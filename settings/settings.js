@@ -14,8 +14,14 @@ function onHomeyReady(HomeyReady) {
 }
 
 function clear_simpleLOG() {
-  Homey.api("GET", "/clearlog/");
-  _id = -1;
+  Homey.confirm('Are you sure you wish to clear the complete log?',  'warning', function (err, val) {
+    if(err) return Homey.alert(err);
+    if(!val) return;
+      
+    Homey.api("GET", "/clearlog/");
+    _id = -1;
+  });
+
 }
 
 function download_simpleLOG() {

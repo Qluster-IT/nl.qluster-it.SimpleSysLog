@@ -2,6 +2,7 @@
 const Homey = require("homey");
 const DBLIMIT = 2000;
 let loggingDB = [];
+let homey;
 
 // Array check.
 function isArray(a) {
@@ -12,12 +13,12 @@ function isArray(a) {
 function addLogToDB(data, group) {
   checkSurplusEntries();
   loggingDB.push({ data, group, date: new Date() });
-  Homey.ManagerSettings.set("loggingDB", loggingDB);
+  homey.settings.set("loggingDB", loggingDB);
 }
 
 // Adding a log entry to Timeline.
 function addLogToTimeline(data) {
-  Homey.ManagerNotifications.registerNotification({ excerpt: data }, (e, n) => {});
+  homey.managerNotifications.registerNotification({ excerpt: data }, (e, n) => {});
 }
 
 //Limit amount of log entries to 2000.
@@ -30,8 +31,14 @@ function checkSurplusEntries() {
 
 //App Class...
 class simpleLog extends Homey.App {
-  onInit() {
-    loggingDB = Homey.ManagerSettings.get("loggingDB");
+  async onInit() {
+    
+		if (process.env.DEBUG === '1') require('inspector').open(9246, '0.0.0.0', true);
+    	
+
+    homey=this.homey;
+    this.buildCards();
+    loggingDB = this.homey.settings.get("loggingDB");
     if (!isArray(loggingDB)) {
       loggingDB = [];
     }
@@ -51,65 +58,69 @@ class simpleLog extends Homey.App {
   getLog() {
     return loggingDB;
   }
+
+  buildCards() {
+        
+    // FLOW Action Card, Input_log
+    let actionInputLog = this.homey.flow.getActionCard("Input_log");
+    actionInputLog.registerRunListener((args, state) => {
+      addLogToDB(args.log);
+      return true;
+    });
+
+    // FLOW Action Card, Input_logtimeline
+    let actionInputLogTimeline = this.homey.flow.getActionCard("Input_logtimeline");
+    actionInputLogTimeline.registerRunListener((args, state) => {
+      addLogToDB(args.log);
+      addLogToTimeline(args.log);
+      return true;
+    });
+
+    // FLOW Action Card, Input_timeline
+    let actionInputTimeline = this.homey.flow.getActionCard("Input_timeline");
+    actionInputTimeline.registerRunListener((args, state) => {
+      addLogToTimeline(args.log);
+      return true;
+    });
+
+    // FLOW Action Card, Input_group_log
+    let actionInputGroupLog = this.homey.flow.getActionCard("Input_group_log");
+    actionInputGroupLog.registerRunListener((args, state) => {
+      addLogToDB(args.log, args.group);
+      return true;
+    });
+
+    // FLOW Action Card, Input_group_logtimeline
+    let actionInputGroupLogTimeline = this.homey.flow.getActionCard("Input_group_logtimeline");
+    actionInputGroupLogTimeline.registerRunListener((args, state) => {
+      addLogToDB(args.log, args.group);
+      addLogToTimeline(`[${args.group}] ${args.log}`);
+      return true;
+    });
+
+    // FLOW Action Card, Clear_log_Older
+    let actionClearlogOlder = this.homey.flow.getActionCard("Clear_log_Older");
+    actionClearlogOlder.registerRunListener((args, state) => {
+      console.log("Removing log data older then " + args.days + " Day(s).");
+      let newloggingDB = [];
+      for (let i in loggingDB) {
+        if ((new Date() - new Date(loggingDB[i].date)) / 86400000 <= args.days) {
+          newloggingDB.push(loggingDB[i]);
+        }
+      }
+      loggingDB = newloggingDB;
+      this.homey.settings.set("loggingDB", loggingDB);
+      return true;
+    });
+
+    // FLOW Action Card, Clear_log
+    let actionClearlog = this.homey.flow.getActionCard("Clear_log");
+    actionClearlog.registerRunListener((args, state) => {
+      loggingDB = [];
+      addLogToDB("Cleared all logging data", "Simple LOG");
+      return true;
+    });
+
+  }
 }
 module.exports = simpleLog;
-
-// FLOW Action Card, Input_log
-let actionInputLog = new Homey.FlowCardAction("Input_log");
-actionInputLog.register().registerRunListener((args, state) => {
-  addLogToDB(args.log);
-  return true;
-});
-
-// FLOW Action Card, Input_logtimeline
-let actionInputLogTimeline = new Homey.FlowCardAction("Input_logtimeline");
-actionInputLogTimeline.register().registerRunListener((args, state) => {
-  addLogToDB(args.log);
-  addLogToTimeline(args.log);
-  return true;
-});
-
-// FLOW Action Card, Input_timeline
-let actionInputTimeline = new Homey.FlowCardAction("Input_timeline");
-actionInputTimeline.register().registerRunListener((args, state) => {
-  addLogToTimeline(args.log);
-  return true;
-});
-
-// FLOW Action Card, Input_group_log
-let actionInputGroupLog = new Homey.FlowCardAction("Input_group_log");
-actionInputGroupLog.register().registerRunListener((args, state) => {
-  addLogToDB(args.log, args.group);
-  return true;
-});
-
-// FLOW Action Card, Input_group_logtimeline
-let actionInputGroupLogTimeline = new Homey.FlowCardAction("Input_group_logtimeline");
-actionInputGroupLogTimeline.register().registerRunListener((args, state) => {
-  addLogToDB(args.log, args.group);
-  addLogToTimeline(`[${args.group}] ${args.log}`);
-  return true;
-});
-
-// FLOW Action Card, Clear_log_Older
-let actionClearlogOlder = new Homey.FlowCardAction("Clear_log_Older");
-actionClearlogOlder.register().registerRunListener((args, state) => {
-  console.log("Removing log data older then " + args.days + " Day(s).");
-  let newloggingDB = [];
-  for (let i in loggingDB) {
-    if ((new Date() - new Date(loggingDB[i].date)) / 86400000 <= args.days) {
-      newloggingDB.push(loggingDB[i]);
-    }
-  }
-  loggingDB = newloggingDB;
-  Homey.ManagerSettings.set("loggingDB", loggingDB);
-  return true;
-});
-
-// FLOW Action Card, Clear_log
-let actionClearlog = new Homey.FlowCardAction("Clear_log");
-actionClearlog.register().registerRunListener((args, state) => {
-  loggingDB = [];
-  addLogToDB("Cleared all logging data", "Simple LOG");
-  return true;
-});

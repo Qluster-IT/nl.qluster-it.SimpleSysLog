@@ -1,0 +1,200 @@
+{
+  "id": "nl.nielsdeklerk.log",
+  "sdk": 3,
+  "brandColor": "#BC274A",
+  "name": {
+    "en": "Simple LOG"
+  },
+  "description": {
+    "en": "Use this app for simple logging."
+  },
+  "category": "tools",
+  "images": {
+    "large": "assets/images/large.png",
+    "small": "assets/images/small.png"
+  },
+  "version": "2.9.0",
+  "compatibility": ">=5.0.0",
+  "author": {
+		"name": "Arie J. Godschalk",
+		"email": "arie@qluster-it.nl"
+	},
+  "tags": {
+    "en": [
+      "Log",
+      "Tools",
+      "simple",
+      "sys"
+    ]
+  },
+	"contributing": {
+		"donate": {
+			"paypal": {
+				"username": "QlusterIT"
+			},
+      "patreon": {
+				"username": "QlusterIT"
+			},
+      "githubSponsors": {
+        "username": "XeroxQ"
+      }
+		}
+	},
+	"contributors": {
+		"developers": [
+			{
+        "name": "Niels de Klerk",
+        "email": "mail@nielsdeklerk.nl"
+      },
+			{
+				"name": "Arie J. Godschalk",
+				"email": "arie@qluster-it.nl"
+			}
+		]
+	},
+	"source": "https://bitbucket.org/QlusterIT/nl.qluster-it.simplelog/",
+	"bugs": {
+		"url": "https://bitbucket.org/QlusterIT/nl.qluster-it.simplelog/issues"
+	},
+  "athomForumDiscussionId": 3052,
+  "homeyCommunityTopicId": 146,  
+	"api": {    
+		"getLogs": {
+			"method": "GET",
+			"path": "/"
+		},
+		"clearLog": {
+			"method": "GET",
+			"path": "/clearlog/"
+		},
+		"addLog": {
+			"method": "PUT",
+			"path": "/addlog/"
+		}
+  },
+  "flow": {
+    "actions": [
+      {
+        "id": "Input_log",
+        "title": {
+          "en": "Add Something to the log",
+          "nl": "Voeg iets toe aan de log"
+        },
+        "args": [
+          {
+            "name": "log",
+            "type": "text",
+            "placeholder": {
+              "en": "Data to log...",
+              "nl": "Gegevens voor logboek..."
+            }
+          }
+        ]
+      },
+      {
+        "id": "Input_logtimeline",
+        "title": {
+          "en": "Add Something to the timeline and log",
+          "nl": "Voeg iets toe aan de tijdslijn en log"
+        },
+        "args": [
+          {
+            "name": "log",
+            "type": "text",
+            "placeholder": {
+              "en": "Data to log...",
+              "nl": "Gegevens voor logboek..."
+            }
+          }
+        ]
+      },
+      {
+        "id": "Input_timeline",
+        "title": {
+          "en": "Add Something to the timeline",
+          "nl": "Voeg iets toe aan de tijdslijn"
+        },
+        "args": [
+          {
+            "name": "log",
+            "type": "text",
+            "placeholder": {
+              "en": "Data to log...",
+              "nl": "Gegevens voor logboek..."
+            }
+          }
+        ]
+      },
+      {
+        "id": "Input_group_log",
+        "title": {
+          "en": "Add Something to a log group",
+          "nl": "Voeg iets toe aan een log groep"
+        },
+        "args": [
+          {
+            "name": "group",
+            "type": "text",
+            "placeholder": {
+              "en": "Group name...",
+              "nl": "Groepsnaam..."
+            }
+          },
+          {
+            "name": "log",
+            "type": "text",
+            "placeholder": {
+              "en": "Data to log...",
+              "nl": "Gegevens voor logboek..."
+            }
+          }
+        ]
+      },
+      {
+        "id": "Input_group_logtimeline",
+        "title": {
+          "en": "Add Something to the timeline and a log group",
+          "nl": "Voeg iets toe aan de tijdslijn en een log groep"
+        },
+        "args": [
+          {
+            "name": "group",
+            "type": "text",
+            "placeholder": {
+              "en": "Group name...",
+              "nl": "Groepsnaam..."
+            }
+          },
+          {
+            "name": "log",
+            "type": "text",
+            "placeholder": {
+              "en": "Data to log...",
+              "nl": "Gegevens voor logboek..."
+            }
+          }
+        ]
+      },
+      {
+        "id": "Clear_log",
+        "title": {
+          "en": "Clear log data",
+          "nl": "Verwijder log data"
+        }
+      },
+      {
+        "id": "Clear_log_Older",
+        "title": {
+          "en": "Clear log data older then (Dagen)",
+          "nl": "Verwijder log data ouder dan (Dagen)"
+        },
+        "args": [
+          {
+            "name": "days",
+            "type": "number"
+          }
+        ]
+      }
+    ]
+  }
+}

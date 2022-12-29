@@ -18,7 +18,7 @@ function addLogToDB(data, group) {
 
 // Adding a log entry to Timeline.
 function addLogToTimeline(data) {
-  homey.managerNotifications.registerNotification({ excerpt: data }, (e, n) => {});
+  homey.notifications.createNotification({ excerpt: data }, (e, n) => {});
 }
 
 //Limit amount of log entries to 2000.

@@ -10,8 +10,8 @@ module.exports =  {
 		homey.app.apiClearLog();
     return "OK";
 	},
-  async addLog({homey, data}) {
-    homey.app.apiPutAddlog(data);
+  async addLog({homey, body}) {
+    homey.app.apiPutAddlog({body});
     return "OK";
 	}
 };

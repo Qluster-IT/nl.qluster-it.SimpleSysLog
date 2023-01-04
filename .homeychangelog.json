@@ -16,5 +16,8 @@
   },
   "2.9.3": {
     "en": "Added: Flowcard (then) to retrieve the log as json."
+  },
+  "2.9.4": {
+    "en": "Resolved: AddLog api bug."
   }
 }

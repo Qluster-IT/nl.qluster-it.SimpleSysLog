@@ -13,7 +13,7 @@
     "large": "assets/images/large.png",
     "small": "assets/images/small.png"
   },
-  "version": "2.9.2",
+  "version": "2.9.3",
   "compatibility": ">=5.0.0",
   "author": {
 		"name": "Arie J. Godschalk",
@@ -193,6 +193,21 @@
           {
             "name": "days",
             "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "get_log",
+        "title": {
+          "en": "Get the (whole) log as JSON token",
+          "nl": "Ontvang het (hele) logboek als JSON token"
+        },
+        "tokens": [
+          {
+            "name": "log",
+            "type": "string",
+            "title": { "en": "Log" },
+            "example": "[\n  {\n    \"data\": \"Cleared all logging data\",\n    \"group\": \"Simple LOG\",\n    \"date\": \"2022-12-29T09:38:30.249Z\"\n  },\n  {\n    \"data\": \"badkamer: 60\",\n    \"date\": \"2022-12-29T09:39:32.172Z\"\n  },"
           }
         ]
       }

@@ -121,6 +121,18 @@ class simpleLog extends Homey.App {
       return true;
     });
 
+    // FLOW Action Card, get_log
+    let actionGetLog = this.homey.flow.getActionCard("get_log");
+    actionGetLog.registerRunListener((args, state) => {
+      let s;
+      try {
+        s = JSON.stringify(this.getLog());
+      } catch (error) {
+        
+      }
+      return {"log":s};
+
+    });
   }
 }
 module.exports = simpleLog;

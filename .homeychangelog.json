@@ -10,5 +10,8 @@
   },
   "2.9.1": {
     "en": "Updated to SDK3."
+  },
+  "2.9.2": {
+    "en": "Resolved: getLogs API back to public."
   }
 }

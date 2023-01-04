@@ -13,7 +13,7 @@
     "large": "assets/images/large.png",
     "small": "assets/images/small.png"
   },
-  "version": "2.9.1",
+  "version": "2.9.2",
   "compatibility": ">=5.0.0",
   "author": {
 		"name": "Arie J. Godschalk",
@@ -61,11 +61,12 @@
 	"api": {    
 		"getLogs": {
 			"method": "GET",
-			"path": "/"
+			"path": "/",
+      "public":true
 		},
 		"clearLog": {
 			"method": "GET",
-			"path": "/clearlog/"
+			"path": "/clearlog/"      
 		},
 		"addLog": {
 			"method": "PUT",

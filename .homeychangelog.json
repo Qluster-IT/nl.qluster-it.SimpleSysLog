@@ -19,5 +19,8 @@
   },
   "2.9.4": {
     "en": "Resolved: AddLog api bug."
+  },
+  "2.9.5": {
+    "en": "Improved: Works with Early 2023!"
   }
 }

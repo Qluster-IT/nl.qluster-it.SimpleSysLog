@@ -1,0 +1,17 @@
+{
+  "id": "Input_timeline",
+  "title": {
+    "en": "Add Something to the timeline",
+    "nl": "Voeg iets toe aan de tijdslijn"
+  },
+  "args": [
+    {
+      "name": "log",
+      "type": "text",
+      "placeholder": {
+        "en": "Data to log...",
+        "nl": "Gegevens voor logboek..."
+      }
+    }
+  ]
+}

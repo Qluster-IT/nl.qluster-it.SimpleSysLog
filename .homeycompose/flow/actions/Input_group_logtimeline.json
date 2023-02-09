@@ -1,0 +1,25 @@
+{
+  "id": "Input_group_logtimeline",
+  "title": {
+    "en": "Add Something to the timeline and a log group",
+    "nl": "Voeg iets toe aan de tijdslijn en een log groep"
+  },
+  "args": [
+    {
+      "name": "group",
+      "type": "text",
+      "placeholder": {
+        "en": "Group name...",
+        "nl": "Groepsnaam..."
+      }
+    },
+    {
+      "name": "log",
+      "type": "text",
+      "placeholder": {
+        "en": "Data to log...",
+        "nl": "Gegevens voor logboek..."
+      }
+    }
+  ]
+}

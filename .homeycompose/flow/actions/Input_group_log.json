@@ -1,0 +1,25 @@
+{
+  "id": "Input_group_log",
+  "title": {
+    "en": "Add Something to a log group",
+    "nl": "Voeg iets toe aan een log groep"
+  },
+  "args": [
+    {
+      "name": "group",
+      "type": "text",
+      "placeholder": {
+        "en": "Group name...",
+        "nl": "Groepsnaam..."
+      }
+    },
+    {
+      "name": "log",
+      "type": "text",
+      "placeholder": {
+        "en": "Data to log...",
+        "nl": "Gegevens voor logboek..."
+      }
+    }
+  ]
+}

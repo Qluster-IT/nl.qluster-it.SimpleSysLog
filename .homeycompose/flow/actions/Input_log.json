@@ -1,0 +1,17 @@
+{
+    "id": "Input_log",
+    "title": {
+      "en": "Add Something to the log",
+      "nl": "Voeg iets toe aan de log"
+    },
+    "args": [
+      {
+        "name": "log",
+        "type": "text",
+        "placeholder": {
+          "en": "Data to log...",
+          "nl": "Gegevens voor logboek..."
+        }
+      }
+    ]
+  }

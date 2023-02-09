@@ -1,0 +1,13 @@
+{
+  "id": "Clear_log_Older",
+  "title": {
+    "en": "Clear log data older then (Dagen)",
+    "nl": "Verwijder log data ouder dan (Dagen)"
+  },
+  "args": [
+    {
+      "name": "days",
+      "type": "number"
+    }
+  ]
+}

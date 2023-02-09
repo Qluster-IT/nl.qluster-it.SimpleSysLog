@@ -1,4 +1,5 @@
 {
+  "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "nl.nielsdeklerk.log",
   "sdk": 3,
   "brandColor": "#BC274A",
@@ -16,9 +17,9 @@
   "version": "2.9.7",
   "compatibility": ">=5.0.0",
   "author": {
-		"name": "Arie J. Godschalk",
-		"email": "arie@qluster-it.nl"
-	},
+    "name": "Arie J. Godschalk",
+    "email": "arie@qluster-it.nl"
+  },
   "tags": {
     "en": [
       "Log",
@@ -27,102 +28,88 @@
       "sys"
     ]
   },
-	"contributing": {
-		"donate": {
-			"paypal": {
-				"username": "QlusterIT"
-			},
+  "contributing": {
+    "donate": {
+      "paypal": {
+        "username": "QlusterIT"
+      },
       "patreon": {
-				"username": "QlusterIT"
-			},
+        "username": "QlusterIT"
+      },
       "githubSponsors": {
         "username": "XeroxQ"
       }
-		}
-	},
-	"contributors": {
-		"developers": [
-			{
+    }
+  },
+  "contributors": {
+    "developers": [
+      {
         "name": "Niels de Klerk",
         "email": "mail@nielsdeklerk.nl"
       },
-			{
-				"name": "Arie J. Godschalk",
-				"email": "arie@qluster-it.nl"
-			}
-		]
-	},
-	"source": "https://bitbucket.org/QlusterIT/nl.qluster-it.simplelog/",
-	"bugs": {
-		"url": "https://bitbucket.org/QlusterIT/nl.qluster-it.simplelog/issues"
-	},
+      {
+        "name": "Arie J. Godschalk",
+        "email": "arie@qluster-it.nl"
+      }
+    ]
+  },
+  "source": "https://bitbucket.org/QlusterIT/nl.qluster-it.simplelog/",
+  "bugs": {
+    "url": "https://bitbucket.org/QlusterIT/nl.qluster-it.simplelog/issues"
+  },
   "athomForumDiscussionId": 3052,
-  "homeyCommunityTopicId": 146,  
-	"api": {    
-		"getLogs": {
-			"method": "GET",
-			"path": "/",
-      "public":true
-		},
-		"clearLog": {
-			"method": "GET",
-			"path": "/clearlog/"      
-		},
-		"addLog": {
-			"method": "PUT",
-			"path": "/addlog/"
-		}
+  "homeyCommunityTopicId": 146,
+  "api": {
+    "getLogs": {
+      "method": "GET",
+      "path": "/",
+      "public": true
+    },
+    "clearLog": {
+      "method": "GET",
+      "path": "/clearlog/"
+    },
+    "addLog": {
+      "method": "PUT",
+      "path": "/addlog/"
+    }
   },
   "flow": {
     "actions": [
       {
-        "id": "Input_log",
+        "id": "Clear_log",
         "title": {
-          "en": "Add Something to the log",
-          "nl": "Voeg iets toe aan de log"
+          "en": "Clear log data",
+          "nl": "Verwijder log data"
+        }
+      },
+      {
+        "id": "Clear_log_Older",
+        "title": {
+          "en": "Clear log data older then (Dagen)",
+          "nl": "Verwijder log data ouder dan (Dagen)"
         },
         "args": [
           {
-            "name": "log",
-            "type": "text",
-            "placeholder": {
-              "en": "Data to log...",
-              "nl": "Gegevens voor logboek..."
-            }
+            "name": "days",
+            "type": "number"
           }
         ]
       },
       {
-        "id": "Input_logtimeline",
+        "id": "get_log",
         "title": {
-          "en": "Add Something to the timeline and log",
-          "nl": "Voeg iets toe aan de tijdslijn en log"
+          "en": "Get the (whole) log as JSON token",
+          "nl": "Ontvang het (hele) logboek als JSON token"
         },
-        "args": [
+        "tokens": [
           {
             "name": "log",
-            "type": "text",
-            "placeholder": {
-              "en": "Data to log...",
-              "nl": "Gegevens voor logboek..."
-            }
-          }
-        ]
-      },
-      {
-        "id": "Input_timeline",
-        "title": {
-          "en": "Add Something to the timeline",
-          "nl": "Voeg iets toe aan de tijdslijn"
-        },
-        "args": [
-          {
-            "name": "log",
-            "type": "text",
-            "placeholder": {
-              "en": "Data to log...",
-              "nl": "Gegevens voor logboek..."
-            }
+            "type": "string",
+            "title": {
+              "en": "Log"
+            },
+            "example": "[\n  {\n    \"data\": \"Cleared all logging data\",\n    \"group\": \"Simple LOG\",\n    \"date\": \"2022-12-29T09:38:30.249Z\"\n  },\n  {\n    \"data\": \"badkamer: 60\",\n    \"date\": \"2022-12-29T09:39:32.172Z\"\n  },"
           }
         ]
       },
@@ -177,40 +164,117 @@
         ]
       },
       {
-        "id": "Clear_log",
+        "id": "Input_log",
         "title": {
-          "en": "Clear log data",
-          "nl": "Verwijder log data"
-        }
-      },
-      {
-        "id": "Clear_log_Older",
-        "title": {
-          "en": "Clear log data older then (Dagen)",
-          "nl": "Verwijder log data ouder dan (Dagen)"
+          "en": "Add Something to the log",
+          "nl": "Voeg iets toe aan de log"
         },
         "args": [
           {
-            "name": "days",
-            "type": "number"
+            "name": "log",
+            "type": "text",
+            "placeholder": {
+              "en": "Data to log...",
+              "nl": "Gegevens voor logboek..."
+            }
           }
         ]
       },
       {
-        "id": "get_log",
+        "id": "Input_logtimeline",
         "title": {
-          "en": "Get the (whole) log as JSON token",
-          "nl": "Ontvang het (hele) logboek als JSON token"
+          "en": "Add Something to the timeline and log",
+          "nl": "Voeg iets toe aan de tijdslijn en log"
         },
-        "tokens": [
+        "args": [
           {
             "name": "log",
-            "type": "string",
-            "title": { "en": "Log" },
-            "example": "[\n  {\n    \"data\": \"Cleared all logging data\",\n    \"group\": \"Simple LOG\",\n    \"date\": \"2022-12-29T09:38:30.249Z\"\n  },\n  {\n    \"data\": \"badkamer: 60\",\n    \"date\": \"2022-12-29T09:39:32.172Z\"\n  },"
+            "type": "text",
+            "placeholder": {
+              "en": "Data to log...",
+              "nl": "Gegevens voor logboek..."
+            }
+          }
+        ]
+      },
+      {
+        "id": "Input_timeline",
+        "title": {
+          "en": "Add Something to the timeline",
+          "nl": "Voeg iets toe aan de tijdslijn"
+        },
+        "args": [
+          {
+            "name": "log",
+            "type": "text",
+            "placeholder": {
+              "en": "Data to log...",
+              "nl": "Gegevens voor logboek..."
+            }
           }
         ]
       }
     ]
-  }
+  },
+  "drivers": [
+    {
+      "id": "syslogclient",
+      "deprecated": true,
+      "name": {
+        "en": "Syslog client",
+        "nl": "Syslog client",
+        "de": "Syslog client"
+      },
+      "images": {
+        "large": "/drivers/syslogclient/assets/images/large.png",
+        "small": "/drivers/syslogclient/assets/images/small.png"
+      },
+      "capabilities": [],
+      "class": "other",
+      "pair": [
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          },
+          "options": {
+            "singular": true
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "settings": [
+        {
+          "id": "hostname",
+          "type": "text",
+          "label": {
+            "en": "Hostname"
+          },
+          "value": "",
+          "placeholder": "192.168.1.100"
+        },
+        {
+          "id": "port",
+          "type": "number",
+          "label": "Pitch",
+          "min": 1,
+          "max": 65536,
+          "step": 1,
+          "value": 514
+        },
+        {
+          "id": "appName",
+          "type": "text",
+          "label": {
+            "en": "App name"
+          },
+          "value": "Homey"
+        }
+      ]
+    }
+  ]
 }

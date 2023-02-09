@@ -13,7 +13,7 @@
     "large": "assets/images/large.png",
     "small": "assets/images/small.png"
   },
-  "version": "2.9.5",
+  "version": "2.9.6",
   "compatibility": ">=5.0.0",
   "author": {
 		"name": "Arie J. Godschalk",

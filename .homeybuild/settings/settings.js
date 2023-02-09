@@ -45,6 +45,7 @@ function show_csv() {
     csv = csv + `<div class="logline"></div><br>`;
     csv = csv + `<div class="logline"></div><br>`;
     csv = csv + `<div class="logline"></div><br>`;
+    csv = csv + `<div class="logfile">`;
     csv = csv + `<div class="logline">date;group;data</div>`;
     let log = "";
     for (i in logging) {
@@ -56,6 +57,7 @@ function show_csv() {
       }
     }
     csv = csv + log;
+    csv = csv + `</div>`;
     document.getElementById("logtextarea").innerHTML = csv;
   });
 }
@@ -182,16 +184,51 @@ function formatDT(dateIn, returnDate, returnTime) {
   }
 }
 
-function download(filename, text) {
-  var pom = document.createElement("a");
-  pom.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
-  pom.setAttribute("download", filename);
+ function _download(content, fileName, mimeType) {
+  var a = document.createElement('a');
+  mimeType = mimeType || 'application/octet-stream';
 
-  if (document.createEvent) {
-    var event = document.createEvent("MouseEvents");
-    event.initEvent("click", true, true);
-    pom.dispatchEvent(event);
+  if (navigator.msSaveBlob) { // IE10
+    navigator.msSaveBlob(new Blob([content], {
+      type: mimeType
+    }), fileName);
+  } else if (URL && 'download' in a) { //html5 A[download]
+    a.href = URL.createObjectURL(new Blob([content], {
+      type: mimeType
+    }));
+    a.setAttribute('download', fileName);
+    document.body.appendChild(a);
+    a.click();
+    Homey.openURL(a.href);
+    console.log('homey openURL');
+    document.body.removeChild(a);
   } else {
-    pom.click();
+    location.href = 'data:application/octet-stream,' + encodeURIComponent(content); // only this mime type is supported
   }
+}
+
+function download(filename, text) {
+  //return _download(text, filename, 'data:text/plain;charset=utf-8,');
+  //var encodedUri = encodeURI("data:application/octet-stream," + encodeURIComponent(text));
+  //var encodedUri = encodeURI("data:text/plain;charset=utf-8," + encodeURIComponent(text));
+  //Homey.openURL(encodedUri);
+
+  //var encodedUri = encodeURI("data:text/csv;charset=utf-8," + encodeURIComponent(text));
+  var encodedUri = encodeURI("data:text/csv;charset=utf-8," + text);//+ encodeURIComponent(text));
+  console.log(encodedUri);
+  Homey.openURL(encodedUri);
+
+
+
+  // var pom = document.createElement("a");
+  // pom.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
+  // pom.setAttribute("download", filename);
+
+  // if (document.createEvent) {
+  //   var event = document.createEvent("MouseEvents");
+  //   event.initEvent("click", true, true);
+  //   pom.dispatchEvent(event);
+  // } else {
+  //   pom.click();
+  // }
 }

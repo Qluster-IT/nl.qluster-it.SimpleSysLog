@@ -25,5 +25,8 @@
   },
   "2.9.6": {
     "en": "Bugfixed: CSV can now be downloaded again and the CSV text can be selected within the Homey App Settings."
+  },
+  "2.9.7": {
+    "en": "Bugfixed: CSV can now be downloaded again and the CSV text can be selected within the Homey App Settings. And some minor other bugs."
   }
 }

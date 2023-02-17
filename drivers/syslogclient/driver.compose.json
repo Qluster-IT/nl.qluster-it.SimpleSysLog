@@ -1,6 +1,6 @@
 {
 	"id": "syslogclient",
-	"deprecated":true,
+	"_deprecated":true,
 	"name": {
 		"en": "Syslog client",
 		"nl": "Syslog client",
@@ -30,10 +30,10 @@
 	],	
     "settings": [
 		{
-		  "id": "hostname",
+		  "id": "server",
 		  "type": "text",
 		  "label": {
-			"en": "Hostname"
+			"en": "Server"
 		  },
 		  "value" : "",
 		  "placeholder" : "192.168.1.100"		  
@@ -41,19 +41,111 @@
 		{
 		  "id": "port",
 		  "type": "number",
-		  "label": "Pitch",
+		  "label": {
+			"en": "Port"
+		  },
 		  "min": 1,
 		  "max": 65536,
 		  "step": 1,
 		  "value" : 514
-		},		
+		},
+		{
+		  "id": "useRfc5424",
+		  "type": "checkbox",
+		  "label": {
+			"en": "Use Rfc5424"
+		  },
+		  "value" : false
+		},
 		{
 			"id": "appName",
 			"type": "text",
 			"label": {
-				"en": "App name"
+				"en": "(This) App name"
 			},
 			"value" : "Homey"	  
+		},		
+		{
+			"id": "hostname",
+			"type": "text",
+			"label": {
+				"en": "(This) Hostname"
+			},
+			"value" : "",
+			"placeholder" : "Homey"
+		},		
+		{
+			"id": "log_syslogs",
+			"type": "checkbox",
+			"label": {
+			  "en": "Log all Syslogs to the default Simple Log."
+			},
+			"value" : true
+		},
+		{
+			"id": "autolog_severity",
+			"type": "dropdown",
+			"label": {
+				"en": "Log all default Logs to this Syslog from Level:"
+			},
+			"value" : "",
+			"placeholder" : "",
+			"values": [
+				{
+					"id": "",
+					"label": {
+					  "en": "No"
+					}
+				},
+				{
+				  "id": "0",
+				  "label": {
+					"en": "Emergency"
+				  }
+				},
+				{
+				  "id": "1",
+				  "label": {
+					"en": "Alert"
+				  }
+				},
+				{
+				  "id": "2",
+				  "label": {
+					"en": "Critical"
+				  }
+				},
+				{
+				  "id": "3",
+				  "label": {
+					"en": "Error"
+				  }
+				},
+				{
+				  "id": "4",
+				  "label": {
+					"en": "Warning"
+				  }
+				},
+				{
+				  "id": "5",
+				  "label": {
+					"en": "Notice"
+				  }
+				},
+				{
+				  "id": "6",
+				  "label": {
+					"en": "Informational"
+				  }
+				},
+				{
+				  "id": "7",
+				  "label": {
+					"en": "Debug"
+				  }
+				}
+			  ]
 		}
 	]
 }

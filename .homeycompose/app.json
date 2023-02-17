@@ -13,7 +13,7 @@
     "large": "assets/images/large.png",
     "small": "assets/images/small.png"
   },
-  "version": "2.9.7",
+  "version": "2.9.9",
   "compatibility": ">=5.0.0",
   "author": {
 		"name": "Arie J. Godschalk",
@@ -27,6 +27,7 @@
       "sys"
     ]
   },
+  "permissions": ["homey:app:net.i-dev.betterlogic"],
 	"contributing": {
 		"donate": {
 			"paypal": {

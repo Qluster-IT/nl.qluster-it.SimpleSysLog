@@ -1,0 +1,178 @@
+{
+    "actions": [
+        {
+            "id": "syslogclient_log",
+            "highlight":true,
+            "title": {
+                "en": "Add Something to the Syslog",
+                "nl": "Voeg iets toe aan de Syslog"              
+            },
+            "titleFormatted": {
+                "en": "Add [[message]] to the Syslog with level [[severity]] of [[facility]]",
+                "nl": "Voeg [[message]] toe aan de Syslog met niveau [[severity]] van [[facility]]"
+            },
+            "args": [
+                {
+                    "name": "message",
+                    "type": "text",
+                    "placeholder":{
+                      "en":"Message...",
+                      "nl":"Bericht..."
+                    },
+                    "title":{
+                      "en":"Message",
+                      "nl":"Bericht"
+                    }
+                },
+                {
+                    "type": "dropdown",
+                    "required": false,
+                    "name": "severity",
+                    "placeholder": {
+                      "en": "Info",
+                      "nl": "Info"
+                    },
+                    "values": [
+                      {
+                        "id": "0",
+                        "label": {
+                          "en": "Emergency"
+                        }
+                      },
+                      {
+                        "id": "1",
+                        "label": {
+                          "en": "Alert"
+                        }
+                      },
+                      {
+                        "id": "2",
+                        "label": {
+                          "en": "Critical"
+                        }
+                      },
+                      {
+                        "id": "3",
+                        "label": {
+                          "en": "Error"
+                        }
+                      },
+                      {
+                        "id": "4",
+                        "label": {
+                          "en": "Warning"
+                        }
+                      },
+                      {
+                        "id": "5",
+                        "label": {
+                          "en": "Notice"
+                        }
+                      },
+                      {
+                        "id": "6",
+                        "label": {
+                          "en": "Informational"
+                        }
+                      },
+                      {
+                        "id": "7",
+                        "label": {
+                          "en": "Debug"
+                        }
+                      }
+                    ]
+                },
+                {
+                    "type": "dropdown",
+                    "required": false,
+                    "name": "facility",
+                    "placeholder": {
+                      "en": "Category",
+                      "nl": "Categorie"
+                    },
+                    "values": [
+                      {
+                        "id": "0",
+                        "label": {
+                          "en": "Kernel"
+                        }
+                      },
+                      {
+                        "id": "1",
+                        "label": {
+                          "en": "User"
+                        }
+                      },
+                      {
+                        "id": "3",
+                        "label": {
+                          "en": "System"
+                        }
+                      },
+                      {
+                        "id": "13",
+                        "label": {
+                          "en": "Audit"
+                        }
+                      },
+                      {
+                        "id": "14",
+                        "label": {
+                          "en": "Alert"
+                        }
+                      },
+                      {
+                        "id": "16",
+                        "label": {
+                          "en": "Local0"
+                        }
+                      },
+                      {
+                        "id": "17",
+                        "label": {
+                          "en": "Local1"
+                        }
+                      },
+                      {
+                        "id": "18",
+                        "label": {
+                          "en": "Local2"
+                        }
+                      },
+                      {
+                        "id": "19",
+                        "label": {
+                          "en": "Local3"
+                        }
+                      },
+                      {
+                        "id": "20",
+                        "label": {
+                          "en": "Local4"
+                        }
+                      },
+                      {
+                        "id": "21",
+                        "label": {
+                          "en": "Local5"
+                        }
+                      },
+                      {
+                        "id": "22",
+                        "label": {
+                          "en": "Local6"
+                        }
+                      },
+                      {
+                        "id": "23",
+                        "label": {
+                          "en": "Local7"
+                        }
+                      }
+                    ]
+                }
+            ]
+        }       
+    ]
+}

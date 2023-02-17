@@ -1,4 +1,5 @@
 "use strict";
+const { BL } = require("betterlogiclibrary");
 const Homey = require("homey");
 const DBLIMIT = 2000;
 let loggingDB = [];
@@ -10,9 +11,9 @@ function isArray(a) {
 }
 
 // The heart of this app. adding a log entry
-function addLogToDB(data, group) {
+function addLogToDB(data, group, {timestamp}={}) {
   checkSurplusEntries();
-  loggingDB.push({ data, group, date: new Date() });
+  loggingDB.push({ data, group, date: timestamp || new Date() });
   homey.settings.set("loggingDB", loggingDB);
 }
 
@@ -36,7 +37,22 @@ function checkSurplusEntries() {
 //App Class...
 class simpleLog extends Homey.App {
   async onInit() {
-    
+    this.Loggers = {};
+
+    if (process.env.DEBUG === '1'){
+			try{ 
+				require('inspector').waitForDebugger();
+			}
+			catch(error){
+				require('inspector').open(9218, '0.0.0.0', true);
+			}
+		}
+
+    await BL.init({
+      homey:this.homey,      
+      modules:[
+				"datetime"
+			]});
 		//if (process.env.DEBUG === '1') require('inspector').open(9246, '0.0.0.0', true);
     	
 
@@ -48,16 +64,31 @@ class simpleLog extends Homey.App {
     }
     addLogToDB('App "Simple LOG" started.', "Simple LOG");
   }
+  
+  addLogToDB(data, group, {severity, facility, timestamp}={severity:'6'}) {
+    timestamp = timestamp || new Date();
+    checkSurplusEntries();
+    loggingDB.push({ data, group, date: timestamp });
+    homey.settings.set("loggingDB", loggingDB);
+    for (const _severity of Object.keys(this.Loggers)) {
+      if(Number.parseInt(_severity)<=Number.parseInt(severity) && this.Loggers[_severity] && this.Loggers[_severity].length>0) 
+      
+      for (const logger  of this.Loggers[_severity]) {
+        logger.log({data, group, severity, facility, timestamp });
+      }
+    }
+  }
+  
   apiPutAddlog(data) {
     console.log("API: PUT...");
     console.log(data);
     if (data && data.body && data.body.log) {
-      addLogToDB(data.body.log, data.body.group);
+      this.addLogToDB(data.body.log, data.body.group);
     }
   }
   apiClearLog() {
     loggingDB = [];
-    addLogToDB("Cleared all logging data", "Simple LOG");
+    this.addLogToDB("Cleared all logging data", "Simple LOG");
   }
   getLog() {
     return loggingDB;
@@ -68,14 +99,14 @@ class simpleLog extends Homey.App {
     // FLOW Action Card, Input_log
     let actionInputLog = this.homey.flow.getActionCard("Input_log");
     actionInputLog.registerRunListener((args, state) => {
-      addLogToDB(args.log);
+      this.addLogToDB(args.log, undefined, args);
       return true;
     });
 
     // FLOW Action Card, Input_logtimeline
     let actionInputLogTimeline = this.homey.flow.getActionCard("Input_logtimeline");
     actionInputLogTimeline.registerRunListener((args, state) => {
-      addLogToDB(args.log);
+      this.addLogToDB(args.log, undefined, args);
       addLogToTimeline(args.log);
       return true;
     });
@@ -90,14 +121,14 @@ class simpleLog extends Homey.App {
     // FLOW Action Card, Input_group_log
     let actionInputGroupLog = this.homey.flow.getActionCard("Input_group_log");
     actionInputGroupLog.registerRunListener((args, state) => {
-      addLogToDB(args.log, args.group);
+      this.addLogToDB(args.log, args.group, args);
       return true;
     });
 
     // FLOW Action Card, Input_group_logtimeline
     let actionInputGroupLogTimeline = this.homey.flow.getActionCard("Input_group_logtimeline");
     actionInputGroupLogTimeline.registerRunListener((args, state) => {
-      addLogToDB(args.log, args.group);
+      this.addLogToDB(args.log, args.group, args);
       addLogToTimeline(`[${args.group}] ${args.log}`);
       return true;
     });
@@ -121,7 +152,7 @@ class simpleLog extends Homey.App {
     let actionClearlog = this.homey.flow.getActionCard("Clear_log");
     actionClearlog.registerRunListener((args, state) => {
       loggingDB = [];
-      addLogToDB("Cleared all logging data", "Simple LOG");
+      this.addLogToDB("Cleared all logging data", "Simple LOG");
       return true;
     });
 

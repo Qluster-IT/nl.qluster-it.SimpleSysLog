@@ -120,10 +120,14 @@ class SyslogClientDevice extends Homey.Device {
 
 		
 		// syslogClient = syslog.createClient(appSettings.syslogServer, syslogOptions);
-		syslogClient = syslog.createClient(settings.server, syslogOpts);
-		syslogClient.on('error', (error) => {
-			console.error(error, error.constructor.name);
-		});
+		try {		
+			syslogClient = syslog.createClient(settings.server, syslogOpts);	
+			syslogClient.on('error', (error) => {
+				console.error(error, error.constructor.name);
+			});
+		} catch (error) {
+			
+		}
 
 		// if(syslogOpts.rfc3164) syslogClient.log(settings.appName + " " + "Test message", undefined, (error)=> {
 		// 	console.log(error);

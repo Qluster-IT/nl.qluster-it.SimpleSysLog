@@ -1,5 +1,6 @@
 "use strict";
 const { BL } = require("betterlogiclibrary");
+const { createReadStream, readFileSync } = require("fs");
 const Homey = require("homey");
 const { Log } = require("./lib/Log");
 const DBLIMIT = 2000;
@@ -20,8 +21,8 @@ function isArray(a) {
 
 // Adding a log entry to Timeline.
 function addLogToTimeline(data) {
-  try {   
-    homey.notifications.createNotification({ excerpt: data }, (e, n) => {}); 
+  try {
+    homey.notifications.createNotification({ excerpt: data }, (e, n) => { });
   } catch (error) {
     homey.error(error);
   }
@@ -38,50 +39,77 @@ function checkSurplusEntries() {
 //App Class...
 class simpleLog extends Homey.App {
   async onInit() {
-    if (process.env.DEBUG === '1'){
-			try{ 
-				require('inspector').waitForDebugger();
-			}
-			catch(error){
-				require('inspector').open(9218, '0.0.0.0', true);
-			}
-		}
-    
+    if (process.env.DEBUG === '1') {
+      try {
+        require('inspector').waitForDebugger();
+      }
+      catch (error) {
+        require('inspector').open(9218, '0.0.0.0', true);
+      }
+    }
+
     this.Loggers = {};
 
 
     await BL.init({
-      homey:this.homey,      
-      modules:[
-				"datetime"
-			]});
-		//if (process.env.DEBUG === '1') require('inspector').open(9246, '0.0.0.0', true);
-    this.Log = new Log({filePath:'/userdata/'});
+      homey: this.homey,
+      modules: [
+        "datetime"
+        //"proto"
+      ]
+    });
+    //if (process.env.DEBUG === '1') require('inspector').open(9246, '0.0.0.0', true);
+    this.Log = new Log({ filePath: '/userdata/' });
+    this.addLogToDB('App "Simple LOG" started.', "Simple LOG");
 
-    homey=this.homey;
+    console.log(new Date().toISOString());
+    for (let i = 0; i < 1000; i++) {
+      await this.addLogToDB('Test message voor here is this', undefined, {timestamp: new Date() });
+    }    
+    console.log(new Date().toISOString());
+
+    let book = this.Log.getLogBook('2023-02-17');
+    for (let i = 0; i < book.index.length; i++) {
+      this.log(await book.read(book.index[i][0], book.index[i][1]));
+    } 
+
+    // let line = await book.read(book.index[10][0], book.index[10][1]);
+    // this.log(line);
+
+    // let s = createReadStream('/userdata/2023-02-17.log', { start:0, end:24} );
+    // let l = s.read();
+    //let s = readFileSync('/userdata/2023-02-17.log');
+
+    //let l = s.read();
+
+
+    homey = this.homey;
     this.buildCards();
     loggingDB = this.homey.settings.get("loggingDB");
     if (!isArray(loggingDB)) {
       loggingDB = [];
     }
-    this.addLogToDB('App "Simple LOG" started.', "Simple LOG");
-    this.log(loggingDB);
+    //this.log(loggingDB);
   }
-  
-  addLogToDB(data, group, {severity, facility, timestamp}={severity:'6'}) {
-    timestamp = timestamp || new Date();
-    checkSurplusEntries();
-    loggingDB.push({ data, group, date: timestamp });
-    homey.settings.set("loggingDB", loggingDB);
-    for (const _severity of Object.keys(this.Loggers)) {
-      if(Number.parseInt(_severity)<=Number.parseInt(severity) && this.Loggers[_severity] && this.Loggers[_severity].length>0) 
-      
-      for (const logger  of this.Loggers[_severity]) {
-        logger.log({data, group, severity, facility, timestamp });
+
+  async addLogToDB(data, group, { severity, facility, timestamp=new Date(), source='log' }={}) {
+    //checkSurplusEntries();
+    //loggingDB.push({ data, group, date: timestamp });
+    //homey.settings.set("loggingDB", loggingDB);
+    
+    let args = { message: data, appName: group, severity, facility, timestamp };
+    await this.Log.writeLine(args);
+    
+    if (source !== 'syslog')
+      for (const _severity of Object.keys(this.Loggers)) {
+        if (Number.parseInt(_severity) <= Number.parseInt(severity) && this.Loggers[_severity] && this.Loggers[_severity].length > 0)
+
+          for (const logger of this.Loggers[_severity]) {
+            await logger.log({ data, group, severity:severity||'6', facility:facility||'16', timestamp });
+          }
       }
-    }
   }
-  
+
   apiPutAddlog(data) {
     console.log("API: PUT...");
     console.log(data);
@@ -98,7 +126,7 @@ class simpleLog extends Homey.App {
   }
 
   buildCards() {
-        
+
     // FLOW Action Card, Input_log
     let actionInputLog = this.homey.flow.getActionCard("Input_log");
     actionInputLog.registerRunListener((args, state) => {
@@ -166,9 +194,9 @@ class simpleLog extends Homey.App {
       try {
         s = JSON.stringify(this.getLog());
       } catch (error) {
-        
+
       }
-      return {"log":s};
+      return { "log": s };
 
     });
   }

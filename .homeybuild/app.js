@@ -1,6 +1,7 @@
 "use strict";
 const { BL } = require("betterlogiclibrary");
 const Homey = require("homey");
+const { Log } = require("./lib/Log");
 const DBLIMIT = 2000;
 let loggingDB = [];
 let homey;
@@ -10,12 +11,12 @@ function isArray(a) {
   return !!a && a.constructor === Array;
 }
 
-// The heart of this app. adding a log entry
-function addLogToDB(data, group, {timestamp}={}) {
-  checkSurplusEntries();
-  loggingDB.push({ data, group, date: timestamp || new Date() });
-  homey.settings.set("loggingDB", loggingDB);
-}
+// // The heart of this app. adding a log entry
+// function addLogToDB(data, group, {timestamp}={}) {
+//   checkSurplusEntries();
+//   loggingDB.push({ data, group, date: timestamp || new Date() });
+//   homey.settings.set("loggingDB", loggingDB);
+// }
 
 // Adding a log entry to Timeline.
 function addLogToTimeline(data) {
@@ -37,8 +38,6 @@ function checkSurplusEntries() {
 //App Class...
 class simpleLog extends Homey.App {
   async onInit() {
-    this.Loggers = {};
-
     if (process.env.DEBUG === '1'){
 			try{ 
 				require('inspector').waitForDebugger();
@@ -47,6 +46,9 @@ class simpleLog extends Homey.App {
 				require('inspector').open(9218, '0.0.0.0', true);
 			}
 		}
+    
+    this.Loggers = {};
+
 
     await BL.init({
       homey:this.homey,      
@@ -54,7 +56,7 @@ class simpleLog extends Homey.App {
 				"datetime"
 			]});
 		//if (process.env.DEBUG === '1') require('inspector').open(9246, '0.0.0.0', true);
-    	
+    this.Log = new Log({filePath:'/userdata/'});
 
     homey=this.homey;
     this.buildCards();
@@ -62,7 +64,8 @@ class simpleLog extends Homey.App {
     if (!isArray(loggingDB)) {
       loggingDB = [];
     }
-    addLogToDB('App "Simple LOG" started.', "Simple LOG");
+    this.addLogToDB('App "Simple LOG" started.', "Simple LOG");
+    this.log(loggingDB);
   }
   
   addLogToDB(data, group, {severity, facility, timestamp}={severity:'6'}) {

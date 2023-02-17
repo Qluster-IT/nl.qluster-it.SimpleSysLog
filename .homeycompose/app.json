@@ -1,52 +1,55 @@
 {
-  "id": "nl.nielsdeklerk.log",
-  "sdk": 3,
-  "brandColor": "#BC274A",
-  "name": {
-    "en": "Simple LOG"
-  },
-  "description": {
-    "en": "Use this app for simple logging."
-  },
-  "category": "tools",
-  "images": {
-    "large": "assets/images/large.png",
-    "small": "assets/images/small.png"
-  },
-  "version": "2.9.9",
-  "compatibility": ">=5.0.0",
-  "author": {
+	"id": "nl.nielsdeklerk.log",
+	"sdk": 3,
+	"brandColor": "#BC274A",
+	"name": {
+		"en": "Simple (Sys)LOG"
+	},
+	"description": {
+		"en": "Use this app for simple (sys)logging."
+	},
+	"category": "tools",
+	"images": {
+		"large": "assets/images/large.png",
+		"small": "assets/images/small.png"
+	},
+	"version": "2.9.9",
+	"compatibility": ">=5.0.0",
+	"author": {
 		"name": "Arie J. Godschalk",
 		"email": "arie@qluster-it.nl"
 	},
-  "tags": {
-    "en": [
-      "Log",
-      "Tools",
-      "simple",
-      "sys"
-    ]
-  },
-  "permissions": ["homey:app:net.i-dev.betterlogic"],
+	"tags": {
+		"en": [
+			"Log",
+			"Tools",
+			"simple",
+			"sys",
+			"syslog"
+		]
+	},
+	"permissions": [
+		"homey:app:net.i-dev.betterlogic"
+	],
 	"contributing": {
 		"donate": {
 			"paypal": {
 				"username": "QlusterIT"
 			},
-      "patreon": {
+			"patreon": {
 				"username": "QlusterIT"
 			},
-      "githubSponsors": {
-        "username": "XeroxQ"
-      }
+			"githubSponsors": {
+				"username": "XeroxQ"
+			}
 		}
 	},
 	"contributors": {
 		"developers": [
 			{
-        "name": "Niels de Klerk",
-        "email": "mail@nielsdeklerk.nl"
-      },
+				"name": "Niels de Klerk",
+				"email": "mail@nielsdeklerk.nl"
+			},
 			{
 				"name": "Arie J. Godschalk",
 				"email": "arie@qluster-it.nl"
@@ -57,21 +60,21 @@
 	"bugs": {
 		"url": "https://bitbucket.org/QlusterIT/nl.qluster-it.simplelog/issues"
 	},
-  "athomForumDiscussionId": 3052,
-  "homeyCommunityTopicId": 146,  
-	"api": {    
+	"athomForumDiscussionId": 3052,
+	"homeyCommunityTopicId": 146,
+	"api": {
 		"getLogs": {
 			"method": "GET",
 			"path": "/",
-      "public":true
+			"public": true
 		},
 		"clearLog": {
 			"method": "GET",
-			"path": "/clearlog/"      
+			"path": "/clearlog/"
 		},
 		"addLog": {
 			"method": "PUT",
 			"path": "/addlog/"
 		}
-  }
+	}
 }

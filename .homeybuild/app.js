@@ -68,12 +68,16 @@ class simpleLog extends Homey.App {
     }    
     console.log(new Date().toISOString());
 
+    console.log(await this.Log.getLogs());
+
+    this.addLogToDB('App "Simple LOG" started.', "Simple LOG");
+    
     // let book = this.Log.getLogBook(new Date());
     // for (let i = 0; i < book.index.length; i++) {
     //   this.log(await book.read(book.index[i][0], book.index[i][1]));
     // } 
 
-    
+
 
     // let line = await book.read(book.index[10][0], book.index[10][1]);
     // this.log(line);

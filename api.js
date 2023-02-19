@@ -1,19 +1,27 @@
 "use strict";
+const { BL } = require("betterlogiclibrary/src/bl");
 const Homey = require("homey");
 
 
-module.exports =  {
-  async getLogs({homey}) {
-		return homey.app.getLog();      
-	},
-  async clearLog({homey}) {
-		homey.app.apiClearLog();
+module.exports = {
+  async getLogs({ homey }) {
+    let result = await homey.app.Log.getLogs({ maxSizeKb: 900 });//BL._.take(, 1000);
+    return result;
+    return homey.app.getLog();
+  },
+  async queryLogs({ homey, body: { skip, take } }) {
+    arguments[0].body.maxSizeKb = 900;
+    let result = await homey.app.Log.getLogs(arguments[0].body);//BL._.take(, 1000);
+    return result;
+  },
+  async clearLog({ homey }) {
+    homey.app.apiClearLog();
     return "OK";
-	},
-  async addLog({homey, body}) {
-    homey.app.apiPutAddlog({body});
+  },
+  async addLog({ homey, body }) {
+    homey.app.apiPutAddlog({ body });
     return "OK";
-	}
+  }
 };
 
 

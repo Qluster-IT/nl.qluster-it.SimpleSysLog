@@ -62,16 +62,25 @@ class simpleLog extends Homey.App {
     this.Log = new Log({ filePath: '/userdata/' });
     this.addLogToDB('App "Simple LOG" started.', "Simple LOG");
 
-    console.log(new Date().toISOString());
-    for (let i = 0; i < 1000; i++) {
-      await this.addLogToDB('Test message voor here is this', undefined, {timestamp: new Date() });
-    }    
-    console.log(new Date().toISOString());
+    if (false && process.env.DEBUG === '1') {
+      let date = new Date();
+      //date = new Date(date.setMonth(date.getMonth()-8));
+      for (let i = 0; i < 150; i++) {
+        date = new Date(date.setDate(date.getDate() - 1));
+        for (let i = 0; i < 100; i++) {
+          await this.addLogToDB('Test message voor here is this', undefined, { severity: i === 0 ? 4 : undefined, timestamp: date });
+        }
+      }
+      console.log(new Date().toISOString());
+    }
 
-    console.log(await this.Log.getLogs());
+    // let first = new Date().toISOString();
+    // this.log(await this.Log.getLogs());
+    // this.log('first', first);
+    // this.log('second', new Date().toISOString());
 
     this.addLogToDB('App "Simple LOG" started.', "Simple LOG");
-    
+
     // let book = this.Log.getLogBook(new Date());
     // for (let i = 0; i < book.index.length; i++) {
     //   this.log(await book.read(book.index[i][0], book.index[i][1]));
@@ -98,20 +107,20 @@ class simpleLog extends Homey.App {
     //this.log(loggingDB);
   }
 
-  async addLogToDB(data, group, { severity, facility, timestamp=new Date(), source='log' }={}) {
+  async addLogToDB(data, group, { severity, facility, timestamp = new Date(), source = 'log' } = {}) {
     //checkSurplusEntries();
     //loggingDB.push({ data, group, date: timestamp });
     //homey.settings.set("loggingDB", loggingDB);
-    
+
     let args = { message: data, appName: group, severity, facility, timestamp };
     await this.Log.writeLine(args);
-    
+
     if (source !== 'syslog')
       for (const _severity of Object.keys(this.Loggers)) {
         if (Number.parseInt(_severity) <= Number.parseInt(severity) && this.Loggers[_severity] && this.Loggers[_severity].length > 0)
 
           for (const logger of this.Loggers[_severity]) {
-            await logger.log({ data, group, severity:severity||'6', facility:facility||'16', timestamp });
+            await logger.log({ data, group, severity: severity || '6', facility: facility || '16', timestamp });
           }
       }
   }

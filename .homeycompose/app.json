@@ -68,6 +68,10 @@
 			"path": "/",
 			"public": true
 		},
+		"queryLogs": {
+			"method": "POST",
+			"path": "/"
+		},
 		"clearLog": {
 			"method": "GET",
 			"path": "/clearlog/"

@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+    <head>
+        <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
+        <script type="text/javascript" src="settings.js" data-origin="settings"></script>
+    </head>
+    <style>
+        i {
+            margin-right: 20px;
+        }
+
+        .logline {
+            height: auto;
+            line-height: initial;
+            white-space: nowrap;
+        }
+        input{
+            margin-top: 10px;
+            margin-right: 24px;
+        }
+        .checkbox-image {
+            mask-image: none!important;
+            background-size: 20px!important;
+            width: 24px !important;
+            height: 24px !important;
+            background-repeat: no-repeat;
+            background-position: 2px;
+        }
+        .logfile {
+            user-select: all;
+        }.logfile * {
+            user-select: inherit;
+        }
+    </style>
+    <body>
+        <div id="logView" class= "dblock" style="display: block;">
+            <div style="top: -1px;position: absolute;width: 300%;left: 0px;">
+                <div>
+                    <div style="display:block;">
+                        <input type="checkbox" id="show_date" style="background-image: url(./date.png);" onClick="show_log(true)" class="checkbox-image" checked ></input>
+                        <input type="checkbox" id="show_time" style="background-image: url(./time.png);" onClick="show_log(true)" class="checkbox-image" checked > </input>
+                        <input type="checkbox" id="show_refresh" style="background-image: url(./refresh.png);" onClick="show_log(true)" class="checkbox-image" checked >  </input>
+                        <input type="checkbox" id="show_td" style="background-image: url(./sort.png);" onClick="show_log(true)" class="checkbox-image" checked > </input>
+                        <input type="checkbox" id="show_ft" style="background-image: url(./font.png);" onClick="show_size(true)" class="checkbox-image" >  </input>
+                    </div>
+                    <div style="display:block;">
+                        <button id="showCsv" onclick="show_csv()"  style="margin-left: 40px;"> <img src="download.svg"height="24" width="24" style="float: right;"> CSV </button>
+                        <button id="clear_simpleLOG" onclick="clear_simpleLOG()" style="margin-left: 40px;"> <img src="trash.svg"height="24" width="24" style="float: right;"> Clear log</button>
+                    </div>
+                </div>
+                <div id="logtextarea" style="margin: 0px; width: 90%; height: 700px; font-family: monospace; font-size: xx-small; margin-top: 10px;">
+                    Log...
+                </div>
+                <!-- <button id="clear_simpleLOG" onclick="clear_simpleLOG()"><img src="trash.svg"height="24" width="24" style="float: right;"> Clear </button>-->
+                <!-- <button id="download_simpleLOG" onclick="download_simpleLOG()"> <img src="download.svg"height="24" width="24"> CSV </button>-->
+            </div>
+    </body>
+</html>

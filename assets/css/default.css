@@ -4,15 +4,17 @@
 body.index {
     padding: 0 !important;
 }
-.main-view  {
-    height:100%;
+
+.main-view {
+    height: 100%;
 }
 
-.pagination  {
+.pagination {
     text-align: center;
     display: inline-block;
 }
-.pagination > li  {
+
+.pagination>li {
     display: inline-block;
 }
 
@@ -62,19 +64,36 @@ input {
 
 .toggle-icon {
     font-size: 16pt;
+    cursor: pointer;
 }
 
 .log-table td {
     vertical-align: top;
-    padding:5px;
+    padding: 5px;
 }
+
 .ui-grid-filter-select {
-    padding:5px 2px!important;
+    padding: 5px 2px !important;
 }
+
 .ui-grid-filter-input {
-    border:1px solid grey!important;
+    border: 1px solid grey !important;
 }
 
 .log-grid {
-    height:calc(100% - 8px)!important;
+    height: calc(100% - 8px) !important;
+}
+
+.date-time-filter-buttons {
+    width: 40%;
+    height: 2em;
+    padding: inherit;
+    text-align: center;
+}
+
+.modal {
+    opacity: 1 !important;
+}
+.modal-backdrop {
+    opacity: 0.2 !important;
 }

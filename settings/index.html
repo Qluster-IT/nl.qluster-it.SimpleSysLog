@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html ng-app="simplelog">
 
 <head>
 	<script type="text/javascript" src="/homey.js" data-origin="settings"></script>
@@ -41,13 +41,14 @@
 </style>
 
 <body class="index h-100 overflow-hidden">
-	<div ng-app="simplelog" ng-controller="simplelogCtrl as simplelog" class="main-view overflow-hidden" ng-class="{rotated90:view.settings.rotated90}">
+	<div ng-controller="simplelogCtrl as simplelog" class="main-view overflow-hidden" ng-class="{rotated90:view.settings.rotated90}">
+		<div class="position-fixed z-1" style="right:5px;top:5px;"><span class="fa-solid toggle-icon fa-rotate-right" ng-click="toggleSetting('rotated90');"></span></div>
 		<div class="d-flex flex-column overflow-hidden h-100">
-			<div class="container text-center">
+			<!-- <div class="container text-center">
 				<div class="row">
 					<div class="col"><span class="fa-solid toggle-icon fa-rotate-right" ng-click="toggleSetting('rotated90');"></span></div>
 				</div>
-			</div>
+			</div> -->
 			<div class="flex-grow-1 overflow-y-auto">
 				<div ui-grid="logGridOptions" class="log-grid" ui-grid-auto-resize ui-grid-resize-columns ui-grid-selection ui-grid-pagination></div>
 
@@ -85,6 +86,66 @@
 			}
 		</script>
 	</div>
+	
+    <script type="text/ng-template" id="custom-date-filter.html">
+    
+		<div class="modal-content col-md-12 col-md-offset-0 col-sm-12 col-sm-offset-0 col-xs-12 col-xs-offset-0">
+	
+		  <div class="modal-header">
+			<p class="modal-title well custom-date-filter-header">
+			  <span class="custom-date-filter-title-text">
+				{{ custom.title }}
+			  </span>
+			</p>
+		  </div>
+	
+		  <div class="row modal-body custom-date-filter-container-row">
+	
+			<form name="custom.customDateFilterForm"
+				  ng-submit="custom.setFilterDate(custom.filterDate)"
+				  no-validation>
+  
+			  <div class="row custom-filter-date-input-row">
+			  
+				<div class="well col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-10 col-xs-offset-1 custom-date-filter-input">
+				
+				  <div uib-datepicker ng-model="custom.filterDate" 
+					  min-date="custom.minDate" 
+					  max-date="custom.maxDate"
+					  ng-change="custom.filterDateChanged()"
+					  class="well well-sm">
+				</div>
+  
+				</div>
+  
+			  </div>
+  
+			  <div class="row modal-footer custom-date-filter-submit-buttons-row">
+  
+				<div class="custom-date-filter-submit-buttons-div col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1">
+  
+				  <button class="btn btn-success btn-lg custom-date-filter-submit-button"
+						  type="submit">
+					Apply
+				  </button>
+  
+				  <button type="button"
+						  class="btn btn-warning btn-lg custom-date-filter-cancel-button"
+						  ng-click="custom.cancelDateFilter()">
+					Cancel
+				  </button>
+  
+				</div>
+  
+			  </div>
+  
+			</form>
+	
+		  </div>
+	
+		</div>
+	  
+	  </script>
 </body>
 
 </html>

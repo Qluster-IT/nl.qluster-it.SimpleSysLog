@@ -1,10 +1,11 @@
 "use strict";
 const { BL } = require("betterlogiclibrary");
-const { createReadStream, readFileSync, unlinkSync, rmSync } = require("fs");
+const { createReadStream, readFileSync, unlinkSync, rmSync, stat, statSync, readdirSync } = require("fs");
 const Homey = require("homey");
+const path = require("path");
 const { Log } = require("./lib/Log");
 const DBLIMIT = 2000;
-let loggingDB = [];
+//let loggingDB = [];
 let homey;
 
 // Array check.
@@ -29,12 +30,12 @@ function addLogToTimeline(data) {
 }
 
 //Limit amount of log entries to 2000.
-function checkSurplusEntries() {
-  if (loggingDB.length > DBLIMIT) {
-    let tomuch = loggingDB.length - DBLIMIT;
-    loggingDB.splice(0, tomuch);
-  }
-}
+// function checkSurplusEntries() {
+//   if (loggingDB.length > DBLIMIT) {
+//     let tomuch = loggingDB.length - DBLIMIT;
+//     loggingDB.splice(0, tomuch);
+//   }
+// }
 
 //App Class...
 class simpleLog extends Homey.App {
@@ -61,19 +62,28 @@ class simpleLog extends Homey.App {
     //if (process.env.DEBUG === '1') 
       
     
-    // rmSync('/userdata/2022/', {recursive:true, force:true });
-    // rmSync('/userdata/2023/', {recursive:true, force:true });
-    // unlinkSync('/userdata/log.jsons');
-
     this.Log = new Log({ filePath: '/userdata/' });
+    //this.Log.clearLog();
+
+    
+    let loggingDB = this.homey.settings.get("loggingDB");
+    if (isArray(loggingDB)) {
+      for (let i = 0; i < loggingDB.length; i++) {
+        const log = loggingDB[i];
+        this.addLogToDB(log.data, log.group, {timestamp:log.date});        
+      }
+      await this.homey.settings.set("loggingDB", null);
+    }
+
     this.addLogToDB('App "Simple (Sys) LOG" started.', "Simple LOG");
 
     if ( false ){//&& process.env.DEBUG === '1') {
       let date = new Date();
+      //await this.addLogToDB(date, 'DATE TEST');
       //date = new Date(date.setMonth(date.getMonth()-8));
-      for (let i = 0; i < 150; i++) {
+      for (let i = 0; i < 100; i++) {
         date = new Date(date.setDate(date.getDate() - 1));
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 30; i++) {
           await this.addLogToDB('Test message voor here is this', undefined, { severity: i === 0 ? 4 : undefined, timestamp: date });
         }
       }
@@ -114,9 +124,9 @@ class simpleLog extends Homey.App {
   }
 
   async addLogToDB(data, group, { severity, facility, timestamp = new Date(), source = 'log' } = {}) {
-    //checkSurplusEntries();
-    //loggingDB.push({ data, group, date: timestamp });
-    //homey.settings.set("loggingDB", loggingDB);
+    // checkSurplusEntries();
+    // loggingDB.push({ data, group, date: timestamp });
+    // this.homey.settings.set("loggingDB", loggingDB);
 
     let args = { message: data, app: group, severity, facility, timestamp };
     await this.Log.writeLine(args);
@@ -139,12 +149,9 @@ class simpleLog extends Homey.App {
     }
   }
   apiClearLog() {
-    loggingDB = [];
-    this.addLogToDB("Cleared all logging data", "Simple LOG");
+    this.Log.clearLog();
   }
-  getLog() {
-    return loggingDB;
-  }
+  
 
   buildCards() {
 
@@ -188,24 +195,14 @@ class simpleLog extends Homey.App {
     // FLOW Action Card, Clear_log_Older
     let actionClearlogOlder = this.homey.flow.getActionCard("Clear_log_Older");
     actionClearlogOlder.registerRunListener((args, state) => {
-      console.log("Removing log data older then " + args.days + " Day(s).");
-      let newloggingDB = [];
-      for (let i in loggingDB) {
-        if ((new Date() - new Date(loggingDB[i].date)) / 86400000 <= args.days) {
-          newloggingDB.push(loggingDB[i]);
-        }
-      }
-      loggingDB = newloggingDB;
-      this.homey.settings.set("loggingDB", loggingDB);
+      this.Log.clearLog(args.days);
       return true;
     });
 
     // FLOW Action Card, Clear_log
     let actionClearlog = this.homey.flow.getActionCard("Clear_log");
     actionClearlog.registerRunListener((args, state) => {
-      loggingDB = [];
-      this.addLogToDB("Cleared all logging data", "Simple LOG");
-      return true;
+      return this.Log.clearLog();
     });
 
     // FLOW Action Card, get_log
@@ -213,7 +210,7 @@ class simpleLog extends Homey.App {
     actionGetLog.registerRunListener((args, state) => {
       let s;
       try {
-        s = JSON.stringify(this.getLog());
+        s = JSON.stringify(this.Log.getLogs());
       } catch (error) {
 
       }

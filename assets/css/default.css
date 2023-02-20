@@ -66,4 +66,15 @@ input {
 
 .log-table td {
     vertical-align: top;
+    padding:5px;
+}
+.ui-grid-filter-select {
+    padding:5px 2px!important;
+}
+.ui-grid-filter-input {
+    border:1px solid grey!important;
+}
+
+.log-grid {
+    height:calc(100% - 8px)!important;
 }

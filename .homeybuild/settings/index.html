@@ -25,6 +25,9 @@
 
 
 	<script type="text/javascript" src="../../net.i-dev.betterlogic/assets/js/ui-bootstrap-tpls-2.5.0.min.js"></script>
+	
+	<link rel="stylesheet" href="../../net.i-dev.betterlogic/assets/css/ui-grid.min.css" type="text/css" />
+	<script type="text/javascript" src="../../net.i-dev.betterlogic/assets/js/ui-grid.min.js"></script>
 
 
 	<script type="text/javascript" src="../../net.i-dev.betterlogic/assets/js/bll.module.js"></script>
@@ -45,9 +48,19 @@
 					<div class="col"><span class="fa-solid toggle-icon fa-rotate-right" ng-click="toggleSetting('rotated90');"></span></div>
 				</div>
 			</div>
-			<div class="flex-grow-1 overflow-y-scroll">
-				<table class="log-table">
-					<thead></thead>
+			<div class="flex-grow-1 overflow-y-auto">
+				<div ui-grid="logGridOptions" class="log-grid" ui-grid-auto-resize ui-grid-resize-columns ui-grid-selection ui-grid-pagination></div>
+
+				<!-- <table class="log-table">
+					<thead>
+						<tr>
+							<th>Timestamp</th>
+							<th>Severity</th>
+							<th>Facility</th>
+							<th>App</th>
+							<th>Message</th>
+						</tr>
+					</thead>
 					<tbody>
 						<tr ng-repeat="log in vars.logs">
 							<td>{{log.timestamp}}</td>
@@ -57,9 +70,9 @@
 							<td>{{log.message}}</td>
 						</tr>
 					</tbody>
-				</table>
+				</table> -->
 			</div>
-			<div uib-pagination total-items="vars.logTotal" ng-model="vars.logCurrentPage" items-per-page="vars.logPerPage"></div>
+			<!-- <div uib-pagination total-items="vars.logTotal" ng-model="vars.logCurrentPage" items-per-page="vars.logPerPage"></div> -->
 		</div>
 		<div id="overlay"></div>
 		<script>

@@ -141,7 +141,7 @@ class SyslogClientDevice extends Homey.Device {
 		if (facility) facility = Number.parseInt(facility); else facility = this.settings.facility;
 
 		if (!timestamp) timestamp = new Date();
-		let opts = { facility, severity, timestamp, appName: this.appName };
+		let opts = { facility, severity, timestamp, app: this.appName };
 		if(message && this.settings.log_syslogs===true) this.homey.app.addLogToDB(message, this.appName, {facility, severity, timestamp});
 		else if(!message && data) message = data;
 

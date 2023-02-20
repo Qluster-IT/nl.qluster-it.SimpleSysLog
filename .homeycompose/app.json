@@ -3,10 +3,10 @@
 	"sdk": 3,
 	"brandColor": "#BC274A",
 	"name": {
-		"en": "Simple (Sys)LOG"
+		"en": "Simple (Sys) LOG"
 	},
 	"description": {
-		"en": "Use this app for simple (sys)logging."
+		"en": "Use this app for simple (sys) logging."
 	},
 	"category": "tools",
 	"images": {

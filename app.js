@@ -1,6 +1,6 @@
 "use strict";
 const { BL } = require("betterlogiclibrary");
-const { createReadStream, readFileSync } = require("fs");
+const { createReadStream, readFileSync, unlinkSync, rmSync } = require("fs");
 const Homey = require("homey");
 const { Log } = require("./lib/Log");
 const DBLIMIT = 2000;
@@ -39,7 +39,7 @@ function checkSurplusEntries() {
 //App Class...
 class simpleLog extends Homey.App {
   async onInit() {
-    if (process.env.DEBUG === '1') {
+    if (process.env.DEBUG === '1' || false) {
       try {
         require('inspector').waitForDebugger();
       }
@@ -58,11 +58,17 @@ class simpleLog extends Homey.App {
         //"proto"
       ]
     });
-    //if (process.env.DEBUG === '1') require('inspector').open(9246, '0.0.0.0', true);
-    this.Log = new Log({ filePath: '/userdata/' });
-    this.addLogToDB('App "Simple LOG" started.', "Simple LOG");
+    //if (process.env.DEBUG === '1') 
+      
+    
+    // rmSync('/userdata/2022/', {recursive:true, force:true });
+    // rmSync('/userdata/2023/', {recursive:true, force:true });
+    // unlinkSync('/userdata/log.jsons');
 
-    if (false && process.env.DEBUG === '1') {
+    this.Log = new Log({ filePath: '/userdata/' });
+    this.addLogToDB('App "Simple (Sys) LOG" started.', "Simple LOG");
+
+    if ( false ){//&& process.env.DEBUG === '1') {
       let date = new Date();
       //date = new Date(date.setMonth(date.getMonth()-8));
       for (let i = 0; i < 150; i++) {
@@ -79,7 +85,7 @@ class simpleLog extends Homey.App {
     // this.log('first', first);
     // this.log('second', new Date().toISOString());
 
-    this.addLogToDB('App "Simple LOG" started.', "Simple LOG");
+    //this.addLogToDB('App "Simple LOG" started.', "Simple LOG");
 
     // let book = this.Log.getLogBook(new Date());
     // for (let i = 0; i < book.index.length; i++) {
@@ -112,7 +118,7 @@ class simpleLog extends Homey.App {
     //loggingDB.push({ data, group, date: timestamp });
     //homey.settings.set("loggingDB", loggingDB);
 
-    let args = { message: data, appName: group, severity, facility, timestamp };
+    let args = { message: data, app: group, severity, facility, timestamp };
     await this.Log.writeLine(args);
 
     if (source !== 'syslog')

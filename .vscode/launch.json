@@ -66,7 +66,7 @@
 			"serverReadyAction": {
 				"pattern": "Debugger listening on",
 				"action": "startDebugging",
-				"name": "Attach to Homey"
+				"name": "Attach to Homey Pro Early 2023"
 			}
 		},
 		{
@@ -80,7 +80,24 @@
 			"restart": true
 		},
 		{
-			"name": "Attach to Docker 2023",
+			"name": "Launch app on Docker",
+			"type": "node",
+			"request": "launch",
+			"cwd": "${workspaceFolder}",
+			"runtimeExecutable": "homey",
+			"args": [
+				"app",
+				"run"
+			],
+			"outputCapture": "std",
+			"serverReadyAction": {
+				"pattern": "Debugger listening on",
+				"action": "startDebugging",
+				"name": "Attach to Docker"
+			}
+		},
+		{
+			"name": "Attach to Docker",
 			"type": "node",
 			"request": "attach",
 			"address": "0.0.0.0",

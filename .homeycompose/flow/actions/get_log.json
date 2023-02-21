@@ -1,14 +1,46 @@
 {
   "id": "get_log",
   "title": {
-    "en": "Get the (whole) log as JSON token",
-    "nl": "Ontvang het (hele) logboek als JSON token"
+    "en": "Get the (whole) log",
+    "nl": "Ontvang het (hele) logboek"
   },
+  "titleFormatted": {
+    "en": "Get the (whole) log as [[returnType]]",
+    "nl": "Ontvang het (hele) logboek as [[returnType]]"
+  },
+  "args": [
+    {
+      "type": "dropdown",
+      "required": false,
+      "name": "returnType",
+      
+      "placeholder": {
+        "en": "JSON",
+        "nl": "JSON"
+      },
+      "values": [
+        {
+          "id": "json",
+          "label": {
+            "en": "JSON"
+          }
+        },
+        {
+          "id": "csv",
+          "label": {
+            "en": "CSV"
+          }
+        }
+      ]
+    }
+  ],
   "tokens": [
     {
       "name": "log",
       "type": "string",
-      "title": { "en": "Log" },
+      "title": {
+        "en": "Log"
+      },
       "example": "[\n  {\n    \"data\": \"Cleared all logging data\",\n    \"group\": \"Simple LOG\",\n    \"date\": \"2022-12-29T09:38:30.249Z\"\n  },\n  {\n    \"data\": \"badkamer: 60\",\n    \"date\": \"2022-12-29T09:39:32.172Z\"\n  },"
     }
   ]

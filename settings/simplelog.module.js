@@ -9,7 +9,7 @@ angular.module('simplelog', [
     'ui.grid.autoResize',
     'ui.grid.pagination',
     'ui.grid.selection',
-    'ui.grid.exporter'
+    //'ui.grid.exporter'
 ])
     .run(['$rootScope', function ($rootScope) {
         // $rootScope.a = true;
@@ -70,7 +70,7 @@ angular.module('simplelog', [
 
             if (lastLog) opt.lastLog = lastLog;
             await $bl.api("POST", "/", opt, (x) => {
-                vars.logTotal = ($scope.logGridApi.pagination.getPage() - 1) * $scope.logGridOptions.paginationPageSize + (vars.logs = x).length + 1;
+                vars.logTotal = ($scope.logGridApi.pagination.getPage() - 1) * $scope.logGridOptions.paginationPageSize + (vars.logs = x.logs).length + 1;
                 $scope.logGridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
                 $scope.logGridOptions.totalItems = vars.logTotal;
             });
@@ -142,10 +142,11 @@ angular.module('simplelog', [
         $scope.logQuery = $query();
 
 
-        ctrl.init = async (homey, scope) => {
-            ctrl.homey = homey;
+        ctrl.init = async (_homey, scope) => {
+            homey = _homey;
+            ctrl.homey = _homey;
             $scope.__ = Homey.__;
-            $bl.init(homey, $scope);
+            $bl.init(_homey, $scope);
             $bl.get("settings.view.settings", async (x) => {
                 view.settings = x;
                 //await $bl.api("POST", "/date", {format:formats}, (x)=> temp.dateFormats = x );
@@ -396,7 +397,14 @@ angular.module('simplelog', [
             if (setting === 'rotated90') $scope.logGridApi.core.handleWindowResize();
         };
 
-
+        $scope.downloadCSV = async () => {
+            let opt = { returnType:'csv' };
+            await $bl.api("POST", "/", opt, (x) => {
+                var encodedUri = encodeURI("data:text/csv;charset=utf-8," + x.csv);
+                console.log(encodedUri);
+                $bl.openURL(encodedUri);
+            });
+        }
 
     }])
 

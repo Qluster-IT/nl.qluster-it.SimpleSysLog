@@ -10,9 +10,9 @@ module.exports = {
     return homey.app.getLog();
   },
   async queryLogs({ homey, body: { skip, take } }) {
-    //return [];
     arguments[0].body.maxSizeKb = 900;
     let result = await homey.app.Log.getLogs(arguments[0].body);//BL._.take(, 1000);
+    //return [];
     return result;
   },
   async clearLog({ homey }) {

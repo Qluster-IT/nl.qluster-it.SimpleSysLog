@@ -8,6 +8,7 @@ const DBLIMIT = 2000;
 //let loggingDB = [];
 let homey;
 
+const fs = require('fs/promises');
 // Array check.
 function isArray(a) {
   return !!a && a.constructor === Array;
@@ -47,7 +48,8 @@ class simpleLog extends Homey.App {
       catch (error) {
         require('inspector').open(9218, '0.0.0.0', true);
       }
-    }
+    } 
+    else try{ require('inspector').open(9218, '0.0.0.0', false); } catch(ex){}
 
     this.Loggers = {};
 
@@ -68,6 +70,8 @@ try {
       
     
     this.Log = new Log({ filePath: '/userdata/' });
+    await this.Log.init();
+    
     //this.Log.clearLog();
 
     
@@ -218,7 +222,13 @@ try {
     actionGetLog.registerRunListener(async (args, state) => {
       let s;
       try {
-        s = JSON.stringify(await this.Log.getLogs());
+        //s = await fs.readFile('/app/test.json');
+        //s = {logs:JSON.parse(s)};
+        args.take = 5000; // this is just for HP2023 remove on production!
+        s=await this.Log.getLogs(args);
+        // s = BL._.take(s.logs, 6000);
+        // s=JSON.stringify(s);
+        s = s.logs ? JSON.stringify(s.logs) : s.csv;
       } catch (error) {
         throw new Error(error);
       }

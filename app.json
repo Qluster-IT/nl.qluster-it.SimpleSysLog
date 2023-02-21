@@ -107,9 +107,38 @@
       {
         "id": "get_log",
         "title": {
-          "en": "Get the (whole) log as JSON token",
-          "nl": "Ontvang het (hele) logboek als JSON token"
+          "en": "Get the (whole) log",
+          "nl": "Ontvang het (hele) logboek"
         },
+        "titleFormatted": {
+          "en": "Get the (whole) log as [[returnType]]",
+          "nl": "Ontvang het (hele) logboek as [[returnType]]"
+        },
+        "args": [
+          {
+            "type": "dropdown",
+            "required": false,
+            "name": "returnType",
+            "placeholder": {
+              "en": "JSON",
+              "nl": "JSON"
+            },
+            "values": [
+              {
+                "id": "json",
+                "label": {
+                  "en": "JSON"
+                }
+              },
+              {
+                "id": "csv",
+                "label": {
+                  "en": "CSV"
+                }
+              }
+            ]
+          }
+        ],
         "tokens": [
           {
             "name": "log",

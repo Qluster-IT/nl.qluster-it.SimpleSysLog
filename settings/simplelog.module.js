@@ -374,8 +374,8 @@ angular.module('simplelog', [
                     case 'app': opts.app = filter.term; break;
                     case 'message': opts.message = filter.term; break;
                     case 'timestamp':
-                        opts.timestamp_from =  filter.terms[0] ? new Date(Date.UTC(filter.terms[0].getUTCFullYear(), filter.terms[0].getUTCMonth(), filter.terms[0].getUTCDate(), 0,0,0,0)) : undefined;
-                        opts.timestamp_to =  filter.terms[1] ? new Date(Date.UTC(filter.terms[1].getUTCFullYear(), filter.terms[1].getUTCMonth(), filter.terms[1].getUTCDate(), 0,0,0,0)) : undefined;
+                        opts.timestamp_fromUTC =  filter.terms[0] ? new Date(Date.UTC(filter.terms[0].getFullYear(), filter.terms[0].getMonth(), filter.terms[0].getDate(), 0,0,0,0)) : undefined;
+                        opts.timestamp_toUTC =  filter.terms[1] ? new Date(Date.UTC(filter.terms[1].getFullYear(), filter.terms[1].getMonth(), filter.terms[1].getDate(), 0,0,0,0)) : undefined;
                         break;
                     default:
                         break;
@@ -505,11 +505,14 @@ angular.module('simplelog', [
                   return filter.name;
                 }],
                 minDate: [function() {
-                  return new Date(minDate);
+                    return new Date(minDate);
                 }],
                 maxDate: [function() {
                   return new Date(maxDate);
                 }],
+                filterDate: [function() {
+                    return filter.term;                    
+                }]
               }
             });
         
@@ -526,7 +529,7 @@ angular.module('simplelog', [
         
       
       }])
-      .controller('customGridDateFilterModalCtrl', ['$scope', '$rootScope', '$log', '$uibModalInstance', 'filterName', 'minDate', 'maxDate', function($scope, $rootScope, $log, $uibModalInstance, filterName, minDate, maxDate) {
+      .controller('customGridDateFilterModalCtrl', ['$scope', '$rootScope', '$log', '$uibModalInstance', 'filterName', 'minDate', 'maxDate', 'filterDate', function($scope, $rootScope, $log, $uibModalInstance, filterName, minDate, maxDate, filterDate) {
         
           var ctrl = this;
       
@@ -537,8 +540,12 @@ angular.module('simplelog', [
           ctrl.minDate = minDate;
           ctrl.maxDate = maxDate;
           ctrl.customDateFilterForm;
-        
-          ctrl.filterDate = new Date();// (filterName.indexOf('From') !== -1) ? angular.copy(ctrl.minDate) : angular.copy(ctrl.maxDate);
+          //ctrl.currentDate = new Date();
+            let f = filterDate;
+            console.log(f);
+            console.log('f');
+            ctrl.filterDate =filterDate;
+          //  ctrl.filterDate = new Date();// (filterName.indexOf('From') !== -1) ? angular.copy(ctrl.minDate) : angular.copy(ctrl.maxDate);
           
           function setDateToStartOfDay(date) {
             return new Date(date.getFullYear(), date.getMonth(), date.getDate());

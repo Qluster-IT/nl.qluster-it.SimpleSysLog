@@ -97,3 +97,12 @@ input {
 .modal-backdrop {
     opacity: 0.2 !important;
 }
+.uib-day>.btn  {
+    padding:5px 2px!important;
+}
+.uib-day .btn.active {
+    font-weight: bold!important;
+}
+.ui-grid-pager-control-input  {
+    padding:4px 4px;
+}

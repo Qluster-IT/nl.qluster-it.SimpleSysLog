@@ -54,7 +54,7 @@
 				"pattern": "Debugger listening on",
 				"action": "startDebugging",
 				"name": "Attach to Homey"
-			},
+			}
 			//"localRoot": "${workspaceFolder}",
 			//"localRoot": "D:/Qlustrator/Local Visual Code/nl.qluster-it.DeviceCapabilities",
 			//"remoteRoot": "/app/"
@@ -66,7 +66,8 @@
 			"address": "192.168.1.239",
 			"port": 9218,
 			"localRoot": "${workspaceFolder}",
-			"remoteRoot": "/app/"
+			"remoteRoot": "/app/",
+			"restart": true
 		},
         {
 			"name": "Attach to Docker 2023",

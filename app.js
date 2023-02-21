@@ -51,14 +51,19 @@ class simpleLog extends Homey.App {
 
     this.Loggers = {};
 
-
-    await BL.init({
-      homey: this.homey,
-      modules: [
-        "datetime"
-        //"proto"
-      ]
-    });
+try {
+  
+  await BL.init({
+    homey: this.homey,
+    modules: [
+      "datetime"
+      //"proto"
+    ]
+  });
+} catch (error) {
+  this.error(error);
+  throw new Error(error);
+}
     //if (process.env.DEBUG === '1') 
       
     
@@ -81,13 +86,12 @@ class simpleLog extends Homey.App {
       let date = new Date();
       //await this.addLogToDB(date, 'DATE TEST');
       //date = new Date(date.setMonth(date.getMonth()-8));
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 365; i++) {
         date = new Date(date.setDate(date.getDate() - 1));
         for (let i = 0; i < 30; i++) {
           await this.addLogToDB('Test message voor here is this', undefined, { severity: i === 0 ? 4 : undefined, timestamp: date });
         }
       }
-      console.log(new Date().toISOString());
     }
 
     // let first = new Date().toISOString();
@@ -121,6 +125,10 @@ class simpleLog extends Homey.App {
       loggingDB = [];
     }
     //this.log(loggingDB);
+  }
+
+  async onUninit() {
+    if(this.Log) await this.Log.destroy();
   }
 
   async addLogToDB(data, group, { severity, facility, timestamp = new Date(), source = 'log' } = {}) {
@@ -207,12 +215,12 @@ class simpleLog extends Homey.App {
 
     // FLOW Action Card, get_log
     let actionGetLog = this.homey.flow.getActionCard("get_log");
-    actionGetLog.registerRunListener((args, state) => {
+    actionGetLog.registerRunListener(async (args, state) => {
       let s;
       try {
-        s = JSON.stringify(this.Log.getLogs());
+        s = JSON.stringify(await this.Log.getLogs());
       } catch (error) {
-
+        throw new Error(error);
       }
       return { "log": s };
 

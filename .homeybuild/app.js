@@ -56,8 +56,8 @@ try {
   await BL.init({
     homey: this.homey,
     modules: [
+      '_',
       "datetime"
-      //"proto"
     ]
   });
 } catch (error) {

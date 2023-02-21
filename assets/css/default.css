@@ -106,3 +106,6 @@ input {
 .ui-grid-pager-control-input  {
     padding:4px 4px;
 }
+.ui-grid-menu-button {
+    padding-right:30px;
+}

@@ -8,7 +8,8 @@ angular.module('simplelog', [
     'ui.grid.resizeColumns',
     'ui.grid.autoResize',
     'ui.grid.pagination',
-    'ui.grid.selection'
+    'ui.grid.selection',
+    'ui.grid.exporter'
 ])
     .run(['$rootScope', function ($rootScope) {
         // $rootScope.a = true;
@@ -166,6 +167,8 @@ angular.module('simplelog', [
             useExternalPagination: true,
             //useExternalSorting: true,
             useExternalFiltering: true,
+
+            
 
             enableSorting: false,
             enableColumnResizing: true,

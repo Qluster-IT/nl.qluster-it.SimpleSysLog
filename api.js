@@ -1,5 +1,5 @@
 "use strict";
-const { BL } = require("betterlogiclibrary/src/bl");
+const { BL } = require("betterlogiclibrary");
 const Homey = require("homey");
 
 

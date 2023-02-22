@@ -64,6 +64,11 @@
   "athomForumDiscussionId": 3052,
   "homeyCommunityTopicId": 146,
   "api": {
+    "getLogDownloadUrl": {
+      "method": "GET",
+      "path": "/getlogdownloadurl/:returnType",
+      "public": true
+    },
     "getLogs": {
       "method": "GET",
       "path": "/",

@@ -397,14 +397,20 @@ angular.module('simplelog', [
             if (setting === 'rotated90') $scope.logGridApi.core.handleWindowResize();
         };
 
+        // $scope.downloadCSV = async () => {
+        //     let opt = { returnType:'csv' };
+        //     await $bl.api("POST", "/", opt, (x) => {
+        //         var encodedUri = encodeURI("data:text/csv;charset=utf-8," + x.csv);
+        //         console.log(encodedUri);
+        //         $bl.openURL(encodedUri);
+        //     });
+        // };
         $scope.downloadCSV = async () => {
             let opt = { returnType:'csv' };
-            await $bl.api("POST", "/", opt, (x) => {
-                var encodedUri = encodeURI("data:text/csv;charset=utf-8," + x.csv);
-                console.log(encodedUri);
-                $bl.openURL(encodedUri);
-            });
-        }
+            //let csv = await $bl.api("POST", "/");
+            let downloadLink = await $bl.api("GET", "/getlogdownloadurl/csv");
+            $bl.openURL(downloadLink.url + downloadLink.filenameEncoded);
+        };
 
     }])
 

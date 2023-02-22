@@ -9,7 +9,8 @@ const DBLIMIT = 2000;
 let homey;
 
 const fs = require('fs/promises');
-// Array check.
+
+
 function isArray(a) {
   return !!a && a.constructor === Array;
 }
@@ -121,6 +122,12 @@ try {
 
     //let l = s.read();
 
+    try {     
+      let link = await BL.getDownloadUrl(); 
+      let b= link;
+    } catch (error) {
+      this.homey.error(error);
+    }
 
     homey = this.homey;
     this.buildCards();
@@ -129,9 +136,12 @@ try {
       loggingDB = [];
     }
     //this.log(loggingDB);
+
+    
   }
 
   async onUninit() {
+    //this.addLogToDB('SSL onUninit');
     if(this.Log) await this.Log.destroy();
   }
 
@@ -160,8 +170,8 @@ try {
       this.addLogToDB(data.body.log, data.body.group);
     }
   }
-  apiClearLog() {
-    this.Log.clearLog();
+  async apiClearLog() {
+    await this.Log.clearLog();
   }
   
 
@@ -206,15 +216,15 @@ try {
 
     // FLOW Action Card, Clear_log_Older
     let actionClearlogOlder = this.homey.flow.getActionCard("Clear_log_Older");
-    actionClearlogOlder.registerRunListener((args, state) => {
-      this.Log.clearLog(args.days);
+    actionClearlogOlder.registerRunListener(async (args, state) => {
+      await this.Log.clearLog(args.days);
       return true;
     });
 
     // FLOW Action Card, Clear_log
     let actionClearlog = this.homey.flow.getActionCard("Clear_log");
-    actionClearlog.registerRunListener((args, state) => {
-      return this.Log.clearLog();
+    actionClearlog.registerRunListener(async (args, state) => {
+      return await this.Log.clearLog();
     });
 
     // FLOW Action Card, get_log

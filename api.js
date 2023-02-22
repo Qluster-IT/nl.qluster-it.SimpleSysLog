@@ -1,4 +1,5 @@
 "use strict";
+const buffer = require("buffer");
 const { BL } = require("betterlogiclibrary");
 const Homey = require("homey");
 
@@ -12,6 +13,17 @@ module.exports = {
           const link = await BL.getDownloadUrl({ base64: Buffer.from(logs.csv).toString('base64'), contentType: 'text/csv' });
           if (homey.app.settings && homey.app.settings.csvFilename) link.filename = await BL.decode(homey.app.settings.csvFilename);
           else link.filename = "Logs " + BL.datetime.toString('datetimeshort') + '.csv';
+          //if(!a.filename.toLowerCase().endsWith('.csv')) a.filename+='.csv';
+          link.filenameEncoded = encodeURIComponent(link.filename);
+          return link;
+        }
+        case 'xlsx': {
+          let a = buffer.Blob;
+          const logs = await homey.app.Log.getLogs({ returnType: 'xlsx' });
+          const test = logs.xlsx.toString('base64');
+          const link = await BL.getDownloadUrl({ base64: logs.xlsx.toString('base64'), contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+          if (homey.app.settings && homey.app.settings.xlsxFilename) link.filename = await BL.decode(homey.app.settings.xlsxFilename);
+          else link.filename = "Logs " + BL.datetime.toString('datetimeshort') + '.xlsx';
           //if(!a.filename.toLowerCase().endsWith('.csv')) a.filename+='.csv';
           link.filenameEncoded = encodeURIComponent(link.filename);
           return link;

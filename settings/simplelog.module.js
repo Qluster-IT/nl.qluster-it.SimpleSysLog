@@ -371,15 +371,22 @@ angular.module('simplelog', [
                         //this.grid.element.toggleClass('rotated');
                     },
                     order: 0
-                },                
+                },
                 {
                     icon:'fa-solid fa-file-csv',
                     title: 'Export as CSV',
                     action: function ($event) {
-                        $scope.downloadCSV();                
-                        //this.grid.element.toggleClass('rotated');
+                        $scope.downloadFile('csv');
                     },
                     order: 10
+                },
+                {
+                    icon:'fa-solid fa-file-excel',
+                    title: 'Export as Excel',
+                    action: function ($event) {
+                        $scope.downloadFile('xlsx');
+                    },
+                    order: 11
                 }
             ],
             enableColumnResize: true
@@ -433,10 +440,9 @@ angular.module('simplelog', [
         //         $bl.openURL(encodedUri);
         //     });
         // };
-        $scope.downloadCSV = async () => {
-            let opt = { returnType: 'csv' };
-            //let csv = await $bl.api("POST", "/");
-            let downloadLink = await $bl.api("GET", "/getlogdownloadurl/csv");
+        $scope.downloadFile = async (type) => {
+            let opt = { returnType: type };
+            let downloadLink = await $bl.api("GET", "/getlogdownloadurl/" + type);
             $bl.openURL(downloadLink.url + downloadLink.filenameEncoded);
         };
 

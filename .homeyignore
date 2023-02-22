@@ -1,0 +1,6 @@
+/settings.old/
+/.homeycompose/
+/.vscode/
+/package-lock.json
+/.homeyplugins.json
+/.homeyignore

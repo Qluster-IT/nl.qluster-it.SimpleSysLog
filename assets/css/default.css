@@ -20,9 +20,6 @@ body.index {
 
 
 
-i {
-    margin-right: 20px;
-}
 
 .logline {
     height: auto;
@@ -111,4 +108,24 @@ input {
 }
 .ui-grid-menu-button .ui-grid-menu .ui-grid-menu-mid {
     overflow: auto;
+}
+.ui-grid-icon-container .ui-grid-icon-menu {
+    font-size:20px;
+    /* margin-right:20px; */
+}
+.ui-grid-menu {
+    max-width:500px!important;
+}
+.ui-grid-menu-mid {
+    overflow: hidden !important;;
+    overflow-y:scroll!important;
+}
+.ui-grid-menu-item {
+    width: auto!important;
+}
+.ui-grid-menu-items  {
+    display:inline-block;
+}
+.ui-grid-menu-items > li {
+    /* display:inline-block;  */
 }

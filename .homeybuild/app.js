@@ -49,45 +49,45 @@ class simpleLog extends Homey.App {
       catch (error) {
         require('inspector').open(9218, '0.0.0.0', true);
       }
-    } 
-    else try{ require('inspector').open(9218, '0.0.0.0', false); } catch(ex){}
+    }
+    //else try{ require('inspector').open(9218, '0.0.0.0', false); } catch(ex){}
 
     this.Loggers = {};
 
-try {
-  
-  await BL.init({
-    homey: this.homey,
-    modules: [
-      '_',
-      "datetime"
-    ]
-  });
-} catch (error) {
-  this.error(error);
-  throw new Error(error);
-}
+    try {
+
+      await BL.init({
+        homey: this.homey,
+        modules: [
+          '_',
+          "datetime"
+        ]
+      });
+    } catch (error) {
+      this.error(error);
+      throw new Error(error);
+    }
     //if (process.env.DEBUG === '1') 
-      
-    
+
+
     this.Log = new Log({ filePath: '/userdata/' });
     await this.Log.init();
-    
+
     //this.Log.clearLog();
 
-    
+
     let loggingDB = this.homey.settings.get("loggingDB");
     if (isArray(loggingDB)) {
       for (let i = 0; i < loggingDB.length; i++) {
         const log = loggingDB[i];
-        this.addLogToDB(log.data, log.group, {timestamp:log.date});        
+        this.addLogToDB(log.data, log.group, { timestamp: log.date });
       }
       await this.homey.settings.set("loggingDB", null);
     }
 
     this.addLogToDB('App "Simple (Sys) LOG" started.', "Simple LOG");
 
-    if ( false ){//&& process.env.DEBUG === '1') {
+    if (false) {//&& process.env.DEBUG === '1') {
       let date = new Date();
       //await this.addLogToDB(date, 'DATE TEST');
       //date = new Date(date.setMonth(date.getMonth()-8));
@@ -99,32 +99,10 @@ try {
       }
     }
 
-    // let first = new Date().toISOString();
-    // this.log(await this.Log.getLogs());
-    // this.log('first', first);
-    // this.log('second', new Date().toISOString());
 
-    //this.addLogToDB('App "Simple LOG" started.', "Simple LOG");
-
-    // let book = this.Log.getLogBook(new Date());
-    // for (let i = 0; i < book.index.length; i++) {
-    //   this.log(await book.read(book.index[i][0], book.index[i][1]));
-    // } 
-
-
-
-    // let line = await book.read(book.index[10][0], book.index[10][1]);
-    // this.log(line);
-
-    // let s = createReadStream('/userdata/2023-02-17.log', { start:0, end:24} );
-    // let l = s.read();
-    //let s = readFileSync('/userdata/2023-02-17.log');
-
-    //let l = s.read();
-
-    try {     
-      let link = await BL.getDownloadUrl(); 
-      let b= link;
+    try {
+      let link = await BL.getDownloadUrl();
+      let b = link;
     } catch (error) {
       this.homey.error(error);
     }
@@ -137,12 +115,22 @@ try {
     }
     //this.log(loggingDB);
 
-    
+    this.homey.settings.on('set', async (settingName)=> {
+        switch (settingName) {
+          case 'settings': this.getSettings(); break;
+        }
+    });
+    this.getSettings();
+
   }
+
+getSettings() {
+  this.settings = this.homey.settings.get('settings');
+}
 
   async onUninit() {
     //this.addLogToDB('SSL onUninit');
-    if(this.Log) await this.Log.destroy();
+    if (this.Log) await this.Log.destroy();
   }
 
   async addLogToDB(data, group, { severity, facility, timestamp = new Date(), source = 'log' } = {}) {
@@ -173,7 +161,7 @@ try {
   async apiClearLog() {
     await this.Log.clearLog();
   }
-  
+
 
   buildCards() {
 
@@ -235,7 +223,7 @@ try {
         //s = await fs.readFile('/app/test.json');
         //s = {logs:JSON.parse(s)};
         args.take = 5000; // this is just for HP2023 remove on production!
-        s=await this.Log.getLogs(args);
+        s = await this.Log.getLogs(args);
         // s = BL._.take(s.logs, 6000);
         // s=JSON.stringify(s);
         s = s.logs ? JSON.stringify(s.logs) : s.csv;

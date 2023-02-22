@@ -18,7 +18,7 @@ angular.module('simplelog', [
     }])
     .controller("simplelogCtrl", ['$scope', '$rootScope', '$timeout', '$compile', '$q', '$bl', 'gridUtil', 'uiGridConstants', function ($scope, $rootScope, $timeout, $compile, $q, $bl, gridUtil, uiGridConstants) {
         const vars = $rootScope.vars = $scope.vars = { logCurrentPage: 1, logPerPage: 100, logs: [] };
-        const view = $rootScope.view = $scope.view = { severities: {}, facilities: {} };
+        const view = $rootScope.view = $scope.view = { severities: {}, facilities: {}, id:'log', settings:{} };
         let ctrl = this;
         let homey;
 
@@ -132,7 +132,7 @@ angular.module('simplelog', [
                             return { field: c.name ? c.name : c.field, term: c.filters[0].term, terms: _.map(c.filters, 'term'), comparator: c.filters[0].comparator };
                         }),
                         function (f) {
-                            return (f.term !== undefined && f.term !== null) || !_.every(f.terms, x=>!x);
+                            return (f.term !== undefined && f.term !== null) || !_.every(f.terms, x => !x);
                         }
                     );
                 }
@@ -147,9 +147,10 @@ angular.module('simplelog', [
             ctrl.homey = _homey;
             $scope.__ = Homey.__;
             $bl.init(_homey, $scope);
-            $bl.get("settings.view.settings", async (x) => {
-                view.settings = x;
-                //await $bl.api("POST", "/date", {format:formats}, (x)=> temp.dateFormats = x );
+            $bl.get("settings", async (x) => {
+                view.settings = (x=x||{});
+                if(!x.csvFilename) x.csvFilename = "Logs_{[date('yyyy-MM-dd_HH-mm-ss')]}.csv";
+                if(!x.jsonFilename) x.jsonFilename = "Logs_{[date('yyyy-MM-dd_HH-mm-ss')]}.json";
             });
             loadLogs();
 
@@ -162,14 +163,13 @@ angular.module('simplelog', [
         let columnWidhtSet = false;
 
         $scope.logGridOptions = {
-
             paginationPageSizes: [10, 15, 20, 25, 50, 75, 100, 500, 1000],
             paginationPageSize: 50,
             useExternalPagination: true,
             //useExternalSorting: true,
             useExternalFiltering: true,
 
-            
+
 
             enableSorting: false,
             enableColumnResizing: true,
@@ -243,7 +243,7 @@ angular.module('simplelog', [
                                     }
                                 });
                             });
-                            maxWidth+= 20;
+                            maxWidth += 20;
                             console.log('maxwidht');
                             console.log(maxWidth);
                             // check we're not outside the allowable bounds for this column
@@ -311,14 +311,14 @@ angular.module('simplelog', [
                     //cellFilter: 'date:"longDate"',
                     filterCellFiltered: true,
                     filters: [
-                      {
-                        name: 'From',
-                        condition: uiGridConstants.filter.GREATER_THAN_OR_EQUAL
-                      },
-                      {
-                        name: 'To',
-                        condition: uiGridConstants.filter.LESS_THAN_OR_EQUAL
-                      }
+                        {
+                            name: 'From',
+                            condition: uiGridConstants.filter.GREATER_THAN_OR_EQUAL
+                        },
+                        {
+                            name: 'To',
+                            condition: uiGridConstants.filter.LESS_THAN_OR_EQUAL
+                        }
                     ],
                     //cellFilter: 'date:"M/d/yyyy h:mm:ss a"',
                     filterHeaderTemplate: '<div class="ui-grid-filter-container row"><div ng-repeat="colFilter in col.filters" class="col-md-6 col-md-offset-0 col-sm-6 col-sm-offset-0 col-xs-6 col-xs-offset-0"><div custom-grid-date-filter-header></div></div></div>',
@@ -362,9 +362,37 @@ angular.module('simplelog', [
                 }
 
             ],
+            gridMenuCustomItems: [
+                {
+                    icon:'fa-solid fa-wrench',
+                    title: 'Settings',
+                    action: function ($event) {
+                        view.id='settings';                        
+                        //this.grid.element.toggleClass('rotated');
+                    },
+                    order: 0
+                },                
+                {
+                    icon:'fa-solid fa-file-csv',
+                    title: 'Export as CSV',
+                    action: function ($event) {
+                        $scope.downloadCSV();                
+                        //this.grid.element.toggleClass('rotated');
+                    },
+                    order: 10
+                }
+            ],
             enableColumnResize: true
             // rowTemplate:                                
             //         '<div ng-dblclick="grid.appScope.onDblClick(row)" ng-repeat="(colRenderIndex, col) in colContainer.renderedColumns track by col.colDef.name" class="ui-grid-cell" ng-class="{ \'ui-grid-row-header-cell\': col.isRowHeader }" ui-grid-cell ></div>'
+        };
+
+
+        $scope.saveSettings = function() {
+            $bl.set("settings", view.settings, async (x) => {
+                $scope.settingForm.$setSubmitted();
+                $scope.settingForm.$setPristine();
+            });
         };
 
         $scope.refresh = function (query) {
@@ -378,8 +406,8 @@ angular.module('simplelog', [
                     case 'app': opts.app = filter.term; break;
                     case 'message': opts.message = filter.term; break;
                     case 'timestamp':
-                        opts.timestamp_fromUTC =  filter.terms[0] ? new Date(Date.UTC(filter.terms[0].getFullYear(), filter.terms[0].getMonth(), filter.terms[0].getDate(), 0,0,0,0)) : undefined;
-                        opts.timestamp_toUTC =  filter.terms[1] ? new Date(Date.UTC(filter.terms[1].getFullYear(), filter.terms[1].getMonth(), filter.terms[1].getDate(), 0,0,0,0)) : undefined;
+                        opts.timestamp_fromUTC = filter.terms[0] ? new Date(Date.UTC(filter.terms[0].getFullYear(), filter.terms[0].getMonth(), filter.terms[0].getDate(), 0, 0, 0, 0)) : undefined;
+                        opts.timestamp_toUTC = filter.terms[1] ? new Date(Date.UTC(filter.terms[1].getFullYear(), filter.terms[1].getMonth(), filter.terms[1].getDate(), 0, 0, 0, 0)) : undefined;
                         break;
                     default:
                         break;
@@ -406,7 +434,7 @@ angular.module('simplelog', [
         //     });
         // };
         $scope.downloadCSV = async () => {
-            let opt = { returnType:'csv' };
+            let opt = { returnType: 'csv' };
             //let csv = await $bl.api("POST", "/");
             let downloadLink = await $bl.api("GET", "/getlogdownloadurl/csv");
             $bl.openURL(downloadLink.url + downloadLink.filenameEncoded);
@@ -497,99 +525,99 @@ angular.module('simplelog', [
             }
         };
     }])
-    .controller('gridDatePickerFilterCtrl', ['$scope', '$timeout', '$uibModal', 'uiGridConstants', function( $scope, $timeout, $uibModal, uiGridConstants) {
+    .controller('gridDatePickerFilterCtrl', ['$scope', '$timeout', '$uibModal', 'uiGridConstants', function ($scope, $timeout, $uibModal, uiGridConstants) {
 
-        $timeout(function() {
-          console.log($scope.col); 
-          var field = $scope.col.colDef.name;
-      
-          var allDates = _.map($scope.col.grid.appScope.logGridOptions.data, function(datum) {
-            return datum[field];
-          });
-            
-          var minDate = new Date(2020,01,01);// _.min(allDates);
-          var maxDate = new Date();// _.max(allDates);
-      
-          $scope.openDatePicker = function(filter) {
-            
-            var modalInstance = $uibModal.open({
-              templateUrl: 'custom-date-filter.html',
-              controller: 'customGridDateFilterModalCtrl as custom',
-              size: 'sm',
-              windowClass: 'custom-date-filter-modal',
-              resolve: {
-                filterName: [function() {
-                  return filter.name;
-                }],
-                minDate: [function() {
-                    return new Date(minDate);
-                }],
-                maxDate: [function() {
-                  return new Date(maxDate);
-                }],
-                filterDate: [function() {
-                    return filter.term;                    
-                }]
-              }
+        $timeout(function () {
+            console.log($scope.col);
+            var field = $scope.col.colDef.name;
+
+            var allDates = _.map($scope.col.grid.appScope.logGridOptions.data, function (datum) {
+                return datum[field];
             });
-        
-            modalInstance.result.then(function(selectedDate) {
-              
-              if(!$scope.colFilter.listTerm) $scope.colFilter.listTerm = {};
-              $scope.colFilter.listTerm[filter.name] = selectedDate;
-              
-              $scope.colFilter.term = selectedDate;
-            });
-          };
-            
+
+            var minDate = new Date(2020, 01, 01);// _.min(allDates);
+            var maxDate = new Date();// _.max(allDates);
+
+            $scope.openDatePicker = function (filter) {
+
+                var modalInstance = $uibModal.open({
+                    templateUrl: 'custom-date-filter.html',
+                    controller: 'customGridDateFilterModalCtrl as custom',
+                    size: 'sm',
+                    windowClass: 'custom-date-filter-modal',
+                    resolve: {
+                        filterName: [function () {
+                            return filter.name;
+                        }],
+                        minDate: [function () {
+                            return new Date(minDate);
+                        }],
+                        maxDate: [function () {
+                            return new Date(maxDate);
+                        }],
+                        filterDate: [function () {
+                            return filter.term;
+                        }]
+                    }
+                });
+
+                modalInstance.result.then(function (selectedDate) {
+
+                    if (!$scope.colFilter.listTerm) $scope.colFilter.listTerm = {};
+                    $scope.colFilter.listTerm[filter.name] = selectedDate;
+
+                    $scope.colFilter.term = selectedDate;
+                });
+            };
+
         });
-        
-      
-      }])
-      .controller('customGridDateFilterModalCtrl', ['$scope', '$rootScope', '$log', '$uibModalInstance', 'filterName', 'minDate', 'maxDate', 'filterDate', function($scope, $rootScope, $log, $uibModalInstance, filterName, minDate, maxDate, filterDate) {
-        
-          var ctrl = this;
-      
-          console.log('filter name', filterName);
-          console.log('min date', minDate, 'max date', maxDate);
-          
-          ctrl.title = 'Select Dates ' + filterName + '...';
-          ctrl.minDate = minDate;
-          ctrl.maxDate = maxDate;
-          ctrl.customDateFilterForm;
-          //ctrl.currentDate = new Date();
-            let f = filterDate;
-            console.log(f);
-            console.log('f');
-            ctrl.filterDate =filterDate;
-          //  ctrl.filterDate = new Date();// (filterName.indexOf('From') !== -1) ? angular.copy(ctrl.minDate) : angular.copy(ctrl.maxDate);
-          
-          function setDateToStartOfDay(date) {
+
+
+    }])
+    .controller('customGridDateFilterModalCtrl', ['$scope', '$rootScope', '$log', '$uibModalInstance', 'filterName', 'minDate', 'maxDate', 'filterDate', function ($scope, $rootScope, $log, $uibModalInstance, filterName, minDate, maxDate, filterDate) {
+
+        var ctrl = this;
+
+        console.log('filter name', filterName);
+        console.log('min date', minDate, 'max date', maxDate);
+
+        ctrl.title = 'Select Dates ' + filterName + '...';
+        ctrl.minDate = minDate;
+        ctrl.maxDate = maxDate;
+        ctrl.customDateFilterForm;
+        //ctrl.currentDate = new Date();
+        let f = filterDate;
+        console.log(f);
+        console.log('f');
+        ctrl.filterDate = filterDate;
+        //  ctrl.filterDate = new Date();// (filterName.indexOf('From') !== -1) ? angular.copy(ctrl.minDate) : angular.copy(ctrl.maxDate);
+
+        function setDateToStartOfDay(date) {
             return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-          }
-      
-          function setDateToEndOfDay(date) {
+        }
+
+        function setDateToEndOfDay(date) {
             return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999);
-          }
-      
-          ctrl.filterDateChanged = function () {
+        }
+
+        ctrl.filterDateChanged = function () {
             ctrl.filterDate = (filterName.indexOf('From') !== -1) ? setDateToStartOfDay(ctrl.filterDate) : setDateToEndOfDay(ctrl.filterDate);
             $log.log('new filter date', ctrl.filterDate);
-          };
-          
-          ctrl.setFilterDate = function(date) {
-            $uibModalInstance.close(date);
-          };
-      
-          ctrl.cancelDateFilter = function() {
-            $uibModalInstance.dismiss();
-          };
-        
-      }])
-      
-      .directive('customGridDateFilterHeader', function() {
-        return {
-          template: '<button class="btn btn-default date-time-filter-buttons" style="width:90%;padding:inherit;" ng-click="openDatePicker(colFilter)">{{ colFilter.name }}</button><div role="button" class="ui-grid-filter-button-select cancel-custom-date-range-filter-button ng-scope" ng-click="removeFilter(colFilter, $index)" ng-if="!colFilter.disableCancelFilterButton" ng-disabled="colFilter.term === undefined || colFilter.term === null || colFilter.term === \'\'" ng-show="colFilter.term !== undefined &amp;&amp; colFilter.term != null" tabindex="0" aria-hidden="false" aria-disabled="false" style=""><i class="ui-grid-icon-cancel cancel-custom-date-range-filter" ui-grid-one-bind-aria-label="aria.removeFilter" aria-label="Remove Filter">&nbsp;</i></div>',
-          controller: 'gridDatePickerFilterCtrl'
         };
-      });
+
+        ctrl.setFilterDate = function (date) {
+            $uibModalInstance.close(date);
+        };
+
+        ctrl.cancelDateFilter = function () {
+            $uibModalInstance.dismiss();
+        };
+
+    }])
+
+    .directive('customGridDateFilterHeader', function () {
+        return {
+            template: '<button class="btn btn-default date-time-filter-buttons" style="width:90%;padding:inherit;" ng-click="openDatePicker(colFilter)">{{ colFilter.name }}</button><div role="button" class="ui-grid-filter-button-select cancel-custom-date-range-filter-button ng-scope" ng-click="removeFilter(colFilter, $index)" ng-if="!colFilter.disableCancelFilterButton" ng-disabled="colFilter.term === undefined || colFilter.term === null || colFilter.term === \'\'" ng-show="colFilter.term !== undefined &amp;&amp; colFilter.term != null" tabindex="0" aria-hidden="false" aria-disabled="false" style=""><i class="ui-grid-icon-cancel cancel-custom-date-range-filter" ui-grid-one-bind-aria-label="aria.removeFilter" aria-label="Remove Filter">&nbsp;</i></div>',
+            controller: 'gridDatePickerFilterCtrl'
+        };
+    });

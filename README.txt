@@ -12,7 +12,7 @@ With simple log You can:
 - Use the API to retreive, add and clean logging.
 
 
-# API
+API
 
 The folowing API endpoints can be used:
 - Grab log data:
@@ -23,3 +23,4 @@ The folowing API endpoints can be used:
   {"log": "Test 1,2,3", "group": "TEST"}
 - Clear log
   GET /api/app/nl.nielsdeklerk.log/clearlog
+- 

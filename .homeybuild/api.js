@@ -1,19 +1,32 @@
 "use strict";
-const { BL } = require("betterlogiclibrary/src/bl");
+const { BL } = require("betterlogiclibrary");
 const Homey = require("homey");
 
 
 module.exports = {
-  async getLogDownloadUrl({ homey, params: {returnType} }) {
+  async getLogDownloadUrl({ homey, params: { returnType } }) {
     try {
-      if(returnType==='csv') {
-        let logs = await homey.app.Log.getLogs({returnType:'csv'});
-        let a = await BL.getDownloadUrl({base64:Buffer.from(logs.csv).toString('base64'), contentType:'text/csv'});
-        a.filename = "Logs " + BL.datetime.toString('datetimeshort') + '.csv';
-        a.filenameEncoded = encodeURIComponent(a.filename);
-        
-        return a;
-
+      switch (returnType) {
+        case 'csv': {
+          const logs = await homey.app.Log.getLogs({ returnType: 'csv' });
+          const link = await BL.getDownloadUrl({ base64: Buffer.from(logs.csv).toString('base64'), contentType: 'text/csv' });
+          if (homey.app.settings && homey.app.settings.csvFilename) link.filename = await BL.decode(homey.app.settings.csvFilename);
+          else link.filename = "Logs " + BL.datetime.toString('datetimeshort') + '.csv';
+          //if(!a.filename.toLowerCase().endsWith('.csv')) a.filename+='.csv';
+          link.filenameEncoded = encodeURIComponent(link.filename);
+          return link;
+        }
+        case 'json': {
+          const logs = await homey.app.Log.getLogs({ returnType: 'json' });
+          const link = await BL.getDownloadUrl({ base64: Buffer.from(logs.csv).toString('base64'), contentType: 'text/json' });
+          if (homey.app.settings && homey.app.settings.jsonFilename) link.filename = await BL.decode(homey.app.settings.jsonFilename);
+          else link.filename = "Logs " + BL.datetime.toString('datetimeshort') + '.json';
+          //if(!a.filename.toLowerCase().endsWith('.csv')) a.filename+='.csv';
+          link.filenameEncoded = encodeURIComponent(link.filename);
+          return link;
+        }
+      }
+      if (returnType === 'csv') {
       }
     } catch (error) {
       homey.error(error);
@@ -24,10 +37,9 @@ module.exports = {
     return result;
     //return homey.app.getLog();
   },
-  async queryLogs({ homey, body: { skip, take } }) {
-    arguments[0].body.maxSizeKb = 900;
-    let result = await homey.app.Log.getLogs(arguments[0].body);//BL._.take(, 1000);
-    //return [];
+  async queryLogs({ homey, body }) {
+    body.maxSizeKb = 900;
+    let result = await homey.app.Log.getLogs(body);//BL._.take(, 1000);
     return result;
   },
   async clearLog({ homey }) {

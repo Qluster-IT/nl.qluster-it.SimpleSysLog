@@ -126,6 +126,9 @@ input {
 .ui-grid-menu-items  {
     display:inline-block;
 }
+.ui-grid-menu-item > .fa-solid {
+    font-size:20px;
+}
 .ui-grid-menu-items > li {
     /* display:inline-block;  */
 }

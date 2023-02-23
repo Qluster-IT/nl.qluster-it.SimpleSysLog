@@ -149,8 +149,6 @@ angular.module('simplelog', [
             $bl.init(_homey, $scope);
             $bl.get("settings", async (x) => {
                 view.settings = (x=x||{});
-                if(!x.csvFilename) x.csvFilename = "Logs_{[date('yyyy-MM-dd_HH-mm-ss')]}.csv";
-                if(!x.jsonFilename) x.jsonFilename = "Logs_{[date('yyyy-MM-dd_HH-mm-ss')]}.json";
             });
             loadLogs();
 
@@ -163,14 +161,12 @@ angular.module('simplelog', [
         let columnWidhtSet = false;
 
         $scope.logGridOptions = {
-            paginationPageSizes: [10, 15, 20, 25, 50, 75, 100, 500, 1000],
+            paginationPageSizes: [10, 15, 20, 25, 50, 75, 100, 250],//, 500, 1000],
             paginationPageSize: 50,
             useExternalPagination: true,
             //useExternalSorting: true,
             useExternalFiltering: true,
-
-
-
+            
             enableSorting: false,
             enableColumnResizing: true,
             enableRowHeaderSelection: false,
@@ -373,6 +369,14 @@ angular.module('simplelog', [
                     order: 0
                 },
                 {
+                    icon:'fa-solid fa-file-excel',
+                    title: 'Export as Excel',
+                    action: function ($event) {
+                        $scope.downloadFile('xlsx');
+                    },
+                    order: 9
+                },
+                {
                     icon:'fa-solid fa-file-csv',
                     title: 'Export as CSV',
                     action: function ($event) {
@@ -381,10 +385,10 @@ angular.module('simplelog', [
                     order: 10
                 },
                 {
-                    icon:'fa-solid fa-file-excel',
-                    title: 'Export as Excel',
+                    icon:'fa-solid fa-file-code',
+                    title: 'Export as JSON',
                     action: function ($event) {
-                        $scope.downloadFile('xlsx');
+                        $scope.downloadFile('json');
                     },
                     order: 11
                 }

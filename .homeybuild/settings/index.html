@@ -98,12 +98,17 @@
 				<div class="card">
 					<div class="card-header">Exports</div>
 					<div class="card-body">
-						<div class="col-12 form-label">Set the name to use when exporting files</div>
+						<div class="col-12 form-label">Set the filenames to use when exporting files</div>
+						<div class="col-12 form-group form-floating">
+							<input type="text" class="form-control hy-nostyle" name="xlsxFilename" placeholder="Excel filename (* BLL supported)" ng-model="view.settings.xlsxFilename" ng-model-options="{ debounce: 300 }" 
+								minlength="1" required="true"/>
+							<label class="hy-nostyle" for="xlsxFilename">Excel filename (* BLL supported)</label>
+						</div>
 						<div class="col-12 form-group form-floating">
 							<input type="text" class="form-control hy-nostyle" name="csvFilename" placeholder="CSV filename (* BLL supported)" ng-model="view.settings.csvFilename" ng-model-options="{ debounce: 300 }" 
 								minlength="1" required="true"/>
 							<label class="hy-nostyle" for="csvFilename">CSV filename (* BLL supported)</label>
-						</div>						
+						</div>
 						<div class="col-12 form-group form-floating">
 							<input type="text" class="form-control hy-nostyle" name="jsonFilename" placeholder="JSON filename (* BLL supported)" ng-model="view.settings.jsonFilename" ng-model-options="{ debounce: 300 }" 
 								minlength="1" required="true"/>

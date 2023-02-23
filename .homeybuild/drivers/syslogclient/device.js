@@ -100,8 +100,9 @@ class SyslogClientDevice extends Homey.Device {
 
 		settings = settings || this.getSettings();
 		this.settings = settings;
-		if (settings.useRfc5424 === false) this.appName = this.settings.appName.replaceAll(' ', '\t');
-		else this.appName = this.settings.appName;
+		// if (settings.useRfc5424 === false) this.appName = this.settings.appName.replaceAll(' ', '\t');
+		// else 
+		this.appName = this.settings.appName;
 		var syslogOpts = {
 			syslogHostname: settings.hostname,
 			transport: (settings.transport === 'UDP') ? syslog.Transport.Udp : syslog.Transport.Tcp,
@@ -142,6 +143,7 @@ class SyslogClientDevice extends Homey.Device {
 
 		if (!timestamp) timestamp = new Date();
 		let opts = { facility, severity, timestamp, app: this.appName };
+		if (this.settings.useRfc5424 === false) opts.app = opts.app.replaceAll(' ', '\t');
 		if(message && this.settings.log_syslogs===true) this.homey.app.addLogToDB(message, this.appName, {facility, severity, timestamp});
 		else if(!message && data) message = data;
 

@@ -1,5 +1,4 @@
 "use strict";
-const buffer = require("buffer");
 const { BL } = require("betterlogiclibrary");
 const Homey = require("homey");
 
@@ -10,7 +9,7 @@ module.exports = {
       switch (returnType) {
         case 'csv': {
           const logs = await homey.app.Log.getLogs({ returnType: 'csv' });
-          const link = await BL.getDownloadUrl({ base64: Buffer.from(logs.csv).toString('base64'), contentType: 'text/csv' });
+          const link = await BL.getDownloadUrl({ text: logs.csv, contentType: 'text/csv' });
           if (homey.app.settings && homey.app.settings.csvFilename) link.filename = await BL.decode(homey.app.settings.csvFilename);
           else link.filename = "Logs " + BL.datetime.toString('datetimeshort') + '.csv';
           //if(!a.filename.toLowerCase().endsWith('.csv')) a.filename+='.csv';
@@ -18,19 +17,22 @@ module.exports = {
           return link;
         }
         case 'xlsx': {
-          let a = buffer.Blob;
-          const logs = await homey.app.Log.getLogs({ returnType: 'xlsx' });
-          const test = logs.xlsx.toString('base64');
-          const link = await BL.getDownloadUrl({ base64: logs.xlsx.toString('base64'), contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-          if (homey.app.settings && homey.app.settings.xlsxFilename) link.filename = await BL.decode(homey.app.settings.xlsxFilename);
-          else link.filename = "Logs " + BL.datetime.toString('datetimeshort') + '.xlsx';
-          //if(!a.filename.toLowerCase().endsWith('.csv')) a.filename+='.csv';
-          link.filenameEncoded = encodeURIComponent(link.filename);
-          return link;
-        }
+          try {
+            const logs = await homey.app.Log.getLogs({ returnType: 'xlsx' });
+            const test = logs.xlsx;//Buffer.from(logs.xlsx).toString('base64');
+            const link = await BL.getDownloadUrl({ base64: logs.xlsx, contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            if (homey.app.settings && homey.app.settings.xlsxFilename) link.filename = await BL.decode(homey.app.settings.xlsxFilename);
+            else link.filename = "Logs " + BL.datetime.toString('datetimeshort') + '.xlsx';
+            //if(!a.filename.toLowerCase().endsWith('.csv')) a.filename+='.csv';
+            link.filenameEncoded = encodeURIComponent(link.filename);
+            return link;
+          } catch (error) {
+            homey.error(error);
+          }
+        };
         case 'json': {
           const logs = await homey.app.Log.getLogs({ returnType: 'json' });
-          const link = await BL.getDownloadUrl({ base64: Buffer.from(logs.csv).toString('base64'), contentType: 'text/json' });
+          const link = await BL.getDownloadUrl({ text: JSON.stringify(logs.logs), contentType: 'text/json' });
           if (homey.app.settings && homey.app.settings.jsonFilename) link.filename = await BL.decode(homey.app.settings.jsonFilename);
           else link.filename = "Logs " + BL.datetime.toString('datetimeshort') + '.json';
           //if(!a.filename.toLowerCase().endsWith('.csv')) a.filename+='.csv';

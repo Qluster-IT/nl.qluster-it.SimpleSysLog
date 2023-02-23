@@ -55,7 +55,6 @@ class simpleLog extends Homey.App {
     this.Loggers = {};
 
     try {
-
       await BL.init({
         homey: this.homey,
         modules: [
@@ -93,7 +92,7 @@ class simpleLog extends Homey.App {
       //date = new Date(date.setMonth(date.getMonth()-8));
       for (let i = 0; i < 365; i++) {
         date = new Date(date.setDate(date.getDate() - 1));
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 100; i++) {
           await this.addLogToDB('Test message voor here is this', undefined, { severity: i === 0 ? 4 : undefined, timestamp: date });
         }
       }
@@ -115,18 +114,24 @@ class simpleLog extends Homey.App {
     }
     //this.log(loggingDB);
 
-    this.homey.settings.on('set', async (settingName)=> {
-        switch (settingName) {
-          case 'settings': this.getSettings(); break;
-        }
+    this.homey.settings.on('set', async (settingName) => {
+      switch (settingName) {
+        case 'settings': this.getSettings(); break;
+      }
     });
     this.getSettings();
 
   }
 
-getSettings() {
-  this.settings = this.homey.settings.get('settings');
-}
+  getSettings() {
+    this.settings = this.homey.settings.get('settings');
+    let changed=false;
+    if (!this.settings) this.settings = {};
+    if (!this.settings.csvFilename && (changed=true)) this.settings.csvFilename = "Logs_{[date('yyyy-MM-dd_HH-mm-ss')]}.csv";
+    if (!this.settings.jsonFilename && (changed=true)) this.settings.jsonFilename = "Logs_{[date('yyyy-MM-dd_HH-mm-ss')]}.json";
+    if (!this.settings.xlsxFilename && (changed=true)) this.settings.xlsxFilename = "Logs_{[date('yyyy-MM-dd_HH-mm-ss')]}.xlsx";
+    if(changed) this.homey.settings.set('settings', this.settings);
+  }
 
   async onUninit() {
     //this.addLogToDB('SSL onUninit');

@@ -40,5 +40,11 @@
   },
   "2.9.11": {
     "en": "Building: Version 3.0.0."
+  },
+  "2.9.12": {
+    "en": "Building Version 3: Export the log in Excel, CSV and JSON on Developer-site and the Homey Mobile App."
+  },
+  "2.9.13": {
+    "en": "Building Version 3: Export large logs in Excel, CSV and JSON on Developer-site and the Homey Mobile App."
   }
 }

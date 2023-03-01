@@ -117,11 +117,16 @@ input {
     max-width:500px!important;
 }
 .ui-grid-menu-mid {
-    overflow: hidden !important;;
+    /* overflow:scroll!important; */
+    overflow-x: hidden !important;;
     overflow-y:scroll!important;
+    /* max-height: 80vh !important; */
 }
+/* .rotated90 .ui-grid-menu-mid {
+    max-height: 70vw !important;
+} */
 .ui-grid-column-menu .ui-grid-menu-mid {
-    overflow: hidden !important;;
+    overflow-x: hidden !important;;
     overflow-y:auto!important;
 }
 .ui-grid-menu-item {

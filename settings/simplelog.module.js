@@ -20,13 +20,17 @@ angular.module('simplelog', [
     }])
     .controller("simplelogCtrl", ['$scope', '$rootScope', '$timeout', '$compile', '$q', '$bl', 'gridUtil', 'uiGridConstants', '$window', function ($scope, $rootScope, $timeout, $compile, $q, $bl, gridUtil, uiGridConstants, $window) {
         const vars = $rootScope.vars = $scope.vars = { logCurrentPage: 1, logPerPage: 100, logs: [] };
-        const view = $rootScope.view = $scope.view = { severities: {}, facilities: {}, id: 'log', settings: {} };
+        const view = $rootScope.view = $scope.view = { lang:'en', severities: {}, facilities: {}, id: 'log', settings: {} };
         $scope.homey = $window.Homey;
 
         let ctrl = this;
         let homey = this.homey = $window.Homey;
         let Homey = homey;
         let __ = homey.__;
+        
+        homey.getLanguage()
+        .then((x)=> console.log(x) & $scope.$apply(()=> $scope.view.lang = x))
+        .catch(x=> {});
 
         let gridDefer = $q.defer();
 

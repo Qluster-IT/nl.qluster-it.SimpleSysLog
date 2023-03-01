@@ -40,7 +40,7 @@
 
 </style>
 
-<body ng-controller="simplelogCtrl as simplelog" class="index h-100 overflow-hidden">
+<body ng-controller="simplelogCtrl as simplelog" class="index h-100 overflow-hidden"  ui-i18n="{{view.lang}}">
 	<div class="main-view overflow-hidden" ng-class="{rotated90:view.settings.rotated90}" ng-show="!view.id || view.id=='log'">
 		<!-- <div class="position-fixed z-1" style="right:30px;top:5px;"><span class="fa-solid toggle-icon fa-file-csv" ng-click="downloadCSV();"></span></div> -->
 		<div class="position-fixed z-1" style="right:5px;top:5px;"><span class="fa-solid toggle-icon fa-rotate-right" ng-click="toggleSetting('rotated90');"></span></div>

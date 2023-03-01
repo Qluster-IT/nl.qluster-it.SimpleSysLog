@@ -40,9 +40,9 @@ angular.module('simplelog', [
             System: 3,
             Audit: 13,
             Alert: 14,
-            Local0: 16,
-            Local1: 17,
-            Local2: 18,
+            Flow: 16,
+            Device: 17,
+            App: 18,
             Local3: 19,
             Local4: 20,
             Local5: 21,
@@ -429,10 +429,19 @@ angular.module('simplelog', [
                     title: __('Save columns'),
                     action: function ($event) {
                         let state = $scope.logGridApi.saveState.save();
+                        if(state && state.columns) for (let i = 0; i < state.columns.length; i++) {
+                            const column = state.columns[i];
+                            for (let j = 0; j < column.filters.length; j++) {
+                                const filter = column.filters[j];
+                                if(filter.selectOptions) delete filter.selectOptions;
+                            }
+                            delete column.width;
+                        }
+                        console.log(state);
                         view.settings.logGridState = state;
                         $scope.saveSettings();
                     },
-                    order: 200
+                    order: 201
                 }
             ],
             enableColumnResize: true

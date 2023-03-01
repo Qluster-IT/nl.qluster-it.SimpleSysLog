@@ -3,7 +3,7 @@
     "bllNotRunning":"De Better Logic Library-app moet actief zijn om deze functie te gebruiken.",
 
     "Timestamp":"Tijdstip",
-    "App":"App",
+    "App":"App / Groep",
     "Severity":"Niveau",
     "Facility":"Categorie",
     "Message":"Bericht",
@@ -20,5 +20,7 @@
     "Excel filename (* BLL supported)":"Excel-bestandsnaam (* BLL ondersteund)",
     "CSV filename (* BLL supported)":"CSV-bestandsnaam (* BLL ondersteund)",
     "JSON filename (* BLL supported)":"JSON-bestandsnaam (* BLL ondersteund)",
-    "Save":"Opslaan"
+    "Save":"Opslaan",
+    
+    "Reset columns":"Herstel kolommen"
 }

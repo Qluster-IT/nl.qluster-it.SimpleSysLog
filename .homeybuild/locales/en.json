@@ -3,7 +3,7 @@
     "bllNotRunning":"The Better Logic Library App must be running to use this function.",
 
     "Timestamp":"Timestamp",
-    "App":"App",
+    "App":"App / Group",
     "Severity":"Severity",
     "Facility":"Facility",
     "Message":"Message",
@@ -20,5 +20,7 @@
     "Excel filename (* BLL supported)":"Excel filename (* BLL supported)",
     "CSV filename (* BLL supported)":"CSV filename (* BLL supported)",
     "JSON filename (* BLL supported)":"JSON filename (* BLL supported)",
-    "Save":"Save"
+    "Save":"Save",
+    
+    "Reset columns":"Reset kolommen"
 }

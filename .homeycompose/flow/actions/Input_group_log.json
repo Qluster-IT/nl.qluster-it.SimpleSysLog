@@ -135,19 +135,19 @@
           {
             "id": "16",
             "label": {
-              "en": "Local0"
+              "en": "Flow"
             }
           },
           {
             "id": "17",
             "label": {
-              "en": "Local1"
+              "en": "Device"
             }
           },
           {
             "id": "18",
             "label": {
-              "en": "Local2"
+              "en": "App"
             }
           },
           {

@@ -1,25 +1,186 @@
 {
   "id": "Input_group_logtimeline",
   "title": {
-    "en": "Add Something to the timeline and a log group",
-    "nl": "Voeg iets toe aan de tijdslijn en een log groep"
+    "en": "Add Something to the Timeline and the Log",
+    "nl": "Voeg iets toe aan de Tijdslijn en de Log"
   },
+  "titleFormatted": {
+    "en": "Add [[log]] to the Timeline and the Log under [[group]] with [[severity]] of [[facility]]",
+    "nl": "Voeg [[log]] toe aan de Tijdslijn en de Log onder [[group]] met [[severity]] van [[facility]]"
+},
   "args": [
     {
+        "name": "log",
+        "type": "text",
+        "placeholder":{
+          "en":"Message...",
+          "nl":"Bericht..."
+        },
+        "title":{
+          "en":"Message",
+          "nl":"Bericht"
+        }
+    },
+    {
       "name": "group",
+      "required": false,
       "type": "text",
       "placeholder": {
-        "en": "Group name...",
-        "nl": "Groepsnaam..."
+        "en": "App/group",
+        "nl": "App/groep"
       }
     },
     {
-      "name": "log",
-      "type": "text",
-      "placeholder": {
-        "en": "Data to log...",
-        "nl": "Gegevens voor logboek..."
-      }
+        "type": "dropdown",
+        "required": false,
+        "name": "severity",
+        "placeholder": {
+          "en": "Severity",
+          "nl": "Niveau"
+        },
+        "title":{
+          "en":"Severity",
+          "nl":"Niveau"
+        },
+        "values": [
+          {
+            "id": "0",
+            "label": {
+              "en": "Emergency"
+            }
+          },
+          {
+            "id": "1",
+            "label": {
+              "en": "Alert"
+            }
+          },
+          {
+            "id": "2",
+            "label": {
+              "en": "Critical"
+            }
+          },
+          {
+            "id": "3",
+            "label": {
+              "en": "Error"
+            }
+          },
+          {
+            "id": "4",
+            "label": {
+              "en": "Warning"
+            }
+          },
+          {
+            "id": "5",
+            "label": {
+              "en": "Notice"
+            }
+          },
+          {
+            "id": "6",
+            "label": {
+              "en": "Informational"
+            }
+          },
+          {
+            "id": "7",
+            "label": {
+              "en": "Debug"
+            }
+          }
+        ]
+    },
+    {
+        "type": "dropdown",
+        "required": false,
+        "name": "facility",
+        "placeholder": {
+          "en": "Category",
+          "nl": "Categorie"
+        },
+        "values": [
+          {
+            "id": "0",
+            "label": {
+              "en": "Kernel"
+            }
+          },
+          {
+            "id": "1",
+            "label": {
+              "en": "User"
+            }
+          },
+          {
+            "id": "3",
+            "label": {
+              "en": "System"
+            }
+          },
+          {
+            "id": "13",
+            "label": {
+              "en": "Audit"
+            }
+          },
+          {
+            "id": "14",
+            "label": {
+              "en": "Alert"
+            }
+          },
+          {
+            "id": "16",
+            "label": {
+              "en": "Local0"
+            }
+          },
+          {
+            "id": "17",
+            "label": {
+              "en": "Local1"
+            }
+          },
+          {
+            "id": "18",
+            "label": {
+              "en": "Local2"
+            }
+          },
+          {
+            "id": "19",
+            "label": {
+              "en": "Local3"
+            }
+          },
+          {
+            "id": "20",
+            "label": {
+              "en": "Local4"
+            }
+          },
+          {
+            "id": "21",
+            "label": {
+              "en": "Local5"
+            }
+          },
+          {
+            "id": "22",
+            "label": {
+              "en": "Local6"
+            }
+          },
+          {
+            "id": "23",
+            "label": {
+              "en": "Local7"
+            }
+          }
+        ]
     }
   ]
 }

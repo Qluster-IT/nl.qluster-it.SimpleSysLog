@@ -1,16 +1,24 @@
 {
   "id": "Input_timeline",
   "title": {
-    "en": "Add Something to the timeline",
-    "nl": "Voeg iets toe aan de tijdslijn"
+    "en": "Add Something to the Timeline",
+    "nl": "Voeg iets toe aan de Tijdslijn"
+  },
+  "titleFormatted": {
+    "en": "Add [[log]] to the Timeline",
+    "nl": "Voeg [[log]] toe aan de Tijdslijn"
   },
   "args": [
     {
       "name": "log",
       "type": "text",
       "placeholder": {
-        "en": "Data to log...",
-        "nl": "Gegevens voor logboek..."
+        "en": "Message...",
+        "nl": "Bericht..."
+      },
+      "title": {
+        "en": "Message",
+        "nl": "Bericht"
       }
     }
   ]

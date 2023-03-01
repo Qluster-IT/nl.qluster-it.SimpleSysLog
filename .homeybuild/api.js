@@ -2,9 +2,12 @@
 const { BL } = require("betterlogiclibrary");
 const Homey = require("homey");
 
+const bllNotStartedYet = 'The Better Logic Library App has not been started yet.';
+const bllNotRunning = 'The Better Logic Library App must be running to use this function.';
 
 module.exports = {
   async getLogDownloadUrl({ homey, params: { returnType } }) {
+    if(!homey.app.Log) throw new Error(bllNotStartedYet);
     try {
       switch (returnType) {
         case 'csv': {
@@ -43,15 +46,19 @@ module.exports = {
       if (returnType === 'csv') {
       }
     } catch (error) {
-      homey.error(error);
+      //homey.error(error);
+      let msg = error.message || error;
+      if(msg.indexOf('App Not Ready')>-1)  throw new Error(bllNotRunning);      
     }
   },
   async getLogs({ homey }) {
+    if(!homey.app.Log) throw new Error(bllNotStartedYet);
     let result = await homey.app.Log.getLogs({ maxSizeKb: 900 });//BL._.take(, 1000);
     return result;
     //return homey.app.getLog();
   },
   async queryLogs({ homey, body }) {
+    if(!homey.app.Log) throw new Error(bllNotStartedYet);
     body.maxSizeKb = 900;
     let result = await homey.app.Log.getLogs(body);//BL._.take(, 1000);
     return result;

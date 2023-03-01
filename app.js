@@ -27,7 +27,7 @@ function addLogToTimeline(data) {
   try {
     homey.notifications.createNotification({ excerpt: data }, (e, n) => { });
   } catch (error) {
-    homey.error(error);
+    //homey.error(error);
   }
 }
 
@@ -42,6 +42,8 @@ function addLogToTimeline(data) {
 //App Class...
 class simpleLog extends Homey.App {
   async onInit() {
+    this.log('Simple (Sys) LOG onInit');
+    homey = this.homey;
     if (process.env.DEBUG === '1' || false) {
       try {
         require('inspector').waitForDebugger();
@@ -54,29 +56,40 @@ class simpleLog extends Homey.App {
 
     this.Loggers = {};
 
-    try {
-      await BL.init({
-        homey: this.homey,
-        modules: [
-          '_',
-          "datetime"
-        ]
-      });
-    } catch (error) {
-      this.error(error);
-      throw new Error(error);
-    }
-    //if (process.env.DEBUG === '1') 
+    //try {
+    let bl = await BL.init({
+      homey: this.homey,
+      modules: [
+        '_',
+        "datetime"
+      ]
+    });
+    bl.ready.then(async () => {
+      await this.initRealApp();
+    });
+    
+    this.buildCards();
 
+    this.log('Simple (Sys) LOG onInit finished');
+    //await this.initRealApp();
+  }
 
+  async initRealApp() {
     this.Log = new Log({ filePath: '/userdata/' });
     await this.Log.init();
-
-    //this.Log.clearLog();
-
+    if(this.BackLog) {
+      for (let i = 0; i < this.BackLog.length; i++) {
+        const backLog = this.BackLog[i];
+        this._addLogToDB(...backLog);
+      }
+      delete this.BackLog;
+    }
 
     let loggingDB = this.homey.settings.get("loggingDB");
     if (isArray(loggingDB)) {
+
+      this.addLogToDB('Mutating old Log to the new Simple (Sys) LOG', "Simple LOG");
+
       for (let i = 0; i < loggingDB.length; i++) {
         const log = loggingDB[i];
         this.addLogToDB(log.data, log.group, { timestamp: log.date });
@@ -99,15 +112,6 @@ class simpleLog extends Homey.App {
     }
 
 
-    try {
-      let link = await BL.getDownloadUrl();
-      let b = link;
-    } catch (error) {
-      this.homey.error(error);
-    }
-
-    homey = this.homey;
-    this.buildCards();
     loggingDB = this.homey.settings.get("loggingDB");
     if (!isArray(loggingDB)) {
       loggingDB = [];
@@ -120,17 +124,16 @@ class simpleLog extends Homey.App {
       }
     });
     this.getSettings();
-
   }
 
   getSettings() {
     this.settings = this.homey.settings.get('settings');
-    let changed=false;
+    let changed = false;
     if (!this.settings) this.settings = {};
-    if (!this.settings.csvFilename && (changed=true)) this.settings.csvFilename = "Logs_{[date('yyyy-MM-dd_HH-mm-ss')]}.csv";
-    if (!this.settings.jsonFilename && (changed=true)) this.settings.jsonFilename = "Logs_{[date('yyyy-MM-dd_HH-mm-ss')]}.json";
-    if (!this.settings.xlsxFilename && (changed=true)) this.settings.xlsxFilename = "Logs_{[date('yyyy-MM-dd_HH-mm-ss')]}.xlsx";
-    if(changed) this.homey.settings.set('settings', this.settings);
+    if (!this.settings.csvFilename && (changed = true)) this.settings.csvFilename = "Logs_{[date('yyyy-MM-dd_HH-mm-ss')]}.csv";
+    if (!this.settings.jsonFilename && (changed = true)) this.settings.jsonFilename = "Logs_{[date('yyyy-MM-dd_HH-mm-ss')]}.json";
+    if (!this.settings.xlsxFilename && (changed = true)) this.settings.xlsxFilename = "Logs_{[date('yyyy-MM-dd_HH-mm-ss')]}.xlsx";
+    if (changed) this.homey.settings.set('settings', this.settings);
   }
 
   async onUninit() {
@@ -139,6 +142,21 @@ class simpleLog extends Homey.App {
   }
 
   async addLogToDB(data, group, { severity, facility, timestamp = new Date(), source = 'log' } = {}) {
+    let args = [data, group, {severity, facility, timestamp, source}];
+    if(this.Log) return await this._addLogToDB(...args);
+    else {
+      if(!this.BackLog) this.BackLog = [];
+      this.BackLog.push(args);
+    }
+  }
+
+  /**
+   * @private
+   * @param {String} data 
+   * @param {String} group 
+   * @param {*} param2 
+   */
+  async _addLogToDB(data, group, { severity, facility, timestamp = new Date(), source = 'log' } = {}) {
     // checkSurplusEntries();
     // loggingDB.push({ data, group, date: timestamp });
     // this.homey.settings.set("loggingDB", loggingDB);

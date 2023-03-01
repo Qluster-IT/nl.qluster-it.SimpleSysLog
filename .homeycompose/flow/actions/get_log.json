@@ -5,18 +5,20 @@
     "nl": "Ontvang het (hele) logboek"
   },
   "titleFormatted": {
-    "en": "Get the (whole) log as [[returnType]]",
-    "nl": "Ontvang het (hele) logboek as [[returnType]]"
+    "en": "Get the (whole) Log as [[returnType]]",
+    "nl": "Ontvang de (hele) Log als [[returnType]]"
   },
   "args": [
     {
       "type": "dropdown",
-      "required": false,
-      "name": "returnType",
-      
+      "name": "returnType",      
       "placeholder": {
-        "en": "JSON",
-        "nl": "JSON"
+        "en": "Choose the Format",
+        "nl": "Kies het format"
+      },      
+      "title": {
+        "en": "Format",
+        "nl": "Format"
       },
       "values": [
         {

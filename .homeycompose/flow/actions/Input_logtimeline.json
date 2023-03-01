@@ -1,5 +1,6 @@
 {
   "id": "Input_logtimeline",
+  "deprecated":true,
   "title": {
     "en": "Add Something to the timeline and log",
     "nl": "Voeg iets toe aan de tijdslijn en log"

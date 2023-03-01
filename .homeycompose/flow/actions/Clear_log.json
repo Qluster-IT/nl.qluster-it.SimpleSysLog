@@ -1,7 +1,11 @@
 {
   "id": "Clear_log",
   "title": {
-    "en": "Clear log data",
-    "nl": "Verwijder log data"
+    "en": "Clear  the whole Log",
+    "nl": "Verwijder de complete Log"
+  },
+  "titleFormatted": {
+    "en": "Clear  the whole Log",
+    "nl": "Verwijder de complete Log"
   }
 }

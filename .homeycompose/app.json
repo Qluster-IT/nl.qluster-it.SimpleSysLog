@@ -6,14 +6,14 @@
 		"en": "Simple (Sys) LOG"
 	},
 	"description": {
-		"en": "Use this app for simple (sys) logging."
+		"en": "Use this app for Simple (Sys) Logging."
 	},
 	"category": "tools",
 	"images": {
 		"large": "assets/images/large.png",
 		"small": "assets/images/small.png"
 	},
-	"version": "2.9.14",
+	"version": "2.9.15",
 	"compatibility": ">=5.0.0",
 	"author": {
 		"name": "Arie J. Godschalk",

@@ -49,5 +49,8 @@
   },
   "2.9.14": {
     "en": "Building Version 3: Export large logs in Excel, CSV and JSON on Developer-site and the Homey Mobile App."
+  },
+  "2.9.15": {
+    "en": "Building Version 3: Works with all Homey Pro's again."
   }
 }

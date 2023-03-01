@@ -118,6 +118,10 @@ input {
 }
 .ui-grid-menu-mid {
     overflow: hidden !important;;
+    overflow-y:scroll!important;
+}
+.ui-grid-column-menu .ui-grid-menu-mid {
+    overflow: hidden !important;;
     overflow-y:auto!important;
 }
 .ui-grid-menu-item {
@@ -131,4 +135,7 @@ input {
 }
 .ui-grid-menu-items > li {
     /* display:inline-block;  */
+}
+.cancel-custom-date-range-filter-button {
+    right: 16px !important;
 }

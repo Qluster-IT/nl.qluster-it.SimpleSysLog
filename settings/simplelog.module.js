@@ -18,11 +18,17 @@ angular.module('simplelog', [
         // this.b=true;
         // $rootScope.menu = {};
     }])
-    .controller("simplelogCtrl", ['$scope', '$rootScope', '$timeout', '$compile', '$q', '$bl', 'gridUtil', 'uiGridConstants', function ($scope, $rootScope, $timeout, $compile, $q, $bl, gridUtil, uiGridConstants) {
+    .controller("simplelogCtrl", ['$scope', '$rootScope', '$timeout', '$compile', '$q', '$bl', 'gridUtil', 'uiGridConstants', '$window', function ($scope, $rootScope, $timeout, $compile, $q, $bl, gridUtil, uiGridConstants, $window) {
         const vars = $rootScope.vars = $scope.vars = { logCurrentPage: 1, logPerPage: 100, logs: [] };
-        const view = $rootScope.view = $scope.view = { severities: {}, facilities: {}, id:'log', settings:{} };
+        const view = $rootScope.view = $scope.view = { severities: {}, facilities: {}, id: 'log', settings: {} };
+        $scope.homey = $window.Homey;
+
         let ctrl = this;
-        let homey;
+        let homey = this.homey = $window.Homey;
+        let Homey = homey;
+        let __ = homey.__;
+
+        let gridDefer = $q.defer();
 
         var facilities = {
             Kernel: 0,
@@ -144,20 +150,24 @@ angular.module('simplelog', [
         $scope.logQuery = $query();
 
 
-        ctrl.init = async (_homey, scope) => {
-            homey = _homey;
-            ctrl.homey = _homey;
-            $scope.__ = Homey.__;
-            $bl.init(_homey, $scope);
+        ctrl.init = async () => {
+            //$scope.__ = Homey.__;
+            $bl.init(homey, $scope);
+            let loaded = false;
             $bl.get("settings", async (x) => {
-                view.settings = (x=x||{});
-                if(view.settings.logGridState) {
-                    $scope.logGridApi.saveState.restore( $scope, view.settings.logGridState );     
+                view.settings = (x = x || {});
+                await gridDefer.promise;
+                if (view.settings.logGridState) {
+                    console.log(view.settings.logGridState);
+                    $scope.logGridApi.saveState.restore($scope, view.settings.logGridState);
                     // let state = $scope.logGridApi.saveState.save();
                     // view.settings.logGridState = state;
-                }
+                } else 
+                if(!loaded) (loaded=true) & loadLogs();
             });
-            loadLogs();
+            await gridDefer.promise;
+            
+            if(!loaded) (loaded=true) & loadLogs();
 
             // $scope.$watch("vars.logCurrentPage", async (newValue, oldValue) => {
             //     let opt = {};
@@ -173,7 +183,7 @@ angular.module('simplelog', [
             useExternalPagination: true,
             //useExternalSorting: true,
             useExternalFiltering: true,
-            
+
             enableSorting: false,
             enableColumnResizing: true,
             enableRowHeaderSelection: false,
@@ -189,24 +199,24 @@ angular.module('simplelog', [
             keepLastSelected: true,
 
             saveScroll: false,
-            saveWidth:false,
-            savePagination:false,
-            saveGrouping:false,
-            saveSelection:false,
-            gridMenuTitleFilter: Homey.__,
+            saveWidth: false,
+            savePagination: false,
+            saveGrouping: false,
+            saveSelection: false,
+            gridMenuTitleFilter:Homey.__,
 
             "data": "vars.logs",
             "onRegisterApi": function (gridApi, gridScope) {
                 $scope.logGridApi = gridApi;
-                console.log(gridApi);
+                //console.log(gridApi);
                 gridApi.core.on.rowsRendered($scope, function (logGridCtrl) {
-                    console.log('rowsRendered');
+                    //console.log('rowsRendered');
                     $scope.logGridCtrl = logGridCtrl;
                     $scope.logGridScope = logGridCtrl.grid;
-                    console.log(logGridCtrl);
+                    //console.log(logGridCtrl);
                     if (!columnWidhtSet && logGridCtrl.grid.rows && logGridCtrl.grid.rows.length) $timeout(function () {
                         columnWidhtSet = true;
-                        console.log('timeout');
+                        //console.log('timeout');
                         angular.forEach($scope.logGridScope.columns, function (col) {
                             //gridCtrl.resizeOnData(col);
 
@@ -253,15 +263,15 @@ angular.module('simplelog', [
                                 });
                             });
                             maxWidth += 20;
-                            console.log('maxwidht');
-                            console.log(maxWidth);
+                            //console.log('maxwidht');
+                            //console.log(maxWidth);
                             // check we're not outside the allowable bounds for this column
                             var newWidth = constrainWidth(col, maxWidth);
                             var xDiff = newWidth - col.drawnWidth;
                             col.width = newWidth;
                             col.hasCustomWidth = true;
 
-                            console.log(newWidth);
+                            //console.log(newWidth);
 
                             logGridCtrl.grid.refreshCanvas(true).then(function () {
                                 logGridCtrl.grid.queueGridRefresh();
@@ -293,7 +303,7 @@ angular.module('simplelog', [
 
                 gridApi.core.on.filterChanged($scope, function () {
                     $scope.logQuery.fill(gridApi.grid);
-                    console.log($scope.logQuery);
+                    //console.log($scope.logQuery);
                     $scope.refresh($scope.logQuery);
                     //$scope.refresh(false, false);
                 });
@@ -303,6 +313,7 @@ angular.module('simplelog', [
                     $scope.logQuery.pagesize = pagesize;
                     $scope.refresh($scope.logQuery);
                 });
+                gridDefer.resolve();
 
             },
             columnDefs: [
@@ -314,7 +325,8 @@ angular.module('simplelog', [
                 // },
                 {
                     field: 'timestamp',
-                    //displayName: 'Timestamp',
+                    displayName: 'Timestamp',
+                    headerCellFilter: '__',
                     width: 100,
                     sort: { direction: uiGridConstants.DESC, priority: 1 },
                     //cellFilter: 'date:"longDate"',
@@ -337,6 +349,7 @@ angular.module('simplelog', [
                 {
                     field: 'severity',
                     displayName: 'Severity',
+                    headerCellFilter: '__',
                     width: 75,
                     filter: {
                         noTerm: true,
@@ -349,6 +362,7 @@ angular.module('simplelog', [
                 {
                     field: 'facility',
                     displayName: 'Facility',
+                    headerCellFilter: '__',
                     width: 75,
                     filter: {
                         noTerm: true,
@@ -361,57 +375,58 @@ angular.module('simplelog', [
                 {
                     field: 'app',
                     displayName: 'App',
+                    headerCellFilter: '__',
                     width: '*',
                     filter: { condition: filter }
                 },
                 {
                     field: 'message',
                     displayName: 'Message',
+                    headerCellFilter: '__',
                     width: '*'
                 }
 
             ],
             gridMenuCustomItems: [
                 {
-                    icon:'fa-solid fa-wrench',
-                    title: 'Settings',
+                    icon: 'fa-solid fa-wrench',
+                    title: __('Settings'),
                     action: function ($event) {
-                        view.id='settings';                        
-                        //this.grid.element.toggleClass('rotated');
+                        view.id = 'settings';
                     },
                     order: 0
                 },
                 {
-                    icon:'fa-solid fa-file-excel',
-                    title: 'Export as Excel',
+                    icon: 'fa-solid fa-file-excel',
+                    title: __('Export as Excel'),
                     action: function ($event) {
                         $scope.downloadFile('xlsx');
                     },
                     order: 9
                 },
                 {
-                    icon:'fa-solid fa-file-csv',
-                    title: 'Export as CSV',
+                    icon: 'fa-solid fa-file-csv',
+                    title: __('Export as CSV'),
                     action: function ($event) {
                         $scope.downloadFile('csv');
                     },
                     order: 10
                 },
                 {
-                    icon:'fa-solid fa-file-code',
-                    title: 'Export as JSON',
+                    icon: 'fa-solid fa-file-code',
+                    title: __('Export as JSON'),
                     action: function ($event) {
                         $scope.downloadFile('json');
                     },
                     order: 11
                 },
                 {
-                    icon:'fa-solid fa-floppy-disk',
-                    title: 'Save columns',
-                    action: function ($event) {                        
+                    icon: 'fa-solid fa-floppy-disk',
+                    title: __('Save columns'),
+                    action: function ($event) {
                         let state = $scope.logGridApi.saveState.save();
                         view.settings.logGridState = state;
-                        $scope.saveSettings();                        
+                        $scope.saveSettings();
                     },
                     order: 200
                 }
@@ -422,9 +437,9 @@ angular.module('simplelog', [
         };
 
 
-        $scope.saveSettings = function() {
+        $scope.saveSettings = function () {
             $bl.set("settings", view.settings, async (x) => {
-                if($scope.settingForm) {
+                if ($scope.settingForm) {
                     $scope.settingForm.$setSubmitted();
                     $scope.settingForm.$setPristine();
                 }
@@ -433,7 +448,7 @@ angular.module('simplelog', [
 
         $scope.refresh = function (query) {
             let opts = {};
-            console.log(query.filters);
+            //console.log(query.filters);
             if (query && query.filters) for (let i = 0; i < query.filters.length; i++) {
                 const filter = query.filters[i];
                 switch (filter.field) {
@@ -442,6 +457,8 @@ angular.module('simplelog', [
                     case 'app': opts.app = filter.term; break;
                     case 'message': opts.message = filter.term; break;
                     case 'timestamp':
+                        if(filter.terms[0] && !(filter.terms[0] instanceof Date )) filter.terms[0] = new Date(filter.terms[0]);
+                        if(filter.terms[1] && !(filter.terms[1] instanceof Date )) filter.terms[1] = new Date(filter.terms[1]);
                         opts.timestamp_fromUTC = filter.terms[0] ? new Date(Date.UTC(filter.terms[0].getFullYear(), filter.terms[0].getMonth(), filter.terms[0].getDate(), 0, 0, 0, 0)) : undefined;
                         opts.timestamp_toUTC = filter.terms[1] ? new Date(Date.UTC(filter.terms[1].getFullYear(), filter.terms[1].getMonth(), filter.terms[1].getDate(), 0, 0, 0, 0)) : undefined;
                         break;
@@ -475,6 +492,9 @@ angular.module('simplelog', [
             $bl.openURL(downloadLink.url + downloadLink.filenameEncoded);
         };
 
+
+
+        ctrl.init();
     }])
 
     .directive('ngEnter', function () {
@@ -563,7 +583,7 @@ angular.module('simplelog', [
     .controller('gridDatePickerFilterCtrl', ['$scope', '$timeout', '$uibModal', 'uiGridConstants', function ($scope, $timeout, $uibModal, uiGridConstants) {
 
         $timeout(function () {
-            console.log($scope.col);
+            // console.log($scope.col);
             var field = $scope.col.colDef.name;
 
             var allDates = _.map($scope.col.grid.appScope.logGridOptions.data, function (datum) {
@@ -613,8 +633,8 @@ angular.module('simplelog', [
 
         var ctrl = this;
 
-        console.log('filter name', filterName);
-        console.log('min date', minDate, 'max date', maxDate);
+        //console.log('filter name', filterName);
+        //console.log('min date', minDate, 'max date', maxDate);
 
         ctrl.title = 'Select Dates ' + filterName + '...';
         ctrl.minDate = minDate;
@@ -622,8 +642,8 @@ angular.module('simplelog', [
         ctrl.customDateFilterForm;
         //ctrl.currentDate = new Date();
         let f = filterDate;
-        console.log(f);
-        console.log('f');
+        //console.log(f);
+        //console.log('f');
         ctrl.filterDate = filterDate;
         //  ctrl.filterDate = new Date();// (filterName.indexOf('From') !== -1) ? angular.copy(ctrl.minDate) : angular.copy(ctrl.maxDate);
 
@@ -652,7 +672,7 @@ angular.module('simplelog', [
 
     .directive('customGridDateFilterHeader', function () {
         return {
-            template: '<button class="btn btn-default date-time-filter-buttons" style="width:90%;padding:inherit;" ng-click="openDatePicker(colFilter)">{{ colFilter.name | translate }}</button><div role="button" class="ui-grid-filter-button-select cancel-custom-date-range-filter-button ng-scope" ng-click="removeFilter(colFilter, $index)" ng-if="!colFilter.disableCancelFilterButton" ng-disabled="colFilter.term === undefined || colFilter.term === null || colFilter.term === \'\'" ng-show="colFilter.term !== undefined &amp;&amp; colFilter.term != null" tabindex="0" aria-hidden="false" aria-disabled="false" style=""><i class="ui-grid-icon-cancel cancel-custom-date-range-filter" ui-grid-one-bind-aria-label="aria.removeFilter" aria-label="Remove Filter">&nbsp;</i></div>',
+            template: '<button class="btn btn-default date-time-filter-buttons" style="width:90%;padding:inherit;" ng-click="openDatePicker(colFilter)">{{ colFilter.name | __ }}</button><div role="button" class="ui-grid-filter-button-select cancel-custom-date-range-filter-button ng-scope" ng-click="removeFilter(colFilter, $index)" ng-if="!colFilter.disableCancelFilterButton" ng-disabled="colFilter.term === undefined || colFilter.term === null || colFilter.term === \'\'" ng-show="colFilter.term !== undefined &amp;&amp; colFilter.term != null" tabindex="0" aria-hidden="false" aria-disabled="false" style=""><i class="ui-grid-icon-cancel cancel-custom-date-range-filter" ui-grid-one-bind-aria-label="aria.removeFilter" aria-label="Remove Filter">&nbsp;</i></div>',
             controller: 'gridDatePickerFilterCtrl'
         };
     });

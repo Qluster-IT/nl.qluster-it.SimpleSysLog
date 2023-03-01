@@ -228,6 +228,7 @@ class simpleLog extends Homey.App {
     // FLOW Action Card, Clear_log_Older
     let actionClearlogOlder = this.homey.flow.getActionCard("Clear_log_Older");
     actionClearlogOlder.registerRunListener(async (args, state) => {
+      if(!this.Log)  throw new Error(this.homey.__('bllNotRunning'));
       await this.Log.clearLog(args.days);
       return true;
     });
@@ -235,20 +236,17 @@ class simpleLog extends Homey.App {
     // FLOW Action Card, Clear_log
     let actionClearlog = this.homey.flow.getActionCard("Clear_log");
     actionClearlog.registerRunListener(async (args, state) => {
+      if(!this.Log)  throw new Error(this.homey.__('bllNotRunning'));
       return await this.Log.clearLog();
     });
 
     // FLOW Action Card, get_log
     let actionGetLog = this.homey.flow.getActionCard("get_log");
     actionGetLog.registerRunListener(async (args, state) => {
+      if(!this.Log)  throw new Error(this.homey.__('bllNotRunning'));
       let s;
       try {
-        //s = await fs.readFile('/app/test.json');
-        //s = {logs:JSON.parse(s)};
-        args.take = 5000; // this is just for HP2023 remove on production!
         s = await this.Log.getLogs(args);
-        // s = BL._.take(s.logs, 6000);
-        // s=JSON.stringify(s);
         s = s.logs ? JSON.stringify(s.logs) : s.csv;
       } catch (error) {
         throw new Error(error);

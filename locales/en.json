@@ -1,7 +1,29 @@
 {
+    "bllNotStartedYet":"The Better Logic Library App has not been started yet.",    
+    "bllNotRunning":"The Better Logic Library App must be running to use this function.",
+
     "Timestamp":"Timestamp",
     "App":"App",
     "Severity":"Severity",
     "Facility":"Facility",
-    "Message":"Message"
+    "Message":"Message",
+    "From":"From",
+    "To":"To",
+    "Settings":"Settings",
+    "Export as Excel":"Export as Excel",
+    "Export as CSV":"Export as CSV",
+    "Export as JSON":"Export as JSON",
+    "Clear all filters":"Clear all filters",
+    "Save columns":"Save columns",
+    "Columns":"CC",
+    "Columns:":"CC:",
+    "items":"items",
+    "items per page":"items per page",
+
+    "Exports":"Exports",
+    "Set the filenames to use when exporting files":"Set the filenames to use when exporting files",
+    "Excel filename (* BLL supported)":"Excel filename (* BLL supported)",
+    "CSV filename (* BLL supported)":"CSV filename (* BLL supported)",
+    "JSON filename (* BLL supported)":"JSON filename (* BLL supported)",
+    "Save":"Save"
 }

@@ -1,1 +1,7 @@
-{}
+{
+    "Timestamp":"Timestamp",
+    "App":"App",
+    "Severity":"Severity",
+    "Facility":"Facility",
+    "Message":"Message"
+}

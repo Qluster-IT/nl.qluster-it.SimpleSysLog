@@ -118,7 +118,7 @@ input {
 }
 .ui-grid-menu-mid {
     overflow: hidden !important;;
-    overflow-y:scroll!important;
+    overflow-y:auto!important;
 }
 .ui-grid-menu-item {
     width: auto!important;

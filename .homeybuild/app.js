@@ -27,7 +27,7 @@ function addLogToTimeline(data) {
   try {
     homey.notifications.createNotification({ excerpt: data }, (e, n) => { });
   } catch (error) {
-    homey.error(error);
+    //homey.error(error);
   }
 }
 

@@ -1,1 +1,7 @@
-{}
+{
+    "Timestamp":"Tijd",
+    "App":"App",
+    "Severity":"Niveau",
+    "Facility":"Categorie",
+    "Message":"Bericht"
+}

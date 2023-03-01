@@ -9,6 +9,8 @@ angular.module('simplelog', [
     'ui.grid.autoResize',
     'ui.grid.pagination',
     'ui.grid.selection',
+    'ui.grid.moveColumns',
+    'ui.grid.saveState'
     //'ui.grid.exporter'
 ])
     .run(['$rootScope', function ($rootScope) {
@@ -149,6 +151,11 @@ angular.module('simplelog', [
             $bl.init(_homey, $scope);
             $bl.get("settings", async (x) => {
                 view.settings = (x=x||{});
+                if(view.settings.logGridState) {
+                    $scope.logGridApi.saveState.restore( $scope, view.settings.logGridState );     
+                    // let state = $scope.logGridApi.saveState.save();
+                    // view.settings.logGridState = state;
+                }
             });
             loadLogs();
 
@@ -181,7 +188,13 @@ angular.module('simplelog', [
             //rowHeight: 26,
             keepLastSelected: true,
 
-            saveScroll: true,
+            saveScroll: false,
+            saveWidth:false,
+            savePagination:false,
+            saveGrouping:false,
+            saveSelection:false,
+            gridMenuTitleFilter: Homey.__,
+
             "data": "vars.logs",
             "onRegisterApi": function (gridApi, gridScope) {
                 $scope.logGridApi = gridApi;
@@ -391,6 +404,16 @@ angular.module('simplelog', [
                         $scope.downloadFile('json');
                     },
                     order: 11
+                },
+                {
+                    icon:'fa-solid fa-floppy-disk',
+                    title: 'Save columns',
+                    action: function ($event) {                        
+                        let state = $scope.logGridApi.saveState.save();
+                        view.settings.logGridState = state;
+                        $scope.saveSettings();                        
+                    },
+                    order: 200
                 }
             ],
             enableColumnResize: true
@@ -401,8 +424,10 @@ angular.module('simplelog', [
 
         $scope.saveSettings = function() {
             $bl.set("settings", view.settings, async (x) => {
-                $scope.settingForm.$setSubmitted();
-                $scope.settingForm.$setPristine();
+                if($scope.settingForm) {
+                    $scope.settingForm.$setSubmitted();
+                    $scope.settingForm.$setPristine();
+                }
             });
         };
 
@@ -627,7 +652,7 @@ angular.module('simplelog', [
 
     .directive('customGridDateFilterHeader', function () {
         return {
-            template: '<button class="btn btn-default date-time-filter-buttons" style="width:90%;padding:inherit;" ng-click="openDatePicker(colFilter)">{{ colFilter.name }}</button><div role="button" class="ui-grid-filter-button-select cancel-custom-date-range-filter-button ng-scope" ng-click="removeFilter(colFilter, $index)" ng-if="!colFilter.disableCancelFilterButton" ng-disabled="colFilter.term === undefined || colFilter.term === null || colFilter.term === \'\'" ng-show="colFilter.term !== undefined &amp;&amp; colFilter.term != null" tabindex="0" aria-hidden="false" aria-disabled="false" style=""><i class="ui-grid-icon-cancel cancel-custom-date-range-filter" ui-grid-one-bind-aria-label="aria.removeFilter" aria-label="Remove Filter">&nbsp;</i></div>',
+            template: '<button class="btn btn-default date-time-filter-buttons" style="width:90%;padding:inherit;" ng-click="openDatePicker(colFilter)">{{ colFilter.name | translate }}</button><div role="button" class="ui-grid-filter-button-select cancel-custom-date-range-filter-button ng-scope" ng-click="removeFilter(colFilter, $index)" ng-if="!colFilter.disableCancelFilterButton" ng-disabled="colFilter.term === undefined || colFilter.term === null || colFilter.term === \'\'" ng-show="colFilter.term !== undefined &amp;&amp; colFilter.term != null" tabindex="0" aria-hidden="false" aria-disabled="false" style=""><i class="ui-grid-icon-cancel cancel-custom-date-range-filter" ui-grid-one-bind-aria-label="aria.removeFilter" aria-label="Remove Filter">&nbsp;</i></div>',
             controller: 'gridDatePickerFilterCtrl'
         };
     });

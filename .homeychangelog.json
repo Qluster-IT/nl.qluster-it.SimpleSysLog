@@ -55,5 +55,8 @@
   },
   "2.9.16": {
     "en": "Building Version 3: Almost done."
+  },
+  "2.9.17": {
+    "en": "Building Version 3: Excel headers translated, styled, sticky and sized."
   }
 }

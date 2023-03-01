@@ -61,5 +61,8 @@
   },
   "2.9.18": {
     "en": "Building Version 3: More translations."
+  },
+  "2.9.19": {
+    "en": "Building Version 3: More error handling."
   }
 }

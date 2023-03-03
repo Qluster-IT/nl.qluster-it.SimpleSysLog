@@ -7,9 +7,13 @@ body.index {
 
 .main-view {
     height: 100%;
+}
+body:not(.ng-scope)> .main-view {
     display:none;
 }
-
+body:not(.ng-scope)> .oldLogView {
+    display:block;
+}
 .pagination {
     text-align: center;
     display: inline-block;

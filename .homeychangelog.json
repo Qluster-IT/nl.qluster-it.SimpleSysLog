@@ -64,5 +64,8 @@
   },
   "2.9.19": {
     "en": "Building Version 3: More error handling."
+  },
+  "2.9.20": {
+    "en": "Building Version 3: Without BLL Simple LOG is exactly as before and functions as it used to."
   }
 }

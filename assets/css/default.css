@@ -11,6 +11,9 @@ body.index {
 body:not(.ng-scope)> .main-view {
     display:none;
 }
+.oldLogView {    
+    display:none;
+}
 body:not(.ng-scope)> .oldLogView {
     display:block;
 }

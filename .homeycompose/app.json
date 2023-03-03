@@ -6,7 +6,8 @@
     "en": "Simple (Sys) LOG"
   },
   "description": {
-    "en": "Use this app for Simple (Sys) Logging."
+    "en": "Use this app for Simple (Sys) Logging.",    
+    "nl": "Gebruik deze app voor Simpele (Sys) Logging."
   },
   "category": "tools",
   "images": {
@@ -25,7 +26,23 @@
       "Tools",
       "simple",
       "sys",
-      "syslog"
+      "syslog",
+      "bll",
+      "ssl"
+    ],
+    "nl": [
+      "Log",
+      "sys",
+      "syslog",
+      "bll",
+      "ssl"
+    ],
+    "de": [
+      "Log",
+      "sys",
+      "syslog",
+      "bll",
+      "ssl"
     ]
   },
   "permissions": [

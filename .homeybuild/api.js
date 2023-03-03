@@ -1,6 +1,5 @@
 "use strict";
 const { BL } = require("betterlogiclibrary");
-const Homey = require("homey");
 
 module.exports = {
   async getLogDownloadUrl({ homey, params: { returnType } }) {

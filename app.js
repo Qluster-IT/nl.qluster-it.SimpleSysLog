@@ -1,16 +1,13 @@
 "use strict";
 const { BL } = require("betterlogiclibrary");
-const { createReadStream, readFileSync, unlinkSync, rmSync, stat, statSync, readdirSync } = require("fs");
 const Homey = require("homey");
-const path = require("path");
 const { Log } = require("./lib/Log");
 
 const DBLIMIT = 2000;
 
-//let loggingDB = [];
+
 let homey;
 
-const fs = require('fs/promises');
 
 const SIMPLE_LOG = "Simple LOG";
 
@@ -57,7 +54,7 @@ class simpleLog extends Homey.App {
     if (!isArray(this.BackLog)) {
       this.BackLog = [];
       this.homey.settings.set("BackLog", this.BackLog);
-    }
+    } else this.BackLog = this.BackLog.map(x=>{ x[2].timestamp = new Date(x[2].timestamp);return x;});
     //this.log(this.BackLog);
 
     /// Conversion into the new BackLog model.
@@ -102,7 +99,7 @@ class simpleLog extends Homey.App {
     if (this.BackLog) {
       for (let i = 0; i < this.BackLog.length; i++) {
         const backLog = this.BackLog[i];
-        this._addLogToDB(...backLog);
+        await this._addLogToDB(...backLog);
       }
       delete this.BackLog;
     }
@@ -111,9 +108,9 @@ class simpleLog extends Homey.App {
       let date = new Date();
       //await this.addLogToDB(date, 'DATE TEST');
       //date = new Date(date.setMonth(date.getMonth()-8));
-      for (let i = 0; i < 365; i++) {
+      for (let i = 0; i < 100; i++) {
         date = new Date(date.setDate(date.getDate() - 1));
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 50; i++) {
           await this.addLogToDB('Test message voor here is this', undefined, { severity: i === 0 ? 4 : undefined, timestamp: date });
         }
       }

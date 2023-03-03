@@ -29,4 +29,4 @@ The folowing API endpoints can be used:
 - 
 
 
-* Requires the Better Logic Library App to be installed.
+* This app still functions as Stand Alone app like it used to, however, to enable all functionalities and new interface, it requires the Better Logic Library App to be installed.

@@ -4,7 +4,9 @@ const { createReadStream, readFileSync, unlinkSync, rmSync, stat, statSync, read
 const Homey = require("homey");
 const path = require("path");
 const { Log } = require("./lib/Log");
+
 const DBLIMIT = 2000;
+
 //let loggingDB = [];
 let homey;
 
@@ -50,12 +52,13 @@ class simpleLog extends Homey.App {
     //else try{ require('inspector').open(9218, '0.0.0.0', false); } catch(ex){}
 
     this.Loggers = {};
-    
+
     this.BackLog = this.homey.settings.get("BackLog");
     if (!isArray(this.BackLog)) {
       this.BackLog = [];
+      this.homey.settings.set("BackLog", this.BackLog);
     }
-    this.log(this.BackLog);
+    //this.log(this.BackLog);
 
     /// Conversion into the new BackLog model.
     let loggingDB = this.homey.settings.get("loggingDB");
@@ -86,7 +89,7 @@ class simpleLog extends Homey.App {
     bl.ready.then(async () => {
       await this.initRealApp();
     });
-    
+
     this.buildCards();
 
     this.log('Simple (Sys) LOG onInit finished');
@@ -96,7 +99,7 @@ class simpleLog extends Homey.App {
   async initRealApp() {
     this.Log = new Log({ filePath: '/userdata/' });
     await this.Log.init();
-    if(this.BackLog) {
+    if (this.BackLog) {
       for (let i = 0; i < this.BackLog.length; i++) {
         const backLog = this.BackLog[i];
         this._addLogToDB(...backLog);
@@ -140,15 +143,19 @@ class simpleLog extends Homey.App {
   }
 
   async addLogToDB(data, group, { severity, facility, timestamp = new Date(), source = 'log' } = {}) {
-    if(!timestamp)timestamp = new Date();
-    if(!source) source = 'log';
+    if (!timestamp) timestamp = new Date();
+    if (!source) source = 'log';
 
-    let args = [data, group, {severity, facility, timestamp, source}];
-    
-    if(this.Log) return await this._addLogToDB(...args);
+    let args = [data, group, { severity, facility, timestamp, source }];
+
+    if (this.Log) return await this._addLogToDB(...args);
     else {
-      if(!this.BackLog) this.BackLog = [];
+      if (!this.BackLog) this.BackLog = [];
       this.BackLog.push(args);
+      if (this.BackLog.length > DBLIMIT) {
+        let tomuch = this.BackLog.length - DBLIMIT;
+        this.BackLog.splice(0, tomuch);
+      }
       await this.homey.settings.set("BackLog", this.BackLog);
     }
   }
@@ -185,7 +192,7 @@ class simpleLog extends Homey.App {
     }
   }
   async apiClearLog() {
-    if(this.Log) return await this.Log.clearLog();
+    if (this.Log) return await this.Log.clearLog();
     else return await this.clearBackLog();
   }
   async addLogToTimeline(data) {
@@ -198,11 +205,11 @@ class simpleLog extends Homey.App {
   }
 
   async clearBackLog(days) {
-    if(!days) this.BackLog = [];
+    if (!days) this.BackLog = [];
     else {
       let date = new Date();
-      date=new Date(date.setDate(date.getDate()-days));
-      this.BackLog = this.BackLog.filter(x=>x[2].timestamp>date);
+      date = new Date(date.setDate(date.getDate() - days));
+      this.BackLog = this.BackLog.filter(x => x[2].timestamp > date);
     }
     await this.homey.settings.set("BackLog", this.BackLog);
   }
@@ -210,8 +217,8 @@ class simpleLog extends Homey.App {
   async getBackLog() {
     return this.BackLog.map((x) => {
       return {
-        data:x[0],
-        group:x[1],
+        data: x[0],
+        group: x[1],
         date: x[2].timestamp
       };
     });
@@ -260,7 +267,9 @@ class simpleLog extends Homey.App {
     // FLOW Action Card, Clear_log_Older
     let actionClearlogOlder = this.homey.flow.getActionCard("Clear_log_Older");
     actionClearlogOlder.registerRunListener(async (args, state) => {
-      if(!this.Log)  throw new Error(this.homey.__('bllNotRunning'));
+      //if (!this.Log) throw new Error(this.homey.__('bllNotRunning'));
+      if (!this.Log) return await this.clearBackLog(args.days);
+
       await this.Log.clearLog(args.days);
       return true;
     });
@@ -269,18 +278,18 @@ class simpleLog extends Homey.App {
     let actionClearlog = this.homey.flow.getActionCard("Clear_log");
     actionClearlog.registerRunListener(async (args, state) => {
       //if(!this.Log)  throw new Error(this.homey.__('bllNotRunning'));
-      if(!this.Log)  return await this.app.apiClearLog();
-      
+      if (!this.Log) return await this.clearBackLog();
+
       return await this.Log.clearLog();
     });
 
     // FLOW Action Card, get_log
     let actionGetLog = this.homey.flow.getActionCard("get_log");
     actionGetLog.registerRunListener(async (args, state) => {
-      //if(!this.Log)  throw new Error(this.homey.__('bllNotRunning'));
-      if (!this.Log) return homey.app.getLogFromBackLog();
+      if (!this.Log && args.returnType==='json') return { log: JSON.stringify(await homey.app.getBackLog()) };
       let s;
       try {
+        if(!this.Log)  throw new Error(this.homey.__('bllNotRunning'));
         s = await this.Log.getLogs(args);
         s = s.logs ? JSON.stringify(s.logs) : s.csv;
       } catch (error) {

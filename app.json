@@ -513,18 +513,25 @@
       },
       {
         "id": "Input_logtimeline",
-        "deprecated": true,
         "title": {
-          "en": "Add Something to the timeline and log",
-          "nl": "Voeg iets toe aan de tijdslijn en log"
+          "en": "Add Something to the Timeline and the Log",
+          "nl": "Voeg iets toe aan de Tijdslijn en de Log"
+        },
+        "titleFormatted": {
+          "en": "Add [[log]] to the Timeline and the Log",
+          "nl": "Voeg [[log]] toe aan de Tijdslijn en de Log"
         },
         "args": [
           {
             "name": "log",
             "type": "text",
             "placeholder": {
-              "en": "Data to log...",
-              "nl": "Gegevens voor logboek..."
+              "en": "Message...",
+              "nl": "Bericht..."
+            },
+            "title": {
+              "en": "Message",
+              "nl": "Bericht"
             }
           }
         ]

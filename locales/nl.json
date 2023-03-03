@@ -1,6 +1,7 @@
 {
     "bllNotStartedYet":"De Better Logic Library-app is nog niet gestart.",    
     "bllNotRunning":"De Better Logic Library-app moet actief zijn om deze functie te gebruiken.",
+    "fullyEnableInstallBll" : "Installeer de app <a href=\"#\" id=\"bllAppLink\" onClick=\"openBllAppLink()\">Better Logic Library</a> om alle functies en nieuwe interface van de nieuwe Simple (Sys) LOG volledig in te schakelen.",
 
     "Timestamp":"Tijdstip",
     "App":"App / Groep",

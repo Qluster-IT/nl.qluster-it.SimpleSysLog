@@ -1,5 +1,6 @@
+//if (typeof window.angular === 'undefined') return;
 
-angular.module('simplelog', [
+if (typeof window.angular !== 'undefined') angular.module('simplelog', [
     'bll',
     'ngAnimate',
     'ngTouch',

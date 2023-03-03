@@ -217,18 +217,4 @@ function download(filename, text) {
   var encodedUri = encodeURI("data:text/csv;charset=utf-8," + text);//+ encodeURIComponent(text));
   console.log(encodedUri);
   Homey.openURL(encodedUri);
-
-
-
-  // var pom = document.createElement("a");
-  // pom.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
-  // pom.setAttribute("download", filename);
-
-  // if (document.createEvent) {
-  //   var event = document.createEvent("MouseEvents");
-  //   event.initEvent("click", true, true);
-  //   pom.dispatchEvent(event);
-  // } else {
-  //   pom.click();
-  // }
 }

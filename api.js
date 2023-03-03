@@ -4,7 +4,7 @@ const Homey = require("homey");
 
 module.exports = {
   async getLogDownloadUrl({ homey, params: { returnType } }) {
-    if(!homey.app.Log) throw new Error(homey.__('bllNotStartedYet'));
+    if (!homey.app.Log) throw new Error(homey.__('bllNotStartedYet'));
     try {
       switch (returnType) {
         case 'csv': {
@@ -45,17 +45,20 @@ module.exports = {
     } catch (error) {
       //homey.error(error);
       let msg = error.message || error;
-      if(msg.indexOf('App Not Ready')>-1)  throw new Error(homey.__('bllNotRunning'));      
+      if (msg.indexOf('App Not Ready') > -1) throw new Error(homey.__('bllNotRunning'));
     }
   },
+
   async getLogs({ homey }) {
-    if(!homey.app.Log) throw new Error(homey.__('bllNotStartedYet'));
+    
+    if (!homey.app.Log) return homey.app.getLogFromBackLog();
+    //if(!homey.app.Log) throw new Error(homey.__('bllNotStartedYet'));
     let result = await homey.app.Log.getLogs({ maxSizeKb: 900 });//BL._.take(, 1000);
     return result;
     //return homey.app.getLog();
   },
   async queryLogs({ homey, body }) {
-    if(!homey.app.Log) throw new Error(homey.__('bllNotStartedYet'));
+    if (!homey.app.Log) throw new Error(homey.__('bllNotStartedYet'));
     body.maxSizeKb = 900;
     let result = await homey.app.Log.getLogs(body);//BL._.take(, 1000);
     return result;

@@ -10,6 +10,7 @@ let homey;
 
 const fs = require('fs/promises');
 
+const SIMPLE_LOG = "Simple LOG";
 
 function isArray(a) {
   return !!a && a.constructor === Array;
@@ -23,13 +24,7 @@ function isArray(a) {
 // }
 
 // Adding a log entry to Timeline.
-function addLogToTimeline(data) {
-  try {
-    homey.notifications.createNotification({ excerpt: data }, (e, n) => { });
-  } catch (error) {
-    //homey.error(error);
-  }
-}
+
 
 //Limit amount of log entries to 2000.
 // function checkSurplusEntries() {
@@ -55,6 +50,30 @@ class simpleLog extends Homey.App {
     //else try{ require('inspector').open(9218, '0.0.0.0', false); } catch(ex){}
 
     this.Loggers = {};
+    
+    this.BackLog = this.homey.settings.get("BackLog");
+    if (!isArray(this.BackLog)) {
+      this.BackLog = [];
+    }
+    this.log(this.BackLog);
+
+    /// Conversion into the new BackLog model.
+    let loggingDB = this.homey.settings.get("loggingDB");
+    if (isArray(loggingDB)) {
+
+      this.addLogToDB('Mutating old Log to the new Simple (Sys) LOG', SIMPLE_LOG);
+
+      for (let i = 0; i < loggingDB.length; i++) {
+        const log = loggingDB[i];
+        this.addLogToDB(log.data, log.group, { timestamp: log.date });
+      }
+      await this.homey.settings.set("loggingDB", null);
+    }
+
+    this.addLogToDB('App "Simple (Sys) LOG" started.', SIMPLE_LOG);
+
+
+
 
     //try {
     let bl = await BL.init({
@@ -85,20 +104,6 @@ class simpleLog extends Homey.App {
       delete this.BackLog;
     }
 
-    let loggingDB = this.homey.settings.get("loggingDB");
-    if (isArray(loggingDB)) {
-
-      this.addLogToDB('Mutating old Log to the new Simple (Sys) LOG', "Simple LOG");
-
-      for (let i = 0; i < loggingDB.length; i++) {
-        const log = loggingDB[i];
-        this.addLogToDB(log.data, log.group, { timestamp: log.date });
-      }
-      await this.homey.settings.set("loggingDB", null);
-    }
-
-    this.addLogToDB('App "Simple (Sys) LOG" started.', "Simple LOG");
-
     if (false) {//&& process.env.DEBUG === '1') {
       let date = new Date();
       //await this.addLogToDB(date, 'DATE TEST');
@@ -110,13 +115,6 @@ class simpleLog extends Homey.App {
         }
       }
     }
-
-
-    loggingDB = this.homey.settings.get("loggingDB");
-    if (!isArray(loggingDB)) {
-      loggingDB = [];
-    }
-    //this.log(loggingDB);
 
     this.homey.settings.on('set', async (settingName) => {
       switch (settingName) {
@@ -142,11 +140,16 @@ class simpleLog extends Homey.App {
   }
 
   async addLogToDB(data, group, { severity, facility, timestamp = new Date(), source = 'log' } = {}) {
+    if(!timestamp)timestamp = new Date();
+    if(!source) source = 'log';
+
     let args = [data, group, {severity, facility, timestamp, source}];
+    
     if(this.Log) return await this._addLogToDB(...args);
     else {
       if(!this.BackLog) this.BackLog = [];
       this.BackLog.push(args);
+      await this.homey.settings.set("BackLog", this.BackLog);
     }
   }
 
@@ -175,14 +178,43 @@ class simpleLog extends Homey.App {
   }
 
   apiPutAddlog(data) {
-    console.log("API: PUT...");
-    console.log(data);
+    // console.log("API: PUT...");
+    // console.log(data);
     if (data && data.body && data.body.log) {
       this.addLogToDB(data.body.log, data.body.group);
     }
   }
   async apiClearLog() {
-    await this.Log.clearLog();
+    if(this.Log) return await this.Log.clearLog();
+    else return await this.clearBackLog();
+  }
+  async addLogToTimeline(data) {
+    try {
+      return await this.homey.notifications.createNotification({ excerpt: data }, (e, n) => { });
+    } catch (error) {
+      await this.addLogToDB(error, SIMPLE_LOG);
+      return false;
+    }
+  }
+
+  async clearBackLog(days) {
+    if(!days) this.BackLog = [];
+    else {
+      let date = new Date();
+      date=new Date(date.setDate(date.getDate()-days));
+      this.BackLog = this.BackLog.filter(x=>x[2].timestamp>date);
+    }
+    await this.homey.settings.set("BackLog", this.BackLog);
+  }
+
+  async getBackLog() {
+    return this.BackLog.map((x) => {
+      return {
+        data:x[0],
+        group:x[1],
+        date: x[2].timestamp
+      };
+    });
   }
 
 
@@ -190,38 +222,38 @@ class simpleLog extends Homey.App {
 
     // FLOW Action Card, Input_log
     let actionInputLog = this.homey.flow.getActionCard("Input_log");
-    actionInputLog.registerRunListener((args, state) => {
-      this.addLogToDB(args.log, undefined, args);
+    actionInputLog.registerRunListener(async (args, state) => {
+      await this.addLogToDB(args.log, undefined, args);
       return true;
     });
 
     // FLOW Action Card, Input_logtimeline
     let actionInputLogTimeline = this.homey.flow.getActionCard("Input_logtimeline");
-    actionInputLogTimeline.registerRunListener((args, state) => {
-      this.addLogToDB(args.log, undefined, args);
-      addLogToTimeline(args.log);
+    actionInputLogTimeline.registerRunListener(async (args, state) => {
+      await this.addLogToDB(args.log, undefined, args);
+      await this.addLogToTimeline(args.log);
       return true;
     });
 
     // FLOW Action Card, Input_timeline
     let actionInputTimeline = this.homey.flow.getActionCard("Input_timeline");
-    actionInputTimeline.registerRunListener((args, state) => {
-      addLogToTimeline(args.log);
+    actionInputTimeline.registerRunListener(async (args, state) => {
+      await this.addLogToTimeline(args.log);
       return true;
     });
 
     // FLOW Action Card, Input_group_log
     let actionInputGroupLog = this.homey.flow.getActionCard("Input_group_log");
-    actionInputGroupLog.registerRunListener((args, state) => {
-      this.addLogToDB(args.log, args.group, args);
+    actionInputGroupLog.registerRunListener(async (args, state) => {
+      await this.addLogToDB(args.log, args.group, args);
       return true;
     });
 
     // FLOW Action Card, Input_group_logtimeline
     let actionInputGroupLogTimeline = this.homey.flow.getActionCard("Input_group_logtimeline");
-    actionInputGroupLogTimeline.registerRunListener((args, state) => {
-      this.addLogToDB(args.log, args.group, args);
-      addLogToTimeline(`[${args.group}] ${args.log}`);
+    actionInputGroupLogTimeline.registerRunListener(async (args, state) => {
+      await this.addLogToDB(args.log, args.group, args);
+      await this.addLogToTimeline(`[${args.group}] ${args.log}`);
       return true;
     });
 
@@ -236,14 +268,17 @@ class simpleLog extends Homey.App {
     // FLOW Action Card, Clear_log
     let actionClearlog = this.homey.flow.getActionCard("Clear_log");
     actionClearlog.registerRunListener(async (args, state) => {
-      if(!this.Log)  throw new Error(this.homey.__('bllNotRunning'));
+      //if(!this.Log)  throw new Error(this.homey.__('bllNotRunning'));
+      if(!this.Log)  return await this.app.apiClearLog();
+      
       return await this.Log.clearLog();
     });
 
     // FLOW Action Card, get_log
     let actionGetLog = this.homey.flow.getActionCard("get_log");
     actionGetLog.registerRunListener(async (args, state) => {
-      if(!this.Log)  throw new Error(this.homey.__('bllNotRunning'));
+      //if(!this.Log)  throw new Error(this.homey.__('bllNotRunning'));
+      if (!this.Log) return homey.app.getLogFromBackLog();
       let s;
       try {
         s = await this.Log.getLogs(args);

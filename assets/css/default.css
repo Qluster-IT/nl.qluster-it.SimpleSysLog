@@ -41,6 +41,7 @@ input {
 }
 
 .checkbox-image {
+    -webkit-mask-image: none !important;
     mask-image: none !important;
     background-size: 20px !important;
     width: 24px !important;
@@ -50,10 +51,12 @@ input {
 }
 
 .logfile {
+    -webkit-user-select: all;
     user-select: all;
 }
 
 .logfile * {
+    -webkit-user-select: inherit;
     user-select: inherit;
 }
 
@@ -146,9 +149,9 @@ input {
 .ui-grid-menu-item > .fa-solid {
     font-size:20px;
 }
-.ui-grid-menu-items > li {
-    /* display:inline-block;  */
-}
+/* .ui-grid-menu-items > li {
+    display:inline-block;  
+} */
 .cancel-custom-date-range-filter-button {
     right: 16px !important;
 }

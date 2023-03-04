@@ -67,7 +67,7 @@ class simpleLog extends Homey.App {
         const log = loggingDB[i];
         this.addLogToDB(log.data, log.group, { timestamp: log.date });
       }
-      await this.homey.settings.set("loggingDB", null);
+      this.homey.settings.set("loggingDB", null);
     }
 
     this.addLogToDB('App "Simple (Sys) LOG" started.', SIMPLE_LOG);
@@ -90,6 +90,7 @@ class simpleLog extends Homey.App {
     this.buildCards();
 
     this.log('Simple (Sys) LOG onInit finished');
+    this.homey.log(this.homey.settings.get('___TEST___'));
     //await this.initRealApp();
   }
 
@@ -135,6 +136,7 @@ class simpleLog extends Homey.App {
   }
 
   async onUninit() {
+    //homey.settings.set('___TEST___', 'onUninit');
     //this.addLogToDB('SSL onUninit');
     if (this.Log) await this.Log.destroy();
   }
@@ -153,7 +155,7 @@ class simpleLog extends Homey.App {
         let tomuch = this.BackLog.length - DBLIMIT;
         this.BackLog.splice(0, tomuch);
       }
-      await this.homey.settings.set("BackLog", this.BackLog);
+      this.homey.settings.set("BackLog", this.BackLog);
     }
   }
 
@@ -208,7 +210,7 @@ class simpleLog extends Homey.App {
       date = new Date(date.setDate(date.getDate() - days));
       this.BackLog = this.BackLog.filter(x => x[2].timestamp > date);
     }
-    await this.homey.settings.set("BackLog", this.BackLog);
+    this.homey.settings.set("BackLog", this.BackLog);
   }
 
   async getBackLog() {

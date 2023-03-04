@@ -3,6 +3,7 @@ const { BL } = require("betterlogiclibrary");
 
 module.exports = {
   async getLogDownloadUrl({ homey, params: { returnType } }) {
+    //return ;
     if (!homey.app.Log) throw new Error(homey.__('bllNotStartedYet'));
     try {
       switch (returnType) {

@@ -14,7 +14,6 @@ module.exports = {
 
           const logs = await homey.app.Log.getLogs({ returnType: 'csv' });
           const link = await BL.getDownloadUrl({ text: logs.csv, contentType: 'text/csv', filename });
-          link.filenameEncoded = encodeURIComponent(link.filename);
           return link;
         }
           break;
@@ -26,7 +25,6 @@ module.exports = {
 
             const logs = await homey.app.Log.getLogs({ returnType: 'xlsx' });
             const link = await BL.getDownloadUrl({ base64: logs.xlsx, contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename });
-            link.filenameEncoded = encodeURIComponent(link.filename);
             return link;
           } catch (error) {
             homey.error(error);
@@ -40,7 +38,6 @@ module.exports = {
 
           const logs = await homey.app.Log.getLogs({ returnType: 'json' });
           const link = await BL.getDownloadUrl({ text: JSON.stringify(logs.logs), contentType: 'text/json', filename });
-          link.filenameEncoded = encodeURIComponent(link.filename);
           return link;
         }
       }

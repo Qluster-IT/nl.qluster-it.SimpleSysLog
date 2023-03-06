@@ -80,7 +80,8 @@ class simpleLog extends Homey.App {
       homey: this.homey,
       modules: [
         '_',
-        "datetime"
+        "datetime",
+        "json"
       ]
     });
     bl.ready.then(async () => {

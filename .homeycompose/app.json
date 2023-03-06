@@ -1,5 +1,6 @@
 {
   "id": "nl.nielsdeklerk.log",
+  "version": "2.9.24",
   "sdk": 3,
   "brandColor": "#BC274A",
   "name": {
@@ -14,7 +15,6 @@
     "large": "assets/images/large.png",
     "small": "assets/images/small.png"
   },
-  "version": "2.9.23",
   "compatibility": ">=5.0.0",
   "author": {
     "name": "Arie J. Godschalk",

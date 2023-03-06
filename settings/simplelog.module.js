@@ -506,18 +506,14 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
         $scope.downloadFile = async (type) => {
             let opt = { returnType: type };
             let downloadLink = await $bl.api("GET", "/getlogdownloadurl/" + type);
-
-            $http.get(downloadLink.localTestUrl).catch((err) => {
-                Homey.alert('catch' + err);
-                console.log('getting google');
-                console.log(err);
+            //let 
+            $http.get(downloadLink.localTestUrl).catch((err) => {                
+                if(x) $bl.openURL(downloadLink.cloudUrl);
             }).then((x) => {
-                Homey.alert('then');
-                console.log('x');
-                console.log(x);
+                if(x) $bl.openURL(downloadLink.localUrl);
             });
 
-            $bl.openURL(downloadLink.url + downloadLink.filenameEncoded);
+            //$bl.openURL(downloadLink.url + downloadLink.filenameEncoded);
         };
 
 

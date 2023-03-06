@@ -103,6 +103,7 @@ class simpleLog extends Homey.App {
         await this._addLogToDB(...backLog);
       }
       delete this.BackLog;
+      this.homey.settings.set("BackLog", null);
     }
 
     if (false) {//&& process.env.DEBUG === '1') {

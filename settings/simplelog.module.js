@@ -172,6 +172,8 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
             });
             await gridDefer.promise;
             
+            homey.ready();
+            
             if(!loaded) (loaded=true) & loadLogs();
 
             // $scope.$watch("vars.logCurrentPage", async (newValue, oldValue) => {

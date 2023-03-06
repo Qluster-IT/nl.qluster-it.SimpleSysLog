@@ -19,19 +19,20 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
         // this.b=true;
         // $rootScope.menu = {};
     }])
-    .controller("simplelogCtrl", ['$scope', '$rootScope', '$timeout', '$compile', '$q', '$bl', 'gridUtil', 'uiGridConstants', '$window', function ($scope, $rootScope, $timeout, $compile, $q, $bl, gridUtil, uiGridConstants, $window) {
+    .controller("simplelogCtrl", ['$scope', '$rootScope', '$timeout', '$compile', '$q', '$bl', 'gridUtil', 'uiGridConstants', '$window', '$http', function ($scope, $rootScope, $timeout, $compile, $q, $bl, gridUtil, uiGridConstants, $window, $http) {
         const vars = $rootScope.vars = $scope.vars = { logCurrentPage: 1, logPerPage: 100, logs: [] };
-        const view = $rootScope.view = $scope.view = { lang:'en', severities: {}, facilities: {}, id: 'log', settings: {} };
+        const view = $rootScope.view = $scope.view = { lang: 'en', severities: {}, facilities: {}, id: 'log', settings: {} };
         $scope.homey = $window.Homey;
+
 
         let ctrl = this;
         let homey = this.homey = $window.Homey;
         let Homey = homey;
         let __ = homey.__;
-        
+
         homey.getLanguage()
-        .then((x)=> console.log(x) & $scope.$apply(()=> $scope.view.lang = x))
-        .catch(x=> {});
+            .then((x) => console.log(x) & $scope.$apply(() => $scope.view.lang = x))
+            .catch(x => { });
 
         let gridDefer = $q.defer();
 
@@ -163,18 +164,18 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
                 view.settings = (x = x || {});
                 await gridDefer.promise;
                 if (view.settings.logGridState) {
-                    console.log(view.settings.logGridState);
+                    //console.log(view.settings.logGridState);
                     $scope.logGridApi.saveState.restore($scope, view.settings.logGridState);
                     // let state = $scope.logGridApi.saveState.save();
                     // view.settings.logGridState = state;
-                } else 
-                if(!loaded) (loaded=true) & loadLogs();
+                } else
+                    if (!loaded) (loaded = true) & loadLogs();
             });
             await gridDefer.promise;
-            
+
             homey.ready();
-            
-            if(!loaded) (loaded=true) & loadLogs();
+
+            if (!loaded) (loaded = true) & loadLogs();
 
             // $scope.$watch("vars.logCurrentPage", async (newValue, oldValue) => {
             //     let opt = {};
@@ -210,7 +211,7 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
             savePagination: false,
             saveGrouping: false,
             saveSelection: false,
-            gridMenuTitleFilter:Homey.__,
+            gridMenuTitleFilter: Homey.__,
 
             "data": "vars.logs",
             "onRegisterApi": function (gridApi, gridScope) {
@@ -432,11 +433,11 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
                     title: __('Save columns'),
                     action: function ($event) {
                         let state = $scope.logGridApi.saveState.save();
-                        if(state && state.columns) for (let i = 0; i < state.columns.length; i++) {
+                        if (state && state.columns) for (let i = 0; i < state.columns.length; i++) {
                             const column = state.columns[i];
                             for (let j = 0; j < column.filters.length; j++) {
                                 const filter = column.filters[j];
-                                if(filter.selectOptions) delete filter.selectOptions;
+                                if (filter.selectOptions) delete filter.selectOptions;
                             }
                             delete column.width;
                         }
@@ -473,8 +474,8 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
                     case 'app': opts.app = filter.term; break;
                     case 'message': opts.message = filter.term; break;
                     case 'timestamp':
-                        if(filter.terms[0] && !(filter.terms[0] instanceof Date )) filter.terms[0] = new Date(filter.terms[0]);
-                        if(filter.terms[1] && !(filter.terms[1] instanceof Date )) filter.terms[1] = new Date(filter.terms[1]);
+                        if (filter.terms[0] && !(filter.terms[0] instanceof Date)) filter.terms[0] = new Date(filter.terms[0]);
+                        if (filter.terms[1] && !(filter.terms[1] instanceof Date)) filter.terms[1] = new Date(filter.terms[1]);
                         opts.timestamp_fromUTC = filter.terms[0] ? new Date(Date.UTC(filter.terms[0].getFullYear(), filter.terms[0].getMonth(), filter.terms[0].getDate(), 0, 0, 0, 0)) : undefined;
                         opts.timestamp_toUTC = filter.terms[1] ? new Date(Date.UTC(filter.terms[1].getFullYear(), filter.terms[1].getMonth(), filter.terms[1].getDate(), 0, 0, 0, 0)) : undefined;
                         break;
@@ -505,6 +506,17 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
         $scope.downloadFile = async (type) => {
             let opt = { returnType: type };
             let downloadLink = await $bl.api("GET", "/getlogdownloadurl/" + type);
+
+            $http.get(downloadLink.localTestUrl).catch((err) => {
+                Homey.alert('catch' + err);
+                console.log('getting google');
+                console.log(err);
+            }).then((x) => {
+                Homey.alert('then');
+                console.log('x');
+                console.log(x);
+            });
+
             $bl.openURL(downloadLink.url + downloadLink.filenameEncoded);
         };
 

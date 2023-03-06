@@ -8,34 +8,38 @@ module.exports = {
     try {
       switch (returnType) {
         case 'csv': {
+          let filename = homey.app.settings && homey.app.settings.csvFilename ?
+            await BL.decode(homey.app.settings.csvFilename) :
+            "Logs " + BL.datetime.toString('datetimeshort') + '.csv';
+
           const logs = await homey.app.Log.getLogs({ returnType: 'csv' });
-          const link = await BL.getDownloadUrl({ text: logs.csv, contentType: 'text/csv' });
-          if (homey.app.settings && homey.app.settings.csvFilename) link.filename = await BL.decode(homey.app.settings.csvFilename);
-          else link.filename = "Logs " + BL.datetime.toString('datetimeshort') + '.csv';
-          //if(!a.filename.toLowerCase().endsWith('.csv')) a.filename+='.csv';
+          const link = await BL.getDownloadUrl({ text: logs.csv, contentType: 'text/csv', filename });
           link.filenameEncoded = encodeURIComponent(link.filename);
           return link;
         }
+          break;
         case 'xlsx': {
           try {
+            let filename = homey.app.settings && homey.app.settings.xlsxFilename ?
+              await BL.decode(homey.app.settings.xlsxFilename) :
+              "Logs " + BL.datetime.toString('datetimeshort') + '.xlsx';
+
             const logs = await homey.app.Log.getLogs({ returnType: 'xlsx' });
-            const test = logs.xlsx;//Buffer.from(logs.xlsx).toString('base64');
-            const link = await BL.getDownloadUrl({ base64: logs.xlsx, contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            if (homey.app.settings && homey.app.settings.xlsxFilename) link.filename = await BL.decode(homey.app.settings.xlsxFilename);
-            else link.filename = "Logs " + BL.datetime.toString('datetimeshort') + '.xlsx';
-            //if(!a.filename.toLowerCase().endsWith('.csv')) a.filename+='.csv';
+            const link = await BL.getDownloadUrl({ base64: logs.xlsx, contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename });
             link.filenameEncoded = encodeURIComponent(link.filename);
             return link;
           } catch (error) {
             homey.error(error);
           }
-        };
+        }
+          break;
         case 'json': {
+          let filename = homey.app.settings && homey.app.settings.jsonFilename ?
+            await BL.decode(homey.app.settings.jsonFilename) :
+            "Logs " + BL.datetime.toString('datetimeshort') + '.json';
+
           const logs = await homey.app.Log.getLogs({ returnType: 'json' });
-          const link = await BL.getDownloadUrl({ text: JSON.stringify(logs.logs), contentType: 'text/json' });
-          if (homey.app.settings && homey.app.settings.jsonFilename) link.filename = await BL.decode(homey.app.settings.jsonFilename);
-          else link.filename = "Logs " + BL.datetime.toString('datetimeshort') + '.json';
-          //if(!a.filename.toLowerCase().endsWith('.csv')) a.filename+='.csv';
+          const link = await BL.getDownloadUrl({ text: JSON.stringify(logs.logs), contentType: 'text/json', filename });
           link.filenameEncoded = encodeURIComponent(link.filename);
           return link;
         }
@@ -50,7 +54,7 @@ module.exports = {
   },
 
   async getLogs({ homey }) {
-    
+
     if (!homey.app.Log) return homey.app.getLogFromBackLog();
     //if(!homey.app.Log) throw new Error(homey.__('bllNotStartedYet'));
     let result = await homey.app.Log.getLogs({ maxSizeKb: 900 });//BL._.take(, 1000);

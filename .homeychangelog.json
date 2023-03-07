@@ -82,5 +82,8 @@
   },
   "2.9.25": {
     "en": "Building Version 3: Solved another startup bug."
+  },
+  "2.9.26": {
+    "en": "Building Version 3: Solved another potential HP2023 startup bug."
   }
 }

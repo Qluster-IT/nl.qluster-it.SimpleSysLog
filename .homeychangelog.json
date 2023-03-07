@@ -79,5 +79,8 @@
   },
   "2.9.24": {
     "en": "Building Version 3: Excel, csv and json can now be downloaded from anywhere, also remote: save and secure!"
+  },
+  "2.9.25": {
+    "en": "Building Version 3: Solved another startup bug."
   }
 }

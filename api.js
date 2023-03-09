@@ -13,6 +13,7 @@ module.exports = {
             "Logs " + BL.datetime.toString('datetimeshort') + '.csv';
 
           const logs = await homey.app.Log.getLogs({ returnType: 'csv' });
+          //return null;
           const link = await BL.getDownloadUrl({ text: logs.csv, contentType: 'text/csv', filename });
           return link;
         }

@@ -365,6 +365,19 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
                         '<div class="ui-grid-cell-contents">{{row.entity.timestamp_formatted || row.entity.timestamp}}</div>'
                 },
                 {
+                    field: 'message',
+                    displayName: 'Message',
+                    headerCellFilter: '__',
+                    width: '*'
+                },
+                {
+                    field: 'app',
+                    displayName: 'App',
+                    headerCellFilter: '__',
+                    width: '*',
+                    filter: { condition: filter }
+                },
+                {
                     field: 'severity',
                     displayName: 'Severity',
                     headerCellFilter: '__',
@@ -389,19 +402,6 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
                     },
                     cellTemplate:
                         '<div class="ui-grid-cell-contents">{{grid.appScope.view.facilities[row.entity.facility]}}</div>'
-                },
-                {
-                    field: 'app',
-                    displayName: 'App',
-                    headerCellFilter: '__',
-                    width: '*',
-                    filter: { condition: filter }
-                },
-                {
-                    field: 'message',
-                    displayName: 'Message',
-                    headerCellFilter: '__',
-                    width: '*'
                 }
 
             ],
@@ -536,6 +536,12 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
             view.isBusy = true;
             //let opt = { returnType: type };
             let downloadLink = await $bl.api("GET", "/getlogdownloadurl/" + type);
+            if(!downloadLink) {
+                $scope.$apply(() => {
+                    (view.isBusy = false);
+                });
+                return (view.isBusy = false);
+            }
             $http.get(downloadLink.localTestUrl).catch((err) => {
                 //if(x) $bl.openURL(downloadLink.cloudUrl);
                 if (err) $bl.openURL(downloadLink.cloudUrl);

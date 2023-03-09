@@ -134,6 +134,7 @@ class simpleLog extends Homey.App {
     if (!this.settings.csvFilename && (changed = true)) this.settings.csvFilename = "Logs_{[date('yyyy-MM-dd_HH-mm-ss')]}.csv";
     if (!this.settings.jsonFilename && (changed = true)) this.settings.jsonFilename = "Logs_{[date('yyyy-MM-dd_HH-mm-ss')]}.json";
     if (!this.settings.xlsxFilename && (changed = true)) this.settings.xlsxFilename = "Logs_{[date('yyyy-MM-dd_HH-mm-ss')]}.xlsx";
+    if (!this.settings.includeUtcInExcel && (changed = true)) this.settings.includeUtcInExcel = false;
     if (changed) this.homey.settings.set('settings', this.settings);
   }
 

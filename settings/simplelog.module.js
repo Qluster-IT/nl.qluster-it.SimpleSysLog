@@ -21,7 +21,7 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
     }])
     .controller("simplelogCtrl", ['$scope', '$rootScope', '$timeout', '$compile', '$q', '$bl', 'gridUtil', 'uiGridConstants', '$window', '$http', function ($scope, $rootScope, $timeout, $compile, $q, $bl, gridUtil, uiGridConstants, $window, $http) {
         const vars = $rootScope.vars = $scope.vars = { logCurrentPage: 1, logPerPage: 100, logs: [] };
-        const view = $rootScope.view = $scope.view = { lang: 'en', severities: {}, facilities: {}, id: 'log', settings: {} };
+        const view = $rootScope.view = $scope.view = { lang: 'en', severities: {}, facilities: {}, id: 'log', settings: {}, showTutorial:true };
         $scope.homey = $window.Homey;
 
 
@@ -44,12 +44,13 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
             Alert: 14,
             Flow: 16,
             Device: 17,
-            App: 18,
-            Local3: 19,
-            Local4: 20,
-            Local5: 21,
-            Local6: 22,
-            Local7: 23
+            App: 18
+            // ,
+            // Local3: 19,
+            // Local4: 20,
+            // Local5: 21,
+            // Local6: 22,
+            // Local7: 23
         };
 
         var severities = {
@@ -76,6 +77,7 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
             }
 
         async function loadLogs({ severity, facility, lastLog } = {}) {
+            view.isBusy = true;
             //let opt = { take: vars.logPerPage, skip: (vars.logCurrentPage - 1) * vars.logPerPage, timestampFormat: 'datetime' };
             let opt = _.cloneDeep(arguments[0]) || {};
             opt.timestampFormat = 'datetime';
@@ -87,6 +89,7 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
                 vars.logTotal = ($scope.logGridApi.pagination.getPage() - 1) * $scope.logGridOptions.paginationPageSize + (vars.logs = x.logs).length + 1;
                 $scope.logGridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
                 $scope.logGridOptions.totalItems = vars.logTotal;
+                view.isBusy = false;
             });
         }
 
@@ -405,6 +408,15 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
                     order: 0
                 },
                 {
+                    icon: 'fa-solid fa-arrows-rotate',
+                    title: __('Refresh Log'),
+                    action: function ($event) {
+                        
+                    $scope.refresh($scope.logQuery);
+                    },
+                    order: 2
+                },
+                {
                     icon: 'fa-solid fa-file-excel',
                     title: __('Export as Excel'),
                     action: function ($event) {
@@ -455,11 +467,13 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
 
 
         $scope.saveSettings = function () {
+            view.isBusy = true;
             $bl.set("settings", view.settings, async (x) => {
-                if ($scope.settingForm) {
-                    $scope.settingForm.$setSubmitted();
-                    $scope.settingForm.$setPristine();
+                if ($scope.settingsForm) {
+                    $scope.settingsForm.$setSubmitted();
+                    $scope.settingsForm.$setPristine();
                 }
+                view.isBusy = false;
             });
         };
 
@@ -504,13 +518,16 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
         //     });
         // };
         $scope.downloadFile = async (type) => {
-            let opt = { returnType: type };
+            view.isBusy = true;
+            //let opt = { returnType: type };
             let downloadLink = await $bl.api("GET", "/getlogdownloadurl/" + type);
-            //let 
-            $http.get(downloadLink.localTestUrl).catch((err) => {                
-                if(x) $bl.openURL(downloadLink.cloudUrl);
+            $http.get(downloadLink.localTestUrl).catch((err) => {
+                //if(x) $bl.openURL(downloadLink.cloudUrl);
+                if(err) $bl.openURL(downloadLink.cloudUrl);
+                view.isBusy = false;
             }).then((x) => {
                 if(x) $bl.openURL(downloadLink.localUrl);
+                view.isBusy = false;
             });
 
             //$bl.openURL(downloadLink.url + downloadLink.filenameEncoded);

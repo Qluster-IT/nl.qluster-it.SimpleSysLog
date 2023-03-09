@@ -26,6 +26,18 @@ body:not(.ng-scope)> .oldLogView {
     display: inline-block;
 }
 
+.busyOverlay {
+    position: fixed;
+    top:0;
+    left:0;
+    bottom:0;
+    right:0;
+    background-color:white;
+    opacity: 0.3;
+    z-index:2000;
+    
+}
+
 
 
 
@@ -154,4 +166,44 @@ input {
 } */
 .cancel-custom-date-range-filter-button {
     right: 16px !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Tutorial parts */
+
+.tutorial {
+    position: fixed;
+    top:32px;
+    left:0;
+    bottom:0;
+    right:0;
+    z-index:2000;    
+}
+
+.tutorial .overlay {
+    position: absolute;
+    top:0px;
+    left:0;
+    bottom:0;
+    right:0;
+    background-color:white;
+    opacity: 0.80;
+    z-index:-1;
+}
+.fa-icon-big {
+    font-size:48px;
 }

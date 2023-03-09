@@ -59,7 +59,7 @@
 					if (err) return Homey.alert(err);
 					if (!val) return;
 
-					Homey.api("GET", "/clearlog/", function(err) {
+					Homey.api("GET", "/clearlog/", function (err) {
 						show_log(true);
 					});
 					_id = -1;
@@ -173,8 +173,8 @@
 					// console.log('logging');
 					// console.log(logging);
 					let log = "";
-					if(force) savedisplayParameters();
-					if(logging) if (logging.length > _id) {
+					if (force) savedisplayParameters();
+					if (logging) if (logging.length > _id) {
 						for (i in logging) {
 							if (logging[i][1]) {
 								logging[i][1] = `[${logging[i][1]}]`;
@@ -285,7 +285,8 @@
 <body ng-controller="simplelogCtrl as simplelog" class="index h-100 overflow-hidden" ui-i18n="{{view.lang}}">
 	<div id="logView" class="oldLogView">
 		<div style="top: -1px;position: absolute;width: 300%;left: 0px;">
-			<strong style="width:90vw;display:block;padding:5px;box-sizing: border-box;" data-i18n="fullyEnableInstallBll">To fully enable the New Simple (Sys) LOG, all it's features and new interface, install the <a href="#" id="bllAppLink" onClick="openBllAppLink()">Better Logic Library app.</a></strong>
+			<strong style="width:90vw;display:block;padding:5px;box-sizing: border-box;" data-i18n="fullyEnableInstallBll">To fully enable the New Simple (Sys) LOG, all it's features and new interface, install the <a href="#" id="bllAppLink" onClick="openBllAppLink()">Better Logic Library
+					app.</a></strong>
 			<div>
 				<div style="display:block;">
 					<input type="checkbox" id="show_date" style="background-image: url(./date.png);" onClick="show_log(true)" class="checkbox-image" checked></input>
@@ -308,6 +309,25 @@
 	</div>
 
 	<div class="main-view overflow-hidden" ng-class="{rotated90:view.settings.rotated90}" ng-show="!view.id || view.id=='log'">
+		<div class="busyOverlay" ng-show="view.isBusy"></div>
+		<div class="tutorial fw-bold" ng-show="view.showTutorial">
+			<div class="overlay"></div>
+			<div class="position-absolute start-0 text-center text-primary" style="width:190px;">
+				<span class="fa-solid fa-icon-big fa-arrow-up"></span>
+				<span class="d-block">Drag the cloumns to re-position them.</span>
+			</div>
+			<div class="position-absolute end-0 h-100 w-100 text-success" style="margin-right: 32px;">
+				<span class="fa-solid fa-icon-big fa-arrow-up position-absolute end-0"></span>
+				<span class="d-block position-absolute w-50 bottom-50 start-50">Click here to open the view settings.</span>
+			</div>
+			<div class="position-absolute end-0 h-100 w-100 text-danger-emphasis">
+				<span class="fa-solid fa-icon-big fa-arrow-up position-absolute end-0"></span>
+				<span class="d-block position-absolute w-50 bottom-0 end-0 p-2">Click here to rotate the screen</span>
+			</div>
+			<div class="position-absolute start-0 bottom-0 ">
+				<div class="btn btn-default" data-i18n="Close" ng-click="view.showTutorial=false">Close</div>
+			</div>
+		</div>
 		<!-- <div class="position-fixed z-1" style="right:30px;top:5px;"><span class="fa-solid toggle-icon fa-file-csv" ng-click="downloadCSV();"></span></div> -->
 		<div class="position-fixed z-1" style="right:5px;top:5px;"><span class="fa-solid toggle-icon fa-rotate-right" ng-click="toggleSetting('rotated90');"></span></div>
 		<div class="d-flex flex-column overflow-hidden h-100">
@@ -316,6 +336,7 @@
 						<div class="col"><span class="fa-solid toggle-icon fa-rotate-right" ng-click="toggleSetting('rotated90');"></span></div>
 					</div>
 				</div> -->
+			<!-- <div class="flex-grow-0"><uib-progressbar value="55"></uib-progressbar></div> -->
 			<div class="flex-grow-1 overflow-y-auto">
 				<div ui-grid="logGridOptions" class="log-grid" ui-grid-auto-resize ui-grid-resize-columns ui-grid-selection ui-grid-pagination ui-grid-move-columns ui-grid-save-state> </div>
 				<!-- >ui-grid-exporter -->
@@ -343,7 +364,6 @@
 			</div>
 			<!-- <div uib-pagination total-items="vars.logTotal" ng-model="vars.logCurrentPage" items-per-page="vars.logPerPage"></div> -->
 		</div>
-		<div id="overlay"></div>
 	</div>
 	<div class="main-view overflow-hidden pb-5" ng-class="{rotated90:view.settings.rotated90}" ng-show="view.id=='settings'">
 		<form name="settingsForm" class="container">
@@ -358,15 +378,25 @@
 					<div class="col-12 form-group form-floating">
 						<input type="text" class="form-control hy-nostyle" name="xlsxFilename" placeholder="Excel filename (* BLL supported)" ng-model="view.settings.xlsxFilename" ng-model-options="{ debounce: 300 }" minlength="1" required="true" />
 						<label class="hy-nostyle" for="xlsxFilename" bl-translate>Excel filename (* BLL supported)</label>
+					</div>					
+					<div class="col-12 form-group form-check form-switch">
+						<input class="form-check-input hy-nostyle" type="checkbox" role="switch" id="includeUtcInExcel" checked ng-model="view.settings.includeUtcInExcel" />
+						<label class="form-check-label" for="includeUtcInExcel">Include UTC in Excel</label>
 					</div>
-					<div class="col-12 form-group form-floating">
+
+					<div class="col-12 form-group form-floating mb-2">
 						<input type="text" class="form-control hy-nostyle" name="csvFilename" placeholder="CSV filename (* BLL supported)" ng-model="view.settings.csvFilename" ng-model-options="{ debounce: 300 }" minlength="1" required="true" />
 						<label class="hy-nostyle" for="csvFilename" bl-translate>CSV filename (* BLL supported)</label>
 					</div>
-					<div class="col-12 form-group form-floating">
+
+					<div class="col-12 form-group form-floating mb-2">
 						<input type="text" class="form-control hy-nostyle" name="jsonFilename" placeholder="JSON filename (* BLL supported)" ng-model="view.settings.jsonFilename" ng-model-options="{ debounce: 300 }" minlength="1" required="true" />
 						<label class="hy-nostyle" for="jsonFilename" bl-translate>JSON filename (* BLL supported)</label>
-					</div>
+					</div>				
+					<!-- <div class="col-12 form-group form-floating">
+						<input type="text" class="form-control hy-nostyle" name="jsonFilename" placeholder="JSON filename (* BLL supported)" ng-model="view.settings.jsonFilename" ng-model-options="{ debounce: 300 }" minlength="1" required="true" />
+						<label class="hy-nostyle" for="jsonFilename" bl-translate>JSON filename (* BLL supported)</label>
+					</div> -->
 				</div>
 			</div>
 		</form>

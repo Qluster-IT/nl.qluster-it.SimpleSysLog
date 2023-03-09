@@ -14,6 +14,10 @@
 	<script type="text/javascript" src="../../net.i-dev.betterlogic/assets/js/angular.min.js"></script>
 	<script type="text/javascript" src="../../net.i-dev.betterlogic/assets/js/angular-animate.min.js"></script>
 	<script type="text/javascript" src="../../net.i-dev.betterlogic/assets/js/angular-touch.min.js"></script>
+	<!-- <script type="text/javascript" src="../../net.i-dev.betterlogic/assets/js/angular-translate.min.js"></script> -->
+	<script type="text/javascript" src="../../net.i-dev.betterlogic/assets/js/angular-dynamic-locale.js"></script>
+	<!-- <script type="text/javascript" src="../../net.i-dev.betterlogic/assets/js/i18n/angular-locale_nl-nl.js"></script> -->
+	<!-- <script type="text/javascript" src="../../net.i-dev.betterlogic/assets/js/i18n/angular-locale_en-gb.js"></script> -->
 
 
 	<script type="text/javascript" src="../../net.i-dev.betterlogic/assets/js/lodash.min.js"></script>
@@ -282,7 +286,7 @@
 
 </style>
 
-<body ng-controller="simplelogCtrl as simplelog" class="index h-100 overflow-hidden" ui-i18n="{{view.lang}}">
+<body ng-controller="simplelogCtrl as simplelog" class="index h-100 overflow-hidden" ng-class="{rotated90:view.settings.rotated90}" ui-i18n="{{view.lang}}">
 	<div id="logView" class="oldLogView">
 		<div style="top: -1px;position: absolute;width: 300%;left: 0px;">
 			<strong style="width:90vw;display:block;padding:5px;box-sizing: border-box;" data-i18n="fullyEnableInstallBll">To fully enable the New Simple (Sys) LOG, all it's features and new interface, install the <a href="#" id="bllAppLink" onClick="openBllAppLink()">Better Logic Library
@@ -308,24 +312,24 @@
 		</div>
 	</div>
 
-	<div class="main-view overflow-hidden" ng-class="{rotated90:view.settings.rotated90}" ng-show="!view.id || view.id=='log'">
+	<div class="main-view overflow-hidden" ng-show="!view.id || view.id=='log'">
 		<div class="busyOverlay" ng-show="view.isBusy"></div>
-		<div class="tutorial fw-bold" ng-show="view.showTutorial">
+		<div class="hints fw-bold" ng-show="view.showHints">
 			<div class="overlay"></div>
 			<div class="position-absolute start-0 text-center text-primary" style="width:190px;">
 				<span class="fa-solid fa-icon-big fa-arrow-up"></span>
-				<span class="d-block">Drag the cloumns to re-position them.</span>
+				<span class="d-block" data-i18n="Drag_the_cloumns">Drag the columns to re-position them</span>
 			</div>
 			<div class="position-absolute end-0 h-100 w-100 text-success" style="margin-right: 32px;">
 				<span class="fa-solid fa-icon-big fa-arrow-up position-absolute end-0"></span>
-				<span class="d-block position-absolute w-50 bottom-50 start-50">Click here to open the view settings.</span>
+				<span class="d-block position-absolute w-50 top-25 start-50 text-center" data-i18n="Click_open_view">Click here to open the view settings</span>
 			</div>
 			<div class="position-absolute end-0 h-100 w-100 text-danger-emphasis">
 				<span class="fa-solid fa-icon-big fa-arrow-up position-absolute end-0"></span>
-				<span class="d-block position-absolute w-50 bottom-0 end-0 p-2">Click here to rotate the screen</span>
+				<span class="d-block position-absolute w-50 top-50 end-0 p-2 text-center" data-i18n="Click_rotate_screen">Click here to rotate the screen</span>
 			</div>
-			<div class="position-absolute start-0 bottom-0 ">
-				<div class="btn btn-default" data-i18n="Close" ng-click="view.showTutorial=false">Close</div>
+			<div class="position-absolute start-0 bottom-0 m-2 ">
+				<div class="btn homey-button-primary-shadow btn-primary" data-i18n="Close" ng-click="closeHints()">Close</div>
 			</div>
 		</div>
 		<!-- <div class="position-fixed z-1" style="right:30px;top:5px;"><span class="fa-solid toggle-icon fa-file-csv" ng-click="downloadCSV();"></span></div> -->
@@ -365,7 +369,7 @@
 			<!-- <div uib-pagination total-items="vars.logTotal" ng-model="vars.logCurrentPage" items-per-page="vars.logPerPage"></div> -->
 		</div>
 	</div>
-	<div class="main-view overflow-hidden pb-5" ng-class="{rotated90:view.settings.rotated90}" ng-show="view.id=='settings'">
+	<div class="main-view overflow-hidden pb-5" ng-show="view.id=='settings'">
 		<form name="settingsForm" class="container">
 			<div class="text-end">
 				<span class="fa-solid fa-icon fa-book p-2 fs-3" ng-click="view.id='log'"></span>
@@ -378,7 +382,7 @@
 					<div class="col-12 form-group form-floating">
 						<input type="text" class="form-control hy-nostyle" name="xlsxFilename" placeholder="Excel filename (* BLL supported)" ng-model="view.settings.xlsxFilename" ng-model-options="{ debounce: 300 }" minlength="1" required="true" />
 						<label class="hy-nostyle" for="xlsxFilename" bl-translate>Excel filename (* BLL supported)</label>
-					</div>					
+					</div>
 					<div class="col-12 form-group form-check form-switch">
 						<input class="form-check-input hy-nostyle" type="checkbox" role="switch" id="includeUtcInExcel" checked ng-model="view.settings.includeUtcInExcel" />
 						<label class="form-check-label" for="includeUtcInExcel">Include UTC in Excel</label>
@@ -392,7 +396,7 @@
 					<div class="col-12 form-group form-floating mb-2">
 						<input type="text" class="form-control hy-nostyle" name="jsonFilename" placeholder="JSON filename (* BLL supported)" ng-model="view.settings.jsonFilename" ng-model-options="{ debounce: 300 }" minlength="1" required="true" />
 						<label class="hy-nostyle" for="jsonFilename" bl-translate>JSON filename (* BLL supported)</label>
-					</div>				
+					</div>
 					<!-- <div class="col-12 form-group form-floating">
 						<input type="text" class="form-control hy-nostyle" name="jsonFilename" placeholder="JSON filename (* BLL supported)" ng-model="view.settings.jsonFilename" ng-model-options="{ debounce: 300 }" minlength="1" required="true" />
 						<label class="hy-nostyle" for="jsonFilename" bl-translate>JSON filename (* BLL supported)</label>
@@ -402,7 +406,7 @@
 		</form>
 		<div class="main-buttons position-fixed bottom-0 w-100">
 			<!-- <div class="homey-button-primary-shadow-full">Save</div> -->
-			<button type="button" class="btn btn-primary homey-button-primary-shadow-full" ng-click="settingsForm.$valid && settingsForm.$dirty ? saveSettings() : null;" ng-disabled="!settingsForm.$valid || !settingsForm.$dirty" bl-translate>Save</button>
+			<button type="button" class="btn homey-button-primary-shadow-full btn-primary" ng-click="settingsForm.$valid && settingsForm.$dirty ? saveSettings() : null;" ng-disabled="!settingsForm.$valid || !settingsForm.$dirty" bl-translate>Save</button>
 		</div>
 	</div>
 
@@ -411,7 +415,7 @@
 			<div class="modal-header">
 				<p class="modal-title well custom-date-filter-header">
 				<span class="custom-date-filter-title-text">
-					{{ custom.title }}
+					{{ custom.title }} {{custom.filterDate | date:'dd MMMM yyyy'}}
 				</span>
 				</p>
 			</div>
@@ -434,16 +438,13 @@
 		
 					<div class="row modal-footer custom-date-filter-submit-buttons-row">		
 						<div class="custom-date-filter-submit-buttons-div col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1">			
-							<button class="btn btn-success btn-lg custom-date-filter-submit-button"
-									type="submit">
-								Apply
-							</button>
+							<!-- <button class="btn hy-nostyle btn-success btn-lg custom-date-filter-submit-button" -->
+								<button class="btn homey-button-primary-shadow btn-lg custom-date-filter-submit-button"
+									type="submit" data-i18n="Apply" bl-translate>Apply</button>
 			
 							<button type="button"
-									class="btn btn-warning btn-lg custom-date-filter-cancel-button"
-									ng-click="custom.cancelDateFilter()">
-								Cancel
-							</button>  
+									class="btn homey-button-secondary-shadow btn-lg custom-date-filter-cancel-button"
+									ng-click="custom.cancelDateFilter()" data-i18n="Cancel" bl-translate>Cancel</button>  
 						</div>  
 					</div>  
 				</form>	

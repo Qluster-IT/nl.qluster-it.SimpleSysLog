@@ -1,3 +1,4 @@
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
 /* * {
     box-sizing: border-box;
 } */
@@ -72,7 +73,7 @@ input {
     user-select: inherit;
 }
 
-.rotated90 {
+.rotated90>* {
     transform: rotate(90deg);
     position: absolute;
     top: -100vw;
@@ -117,12 +118,20 @@ input {
 .modal-backdrop {
     opacity: 0.2 !important;
 }
-.uib-day>.btn  {
+.modal-dialog {
+    margin-top:50px;
+    text-align:center;
+
+}
+.uib-daypicker>table {
+    display:inline-block;
+}
+/* .uib-day>.btn  {
     padding:5px 2px!important;
 }
 .uib-day .btn.active {
     font-weight: bold!important;
-}
+} */
 .ui-grid-pager-control-input  {
     padding:4px 4px;
 }
@@ -160,6 +169,7 @@ input {
 }
 .ui-grid-menu-item > .fa-solid {
     font-size:20px;
+    width:22px;
 }
 /* .ui-grid-menu-items > li {
     display:inline-block;  
@@ -183,18 +193,19 @@ input {
 
 
 
+
 /* Tutorial parts */
 
-.tutorial {
+.hints {
     position: fixed;
-    top:32px;
+    top:30px;
     left:0;
     bottom:0;
     right:0;
-    z-index:2000;    
+    z-index:1;    
 }
 
-.tutorial .overlay {
+.hints .overlay {
     position: absolute;
     top:0px;
     left:0;

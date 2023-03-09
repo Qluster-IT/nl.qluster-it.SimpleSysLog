@@ -85,5 +85,8 @@
   },
   "2.9.26": {
     "en": "Building Version 3: Solved another potential HP2023 startup bug."
+  },
+  "2.9.27": {
+    "en": "Building Version 3: Added a Show Hints in the Settings which is displayed the first time you open the App Settings."
   }
 }

@@ -11,28 +11,36 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
     'ui.grid.pagination',
     'ui.grid.selection',
     'ui.grid.moveColumns',
-    'ui.grid.saveState'
+    'ui.grid.saveState',
+    'tmh.dynamicLocale',
     //'ui.grid.exporter'
 ])
+
     .run(['$rootScope', function ($rootScope) {
         // $rootScope.a = true;
         // this.b=true;
         // $rootScope.menu = {};
     }])
-    .controller("simplelogCtrl", ['$scope', '$rootScope', '$timeout', '$compile', '$q', '$bl', 'gridUtil', 'uiGridConstants', '$window', '$http', function ($scope, $rootScope, $timeout, $compile, $q, $bl, gridUtil, uiGridConstants, $window, $http) {
+    .controller("simplelogCtrl", ['$scope', '$rootScope', '$timeout', '$compile', '$q', '$bl', 'gridUtil', 'uiGridConstants', '$window', '$http', 'tmhDynamicLocale', function ($scope, $rootScope, $timeout, $compile, $q, $bl, gridUtil, uiGridConstants, $window, $http, tmhDynamicLocale) {
         const vars = $rootScope.vars = $scope.vars = { logCurrentPage: 1, logPerPage: 100, logs: [] };
-        const view = $rootScope.view = $scope.view = { lang: 'en', severities: {}, facilities: {}, id: 'log', settings: {}, showTutorial:true };
+        const view = $rootScope.view = $scope.view = { lang: 'en', severities: {}, facilities: {}, id: 'log', settings: {}, showHints: false };
         $scope.homey = $window.Homey;
+        
 
-
+        let localeSetter = tmhDynamicLocale;
         let ctrl = this;
         let homey = this.homey = $window.Homey;
         let Homey = homey;
         let __ = homey.__;
 
+        $bl.init(homey, $scope);
+
         homey.getLanguage()
-            .then((x) => console.log(x) & $scope.$apply(() => $scope.view.lang = x))
+            .then((x) => console.log(x) & $scope.$apply(() => ($scope.view.lang = x) & localeSetter.set(x)))
             .catch(x => { });
+
+        $bl.get('showHints', (x) => view.showHints = (x !== undefined && x !== null ? x : true));
+        //view.showHints = true;
 
         let gridDefer = $q.defer();
 
@@ -161,7 +169,6 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
 
         ctrl.init = async () => {
             //$scope.__ = Homey.__;
-            $bl.init(homey, $scope);
             let loaded = false;
             $bl.get("settings", async (x) => {
                 view.settings = (x = x || {});
@@ -411,8 +418,8 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
                     icon: 'fa-solid fa-arrows-rotate',
                     title: __('Refresh Log'),
                     action: function ($event) {
-                        
-                    $scope.refresh($scope.logQuery);
+
+                        $scope.refresh($scope.logQuery);
                     },
                     order: 2
                 },
@@ -456,6 +463,14 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
                         console.log(state);
                         view.settings.logGridState = state;
                         $scope.saveSettings();
+                    },
+                    order: 200
+                },
+                {
+                    icon: 'fa-solid fa-info',
+                    title: __('Show hints'),
+                    action: function ($event) {
+                        view.showHints = true;
                     },
                     order: 201
                 }
@@ -523,14 +538,19 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
             let downloadLink = await $bl.api("GET", "/getlogdownloadurl/" + type);
             $http.get(downloadLink.localTestUrl).catch((err) => {
                 //if(x) $bl.openURL(downloadLink.cloudUrl);
-                if(err) $bl.openURL(downloadLink.cloudUrl);
+                if (err) $bl.openURL(downloadLink.cloudUrl);
                 view.isBusy = false;
             }).then((x) => {
-                if(x) $bl.openURL(downloadLink.localUrl);
+                if (x) $bl.openURL(downloadLink.localUrl);
                 view.isBusy = false;
             });
 
             //$bl.openURL(downloadLink.url + downloadLink.filenameEncoded);
+        };
+
+        $scope.closeHints = function () {
+            view.showHints = false;
+            $bl.set('showHints', false);
         };
 
 
@@ -670,14 +690,14 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
 
 
     }])
-    .controller('customGridDateFilterModalCtrl', ['$scope', '$rootScope', '$log', '$uibModalInstance', 'filterName', 'minDate', 'maxDate', 'filterDate', function ($scope, $rootScope, $log, $uibModalInstance, filterName, minDate, maxDate, filterDate) {
+    .controller('customGridDateFilterModalCtrl', ['$scope', '$rootScope', '$log', '$uibModalInstance', 'filterName', 'minDate', 'maxDate', 'filterDate', '$bl', function ($scope, $rootScope, $log, $uibModalInstance, filterName, minDate, maxDate, filterDate, $bl) {
 
         var ctrl = this;
 
         //console.log('filter name', filterName);
         //console.log('min date', minDate, 'max date', maxDate);
 
-        ctrl.title = 'Select Dates ' + filterName + '...';
+        ctrl.title = $bl.__('Select Date ' + filterName) + ' ';
         ctrl.minDate = minDate;
         ctrl.maxDate = maxDate;
         ctrl.customDateFilterForm;

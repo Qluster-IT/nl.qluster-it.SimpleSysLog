@@ -23,5 +23,19 @@
     "JSON filename (* BLL supported)":"JSON-bestandsnaam (* BLL ondersteund)",
     "Save":"Opslaan",
     
-    "Reset columns":"Herstel kolommen"
+    "Reset columns":"Herstel kolommen",
+
+
+    "Refresh Log":"Log vernieuwen",
+    "Include UTC in Excel":"Neem UTC op in Excel",
+    "Close":"Sluiten",
+    "Show hints":"Toon hints",
+    "Apply":"Toepassen",
+    "Cancel":"Annuleren",
+    "Select Date From":"Selecteer datum vanaf: ",
+    "Select Date To":"Selecteer datum t/m: ",
+
+    "Drag_the_cloumns":"Versleep de kolommen om ze opnieuw te positioneren",
+    "Click_open_view":"Klik hier om de weergave-instellingen te openen",
+    "Click_rotate_screen":"Klik hier om het scherm te draaien"
 }

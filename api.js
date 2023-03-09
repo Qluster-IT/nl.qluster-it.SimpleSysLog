@@ -33,7 +33,8 @@ module.exports = {
         }
           break;
         case 'json': {
-          let filename = homey.app.settings && homey.app.settings.jsonFilename ?
+          let filename = false && //LET OP! false weg
+            homey.app.settings && homey.app.settings.jsonFilename ?
             await BL.decode(homey.app.settings.jsonFilename) :
             "Logs " + BL.datetime.toString('datetimeshort') + '.json';
 

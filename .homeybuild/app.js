@@ -96,6 +96,7 @@ class simpleLog extends Homey.App {
   }
 
   async initRealApp() {
+    this.log('Simple (Sys) LOG initRealApp');
     this.Log = new Log({ filePath: '/userdata/' });
     await this.Log.init();
     if (this.BackLog) {
@@ -107,7 +108,7 @@ class simpleLog extends Homey.App {
       this.homey.settings.set("BackLog", null);
     }
 
-    if (false) {//&& process.env.DEBUG === '1') {
+    if (true) {//&& process.env.DEBUG === '1') {
       let date = new Date();
       //await this.addLogToDB(date, 'DATE TEST');
       //date = new Date(date.setMonth(date.getMonth()-8));

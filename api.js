@@ -3,7 +3,8 @@ const { BL } = require("betterlogiclibrary");
 
 module.exports = {
   async getLogDownloadUrl({ homey, params: { returnType } }) {
-    //return ;
+    let callback = (link)=> {homey.api.realtime('downloadFileReady', link)};
+    
     if (!homey.app.Log) throw new Error(homey.__('bllNotStartedYet'));
     try {
       switch (returnType) {
@@ -14,7 +15,7 @@ module.exports = {
 
           const logs = await homey.app.Log.getLogs({ returnType: 'csv' });
           //return null;
-          const link = await BL.getDownloadUrl({ text: logs.csv, contentType: 'text/csv', filename });
+          const link = await BL.getDownloadUrl({ text: logs.csv, contentType: 'text/csv', filename, callback });
           return link;
         }
           break;
@@ -25,7 +26,7 @@ module.exports = {
               "Logs " + BL.datetime.toString('datetimeshort') + '.xlsx';
 
             const logs = await homey.app.Log.getLogs({ returnType: 'xlsx' });
-            const link = await BL.getDownloadUrl({ buffer: logs.xlsx, contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename });
+            const link = await BL.getDownloadUrl({ buffer: logs.xlsx, contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename, callback });
             return link;
           } catch (error) {
             homey.error(error);
@@ -39,7 +40,11 @@ module.exports = {
             "Logs " + BL.datetime.toString('datetimeshort') + '.json';
 
           const logs = await homey.app.Log.getLogs({ returnType: 'json' });
-          const link = await BL.getDownloadUrl({ text: JSON.stringify(logs.logs), contentType: 'text/json', filename });
+          let d = Date.now();
+          BL.homey.log(d)
+          const link = await BL.getDownloadUrl({ text: JSON.stringify(logs.logs), contentType: 'text/json', filename, callback });
+          BL.homey.log(Date.now() - d);
+          
           return link;
         }
       }

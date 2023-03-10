@@ -181,6 +181,17 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
                 else if (!loaded) (loaded = true) & loadLogs();
             });
             await gridDefer.promise;
+            Homey.on('downloadFileReady', (link)=> {
+                console.log('downloadFileReady');
+                $http.get(link.localTestUrl).catch((err) => {
+                    //if(x) $bl.openURL(link.cloudUrl);
+                    if (err) $bl.openURL(link.cloudUrl);
+                    view.isBusy = false;
+                }).then((x) => {
+                    if (x) $bl.openURL(link.localUrl);
+                    view.isBusy = false;
+                });
+            });
 
             homey.ready();
 
@@ -541,14 +552,15 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
                 });
                 return (view.isBusy = false);
             }
-            $http.get(downloadLink.localTestUrl).catch((err) => {
-                //if(x) $bl.openURL(downloadLink.cloudUrl);
-                if (err) $bl.openURL(downloadLink.cloudUrl);
-                view.isBusy = false;
-            }).then((x) => {
-                if (x) $bl.openURL(downloadLink.localUrl);
-                view.isBusy = false;
-            });
+
+            // $http.get(downloadLink.localTestUrl).catch((err) => {
+            //     //if(x) $bl.openURL(downloadLink.cloudUrl);
+            //     if (err) $bl.openURL(downloadLink.cloudUrl);
+            //     view.isBusy = false;
+            // }).then((x) => {
+            //     if (x) $bl.openURL(downloadLink.localUrl);
+            //     view.isBusy = false;
+            // });
 
             //$bl.openURL(downloadLink.url + downloadLink.filenameEncoded);
         };

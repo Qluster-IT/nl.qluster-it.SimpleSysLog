@@ -67,7 +67,7 @@ class simpleLog extends Homey.App {
         const log = loggingDB[i];
         this.addLogToDB(log.data, log.group, { timestamp: log.date });
       }
-      this.homey.settings.set("loggingDB", null);
+      this.homey.settings.unset("loggingDB");
     }
 
     this.addLogToDB('App "Simple (Sys) LOG" started.', SIMPLE_LOG);
@@ -105,13 +105,22 @@ class simpleLog extends Homey.App {
         await this._addLogToDB(...backLog);
       }
       delete this.BackLog;
-      this.homey.settings.set("BackLog", null);
+      this.homey.settings.unset("BackLog");
     }
+
     
-    BL.homey.settings.unset('__test__'); 
-    BL.homey.settings.unset('__test2__'); 
+    // BL.homey.settings.unset('settings.view.settings'); 
+    // BL.homey.settings.unset('LogBooks'); 
+    // BL.homey.settings.unset('LogBook_2023/03/10'); 
+    // BL.homey.settings.unset('LogBook_2023/03/09'); 
+    // BL.homey.settings.unset('asd'); 
+    //BL.homey.settings.unset('loggingDB'); 
+
+    //BL.homey.log(BL.homey.settings.getKeys());
+    // BL.homey.settings.unset('__test__'); 
+    // BL.homey.settings.unset('__test2__'); 
     
-    BL.homey.settings.unset('LogApps');
+    // BL.homey.settings.unset('LogApps');
     if(false) { //TEST
       let __test__ = BL.homey.settings.get('__test__');
       if(__test__ && __test__.logs)__test__.logs.pop();
@@ -124,7 +133,7 @@ class simpleLog extends Homey.App {
       let date = new Date();
       //await this.addLogToDB(date, 'DATE TEST');
       //date = new Date(date.setMonth(date.getMonth()-8));
-      for (let i = 0; i < 1; i++) {
+      for (let i = 0; i < 50; i++) {
         date = new Date(date.setDate(date.getDate() - 1));
         for (let i = 0; i < 100; i++) {
           await this.addLogToDB('Test message voor here is this', undefined, { severity: i === 0 ? 4 : undefined, timestamp: date });

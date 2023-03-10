@@ -25,7 +25,7 @@ module.exports = {
               "Logs " + BL.datetime.toString('datetimeshort') + '.xlsx';
 
             const logs = await homey.app.Log.getLogs({ returnType: 'xlsx' });
-            const link = await BL.getDownloadUrl({ base64: logs.xlsx, contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename });
+            const link = await BL.getDownloadUrl({ buffer: logs.xlsx, contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename });
             return link;
           } catch (error) {
             homey.error(error);

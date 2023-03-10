@@ -25,7 +25,7 @@ module.exports = {
               "Logs " + BL.datetime.toString('datetimeshort') + '.xlsx';
 
             const logs = await homey.app.Log.getLogs({ returnType: 'xlsx' });
-            const link = await BL.getDownloadUrl({ base64: logs.xlsx, contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename });
+            const link = await BL.getDownloadUrl({ buffer: logs.xlsx, contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename });
             return link;
           } catch (error) {
             homey.error(error);
@@ -33,7 +33,7 @@ module.exports = {
         }
           break;
         case 'json': {
-          let filename = false && //LET OP! false weg
+          let filename = //false && //LET OP! false weg
             homey.app.settings && homey.app.settings.jsonFilename ?
             await BL.decode(homey.app.settings.jsonFilename) :
             "Logs " + BL.datetime.toString('datetimeshort') + '.json';

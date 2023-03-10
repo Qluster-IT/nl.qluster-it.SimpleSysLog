@@ -107,8 +107,20 @@ class simpleLog extends Homey.App {
       delete this.BackLog;
       this.homey.settings.set("BackLog", null);
     }
+    
+    BL.homey.settings.unset('__test__'); 
+    BL.homey.settings.unset('__test2__'); 
+    
+    BL.homey.settings.unset('LogApps');
+    if(false) { //TEST
+      let __test__ = BL.homey.settings.get('__test__');
+      if(__test__ && __test__.logs)__test__.logs.pop();
+      for (let i = 0; i < 100; i++) {        
+          BL.homey.settings.set('__test2__', "asd");  
+      }
+    }
 
-    if (true) {//&& process.env.DEBUG === '1') {
+    if (false) {//&& process.env.DEBUG === '1') {
       let date = new Date();
       //await this.addLogToDB(date, 'DATE TEST');
       //date = new Date(date.setMonth(date.getMonth()-8));
@@ -126,6 +138,8 @@ class simpleLog extends Homey.App {
       }
     });
     this.getSettings();
+    
+    this.log('Simple (Sys) LOG initRealApp finished');
   }
 
   getSettings() {

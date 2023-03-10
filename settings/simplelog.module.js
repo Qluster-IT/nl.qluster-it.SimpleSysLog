@@ -85,6 +85,7 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
             }
 
         async function loadLogs({ severity, facility, lastLog } = {}) {
+            if(view.isBusy ) return ;//view.isBusy;
             view.isBusy = true;
             //let opt = { take: vars.logPerPage, skip: (vars.logCurrentPage - 1) * vars.logPerPage, timestampFormat: 'datetime' };
             let opt = _.cloneDeep(arguments[0]) || {};
@@ -93,6 +94,7 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
             if (!opt.skip) opt.skip = ($scope.logGridApi.pagination.getPage() - 1) * $scope.logGridOptions.paginationPageSize;
 
             if (lastLog) opt.lastLog = lastLog;
+                        
             await $bl.api("POST", "/", opt, (x) => {
                 vars.logTotal = ($scope.logGridApi.pagination.getPage() - 1) * $scope.logGridOptions.paginationPageSize + (vars.logs = x.logs).length + 1;
                 $scope.logGridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
@@ -174,18 +176,15 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
                 view.settings = (x = x || {});
                 await gridDefer.promise;
                 if (view.settings.logGridState) {
-                    //console.log(view.settings.logGridState);
-                    $scope.logGridApi.saveState.restore($scope, view.settings.logGridState);
-                    // let state = $scope.logGridApi.saveState.save();
-                    // view.settings.logGridState = state;
-                } else
-                    if (!loaded) (loaded = true) & loadLogs();
+                    $scope.logGridApi.saveState.restore($scope, view.settings.logGridState);                    
+                } 
+                else if (!loaded) (loaded = true) & loadLogs();
             });
             await gridDefer.promise;
 
             homey.ready();
 
-            if (!loaded) (loaded = true) & loadLogs();
+            //if (!loaded) (loaded = true) & loadLogs();
 
             // $scope.$watch("vars.logCurrentPage", async (newValue, oldValue) => {
             //     let opt = {};

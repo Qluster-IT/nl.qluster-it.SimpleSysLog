@@ -484,6 +484,7 @@ class Log {
                 
             this.logs.unshift(opts);
             //this.logs = BL._.orderBy(this.logs, 'timestamp', 'desc');
+            
             this.logger.shift();
             p.resolve();
 

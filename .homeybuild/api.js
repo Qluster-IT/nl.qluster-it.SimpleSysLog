@@ -3,10 +3,10 @@ const { BL } = require("betterlogiclibrary");
 
 module.exports = {
   async getLogDownloadUrl({ homey, params: { returnType } }) {
-    let callback = (link)=> {
+    let callback = (link) => {
       homey.api.realtime('downloadFileReady', link)
     };
-    
+
     if (!homey.app.Log) throw new Error(homey.__('bllNotStartedYet'));
     try {
       switch (returnType) {
@@ -15,9 +15,11 @@ module.exports = {
             await BL.decode(homey.app.settings.csvFilename) :
             "Logs " + BL.datetime.toString('datetimeshort') + '.csv';
 
-          const logs = await homey.app.Log.getLogs({ returnType: 'csv' });
-          //return null;
-          const link = await BL.getDownloadUrl({ text: logs.csv, contentType: 'text/csv', filename, callback });
+          const link = await BL.getDownloadUrl({ contentType: 'text/csv', filename });
+          homey.setTimeout(async () => {
+            const logs = await homey.app.Log.getLogs({ returnType: 'csv' });
+            await BL.setDownloadUrl({ link, text: logs.csv, callback });
+          },0);
           return link;
         }
           break;
@@ -27,8 +29,11 @@ module.exports = {
               await BL.decode(homey.app.settings.xlsxFilename) :
               "Logs " + BL.datetime.toString('datetimeshort') + '.xlsx';
 
-            const logs = await homey.app.Log.getLogs({ returnType: 'xlsx' });
-            const link = await BL.getDownloadUrl({ buffer: logs.xlsx, contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename, callback });
+            const link = await BL.getDownloadUrl({ contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename });
+            homey.setTimeout(async () => {
+              const logs = await homey.app.Log.getLogs({ returnType: 'xlsx' });
+              await BL.setDownloadUrl({ link, buffer: logs.xlsx, callback });
+            }, 0);
             return link;
           } catch (error) {
             homey.error(error);
@@ -38,15 +43,14 @@ module.exports = {
         case 'json': {
           let filename = //false && //LET OP! false weg
             homey.app.settings && homey.app.settings.jsonFilename ?
-            await BL.decode(homey.app.settings.jsonFilename) :
-            "Logs " + BL.datetime.toString('datetimeshort') + '.json';
+              await BL.decode(homey.app.settings.jsonFilename) :
+              "Logs " + BL.datetime.toString('datetimeshort') + '.json';
 
-          const logs = await homey.app.Log.getLogs({ returnType: 'json' });
-          let d = Date.now();
-          BL.homey.log(d)
-          const link = await BL.getDownloadUrl({ text: JSON.stringify(logs.logs), contentType: 'text/json', filename, callback });
-          BL.homey.log(Date.now() - d);
-          
+          const link = await BL.getDownloadUrl({ contentType: 'text/json', filename });
+          homey.setTimeout(async () => {
+            const logs = await homey.app.Log.getLogs({ returnType: 'json' });
+            await BL.setDownloadUrl({ link, text: JSON.stringify(logs.logs), callback });
+          },0);
           return link;
         }
       }

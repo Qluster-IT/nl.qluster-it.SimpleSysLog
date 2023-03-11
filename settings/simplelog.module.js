@@ -184,7 +184,7 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
             Homey.on('downloadFileReady', (link)=> {
                 console.log('downloadFileReady');
                 if(!view.downloadFileLink || view.downloadFileLink.token !== link.token) return;
-                $http.get(link.localTestUrl).catch((err) => {
+                $http.get(link.localTestUrl, {timeout:1000}).catch((err) => {
                     //if(x) $bl.openURL(link.cloudUrl);
                     if (err) $bl.openURL(link.cloudUrl);
                     view.isBusy = false;

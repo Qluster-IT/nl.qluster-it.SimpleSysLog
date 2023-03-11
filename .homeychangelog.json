@@ -97,5 +97,8 @@
   },
   "2.9.30": {
     "en": "Building Version 3: Memory improvement."
+  },
+  "2.9.31": {
+    "en": "Building Version 3: Exportfiles can now take longer than the 10 seconds timeout of App Settings. Also, groups, messages and files can have Emoticons, new lines (enters/returns), etc."
   }
 }

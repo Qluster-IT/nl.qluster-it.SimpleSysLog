@@ -3,7 +3,9 @@ const { BL } = require("betterlogiclibrary");
 
 module.exports = {
   async getLogDownloadUrl({ homey, params: { returnType } }) {
-    let callback = (link)=> {homey.api.realtime('downloadFileReady', link)};
+    let callback = (link)=> {
+      homey.api.realtime('downloadFileReady', link)
+    };
     
     if (!homey.app.Log) throw new Error(homey.__('bllNotStartedYet'));
     try {

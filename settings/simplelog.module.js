@@ -23,7 +23,7 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
     }])
     .controller("simplelogCtrl", ['$scope', '$rootScope', '$timeout', '$compile', '$q', '$bl', 'gridUtil', 'uiGridConstants', '$window', '$http', 'tmhDynamicLocale', function ($scope, $rootScope, $timeout, $compile, $q, $bl, gridUtil, uiGridConstants, $window, $http, tmhDynamicLocale) {
         const vars = $rootScope.vars = $scope.vars = { logCurrentPage: 1, logPerPage: 100, logs: [] };
-        const view = $rootScope.view = $scope.view = { lang: 'en', severities: {}, facilities: {}, id: 'log', settings: {}, showHints: false };
+        const view = $rootScope.view = $scope.view = { lang: 'en', severities: {}, facilities: {}, id: 'log', settings: {}, showHints: false, downloadFileLink:undefined };
         $scope.homey = $window.Homey;
         
 
@@ -183,6 +183,7 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
             await gridDefer.promise;
             Homey.on('downloadFileReady', (link)=> {
                 console.log('downloadFileReady');
+                if(!view.downloadFileLink || view.downloadFileLink.token !== link.token) return;
                 $http.get(link.localTestUrl).catch((err) => {
                     //if(x) $bl.openURL(link.cloudUrl);
                     if (err) $bl.openURL(link.cloudUrl);
@@ -551,7 +552,8 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
                     (view.isBusy = false);
                 });
                 return (view.isBusy = false);
-            }
+            } else 
+            view.downloadFileLink = downloadLink;
 
             // $http.get(downloadLink.localTestUrl).catch((err) => {
             //     //if(x) $bl.openURL(downloadLink.cloudUrl);

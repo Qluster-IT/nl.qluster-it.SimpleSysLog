@@ -224,11 +224,11 @@ class Log {
             let opts = BL._.cloneDeep(arguments[0]) || {};
             if (opts.timestamp_fromUTC) {
                 opts.timestamp_fromUTC = new Date(opts.timestamp_fromUTC);
-                opts.timestamp_fromUTC = BL.datetime.fromUTC(opts.timestamp_fromUTC);
+                opts.timestamp_fromUTC = BL.datetime.asLocale(opts.timestamp_fromUTC);
             }
             if (opts.timestamp_toUTC) {
                 opts.timestamp_toUTC = new Date(opts.timestamp_toUTC);
-                opts.timestamp_toUTC = BL.datetime.fromUTC(opts.timestamp_toUTC);
+                opts.timestamp_toUTC = BL.datetime.asLocale(opts.timestamp_toUTC);
                 let t = new Date(opts.timestamp_toUTC.setDate(opts.timestamp_toUTC.getDate() + 1));
                 opts.timestamp_toUTC = t;//new Date(t.setMilliseconds(t.getMilliseconds() - 1));
             }

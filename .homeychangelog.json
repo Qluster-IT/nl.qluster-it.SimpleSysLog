@@ -102,6 +102,6 @@
     "en": "Building Version 3: Exportfiles can now take longer than the 10 seconds timeout of App Settings. Also, groups, messages and files can have Emoticons, new lines (enters/returns), etc."
   },
   "2.9.32": {
-    "en": "Building Version 3: Exportfiles now work through Cloud also (it will check one second if local is available, else send you through the cloud url)."
+    "en": "Building Version 3: Exportfiles now also works through the Cloud (it will check one second if local is available, else send you through the cloud to the file)."
   }
 }

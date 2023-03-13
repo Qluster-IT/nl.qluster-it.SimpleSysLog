@@ -536,6 +536,7 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
         };
 
         // $scope.downloadCSV = async () => {
+            
         //     let opt = { returnType:'csv' };
         //     await $bl.api("POST", "/", opt, (x) => {
         //         var encodedUri = encodeURI("data:text/csv;charset=utf-8," + x.csv);
@@ -554,17 +555,6 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
                 return (view.isBusy = false);
             } else 
             view.downloadFileLink = downloadLink;
-
-            // $http.get(downloadLink.localTestUrl).catch((err) => {
-            //     //if(x) $bl.openURL(downloadLink.cloudUrl);
-            //     if (err) $bl.openURL(downloadLink.cloudUrl);
-            //     view.isBusy = false;
-            // }).then((x) => {
-            //     if (x) $bl.openURL(downloadLink.localUrl);
-            //     view.isBusy = false;
-            // });
-
-            //$bl.openURL(downloadLink.url + downloadLink.filenameEncoded);
         };
 
         $scope.closeHints = function () {

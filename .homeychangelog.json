@@ -109,5 +109,8 @@
   },
   "2.9.34": {
     "en": "Building Version 3: Hidden Automater flowcards for the Include-Logging Script."
+  },
+  "2.9.35": {
+    "en": "Building Version 3: Log can now also be retrieved in flows as CSV (base64), JSON (base64) and Excel (base64)."
   }
 }

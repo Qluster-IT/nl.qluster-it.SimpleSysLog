@@ -28,9 +28,27 @@
           }
         },
         {
+          "id": "json_base64",
+          "label": {
+            "en": "JSON (base64)"
+          }
+        },
+        {
           "id": "csv",
           "label": {
             "en": "CSV"
+          }
+        },
+        {
+          "id": "csv_base64",
+          "label": {
+            "en": "CSV (base64)"
+          }
+        },
+        {
+          "id": "xlsx_base64",
+          "label": {
+            "en": "Excel (base64)"
           }
         }
       ]

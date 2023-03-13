@@ -327,7 +327,7 @@ class simpleLog extends Homey.App {
       try {
         if(!this.Log)  throw new Error(this.homey.__('bllNotRunning'));
         s = await this.Log.getLogs(args);
-        s = s.logs ? JSON.stringify(s.logs) : s.csv;
+        s = s.json || s.csv || s.xlsx;
       } catch (error) {
         throw new Error(error);
       }

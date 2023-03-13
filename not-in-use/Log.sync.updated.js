@@ -399,7 +399,7 @@ class Log {
                             sheet: 'Log',// + BL.datetime.toString('datetime'),
                             stickyRowsCount: 1,
                             buffer: true,
-                            dateFormat: 'yyyy-mm-ddThh:mm:ss'
+                            //dateFormat: 'yyyy-mm-ddThh:mm:ss'
                         });
                         result.xlsx = xlsxBuffer;
                     } catch (error) {

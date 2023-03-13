@@ -1,50 +1,303 @@
 {
   "id": "Automater",
-  "deprecated":true,
+  "deprecated": true,
   "title": {
     "en": "Automater",
     "nl": "Automater"
   },
   "titleFormatted": {
-    "en": "Automater; name: [[group]], update: [[update]], updateCards: [[updateCards]]",
-    "nl": "Automater; naam: [[group]], update: [[update]], updateCards: [[updateCards]]"
-},
+    "en": "Automater; name: [[group]], update: [[update]], updateCards: [[updateCards]], errorSeverity: [[errorSeverity]], triggerSeverity: [[triggerSeverity]], conditionSeverity: [[conditionSeverity]], actionSeverity: [[actionSeverity]]"
+  },
   "args": [
     {
-        "name": "group",
-        "type": "text",
-        "placeholder":{
-          "en":"Name",
-          "nl":"Naam"
-        },
-        "title":{
-          "en":"Name",
-          "nl":"Naam"
-        }
+      "name": "group",
+      "type": "text",
+      "placeholder": {
+        "en": "Name",
+        "nl": "Naam"
+      },
+      "title": {
+        "en": "Name",
+        "nl": "Naam"
+      }
     },
     {
-        "name": "update",
-        "type": "checkbox",
-        "placeholder":{
-          "en":"Update",
-          "nl":"Update"
-        },
-        "title":{
-          "en":"Update",
-          "nl":"Update"
-        }
+      "name": "update",
+      "type": "checkbox",
+      "placeholder": {
+        "en": "Update",
+        "nl": "Update"
+      },
+      "title": {
+        "en": "Update",
+        "nl": "Update"
+      },
+      "value":true
     },
     {
-        "name": "updateCards",
-        "type": "checkbox",
-        "placeholder":{
-          "en":"Update Cards",
-          "nl":"Update Cards"
+      "name": "updateCards",
+      "type": "checkbox",
+      "placeholder": {
+        "en": "Update Cards",
+        "nl": "Update kaarten"
+      },
+      "title": {
+        "en": "Update Cards",
+        "nl": "Update kaarten"
+      },
+      "value":true
+    },
+    {
+      "type": "dropdown",
+      "required": false,
+      "name": "errorSeverity",
+      "placeholder": {
+        "en": "Severity",
+        "nl": "Niveau"
+      },
+      "title": {
+        "en": "Severity",
+        "nl": "Niveau"
+      },
+      "values": [
+        {
+          "id": "0",
+          "label": {
+            "en": "Emergency"
+          }
         },
-        "title":{
-          "en":"Update Cards",
-          "nl":"Update Cards"
+        {
+          "id": "1",
+          "label": {
+            "en": "Alert"
+          }
+        },
+        {
+          "id": "2",
+          "label": {
+            "en": "Critical"
+          }
+        },
+        {
+          "id": "3",
+          "label": {
+            "en": "Error"
+          }
+        },
+        {
+          "id": "4",
+          "label": {
+            "en": "Warning"
+          }
+        },
+        {
+          "id": "5",
+          "label": {
+            "en": "Notice"
+          }
+        },
+        {
+          "id": "6",
+          "label": {
+            "en": "Informational"
+          }
+        },
+        {
+          "id": "7",
+          "label": {
+            "en": "Debug"
+          }
         }
+      ]
+    },
+    {
+      "type": "dropdown",
+      "required": false,
+      "name": "triggerSeverity",
+      "placeholder": {
+        "en": "Severity",
+        "nl": "Niveau"
+      },
+      "title": {
+        "en": "Severity",
+        "nl": "Niveau"
+      },
+      "values": [
+        {
+          "id": "0",
+          "label": {
+            "en": "Emergency"
+          }
+        },
+        {
+          "id": "1",
+          "label": {
+            "en": "Alert"
+          }
+        },
+        {
+          "id": "2",
+          "label": {
+            "en": "Critical"
+          }
+        },
+        {
+          "id": "3",
+          "label": {
+            "en": "Error"
+          }
+        },
+        {
+          "id": "4",
+          "label": {
+            "en": "Warning"
+          }
+        },
+        {
+          "id": "5",
+          "label": {
+            "en": "Notice"
+          }
+        },
+        {
+          "id": "6",
+          "label": {
+            "en": "Informational"
+          }
+        },
+        {
+          "id": "7",
+          "label": {
+            "en": "Debug"
+          }
+        }
+      ]
+    },
+    {
+      "type": "dropdown",
+      "required": false,
+      "name": "conditionSeverity",
+      "placeholder": {
+        "en": "Severity",
+        "nl": "Niveau"
+      },
+      "title": {
+        "en": "Severity",
+        "nl": "Niveau"
+      },
+      "values": [
+        {
+          "id": "0",
+          "label": {
+            "en": "Emergency"
+          }
+        },
+        {
+          "id": "1",
+          "label": {
+            "en": "Alert"
+          }
+        },
+        {
+          "id": "2",
+          "label": {
+            "en": "Critical"
+          }
+        },
+        {
+          "id": "3",
+          "label": {
+            "en": "Error"
+          }
+        },
+        {
+          "id": "4",
+          "label": {
+            "en": "Warning"
+          }
+        },
+        {
+          "id": "5",
+          "label": {
+            "en": "Notice"
+          }
+        },
+        {
+          "id": "6",
+          "label": {
+            "en": "Informational"
+          }
+        },
+        {
+          "id": "7",
+          "label": {
+            "en": "Debug"
+          }
+        }
+      ]
+    },
+    {
+      "type": "dropdown",
+      "required": false,
+      "name": "actionSeverity",
+      "placeholder": {
+        "en": "Severity",
+        "nl": "Niveau"
+      },
+      "title": {
+        "en": "Severity",
+        "nl": "Niveau"
+      },
+      "values": [
+        {
+          "id": "0",
+          "label": {
+            "en": "Emergency"
+          }
+        },
+        {
+          "id": "1",
+          "label": {
+            "en": "Alert"
+          }
+        },
+        {
+          "id": "2",
+          "label": {
+            "en": "Critical"
+          }
+        },
+        {
+          "id": "3",
+          "label": {
+            "en": "Error"
+          }
+        },
+        {
+          "id": "4",
+          "label": {
+            "en": "Warning"
+          }
+        },
+        {
+          "id": "5",
+          "label": {
+            "en": "Notice"
+          }
+        },
+        {
+          "id": "6",
+          "label": {
+            "en": "Informational"
+          }
+        },
+        {
+          "id": "7",
+          "label": {
+            "en": "Debug"
+          }
+        }
+      ]
     }
   ]
 }

@@ -103,5 +103,8 @@
   },
   "2.9.32": {
     "en": "Building Version 3: Exportfiles now also works through the Cloud (it will check one second if local is available, else send you through the cloud to the file)."
+  },
+  "2.9.33": {
+    "en": "Building Version 3: Hidden Automater flowcards for the Include Logging Script."
   }
 }

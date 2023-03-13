@@ -1,0 +1,26 @@
+{
+  "id": "Automater_log",
+  "deprecated":true,
+  "title": {
+    "en": "Add Something to the Simple Log",
+    "nl": "Voeg iets toe aan de Simple Log"
+  },
+  "titleFormatted": {
+    "en": "[[log]]",
+    "nl": "[[log]]"
+},
+  "args": [
+    {
+        "name": "log",
+        "type": "text",
+        "placeholder":{
+          "en":"log",
+          "nl":"log"
+        },
+        "title":{
+          "en":"log",
+          "nl":"log"
+        }
+    }
+  ]
+}

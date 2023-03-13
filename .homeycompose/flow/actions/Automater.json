@@ -1,0 +1,50 @@
+{
+  "id": "Automater",
+  "deprecated":true,
+  "title": {
+    "en": "Automater",
+    "nl": "Automater"
+  },
+  "titleFormatted": {
+    "en": "Automater; name: [[group]], update: [[update]], updateCards: [[updateCards]]",
+    "nl": "Automater; naam: [[group]], update: [[update]], updateCards: [[updateCards]]"
+},
+  "args": [
+    {
+        "name": "group",
+        "type": "text",
+        "placeholder":{
+          "en":"Name",
+          "nl":"Naam"
+        },
+        "title":{
+          "en":"Name",
+          "nl":"Naam"
+        }
+    },
+    {
+        "name": "update",
+        "type": "checkbox",
+        "placeholder":{
+          "en":"Update",
+          "nl":"Update"
+        },
+        "title":{
+          "en":"Update",
+          "nl":"Update"
+        }
+    },
+    {
+        "name": "updateCards",
+        "type": "checkbox",
+        "placeholder":{
+          "en":"Update Cards",
+          "nl":"Update Cards"
+        },
+        "title":{
+          "en":"Update Cards",
+          "nl":"Update Cards"
+        }
+    }
+  ]
+}

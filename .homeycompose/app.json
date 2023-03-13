@@ -1,6 +1,6 @@
 {
   "id": "nl.nielsdeklerk.log",
-  "version": "2.9.32",
+  "version": "2.9.33",
   "sdk": 3,
   "brandColor": "#BC274A",
   "name": {
@@ -78,7 +78,7 @@
     "url": "https://bitbucket.org/QlusterIT/nl.qluster-it.simplelog/issues"
   },
   "athomForumDiscussionId": 3052,
-  "homeyCommunityTopicId": 146,
+  "homeyCommunityTopicId": 77533,
   "api": {
     "getLogDownloadUrl": {
       "method": "GET",

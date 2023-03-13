@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "nl.nielsdeklerk.log",
-  "version": "2.9.32",
+  "version": "2.9.33",
   "sdk": 3,
   "brandColor": "#BC274A",
   "name": {
@@ -79,7 +79,7 @@
     "url": "https://bitbucket.org/QlusterIT/nl.qluster-it.simplelog/issues"
   },
   "athomForumDiscussionId": 3052,
-  "homeyCommunityTopicId": 146,
+  "homeyCommunityTopicId": 77533,
   "api": {
     "getLogDownloadUrl": {
       "method": "GET",
@@ -106,6 +106,82 @@
   },
   "flow": {
     "actions": [
+      {
+        "id": "Automater",
+        "deprecated": true,
+        "title": {
+          "en": "Automater",
+          "nl": "Automater"
+        },
+        "titleFormatted": {
+          "en": "Automater; name: [[group]], update: [[update]], updateCards: [[updateCards]]",
+          "nl": "Automater; naam: [[group]], update: [[update]], updateCards: [[updateCards]]"
+        },
+        "args": [
+          {
+            "name": "group",
+            "type": "text",
+            "placeholder": {
+              "en": "Name",
+              "nl": "Naam"
+            },
+            "title": {
+              "en": "Name",
+              "nl": "Naam"
+            }
+          },
+          {
+            "name": "update",
+            "type": "checkbox",
+            "placeholder": {
+              "en": "Update",
+              "nl": "Update"
+            },
+            "title": {
+              "en": "Update",
+              "nl": "Update"
+            }
+          },
+          {
+            "name": "updateCards",
+            "type": "checkbox",
+            "placeholder": {
+              "en": "Update Cards",
+              "nl": "Update Cards"
+            },
+            "title": {
+              "en": "Update Cards",
+              "nl": "Update Cards"
+            }
+          }
+        ]
+      },
+      {
+        "id": "Automater_log",
+        "deprecated": true,
+        "title": {
+          "en": "Add Something to the Simple Log",
+          "nl": "Voeg iets toe aan de Simple Log"
+        },
+        "titleFormatted": {
+          "en": "[[log]]",
+          "nl": "[[log]]"
+        },
+        "args": [
+          {
+            "name": "log",
+            "type": "text",
+            "placeholder": {
+              "en": "log",
+              "nl": "log"
+            },
+            "title": {
+              "en": "log",
+              "nl": "log"
+            }
+          }
+        ]
+      },
       {
         "id": "Clear_log",
         "title": {
@@ -721,36 +797,6 @@
                 "id": "18",
                 "label": {
                   "en": "App"
-                }
-              },
-              {
-                "id": "19",
-                "label": {
-                  "en": "Local3"
-                }
-              },
-              {
-                "id": "20",
-                "label": {
-                  "en": "Local4"
-                }
-              },
-              {
-                "id": "21",
-                "label": {
-                  "en": "Local5"
-                }
-              },
-              {
-                "id": "22",
-                "label": {
-                  "en": "Local6"
-                }
-              },
-              {
-                "id": "23",
-                "label": {
-                  "en": "Local7"
                 }
               }
             ]

@@ -184,6 +184,7 @@ class simpleLog extends Homey.App {
       }
       this.homey.settings.set("BackLog", this.BackLog);
     }
+    return true;
   }
 
   /**
@@ -252,6 +253,15 @@ class simpleLog extends Homey.App {
 
 
   buildCards() {
+
+     // FLOW Action Card, Input_group_log
+     let actionAutomater_log = this.homey.flow.getActionCard("Automater_log");
+     actionAutomater_log.registerRunListener(async (args, state) => {
+       await this.addLogToDB(args.log, args.group, args);
+       return true;
+     });
+
+     
 
     // FLOW Action Card, Input_log
     let actionInputLog = this.homey.flow.getActionCard("Input_log");

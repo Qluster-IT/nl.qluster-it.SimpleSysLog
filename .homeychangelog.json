@@ -118,5 +118,11 @@
   },
   "2.9.37": {
     "en": "Building Version 3: Excel default date format can now be set through BLL."
+  },
+  "2.9.38": {
+    "en": "Building Version 3: Fixed Syslog client message and app."
+  },
+  "2.9.39": {
+    "en": "Building Version 3: Bugfixed getLogCard."
   }
 }

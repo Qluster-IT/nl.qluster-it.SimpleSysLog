@@ -146,6 +146,30 @@
 				  }
 				}
 			  ]
+		},
+		
+		{
+			"id": "transport",
+			"type": "dropdown",
+			"label": {
+				"en": "Transport mode"
+			},
+			"value" : "tcp",
+			"placeholder" : "",
+			"values": [
+				{
+					"id": "tcp",
+					"label": {
+					  "en": "tcp"
+					}
+				},
+				{
+				  "id": "udp",
+				  "label": {
+					"en": "udp"
+				  }
+				}
+			  ]
 		}
 	]
 }

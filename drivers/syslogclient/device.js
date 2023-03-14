@@ -105,7 +105,7 @@ class SyslogClientDevice extends Homey.Device {
 		this.appName = this.settings.appName;
 		var syslogOpts = {
 			syslogHostname: settings.hostname,
-			transport: (settings.transport === 'UDP') ? syslog.Transport.Udp : syslog.Transport.Tcp,
+			transport: (settings.transport === 'udp') ? syslog.Transport.Udp : syslog.Transport.Tcp,
 			//facility: settings.syslogfacility,
 			//severity: settings.syslogseverity,
 			port: settings.port,
@@ -150,7 +150,7 @@ class SyslogClientDevice extends Homey.Device {
 		let fn = () => {
 			if (this.settings.useRfc5424) syslogClient.log(message, opts, (error) => {
 				console.log(error);
-			}); else syslogClient.log(this.appName + " " + message, opts, (error) => {
+			}); else syslogClient.log(opts.app + " " + message, opts, (error) => {
 				console.log(error);
 			});
 		};

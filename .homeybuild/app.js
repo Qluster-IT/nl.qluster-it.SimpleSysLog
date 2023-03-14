@@ -326,9 +326,13 @@ class simpleLog extends Homey.App {
       let s;
       try {
         if(!this.Log)  throw new Error(this.homey.__('bllNotRunning'));
-        s = await this.Log.getLogs(args);
-        s = s.json || s.csv || s.xlsx;
+        const t = await this.Log.getLogs(args);
+        s = t.json || t.csv || t.xlsx;
+        if(!s) {
+          this.homey.log('s is empty, t is ', t, ', args is ', args);
+        }
       } catch (error) {
+        this.homey.error(error);
         throw new Error(error);
       }
       return { "log": s };

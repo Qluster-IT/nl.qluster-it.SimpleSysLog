@@ -121,5 +121,8 @@
   },
   "2.9.38": {
     "en": "Building Version 3: Fixed Syslog client message and app."
+  },
+  "2.9.39": {
+    "en": "Building Version 3: Solving an issue."
   }
 }

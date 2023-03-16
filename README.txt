@@ -23,7 +23,8 @@ The folowing API endpoints can be used:
 - Add log data:
   PUT /api/app/nl.nielsdeklerk.log/addlog/
   Content-Type: application/json
-  {"log": "Test 1,2,3", "group": "TEST"}
+  {"log": "Test 1,2,3", "group": "TEST", "severity" : 6, "facility": 5, "timestamp":new Date() }
+  * Only log is required, the rest is optional.
 - Clear log
   GET /api/app/nl.nielsdeklerk.log/clearlog
 - 

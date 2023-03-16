@@ -124,5 +124,8 @@
   },
   "2.9.39": {
     "en": "Building Version 3: Solving an issue."
+  },
+  "2.9.40": {
+    "en": "Building Version 3: API call PUT /addlog can now include severity, facility and timestamp in its json body properties."
   }
 }

@@ -215,7 +215,7 @@ class simpleLog extends Homey.App {
     // console.log("API: PUT...");
     // console.log(data);
     if (data && data.body && data.body.log) {
-      this.addLogToDB(data.body.log, data.body.group);
+      this.addLogToDB(data.body.log, data.body.group, data.body);
     }
   }
   async apiClearLog() {

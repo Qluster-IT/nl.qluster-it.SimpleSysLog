@@ -2,20 +2,24 @@
 
 const { BL } = require('betterlogiclibrary');
 const Homey = require('homey');
-const Syslog = require('./../../lib/simple-syslog-server') ;
+const Syslog = require('./../../lib/simple-syslog-server');
 
 class SyslogServerDevice extends Homey.Device {
 
 	async onInit() {
-		
+
 		await this.startSysLogServer();
 	}
 
-	// async onUninit() {
-	// 	for (const severity of Object.values(this.homey.app.Loggers)) 
-	// 		if(severity && severity.length>0 && severity.indexOf(this)>-1) severity.splice(severity.indexOf(this),1);			
+	async onUninit() {
+		for (const severity of Object.values(this.homey.app.Loggers))
+			if (severity && severity.length > 0 && severity.indexOf(this) > -1) severity.splice(severity.indexOf(this), 1);
 
-	// }
+		if (this.server) {
+			this.server.close();
+			delete this.server;
+		}
+	}
 
 	async onSettings({ oldSettings, newSettings, changedKeys }) {
 		await this.startSysLogServer(newSettings);
@@ -25,18 +29,18 @@ class SyslogServerDevice extends Homey.Device {
 	// startsysLog
 	async startSysLogServer(settings) {
 		//if(!settings) settings = this.settings;
-		
-		this.settings = settings || this.getSettings();
-		
 
-		if(this.server) {
+		this.settings = settings || this.getSettings();
+
+
+		if (this.server) {
 			this.server.close();
 			delete this.server;
 		}
 		// Create our syslog server with the given transport
-		const socktype = 'TCP'; // or 'TCP' or 'TLS'
+		const socktype = this.settings.protocol === 'udp' ? 'UDP' : 'TCP'; //'UDP' or 'TCP' or 'TLS'
 		const address = ''; // Any
-		const port = 514;
+		const port = this.settings.port;
 		this.server = Syslog(socktype);
 
 		// State Information
@@ -46,8 +50,8 @@ class SyslogServerDevice extends Homey.Device {
 
 		this.server.on('msg', data => {
 			//console.log('message received (%i) from %s:%i\n%o\n', ++this.count, data.address, data.port, data);
-			if (data && this.settings.log_syslogs === true) this.homey.app.addLogToDB(data.msg, data.tag, { facility:data.facilityCode, severity:data.severityCode, timestamp:data.timestamp, hostname:data.hostname, source:'syslogserver' });
-		
+			if (data && this.settings.log_syslogs === true) this.homey.app.addLogToDB(data.msg, data.tag, { facility: data.facilityCode, severity: data.severityCode, timestamp: data.timestamp, hostname: data.hostname, source: 'syslogserver' });
+
 			/*
 			message received (1) from ::ffff:192.168.1.13:59666
 			{

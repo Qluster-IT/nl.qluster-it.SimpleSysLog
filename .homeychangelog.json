@@ -133,5 +133,8 @@
   },
   "2.9.42": {
     "en": "Building Version 3: You can now create a Syslog Server device, turn Simple Log into a Syslog for network devices."
+  },
+  "2.9.43": {
+    "en": "Building Version 3: You can now create a Syslog Server device, turn Simple Log into a Syslog for network devices (improved settings)."
   }
 }

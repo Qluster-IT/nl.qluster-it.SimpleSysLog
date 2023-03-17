@@ -8,8 +8,8 @@
                 "nl": "Voeg iets toe aan de Syslog"              
             },
             "titleFormatted": {
-                "en": "Add [[message]] to the Syslog with level [[severity]] of [[facility]]",
-                "nl": "Voeg [[message]] toe aan de Syslog met niveau [[severity]] van [[facility]]"
+                "en": "Add [[message]] to the Syslog under [[group]] with level [[severity]] of [[facility]]",
+                "nl": "Voeg [[message]] toe aan de Syslog onder [[group]] met niveau [[severity]] van [[facility]]"
             },
             "args": [
                 {
@@ -23,6 +23,15 @@
                       "en":"Message",
                       "nl":"Bericht"
                     }
+                },
+                {
+                  "name": "group",
+                  "required": false,
+                  "type": "text",
+                  "placeholder": {
+                    "en": "App/group",
+                    "nl": "App/groep"
+                  }
                 },
                 {
                     "type": "dropdown",

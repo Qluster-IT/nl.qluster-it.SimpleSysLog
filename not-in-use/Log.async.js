@@ -189,7 +189,7 @@ class Log {
                 const logBook = this.LogBooks[logBookKey];
                 if (this.stream) this.stream.write(`f:${JSON.stringify(logBook.id)},d:${logBook.date.getTime()}\n`);
             }
-            this.writeLine({ message: "Removed log data older then " + days + " Day(s)", app: "Simple LOG" });
+            this.writeLine({ message: "Removed log data older then " + days + " Day(s)", app: "Simple Log" });
         }
 
         else {
@@ -219,7 +219,7 @@ class Log {
                 logBook.destroy();
             }
             await this.init();
-            this.writeLine({ message: "Cleared all logging data", app: "Simple LOG" });
+            this.writeLine({ message: "Cleared all logging data", app: "Simple Log" });
         }
     }
 

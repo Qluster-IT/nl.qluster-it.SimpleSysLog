@@ -61,7 +61,7 @@
       "title": {
         "en": "Log"
       },
-      "example": "[\n  {\n    \"data\": \"Cleared all logging data\",\n    \"group\": \"Simple LOG\",\n    \"date\": \"2022-12-29T09:38:30.249Z\"\n  },\n  {\n    \"data\": \"badkamer: 60\",\n    \"date\": \"2022-12-29T09:39:32.172Z\"\n  },"
+      "example": "[\n  {\n    \"data\": \"Cleared all logging data\",\n    \"group\": \"Simple Log\",\n    \"date\": \"2022-12-29T09:38:30.249Z\"\n  },\n  {\n    \"data\": \"badkamer: 60\",\n    \"date\": \"2022-12-29T09:39:32.172Z\"\n  },"
     }
   ]
 }

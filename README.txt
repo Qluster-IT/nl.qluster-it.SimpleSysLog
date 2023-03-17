@@ -1,9 +1,11 @@
-The new and improved Simple (Sys) LOG.
+The new and improved Simple (Sys) Log.
 
 This app makes it possible to add logging and/or notifications to your Flows.
 Optionally a log can have, next to it's message, an App/group, severity and facility.
 
 You can also connect to multiple Syslog-clients to a) send specific message and b) have all default messages (with certain severities) send there.
+
+And last but not least, you can create Syslog Server device, to let other Syslog clients connect to, which will be written into the Simple (Sys) Log.
 
 This new version saves the logs into files and not in memory, granting a much larger log then before.
 

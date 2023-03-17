@@ -9,7 +9,7 @@ const DBLIMIT = 2000;
 let homey;
 
 
-const SIMPLE_LOG = "Simple LOG";
+const SIMPLE_LOG = "Simple Log";
 
 function isArray(a) {
   return !!a && a.constructor === Array;
@@ -36,7 +36,7 @@ function isArray(a) {
 //App Class...
 class simpleLog extends Homey.App {
   async onInit() {
-    this.log('Simple (Sys) LOG onInit');
+    this.log('Simple (Sys) Log onInit');
     homey = this.homey;
     if (process.env.DEBUG === '1' || false) {
       try {
@@ -70,7 +70,7 @@ class simpleLog extends Homey.App {
       this.homey.settings.unset("loggingDB");
     }
 
-    this.addLogToDB('App "Simple (Sys) LOG" started.', SIMPLE_LOG);
+    this.addLogToDB('App "Simple (Sys) Log" started.', SIMPLE_LOG);
 
 
 
@@ -90,13 +90,13 @@ class simpleLog extends Homey.App {
 
     this.buildCards();
 
-    this.log('Simple (Sys) LOG onInit finished');
+    this.log('Simple (Sys) Log onInit finished');
     this.homey.log(this.homey.settings.get('___TEST___'));
     //await this.initRealApp();
   }
 
   async initRealApp() {
-    this.log('Simple (Sys) LOG initRealApp');
+    this.log('Simple (Sys) Log initRealApp');
     this.Log = new Log({ filePath: '/userdata/' });
     await this.Log.init();
     if (this.BackLog) {
@@ -148,7 +148,7 @@ class simpleLog extends Homey.App {
     });
     this.getSettings();
     
-    this.log('Simple (Sys) LOG initRealApp finished');
+    this.log('Simple (Sys) Log initRealApp finished');
   }
 
   getSettings() {

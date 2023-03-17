@@ -130,5 +130,8 @@
   },
   "2.9.41": {
     "en": "Building Version 3: API call PUT /addlog can now include severity, facility and timestamp in its json body properties."
+  },
+  "2.9.42": {
+    "en": "Building Version 3: You can now create a Syslog Server device, turn Simple Log into a Syslog for network devices."
   }
 }

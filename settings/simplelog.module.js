@@ -47,9 +47,20 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
         var facilities = {
             Kernel: 0,
             User: 1,
-            System: 3,
-            Audit: 13,
-            Alert: 14,
+            Mail: 2,
+            System: 3,	
+            Authorization: 4,
+            Syslog: 5,
+            LPR: 6,
+            News: 7,
+            UUCP: 8,
+            Cron: 9,
+            Deamon: 10,
+            FTP: 11,
+            NTP: 12,	
+            Security: 13,
+            Console: 14,
+            Clock: 15,            
             Flow: 16,
             Device: 17,
             App: 18
@@ -84,7 +95,7 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
                 view.facilities[facilityNr] = facilityKey;
             }
 
-        async function loadLogs({ severity, facility, lastLog } = {}) {
+        async function loadLogs({ severity, facility, hostname, lastLog } = {}) {
             if(view.isBusy ) return ;//view.isBusy;
             view.isBusy = true;
             //let opt = { take: vars.logPerPage, skip: (vars.logCurrentPage - 1) * vars.logPerPage, timestampFormat: 'datetime' };
@@ -413,6 +424,15 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
                     },
                     cellTemplate:
                         '<div class="ui-grid-cell-contents">{{grid.appScope.view.facilities[row.entity.facility]}}</div>'
+                },
+                {
+                    field: 'hostname',
+                    displayName: 'Hostname',
+                    headerCellFilter: '__',
+                    width: '*',
+                    filter: { condition: filter },
+                    cellTemplate:
+                        '<div class="ui-grid-cell-contents">{{row.entity.hostname}}</div>'
                 }
 
             ],

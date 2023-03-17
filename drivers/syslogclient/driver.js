@@ -4,7 +4,7 @@ const { randomBytes } = require('crypto');
 
 const hostname = require('os').hostname();
 
-class SyslogDriver extends Homey.Driver {
+class SyslogClientDriver extends Homey.Driver {
 	async onInit() {
 		this.hostname = hostname;
 
@@ -35,4 +35,4 @@ class SyslogDriver extends Homey.Driver {
 	
 }
 
-module.exports = SyslogDriver;
+module.exports = SyslogClientDriver;

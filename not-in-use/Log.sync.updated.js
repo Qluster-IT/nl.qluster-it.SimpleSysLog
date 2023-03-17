@@ -227,7 +227,7 @@ class Log {
         }
     }
 
-    async getLogs({ severity, facility, app, message, timestamp_fromUTC, timestamp_toUTC, skip, take, maxSizeKb, lastLog, timestampFormat, returnType } = {}) {
+    async getLogs({ severity, facility, hostname, app, message, timestamp_fromUTC, timestamp_toUTC, skip, take, maxSizeKb, lastLog, timestampFormat, returnType } = {}) {
         BL.homey.log('getLogs', arguments[0]);
         try {
 
@@ -421,7 +421,7 @@ class Log {
         }
     }
 
-    // async getLogsNew({ severity, facility, app, message, timestamp_fromUTC, timestamp_toUTC, skip, take, maxSizeKb, lastLog, timestampFormat, returnType } = {}) {
+    // async getLogsNew({ severity, facility, hostname, app, message, timestamp_fromUTC, timestamp_toUTC, skip, take, maxSizeKb, lastLog, timestampFormat, returnType } = {}) {
     //     try {
 
     //         let logs = [];
@@ -637,7 +637,7 @@ class Log {
         return bytes;
     }
 
-    async writeLine({ message, severity, facility, timestamp = new Date(), app } = {}) {
+    async writeLine({ message, severity, facility, hostname, timestamp = new Date(), app } = {}) {
         let opts = BL._.cloneDeep(...arguments);
         if (opts.app && opts.app.length > 100) throw new Error('App name must not be longer than 100 Characters.');
         if (!opts.timestamp) opts.timestamp = new Date();
@@ -837,7 +837,7 @@ class LogBook {
         //return lines;
     }
 
-    async getLogs({ severity, facility, apps, message, take, skip } = {}) {
+    async getLogs({ severity, facility, hostname, apps, message, take, skip } = {}) {
         if (this.logs && this.logs.length) return this.logs;
         let logs = [];
         //let ind = readFileSync(this.file + '.index', { encoding: 'utf8' });
@@ -948,7 +948,7 @@ class LogBook {
         }
     }
 
-    // getLogsNew({ severity, facility, apps, message, take, skip } = {}) {
+    // getLogsNew({ severity, facility, hostname, apps, message, take, skip } = {}) {
 
     //     var stream = createReadStream(this.file + '.index', { flags: 'r', encoding: 'utf-8' });
     //     var buf = '';
@@ -988,7 +988,7 @@ class LogBook {
     //     console.log('asd');
     // }
 
-    // getLogsOld({ severity, facility, apps, message, take, skip } = {}) {
+    // getLogsOld({ severity, facility, hostname, apps, message, take, skip } = {}) {
     //     if (this.logs && this.logs.length) return this.logs;
     //     let logs = [];
     //     //let ind = readFileSync(this.file + '.index', { encoding: 'utf8' });

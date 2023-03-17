@@ -1,0 +1,92 @@
+{
+	"id": "syslogserver",
+	"_deprecated":true,
+	"name": {
+		"en": "Syslog server",
+		"nl": "Syslog server",
+		"de": "Syslog server"
+	},
+	"images": {
+		"large": "{{driverAssetsPath}}/images/large.png",
+		"small": "{{driverAssetsPath}}/images/small.png"
+	},
+	"capabilities":[],
+	"class": "other",	
+	"pair": [
+		{
+			"id": "list_devices",
+			"template": "list_devices",
+			"navigation": {
+				"next": "add_devices"
+			},
+			"options": {
+				"singular": true
+			}
+		},
+		{
+			"id": "add_devices",
+			"template": "add_devices"
+		}
+	],	
+    "settings": [		
+		{
+		  "id": "port",
+		  "type": "number",
+		  "label": {
+			"en": "Port"
+		  },
+		  "min": 1,
+		  "max": 65536,
+		  "step": 1,
+		  "value" : 514
+		},
+		{
+			"id": "transport",
+			"type": "dropdown",
+			"label": {
+				"en": "Transport mode"
+			},
+			"value" : "tcp",
+			"placeholder" : "",
+			"values": [
+				{
+					"id": "tcp",
+					"label": {
+					  "en": "tcp"
+					}
+				},
+				{
+				  "id": "udp",
+				  "label": {
+					"en": "udp"
+				  }
+				}
+			  ]
+		},
+		{
+			"id": "appName",
+			"type": "text",
+			"label": {
+				"en": "(This) App name"
+			},
+			"value" : "Homey"	  
+		},
+		{
+			"id": "hostname",
+			"type": "text",
+			"label": {
+				"en": "(This) Hostname"
+			},
+			"value" : "",
+			"placeholder" : "Homey"
+		},		
+		{
+			"id": "log_syslogs",
+			"type": "checkbox",
+			"label": {
+			  "en": "Log all received Syslogs to the default Simple Log."
+			},
+			"value" : true
+		}
+	]
+}

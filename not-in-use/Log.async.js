@@ -223,7 +223,7 @@ class Log {
         }
     }
 
-    async getLogs({ severity, facility, app, message, timestamp_fromUTC, timestamp_toUTC, skip, take, maxSizeKb, lastLog, timestampFormat, returnType } = {}) {
+    async getLogs({ severity, facility, hostname, app, message, timestamp_fromUTC, timestamp_toUTC, skip, take, maxSizeKb, lastLog, timestampFormat, returnType } = {}) {
         let logs = [];
         let opts = BL._.cloneDeep(arguments[0]) || {};
         if (opts.timestamp_fromUTC) {
@@ -445,7 +445,7 @@ class Log {
         return bytes;
     }
 
-    async writeLine({ message, severity, facility, timestamp = new Date(), app } = {}) {
+    async writeLine({ message, severity, facility, hostname, timestamp = new Date(), app } = {}) {
         let opts = BL._.cloneDeep(...arguments);
         if (opts.app && opts.app.length > 100) throw new Error('App name must not be longer than 100 Characters.');
         if (!opts.timestamp) opts.timestamp = new Date();
@@ -593,7 +593,7 @@ class LogBook {
         return this._logFile;
     }
 
-    async getLogs({ severity, facility, apps, message, take, skip } = {}) {
+    async getLogs({ severity, facility, hostname, apps, message, take, skip } = {}) {
         if (this.logs && this.logs.length) return this.logs;
         let logs = [];
         try {

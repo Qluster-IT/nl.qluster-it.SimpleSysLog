@@ -655,21 +655,87 @@
                 }
               },
               {
+                "id": "2",
+                "label": {
+                  "en": "Mail"
+                }
+              },
+              {
                 "id": "3",
                 "label": {
                   "en": "System"
                 }
               },
               {
+                "id": "4",
+                "label": {
+                  "en": "Authorization"
+                }
+              },
+              {
+                "id": "5",
+                "label": {
+                  "en": "Syslog"
+                }
+              },
+              {
+                "id": "6",
+                "label": {
+                  "en": "LPR"
+                }
+              },
+              {
+                "id": "7",
+                "label": {
+                  "en": "News"
+                }
+              },
+              {
+                "id": "8",
+                "label": {
+                  "en": "UUCP"
+                }
+              },
+              {
+                "id": "9",
+                "label": {
+                  "en": "Cron"
+                }
+              },
+              {
+                "id": "10",
+                "label": {
+                  "en": "Deamon"
+                }
+              },
+              {
+                "id": "11",
+                "label": {
+                  "en": "FTP"
+                }
+              },
+              {
+                "id": "12",
+                "label": {
+                  "en": "NTP"
+                }
+              },
+              {
                 "id": "13",
                 "label": {
-                  "en": "Audit"
+                  "en": "Security"
                 }
               },
               {
                 "id": "14",
                 "label": {
-                  "en": "Alert"
+                  "en": "Console"
+                }
+              },
+              {
+                "id": "15",
+                "label": {
+                  "en": "Clock"
                 }
               },
               {
@@ -811,21 +877,87 @@
                 }
               },
               {
+                "id": "2",
+                "label": {
+                  "en": "Mail"
+                }
+              },
+              {
                 "id": "3",
                 "label": {
                   "en": "System"
                 }
               },
               {
+                "id": "4",
+                "label": {
+                  "en": "Authorization"
+                }
+              },
+              {
+                "id": "5",
+                "label": {
+                  "en": "Syslog"
+                }
+              },
+              {
+                "id": "6",
+                "label": {
+                  "en": "LPR"
+                }
+              },
+              {
+                "id": "7",
+                "label": {
+                  "en": "News"
+                }
+              },
+              {
+                "id": "8",
+                "label": {
+                  "en": "UUCP"
+                }
+              },
+              {
+                "id": "9",
+                "label": {
+                  "en": "Cron"
+                }
+              },
+              {
+                "id": "10",
+                "label": {
+                  "en": "Deamon"
+                }
+              },
+              {
+                "id": "11",
+                "label": {
+                  "en": "FTP"
+                }
+              },
+              {
+                "id": "12",
+                "label": {
+                  "en": "NTP"
+                }
+              },
+              {
                 "id": "13",
                 "label": {
-                  "en": "Audit"
+                  "en": "Security"
                 }
               },
               {
                 "id": "14",
                 "label": {
-                  "en": "Alert"
+                  "en": "Console"
+                }
+              },
+              {
+                "id": "15",
+                "label": {
+                  "en": "Clock"
                 }
               },
               {
@@ -1035,21 +1167,87 @@
                 }
               },
               {
+                "id": "2",
+                "label": {
+                  "en": "Mail"
+                }
+              },
+              {
                 "id": "3",
                 "label": {
                   "en": "System"
                 }
               },
               {
+                "id": "4",
+                "label": {
+                  "en": "Authorization"
+                }
+              },
+              {
+                "id": "5",
+                "label": {
+                  "en": "Syslog"
+                }
+              },
+              {
+                "id": "6",
+                "label": {
+                  "en": "LPR"
+                }
+              },
+              {
+                "id": "7",
+                "label": {
+                  "en": "News"
+                }
+              },
+              {
+                "id": "8",
+                "label": {
+                  "en": "UUCP"
+                }
+              },
+              {
+                "id": "9",
+                "label": {
+                  "en": "Cron"
+                }
+              },
+              {
+                "id": "10",
+                "label": {
+                  "en": "Deamon"
+                }
+              },
+              {
+                "id": "11",
+                "label": {
+                  "en": "FTP"
+                }
+              },
+              {
+                "id": "12",
+                "label": {
+                  "en": "NTP"
+                }
+              },
+              {
                 "id": "13",
                 "label": {
-                  "en": "Audit"
+                  "en": "Security"
                 }
               },
               {
                 "id": "14",
                 "label": {
-                  "en": "Alert"
+                  "en": "Console"
+                }
+              },
+              {
+                "id": "15",
+                "label": {
+                  "en": "Clock"
                 }
               },
               {
@@ -1132,7 +1330,7 @@
           "id": "useRfc5424",
           "type": "checkbox",
           "label": {
-            "en": "Use Rfc5424"
+            "en": "Use Rfc5424 (IETF/NON-BSD)"
           },
           "value": false
         },
@@ -1248,6 +1446,98 @@
               }
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "syslogserver",
+      "_deprecated": true,
+      "name": {
+        "en": "Syslog server",
+        "nl": "Syslog server",
+        "de": "Syslog server"
+      },
+      "images": {
+        "large": "/drivers/syslogserver/assets/images/large.png",
+        "small": "/drivers/syslogserver/assets/images/small.png"
+      },
+      "capabilities": [],
+      "class": "other",
+      "pair": [
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          },
+          "options": {
+            "singular": true
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "settings": [
+        {
+          "id": "port",
+          "type": "number",
+          "label": {
+            "en": "Port"
+          },
+          "min": 1,
+          "max": 65536,
+          "step": 1,
+          "value": 514
+        },
+        {
+          "id": "transport",
+          "type": "dropdown",
+          "label": {
+            "en": "Transport mode"
+          },
+          "value": "tcp",
+          "placeholder": "",
+          "values": [
+            {
+              "id": "tcp",
+              "label": {
+                "en": "tcp"
+              }
+            },
+            {
+              "id": "udp",
+              "label": {
+                "en": "udp"
+              }
+            }
+          ]
+        },
+        {
+          "id": "appName",
+          "type": "text",
+          "label": {
+            "en": "(This) App name"
+          },
+          "value": "Homey"
+        },
+        {
+          "id": "hostname",
+          "type": "text",
+          "label": {
+            "en": "(This) Hostname"
+          },
+          "value": "",
+          "placeholder": "Homey"
+        },
+        {
+          "id": "log_syslogs",
+          "type": "checkbox",
+          "label": {
+            "en": "Log all received Syslogs to the default Simple Log."
+          },
+          "value": true
         }
       ]
     }

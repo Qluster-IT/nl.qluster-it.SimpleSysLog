@@ -212,7 +212,7 @@ class Log {
         }
     }
 
-    async getLogs({ severity, facility, app, message, timestamp_fromUTC, timestamp_toUTC, skip, take, maxSizeKb, lastLog, timestampFormat, returnType } = {}) {
+    async getLogs({ severity, facility, hostname, app, message, timestamp_fromUTC, timestamp_toUTC, skip, take, maxSizeKb, lastLog, timestampFormat, returnType } = {}) {
         try {
             BL.homey.log('getLogs', ...arguments);
 
@@ -455,7 +455,7 @@ class Log {
         return bytes;
     }
 
-    async writeLine({ message, severity, facility, timestamp = new Date(), app } = {}) {
+    async writeLine({ message, severity, facility, hostname, timestamp = new Date(), app } = {}) {
         let opts = BL._.cloneDeep(...arguments);
         if (opts.app && opts.app.length > 100) throw new Error('App name must not be longer than 100 Characters.');
         if (!opts.timestamp) opts.timestamp = new Date();
@@ -539,12 +539,12 @@ class LogBook {
         BL.homey.settings.unset('LogBook_', null);
     }
 
-    writeLine({ message, severity, facility, timestamp, app } = {}) {
-        this.LogRecords.push({ message, severity, facility, timestamp, app });
+    writeLine({ message, severity, facility, hostname, timestamp, app } = {}) {
+        this.LogRecords.push({ message, severity, facility, hostname, timestamp, app });
         BL.homey.settings.set('LogBook_' + this.id, this.LogRecords);
     }
 
-    getLogs({ severity, facility, apps, message, take, skip } = {}) {
+    getLogs({ severity, facility, hostname, apps, message, take, skip } = {}) {
         let results = [];
         try {
             for (let i = 0; i < this.LogRecords.length; i++) {

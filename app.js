@@ -168,11 +168,11 @@ class simpleLog extends Homey.App {
     if (this.Log) await this.Log.destroy();
   }
 
-  async addLogToDB(data, group, { severity, facility, timestamp = new Date(), source = 'log' } = {}) {
+  async addLogToDB(data, group, { severity, facility, hostname, timestamp = new Date(), source = 'log' } = {}) {
     if (!timestamp) timestamp = new Date();
     if (!source) source = 'log';
 
-    let args = [data, group, { severity, facility, timestamp, source }];
+    let args = [data, group, { severity, facility, hostname, timestamp, source }];
 
     if (this.Log) return await this._addLogToDB(...args);
     else {
@@ -193,20 +193,20 @@ class simpleLog extends Homey.App {
    * @param {String} group 
    * @param {*} param2 
    */
-  async _addLogToDB(data, group, { severity, facility, timestamp = new Date(), source = 'log' } = {}) {
+  async _addLogToDB(data, group, { severity, facility, hostname, timestamp = new Date(), source = 'log' } = {}) {
     // checkSurplusEntries();
     // loggingDB.push({ data, group, date: timestamp });
     // this.homey.settings.set("loggingDB", loggingDB);
 
-    let args = { message: data, app: group, severity, facility, timestamp };
+    let args = { message: data, app: group, severity, facility, hostname, timestamp };
     await this.Log.writeLine(args);
 
-    if (source !== 'syslog')
+    if (source === 'log')
       for (const _severity of Object.keys(this.Loggers)) {
         if (Number.parseInt(_severity) <= Number.parseInt(severity) && this.Loggers[_severity] && this.Loggers[_severity].length > 0)
 
           for (const logger of this.Loggers[_severity]) {
-            await logger.log({ data, group, severity: severity || '6', facility: facility || '16', timestamp });
+            await logger.log({ data, group, severity: severity || '6', facility: facility || '16', timestamp, hostname });
           }
       }
   }

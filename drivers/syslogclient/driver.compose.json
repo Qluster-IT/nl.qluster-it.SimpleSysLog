@@ -53,7 +53,7 @@
 		  "id": "useRfc5424",
 		  "type": "checkbox",
 		  "label": {
-			"en": "Use Rfc5424"
+			"en": "Use Rfc5424 (IETF/NON-BSD)"
 		  },
 		  "value" : false
 		},

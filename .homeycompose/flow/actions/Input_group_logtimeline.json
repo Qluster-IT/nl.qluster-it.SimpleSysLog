@@ -115,21 +115,88 @@
             }
           },
           {
+            "id": "2",
+            "label": {
+              "en": "Mail"
+            }
+          },
+          {
             "id": "3",
             "label": {
               "en": "System"
             }
           },
+          
+          {
+            "id": "4",
+            "label": {
+              "en": "Authorization"
+            }
+          },
+          {
+            "id": "5",
+            "label": {
+              "en": "Syslog"
+            }
+          },
+          {
+            "id": "6",
+            "label": {
+              "en": "LPR"
+            }
+          },
+          {
+            "id": "7",
+            "label": {
+              "en": "News"
+            }
+          },
+          {
+            "id": "8",
+            "label": {
+              "en": "UUCP"
+            }
+          },
+          {
+            "id": "9",
+            "label": {
+              "en": "Cron"
+            }
+          },
+          {
+            "id": "10",
+            "label": {
+              "en": "Deamon"
+            }
+          },
+          {
+            "id": "11",
+            "label": {
+              "en": "FTP"
+            }
+          },
+          {
+            "id": "12",
+            "label": {
+              "en": "NTP"
+            }
+          },
           {
             "id": "13",
             "label": {
-              "en": "Audit"
+              "en": "Security"
             }
           },
           {
             "id": "14",
             "label": {
-              "en": "Alert"
+              "en": "Console"
+            }
+          },
+          {
+            "id": "15",
+            "label": {
+              "en": "Clock"
             }
           },
           {

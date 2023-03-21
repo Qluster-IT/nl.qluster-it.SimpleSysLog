@@ -136,5 +136,8 @@
   },
   "2.9.43": {
     "en": "Building Version 3: You can now create a Syslog Server device, turn Simple Log into a Syslog for network devices (improved settings)."
+  },
+  "2.9.44": {
+    "en": "Building Version 3: Resolving an issue after Homey restart with the log."
   }
 }

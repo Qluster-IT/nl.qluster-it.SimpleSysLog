@@ -139,5 +139,8 @@
   },
   "2.9.44": {
     "en": "Building Version 3: Resolving an issue after Homey restart with the log."
+  },
+  "2.9.45": {
+    "en": "Building Version 3: Resolving an issue after Homey restart with the log."
   }
 }

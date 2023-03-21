@@ -148,5 +148,8 @@
   },
   "2.9.47": {
     "en": "Building Version 3: Testing an issue after Homey restart with the log."
+  },
+  "2.9.48": {
+    "en": "Building Version 3: Testing an issue after Homey restart with the log."
   }
 }

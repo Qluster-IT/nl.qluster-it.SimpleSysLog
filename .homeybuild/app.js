@@ -171,6 +171,7 @@ class simpleLog extends Homey.App {
   async addLogToDB(data, group, { severity, facility, hostname, timestamp = new Date(), source = 'log' } = {}) {
     if (!timestamp) timestamp = new Date();
     if (!source) source = 'log';
+    if(typeof(timestamp)=='number' || typeof(timestamp)=='string') timestamp = new Date(timestamp)
 
     let args = [data, group, { severity, facility, hostname, timestamp, source }];
 
@@ -214,6 +215,7 @@ class simpleLog extends Homey.App {
   apiPutAddlog(data) {
     // console.log("API: PUT...");
     // console.log(data);
+    //if(data && data.body && data.body.)
     if (data && data.body && data.body.log) {
       this.addLogToDB(data.body.log, data.body.group, data.body);
     }

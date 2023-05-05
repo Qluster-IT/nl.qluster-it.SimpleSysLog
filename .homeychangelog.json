@@ -157,5 +157,8 @@
   },
   "3.0.0": {
     "en": "Version 3: First full release."
+  },
+  "3.0.1": {
+    "en": "Bugfixes a report: Reading file error."
   }
 }

@@ -75,6 +75,8 @@ class SyslogServerDevice extends Homey.Device {
 			})
 			.on('error', err => {
 				console.warn('Client disconnected abruptly: %o\n', err);
+				let msg = err.message || err;
+				if(msg.indexOf('Cannot listen on ports below 1024 without root permissions')>-1) this.homey.notifications.createNotification({excerpt : `The Syslog Server cannot be started, ports lower than 1024 cannot be used anymore.\nChange the used portnumber in the device settings.` });
 			})
 			.on('connection', s => {
 				let addr = s.address().address;

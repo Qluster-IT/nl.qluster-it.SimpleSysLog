@@ -154,5 +154,8 @@
   },
   "2.9.49": {
     "en": "Building Version 3: Testing an issue after Homey restart with the log."
+  },
+  "3.0.0": {
+    "en": "Version 3: First full release."
   }
 }

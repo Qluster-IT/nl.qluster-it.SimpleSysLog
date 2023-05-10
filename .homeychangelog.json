@@ -160,5 +160,8 @@
   },
   "3.0.1": {
     "en": "Bugfixes a report: Reading file error."
+  },
+  "3.0.2": {
+    "en": "Bugfixes a report: Reading file error, please send diagnostic if lines are empty."
   }
 }

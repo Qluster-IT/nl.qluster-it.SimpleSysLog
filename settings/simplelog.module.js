@@ -63,12 +63,11 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
             Clock: 15,            
             Flow: 16,
             Device: 17,
-            App: 18
-            // ,
-            // Local3: 19,
-            // Local4: 20,
-            // Local5: 21,
-            // Local6: 22,
+            App: 18,
+            Scene:19,
+            Trigger:20,
+            Condition:21,
+            Action:22
             // Local7: 23
         };
 
@@ -79,7 +78,7 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
             Error: 3,
             Warning: 4,
             Notice: 5,
-            Informational: 6,
+            Info: 6,
             Debug: 7
         };
 

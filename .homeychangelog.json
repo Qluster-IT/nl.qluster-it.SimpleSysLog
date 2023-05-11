@@ -163,5 +163,8 @@
   },
   "3.0.2": {
     "en": "Bugfixes a report: Reading file error, please send diagnostic if lines are empty."
+  },
+  "3.0.3": {
+    "en": "Added:Facilities scene, trigger, condition and action."
   }
 }

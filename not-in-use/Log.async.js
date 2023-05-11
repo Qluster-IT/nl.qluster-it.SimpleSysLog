@@ -44,7 +44,7 @@ const X_OK = 1;
 //     Error         : 3,
 //     Warning       : 4,
 //     Notice        : 5,
-//     Informational : 6,
+//     Info : 6,
 //     Debug         : 7
 // }
 
@@ -55,7 +55,7 @@ const SEVERITIES = {
     '3': 'Error',
     '4': 'Warning',
     '5': 'Notice',
-    '6': 'Informational',
+    '6': 'Info',
     '7': 'Debug'
 };
 const FACILITIES = {

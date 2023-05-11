@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "nl.nielsdeklerk.log",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "sdk": 3,
   "brandColor": "#BC274A",
   "name": {
@@ -207,7 +207,7 @@
               {
                 "id": "6",
                 "label": {
-                  "en": "Informational"
+                  "en": "Info"
                 }
               },
               {
@@ -270,7 +270,7 @@
               {
                 "id": "6",
                 "label": {
-                  "en": "Informational"
+                  "en": "Info"
                 }
               },
               {
@@ -333,7 +333,7 @@
               {
                 "id": "6",
                 "label": {
-                  "en": "Informational"
+                  "en": "Info"
                 }
               },
               {
@@ -396,7 +396,7 @@
               {
                 "id": "6",
                 "label": {
-                  "en": "Informational"
+                  "en": "Info"
                 }
               },
               {
@@ -622,7 +622,7 @@
               {
                 "id": "6",
                 "label": {
-                  "en": "Informational"
+                  "en": "Info"
                 }
               },
               {
@@ -844,7 +844,7 @@
               {
                 "id": "6",
                 "label": {
-                  "en": "Informational"
+                  "en": "Info"
                 }
               },
               {
@@ -1143,7 +1143,7 @@
               {
                 "id": "6",
                 "label": {
-                  "en": "Informational"
+                  "en": "Info"
                 }
               },
               {
@@ -1275,6 +1275,30 @@
                 "id": "18",
                 "label": {
                   "en": "App"
+                }
+              },
+              {
+                "id": "19",
+                "label": {
+                  "en": "Scene"
+                }
+              },
+              {
+                "id": "20",
+                "label": {
+                  "en": "Trigger"
+                }
+              },
+              {
+                "id": "21",
+                "label": {
+                  "en": "Condition"
+                }
+              },
+              {
+                "id": "22",
+                "label": {
+                  "en": "Action"
                 }
               }
             ]
@@ -1422,7 +1446,7 @@
             {
               "id": "6",
               "label": {
-                "en": "Informational"
+                "en": "Info"
               }
             },
             {

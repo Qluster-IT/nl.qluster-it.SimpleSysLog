@@ -76,7 +76,7 @@ class SyslogClientDevice extends Homey.Device {
 					+ newline;
 			}
 
-			console.log(formattedMessage);
+			//console.log(formattedMessage);
 			return Buffer.from(formattedMessage);
 		};
 
@@ -121,16 +121,26 @@ class SyslogClientDevice extends Homey.Device {
 			rfc3164: (settings.useRfc5424 === false),
 			appName: this.appName,
 			tcpTimeout:5000,
-			// dateFormatter:function (a) {
-			// 	//return '2023-03-17T09:05:53+01:00';
-			// 	return this.toISOString()
-			// }
+			dateFormatter:function (date) {
+				return BL.datetime.toString('UTC', date);
+				// let zz = BL.datetime.toString('zz', date);
+				// let iso = BL.datetime.toString('ISO', date);
+				// return iso.substr(0, iso.length-1) + zz + (zz.indexOf(':')==-1 ? ':00' : '');
+				// //return '2023-03-17T09:05:53+01:00';
+				// return this.toISOString()
+			}
 		};
 
 		// let severityLogger = this.settings.autolog_severity ? Number.parseInt(this.settings.autolog_severity) : null;
 		if (this.settings.autolog_severity) {
 			if (!this.homey.app.Loggers[this.settings.autolog_severity]) this.homey.app.Loggers[this.settings.autolog_severity] = [];
 			if (this.homey.app.Loggers[this.settings.autolog_severity].indexOf(this) == -1) this.homey.app.Loggers[this.settings.autolog_severity].push(this);
+		} else {
+			if(this.homey.app.Loggers) for (let i = 0; i < this.homey.app.Loggers.length; i++) {
+				const element = this.homey.app.Loggers[i];
+				if(element.indexOf(this)>-1) element.splice(element.indexOf(this),1) ;
+				
+			}
 		}
 
 

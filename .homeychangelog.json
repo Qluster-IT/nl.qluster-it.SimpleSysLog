@@ -166,5 +166,8 @@
   },
   "3.0.3": {
     "en": "Added:Facilities scene, trigger, condition and action."
+  },
+  "3.0.4": {
+    "en": "Resolved: UTC issue with Sysloc Clients: Update BLL to resolve the issue!"
   }
 }

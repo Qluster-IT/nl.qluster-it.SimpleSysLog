@@ -86,8 +86,12 @@ class SyslogClientDevice extends Homey.Device {
 	}
 
 	async onUninit() {
-		for (const severity of Object.values(this.homey.app.Loggers))
+		for (let i = 0; i < this.homey.app.Loggers.length; i++) {
+			const severity = this.homey.app.Loggers[i];
 			if (severity && severity.length > 0 && severity.indexOf(this) > -1) severity.splice(severity.indexOf(this), 1);
+		}
+		// for (const severity of Object.values(this.homey.app.Loggers))
+		// 	if (severity && severity.length > 0 && severity.indexOf(this) > -1) severity.splice(severity.indexOf(this), 1);
 
 		if (this.syslogClient) {
 			try {
@@ -133,17 +137,14 @@ class SyslogClientDevice extends Homey.Device {
 
 		// let severityLogger = this.settings.autolog_severity ? Number.parseInt(this.settings.autolog_severity) : null;
 		if (this.homey.app.Loggers)
-			for (let logger in this.homey.app.Loggers) {
-				//for (let i = 0; i < this.homey.app.Loggers.length; i++) {
-				const element = this.homey.app.Loggers[logger];
-				if (element.indexOf(this) > -1) element.splice(element.indexOf(this), 1);
+			for (let i = 0; i < this.homey.app.Loggers.length; i++) {
+				const severity = this.homey.app.Loggers[i];
+				if (severity && severity.length > 0 && severity.indexOf(this) > -1) severity.splice(severity.indexOf(this), 1);
 			}
 		if (this.settings.autolog_severity) {
 			if (!this.homey.app.Loggers[this.settings.autolog_severity]) this.homey.app.Loggers[this.settings.autolog_severity] = [];
 			if (this.homey.app.Loggers[this.settings.autolog_severity].indexOf(this) == -1) this.homey.app.Loggers[this.settings.autolog_severity].push(this);
-		} else {
-
-		}
+		} 
 
 
 		// syslogClient = syslog.createClient(appSettings.syslogServer, syslogOptions);

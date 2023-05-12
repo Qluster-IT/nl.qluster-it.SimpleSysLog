@@ -12,9 +12,12 @@ class SyslogServerDevice extends Homey.Device {
 	}
 
 	async onUninit() {
-		for (const severity of Object.values(this.homey.app.Loggers))
+		// for (const severity of Object.values(this.homey.app.Loggers))
+		// 	if (severity && severity.length > 0 && severity.indexOf(this) > -1) severity.splice(severity.indexOf(this), 1);
+		for (let i = 0; i < this.homey.app.Loggers.length; i++) {
+			const severity = this.homey.app.Loggers[i];
 			if (severity && severity.length > 0 && severity.indexOf(this) > -1) severity.splice(severity.indexOf(this), 1);
-
+		}
 		if (this.server) {
 			this.server.close();
 			delete this.server;
@@ -76,7 +79,7 @@ class SyslogServerDevice extends Homey.Device {
 			.on('error', err => {
 				console.warn('Client disconnected abruptly: %o\n', err);
 				let msg = err.message || err;
-				if(msg.indexOf('Cannot listen on ports below 1024 without root permissions')>-1) this.homey.notifications.createNotification({excerpt : `The Syslog Server cannot be started, ports lower than 1024 cannot be used anymore.\nChange the used portnumber in the device settings.` });
+				if (msg.indexOf('Cannot listen on ports below 1024 without root permissions') > -1) this.homey.notifications.createNotification({ excerpt: `The Syslog Server cannot be started, ports lower than 1024 cannot be used anymore.\nChange the used portnumber in the device settings.` });
 			})
 			.on('connection', s => {
 				let addr = s.address().address;

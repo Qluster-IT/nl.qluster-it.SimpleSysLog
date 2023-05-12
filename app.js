@@ -48,7 +48,7 @@ class simpleLog extends Homey.App {
     }
     //else try{ require('inspector').open(9218, '0.0.0.0', false); } catch(ex){}
 
-    this.Loggers = {};
+    this.Loggers = [[],[],[],[],[],[],[],[]];
 
     this.BackLog = this.homey.settings.get("BackLog");
     if (!isArray(this.BackLog)) {
@@ -202,14 +202,23 @@ class simpleLog extends Homey.App {
     let args = { message: data, app: group, severity, facility, hostname, timestamp };
     await this.Log.writeLine(args);
 
-    if (source === 'log')
-      for (const _severity of Object.keys(this.Loggers)) {
-        if (Number.parseInt(_severity) <= Number.parseInt(severity) && this.Loggers[_severity] && this.Loggers[_severity].length > 0)
-
-          for (const logger of this.Loggers[_severity]) {
-            await logger.log({ data, group, severity: severity || '6', facility: facility || '16', timestamp, hostname });
-          }
+    if (source === 'log') {
+      
+      let sev = Number.parseInt(severity ||'6');
+      for (let i = sev; i < this.Loggers.length; i++) {
+        const loggers = this.Loggers[i];
+        for (const logger of loggers) {
+          await logger.log({ data, group, severity: severity || '6', facility: facility || '16', timestamp, hostname });
+        }
       }
+    }
+      // for (const _severity of Object.keys(this.Loggers)) {
+      //   if (Number.parseInt(_severity) <= Number.parseInt(severity) && this.Loggers[_severity] && this.Loggers[_severity].length > 0)
+
+      //     for (const logger of this.Loggers[_severity]) {
+      //       await logger.log({ data, group, severity: severity || '6', facility: facility || '16', timestamp, hostname });
+      //     }
+      // }
   }
 
   apiPutAddlog(data) {

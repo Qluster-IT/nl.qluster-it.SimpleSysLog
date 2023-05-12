@@ -175,5 +175,8 @@
   },
   "3.0.6": {
     "en": "Update: BLL dependency."
+  },
+  "3.0.7": {
+    "en": "Resolved: Automatic logging to Syslog client based on severity."
   }
 }

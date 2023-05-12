@@ -113,16 +113,16 @@ class SyslogClientDevice extends Homey.Device {
 		// else 
 		this.appName = this.settings.appName;
 		var syslogOpts = {
-			syslogHostname: settings.hostname.replace(' ','\t'),
+			syslogHostname: settings.hostname.replace(' ', '\t'),
 			transport: (settings.transport === 'udp') ? syslog.Transport.Udp : syslog.Transport.Tcp,
 			//facility: settings.syslogfacility,
 			//severity: settings.syslogseverity,
 			port: settings.port,
 			rfc3164: (settings.useRfc5424 === false),
 			appName: this.appName,
-			tcpTimeout:5000,
-			dateFormatter:function (date) {
-				return BL.datetime.toString('UTC', date);
+			tcpTimeout: 5000,
+			dateFormatter: function (date) {
+				return BL.datetime.toString('ISOZ', date);
 				// let zz = BL.datetime.toString('zz', date);
 				// let iso = BL.datetime.toString('ISO', date);
 				// return iso.substr(0, iso.length-1) + zz + (zz.indexOf(':')==-1 ? ':00' : '');
@@ -132,15 +132,17 @@ class SyslogClientDevice extends Homey.Device {
 		};
 
 		// let severityLogger = this.settings.autolog_severity ? Number.parseInt(this.settings.autolog_severity) : null;
+		if (this.homey.app.Loggers)
+			for (let logger in this.homey.app.Loggers) {
+				//for (let i = 0; i < this.homey.app.Loggers.length; i++) {
+				const element = this.homey.app.Loggers[logger];
+				if (element.indexOf(this) > -1) element.splice(element.indexOf(this), 1);
+			}
 		if (this.settings.autolog_severity) {
 			if (!this.homey.app.Loggers[this.settings.autolog_severity]) this.homey.app.Loggers[this.settings.autolog_severity] = [];
 			if (this.homey.app.Loggers[this.settings.autolog_severity].indexOf(this) == -1) this.homey.app.Loggers[this.settings.autolog_severity].push(this);
 		} else {
-			if(this.homey.app.Loggers) for (let i = 0; i < this.homey.app.Loggers.length; i++) {
-				const element = this.homey.app.Loggers[i];
-				if(element.indexOf(this)>-1) element.splice(element.indexOf(this),1) ;
-				
-			}
+
 		}
 
 
@@ -172,11 +174,11 @@ class SyslogClientDevice extends Homey.Device {
 
 		// if (this.settings.useRfc5424 === false)  opts.app = opts.app.replaceAll(' ', '\t');
 		// else 
-		
+
 		if (!message && data) message = data;
 
-		if (message && this.settings.log_syslogs === true) this.homey.app.addLogToDB(message, appName, { facility, severity, timestamp, source:'syslogclient' });
-		
+		if (message && this.settings.log_syslogs === true) this.homey.app.addLogToDB(message, appName, { facility, severity, timestamp, source: 'syslogclient' });
+
 
 		opts.app = opts.app.replaceAll(' ', '\t');
 

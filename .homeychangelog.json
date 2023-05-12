@@ -169,5 +169,11 @@
   },
   "3.0.4": {
     "en": "Resolved: UTC issue with Sysloc Clients: Update BLL to resolve the issue!"
+  },
+  "3.0.5": {
+    "en": "Resolved: Double logging after Settings update!"
+  },
+  "3.0.6": {
+    "en": "Update: BLL dependency."
   }
 }

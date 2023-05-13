@@ -40,10 +40,18 @@ class simpleLog extends Homey.App {
     homey = this.homey;
     if (process.env.DEBUG === '1' || false) {
       try {
-        require('inspector').waitForDebugger();
+        try {
+          
+          require('inspector').open(9229, '0.0.0.0', false);
+          require('inspector').close();
+          require('inspector').open(9218, '0.0.0.0', true);
+          //require('inspector').waitForDebugger();
+        } catch (error) {          
+          require('inspector').open(9218, '0.0.0.0', false);
+        }
       }
       catch (error) {
-        require('inspector').open(9218, '0.0.0.0', true);
+        //require('inspector').open(9218, '0.0.0.0', true);
       }
     }
     //else try{ require('inspector').open(9218, '0.0.0.0', false); } catch(ex){}
@@ -91,7 +99,7 @@ class simpleLog extends Homey.App {
     this.buildCards();
 
     this.log('Simple (Sys) Log onInit finished');
-    this.homey.log(this.homey.settings.get('___TEST___'));
+    //this.homey.log(this.homey.settings.get('___TEST___'));
     //await this.initRealApp();
   }
 
@@ -109,18 +117,6 @@ class simpleLog extends Homey.App {
     }
 
     
-    // BL.homey.settings.unset('settings.view.settings'); 
-    // BL.homey.settings.unset('LogBooks'); 
-    // BL.homey.settings.unset('LogBook_2023/03/10'); 
-    // BL.homey.settings.unset('LogBook_2023/03/09'); 
-    // BL.homey.settings.unset('asd'); 
-    //BL.homey.settings.unset('loggingDB'); 
-
-    //BL.homey.log(BL.homey.settings.getKeys());
-    // BL.homey.settings.unset('__test__'); 
-    // BL.homey.settings.unset('__test2__'); 
-    
-    // BL.homey.settings.unset('LogApps');
     if(false) { //TEST
       let __test__ = BL.homey.settings.get('__test__');
       if(__test__ && __test__.logs)__test__.logs.pop();
@@ -133,7 +129,7 @@ class simpleLog extends Homey.App {
       let date = new Date();
       //await this.addLogToDB(date, 'DATE TEST');
       //date = new Date(date.setMonth(date.getMonth()-8));
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < 10; i++) {
         date = new Date(date.setDate(date.getDate() - 1));
         for (let i = 0; i < 100; i++) {
           await this.addLogToDB('Test message voor here is this', undefined, { severity: i === 0 ? 4 : undefined, timestamp: date });
@@ -160,6 +156,18 @@ class simpleLog extends Homey.App {
     if (!this.settings.xlsxFilename && (changed = true)) this.settings.xlsxFilename = "Logs_{[date('yyyy-MM-dd_HH-mm-ss')]}.xlsx";
     if (!this.settings.includeUtcInExcel && (changed = true)) this.settings.includeUtcInExcel = false;
     if (changed) this.homey.settings.set('settings', this.settings);
+    if(this.settings.removeLogOlderThanDays) this.updateAutomaticlyRemovalOfLogs(this.settings.removeLogOlderThanDays);
+  }
+
+  updateAutomaticlyRemovalOfLogs(days) {
+    if(days) this.automaticlyRemovalOfLogsTimer = this.homey.setInterval(async (days)=> {
+      this.homey.log('days', days);
+      await this.clearLog(days);
+    }, 60*60*1_000, days);
+    else if(this.automaticlyRemovalOfLogsTimer) {
+      this.homey.clearInterval(this.automaticlyRemovalOfLogsTimer);
+      delete this.automaticlyRemovalOfLogsTimer;
+    }
   }
 
   async onUninit() {
@@ -260,6 +268,11 @@ class simpleLog extends Homey.App {
         date: x[2].timestamp
       };
     });
+  }
+
+  async clearLog(days) {
+    if (this.Log) return await this.Log.clearLog(days);
+    else return await this.clearBackLog(days);
   }
 
 

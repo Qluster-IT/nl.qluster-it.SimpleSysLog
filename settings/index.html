@@ -32,7 +32,7 @@
 
 
 	<script type="text/javascript" src="../../net.i-dev.betterlogic/assets/js/bll.module.js"></script>
-	<link rel="stylesheet" href="../../net.i-dev.betterlogic/assets/js/bll.css" type="text/css" />
+	<link rel="stylesheet" href="../../net.i-dev.betterlogic/assets/css/bll.css" type="text/css" />
 	<script type="text/javascript" src="simplelog.module.js"></script>
 	<link rel="stylesheet" href="../assets/css/default.css" type="text/css" />
 
@@ -374,6 +374,17 @@
 				<span class="fa-solid toggle-icon fa-rotate-right" ng-click="toggleSetting('rotated90');"></span>
 			</div>
 			<div class="card">
+				<div class="card-header" bl-translate>General</div>
+				<div class="card-body">
+					<div class="col-12 form-label" bl-translate>Automaticly remove logs older than x number of days.</div>
+					<div class="col-12 form-label" bl-translate>Leave empty to not automaticly remove logs rows.</div>
+					<div class="col-12 form-group form-floating">
+						<input type="number" class="form-control hy-nostyle" name="removeLogOlderThanDays" placeholder="Number of days to keep the log" ng-model="view.settings.removeLogOlderThanDays" ng-model-options="{ debounce: 300 }" minlength="1" min="1" step="1"/>
+						<label class="hy-nostyle" for="xlsxFilename" bl-translate>Number of days to keep the log</label>
+					</div>
+				</div>
+			</div>
+			<div class="card">
 				<div class="card-header" bl-translate>Exports</div>
 				<div class="card-body">
 					<div class="col-12 form-label" bl-translate>Set the filenames to use when exporting files</div>
@@ -395,10 +406,6 @@
 						<input type="text" class="form-control hy-nostyle" name="jsonFilename" placeholder="JSON filename (* BLL supported)" ng-model="view.settings.jsonFilename" ng-model-options="{ debounce: 300 }" minlength="1" required="true" />
 						<label class="hy-nostyle" for="jsonFilename" bl-translate>JSON filename (* BLL supported)</label>
 					</div>
-					<!-- <div class="col-12 form-group form-floating">
-						<input type="text" class="form-control hy-nostyle" name="jsonFilename" placeholder="JSON filename (* BLL supported)" ng-model="view.settings.jsonFilename" ng-model-options="{ debounce: 300 }" minlength="1" required="true" />
-						<label class="hy-nostyle" for="jsonFilename" bl-translate>JSON filename (* BLL supported)</label>
-					</div> -->
 				</div>
 			</div>
 		</form>

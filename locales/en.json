@@ -2,7 +2,6 @@
     "bllNotStartedYet":"The Better Logic Library App has not been started yet.",    
     "bllNotRunning":"The Better Logic Library App must be running to use this function.",
     "fullyEnableInstallBll" : "To fully enable the New Simple (Sys) LOG, all it's features and new interface, install the <a href=\"#\" id=\"bllAppLink\" onClick=\"openBllAppLink()\">Better Logic Library app.</a>",
-
     "Timestamp":"Timestamp",
     "App":"App / Group",
     "Severity":"Severity",
@@ -22,8 +21,6 @@
     "JSON filename (* BLL supported)":"JSON filename (* BLL supported)",
     "Save":"Save",    
     "Reset columns":"Reset kolommen",
-
-
     "Refresh Log":"Refresh Log",
     "Include UTC in Excel":"Include UTC in Excel",
     "Close":"Close",
@@ -35,10 +32,11 @@
     "Drag_the_cloumns":"Drag the columns to re-position them",
     "Click_open_view":"Click here to open the view settings",
     "Click_rotate_screen":"Click here to rotate the screen",
-    "":"",
-    "":"",
-    "":"",
-    "":"",
+
+    "General":"General",
+    "Automaticly remove logs older than x number of days.":"Automaticly remove logs older than x number of days.",
+    "Leave empty to not automaticly remove logs rows.":"Leave empty to not automaticly remove logs rows.",
+    "Number of days to keep the log":"Number of days to keep the log",
     "":"",
     "":"",
     "":"",

@@ -23,9 +23,9 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
     }])
     .controller("simplelogCtrl", ['$scope', '$rootScope', '$timeout', '$compile', '$q', '$bl', 'gridUtil', 'uiGridConstants', '$window', '$http', 'tmhDynamicLocale', function ($scope, $rootScope, $timeout, $compile, $q, $bl, gridUtil, uiGridConstants, $window, $http, tmhDynamicLocale) {
         const vars = $rootScope.vars = $scope.vars = { logCurrentPage: 1, logPerPage: 100, logs: [] };
-        const view = $rootScope.view = $scope.view = { lang: 'en', severities: {}, facilities: {}, id: 'log', settings: {}, showHints: false, downloadFileLink:undefined };
+        const view = $rootScope.view = $scope.view = { lang: 'en', severities: {}, facilities: {}, id: 'log', settings: {}, showHints: false, downloadFileLink: undefined, gridLoaded: false };
         $scope.homey = $window.Homey;
-        
+
 
         let localeSetter = tmhDynamicLocale;
         let ctrl = this;
@@ -48,7 +48,7 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
             Kernel: 0,
             User: 1,
             Mail: 2,
-            System: 3,	
+            System: 3,
             Authorization: 4,
             Syslog: 5,
             LPR: 6,
@@ -57,17 +57,17 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
             Cron: 9,
             Deamon: 10,
             FTP: 11,
-            NTP: 12,	
+            NTP: 12,
             Security: 13,
             Console: 14,
-            Clock: 15,            
+            Clock: 15,
             Flow: 16,
             Device: 17,
             App: 18,
-            Scene:19,
-            Trigger:20,
-            Condition:21,
-            Action:22
+            Scene: 19,
+            Trigger: 20,
+            Condition: 21,
+            Action: 22
             // Local7: 23
         };
 
@@ -95,7 +95,7 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
             }
 
         async function loadLogs({ severity, facility, hostname, lastLog } = {}) {
-            if(view.isBusy ) return ;//view.isBusy;
+            if (view.isBusy) return;//view.isBusy;
             view.isBusy = true;
             //let opt = { take: vars.logPerPage, skip: (vars.logCurrentPage - 1) * vars.logPerPage, timestampFormat: 'datetime' };
             let opt = _.cloneDeep(arguments[0]) || {};
@@ -104,7 +104,7 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
             if (!opt.skip) opt.skip = ($scope.logGridApi.pagination.getPage() - 1) * $scope.logGridOptions.paginationPageSize;
 
             if (lastLog) opt.lastLog = lastLog;
-                        
+
             await $bl.api("POST", "/", opt, (x) => {
                 vars.logTotal = ($scope.logGridApi.pagination.getPage() - 1) * $scope.logGridOptions.paginationPageSize + (vars.logs = x.logs).length + 1;
                 $scope.logGridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
@@ -186,15 +186,24 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
                 view.settings = (x = x || {});
                 await gridDefer.promise;
                 if (view.settings.logGridState) {
-                    $scope.logGridApi.saveState.restore($scope, view.settings.logGridState);                    
-                } 
-                else if (!loaded) (loaded = true) & loadLogs();
+                    $scope.logGridApi.saveState.restore($scope, view.settings.logGridState);
+                    view.gridLoaded = true;
+                    $timeout(() => {
+                        view.gridLoaded = true;
+                        loadLogs();
+                    }, 250);
+                }
+                else if (!loaded) {
+                    loaded = true;
+                    view.gridLoaded = true;
+                    loadLogs();
+                }
             });
             await gridDefer.promise;
-            Homey.on('downloadFileReady', (link)=> {
+            Homey.on('downloadFileReady', (link) => {
                 console.log('downloadFileReady');
-                if(!view.downloadFileLink || view.downloadFileLink.token !== link.token) return;
-                $http.get(link.localTestUrl, {timeout:1000}).catch((err) => {
+                if (!view.downloadFileLink || view.downloadFileLink.token !== link.token) return;
+                $http.get(link.localTestUrl, { timeout: 1000 }).catch((err) => {
                     //if(x) $bl.openURL(link.cloudUrl);
                     if (err) $bl.openURL(link.cloudUrl);
                     view.isBusy = false;
@@ -206,13 +215,6 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
 
             homey.ready();
 
-            //if (!loaded) (loaded = true) & loadLogs();
-
-            // $scope.$watch("vars.logCurrentPage", async (newValue, oldValue) => {
-            //     let opt = {};
-            //     if (newValue > oldValue) opt.lastLog = vars.logs.length ? vars.logs[vars.logs.length - 1].id : null;
-            //     await loadLogs(opt);
-            // });
         };
         let columnWidhtSet = false;
 
@@ -334,23 +336,17 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
                 });
 
 
-                // gridApi.core.on.sortChanged($scope, function () {
-                //     $scope.logQuery.fill(gridApi.grid);
-                //     console.log($scope.logQuery);
-                //     //$scope.refresh(false, false);
-                // });
 
                 gridApi.core.on.filterChanged($scope, function () {
                     $scope.logQuery.fill(gridApi.grid);
                     //console.log($scope.logQuery);
-                    $scope.refresh($scope.logQuery);
-                    //$scope.refresh(false, false);
+                    $scope.refresh($scope.logQuery, 1);
                 });
 
                 gridApi.pagination.on.paginationChanged($scope, function (pagenr, pagesize) {
                     $scope.logQuery.pagenr = pagenr;
                     $scope.logQuery.pagesize = pagesize;
-                    $scope.refresh($scope.logQuery);
+                    $scope.refresh($scope.logQuery, 2);
                 });
                 gridDefer.resolve();
 
@@ -522,7 +518,9 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
             });
         };
 
-        $scope.refresh = function (query) {
+        $scope.refresh = function (query, source) {
+            if (!view.gridLoaded) return;
+            console.log('refresh source:', source, query);
             let opts = {};
             //console.log(query.filters);
             if (query && query.filters) for (let i = 0; i < query.filters.length; i++) {
@@ -555,7 +553,7 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
         };
 
         // $scope.downloadCSV = async () => {
-            
+
         //     let opt = { returnType:'csv' };
         //     await $bl.api("POST", "/", opt, (x) => {
         //         var encodedUri = encodeURI("data:text/csv;charset=utf-8," + x.csv);
@@ -567,13 +565,13 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
             view.isBusy = true;
             //let opt = { returnType: type };
             let downloadLink = await $bl.api("GET", "/getlogdownloadurl/" + type);
-            if(!downloadLink) {
+            if (!downloadLink) {
                 $scope.$apply(() => {
                     (view.isBusy = false);
                 });
                 return (view.isBusy = false);
-            } else 
-            view.downloadFileLink = downloadLink;
+            } else
+                view.downloadFileLink = downloadLink;
         };
 
         $scope.closeHints = function () {

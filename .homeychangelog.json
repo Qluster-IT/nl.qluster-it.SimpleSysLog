@@ -178,5 +178,8 @@
   },
   "3.0.7": {
     "en": "Resolved: Automatic logging to Syslog client based on severity."
+  },
+  "3.0.8": {
+    "en": "Resolved: A wrong error after clearing the log."
   }
 }

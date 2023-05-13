@@ -183,6 +183,6 @@
     "en": "Resolved: A wrong error after clearing the log."
   },
   "3.0.9": {
-    "en": "Added: Settings: Automaticly removal of logs after x number of days.\nBugfixed: Having view set to other than 50 would still only load 50 on opening App Settings.\nLoading App Settings has been speedup because of this."
+    "en": "Added: Settings: Automaticly removal of logs after x number of days.\nBugfixed: Having the grid set to other than 50 rows would still only load 50 on opening App Settings.\nLoading App Settings has been speedup because of this."
   }
 }

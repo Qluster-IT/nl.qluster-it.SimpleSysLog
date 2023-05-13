@@ -129,9 +129,9 @@ class simpleLog extends Homey.App {
       let date = new Date();
       //await this.addLogToDB(date, 'DATE TEST');
       //date = new Date(date.setMonth(date.getMonth()-8));
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 100; i++) {
         date = new Date(date.setDate(date.getDate() - 1));
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 10; i++) {
           await this.addLogToDB('Test message voor here is this', undefined, { severity: i === 0 ? 4 : undefined, timestamp: date });
         }
       }

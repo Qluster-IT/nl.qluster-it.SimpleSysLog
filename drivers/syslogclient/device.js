@@ -75,6 +75,7 @@ class SyslogClientDevice extends Homey.Device {
 					+ message
 					+ newline;
 			}
+			if(BL.homey.app.settings && BL.homey.app.settings.debugLogs) BL.homey.log('formattedMessage\n', formattedMessage);
 
 			//console.log(formattedMessage);
 			return Buffer.from(formattedMessage);
@@ -187,12 +188,12 @@ class SyslogClientDevice extends Homey.Device {
 		let fn = () => {
 			if (this.settings.useRfc5424) {
 				const a = this.syslogClient.log(message, opts, (error) => {
-					console.log(error);
+					if(error)BL.homey.error(error);
 				});
 				let b = a;
 			}
 			else this.syslogClient.log(opts.app + " " + message, opts, (error) => {
-				console.log(error);
+				if(error)BL.homey.error(error);
 			});
 		};
 

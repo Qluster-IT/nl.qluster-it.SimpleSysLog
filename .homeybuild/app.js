@@ -10,7 +10,8 @@ let homey;
 
 
 const SIMPLE_LOG = "Simple Log";
-
+const debug = false;
+    
 function isArray(a) {
   return !!a && a.constructor === Array;
 }
@@ -37,6 +38,7 @@ function isArray(a) {
 class simpleLog extends Homey.App {
   async onInit() {
     let cardsBuild = false;
+    
     try {
 
       this.log('Simple (Sys) Log onInit');
@@ -44,9 +46,9 @@ class simpleLog extends Homey.App {
 
       if (process.env.DEBUG === '1' || false) {
 
-        this.log('Simple (Sys) Log onInit - debugger starting');
+        if(debug) this.log('Simple (Sys) Log onInit - debugger starting');
         require('inspector').open(9218, '0.0.0.0', true);
-        this.log('Simple (Sys) Log onInit - debugger connected');
+        if(debug) this.log('Simple (Sys) Log onInit - debugger connected');
 
 
 
@@ -76,7 +78,7 @@ class simpleLog extends Homey.App {
       }
       //else try{ require('inspector').open(9218, '0.0.0.0', false); } catch(ex){}
 
-      this.log('Simple (Sys) Log onInit - past debugger');
+      if(debug) this.log('Simple (Sys) Log onInit - past debugger');
 
       this.Loggers = [[], [], [], [], [], [], [], []];
 
@@ -87,15 +89,15 @@ class simpleLog extends Homey.App {
       } else this.BackLog = this.BackLog.map(x => { x[2].timestamp = new Date(x[2].timestamp); return x; });
       //this.log(this.BackLog);
 
-      this.log('Simple (Sys) Log onInit - past BackLog');
+      if(debug) this.log('Simple (Sys) Log onInit - past BackLog');
 
       /// Conversion into the new BackLog model.
       let loggingDB = this.homey.settings.get("loggingDB");
-      this.log('Simple (Sys) Log onInit - Mutating BackLog');
+      if(debug) this.log('Simple (Sys) Log onInit - Mutating BackLog');
       if (isArray(loggingDB)) {
 
         
-        this.log('Simple (Sys) Log onInit - Mutating BackLog: ' + loggingDB.length);
+        if(debug) this.log('Simple (Sys) Log onInit - Mutating BackLog: ' + loggingDB.length);
       
         for (let i = 0; i < loggingDB.length; i++) {
           const log = loggingDB[i];
@@ -110,7 +112,7 @@ class simpleLog extends Homey.App {
 
 
 
-      this.log('Simple (Sys) Log onInit - BL.init');
+    if(debug) this.log('Simple (Sys) Log onInit - BL.init');
       //try {
       try {
         let bl = await BL.init({
@@ -130,9 +132,7 @@ class simpleLog extends Homey.App {
         this.homey.error('onInit BL init error:', error);
       }
       
-      //this.log('Simple (Sys) Log onInit - BL.init');
       try {
-
         this.buildCards();
         cardsBuild = true;
       } catch (error) {
@@ -149,9 +149,7 @@ class simpleLog extends Homey.App {
       }
     }
 
-    this.log('Simple (Sys) Log onInit finished');
-    //this.homey.log(this.homey.settings.get('___TEST___'));
-    //await this.initRealApp();
+    if(debug) this.log('Simple (Sys) Log onInit finished');
   }
 
   async initRealApp() {

@@ -105,7 +105,8 @@ class simpleLog extends Homey.App {
             '_',
             "datetime",
             "json"
-          ]
+          ],
+          require:false
         });
         bl.ready.then(async () => {
           await this.initRealApp();

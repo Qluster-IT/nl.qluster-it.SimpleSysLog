@@ -8,6 +8,8 @@ module.exports = {
         return homey.app.Log.LogBooks;
       case 'submitLogBookForDiagnostic':
         return homey.app.Log.submitLogBookForDiagnostic(logBookID);
+      case 'retrieveLogBookDiagnostic':
+        return homey.app.Log.retrieveLogBookDiagnostic(logBookID);
     }
   },
 

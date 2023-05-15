@@ -368,7 +368,7 @@
 		</div>
 	</div>
 	<div class="main-view overflow-hidden pb-5" ng-show="view.id=='settings'">
-		<form name="settingsForm" class="container">
+		<form name="settingsForm" class="container h-100 overflow-y-auto">
 			<div class="text-end">
 				<span class="fa-solid fa-icon fa-book p-2 fs-3" ng-click="view.id='log'"></span>
 				<span class="fa-solid toggle-icon fa-rotate-right" ng-click="toggleSetting('rotated90');"></span>
@@ -381,21 +381,6 @@
 					<div class="col-12 form-group form-floating">
 						<input type="number" class="form-control hy-nostyle" name="removeLogOlderThanDays" placeholder="Number of days to keep the log" ng-model="view.settings.removeLogOlderThanDays" ng-model-options="{ debounce: 300 }" minlength="1" min="1" step="1" />
 						<label class="hy-nostyle" for="xlsxFilename" bl-translate>Number of days to keep the log</label>
-					</div>
-
-					<div class="col-12 form-label mt-2" bl-translate>Debug all logs (for diagnostic for developer only) - Heavy on memory</div>
-					<div class="col-12 form-group form-check form-switch">
-						<input class="form-check-input hy-nostyle" type="checkbox" role="switch" id="debugLogs" checked ng-model="view.settings.debugLogs" />
-						<label class="form-check-label" for="debugLogs">Debug</label>
-					</div>
-
-					<div class="col-12 form-label mt-2" bl-translate>Include a Logbook into the diagnostic (only on request of developer)</div>
-					<div class="col-12 form-group">
-						<select class="hy-nostyle" type="checkbox" role="switch" id="logBookDiagnostic" ng-model="view.logBookDiagnostic" ng-ignore-dirty>
-							<option></option>
-							<option ng-repeat="logBook in view.logBooks" value="{{logBook.id}}">{{logBook.id}}</option>
-						</select>
-						<button type="button" class="btn homey-button-primary-shadow-full btn-primary" ng-click="submitLogBookForDiagnostic(view.logBookDiagnostic)" ng-disabled="!view.logBookDiagnostic" bl-translate>Submit into diagnostic</button>
 					</div>
 				</div>
 			</div>
@@ -421,6 +406,25 @@
 						<input type="text" class="form-control hy-nostyle" name="jsonFilename" placeholder="JSON filename (* BLL supported)" ng-model="view.settings.jsonFilename" ng-model-options="{ debounce: 300 }" minlength="1" required="true" />
 						<label class="hy-nostyle" for="jsonFilename" bl-translate>JSON filename (* BLL supported)</label>
 					</div>
+				</div>
+			</div>
+			<div class="card">
+				<div class="card-header" bl-translate>General</div>
+				<div class="card-body">
+					<div class="col-12 form-label mt-2" bl-translate>Debug all logs (for diagnostic for developer only) - Heavy on memory</div>
+					<div class="col-12 form-group form-check form-switch">
+						<input class="form-check-input hy-nostyle" type="checkbox" role="switch" id="debugLogs" checked ng-model="view.settings.debugLogs" />
+						<label class="form-check-label" for="debugLogs">Debug</label>
+					</div>
+<!-- 
+					<div class="col-12 form-label mt-2" bl-translate>Include a Logbook into the diagnostic (only on request of developer)</div>
+					<div class="col-12 form-group mt-2">
+						<select class="hy-nostyle" type="checkbox" role="switch" id="logBookDiagnostic" ng-model="view.logBookDiagnostic" ng-ignore-dirty>
+							<option></option>
+							<option ng-repeat="logBook in view.logBooks" value="{{logBook.id}}">{{logBook.id}}</option>
+						</select>
+						<button type="button" class="btn homey-button-primary-shadow-full btn-primary" ng-click="submitLogBookForDiagnostic(view.logBookDiagnostic)" ng-disabled="!view.logBookDiagnostic" bl-translate>Submit into diagnostic</button>
+					</div> -->
 				</div>
 			</div>
 		</form>

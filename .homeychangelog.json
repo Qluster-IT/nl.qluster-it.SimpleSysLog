@@ -205,5 +205,11 @@
   },
   "3.0.16": {
     "en": "Improved: Automatic removal of old logs will only show a logline when there were logfiles to be deleted."
+  },
+  "3.0.17": {
+    "en": "Added: Script for HS to send a log if there are faults in the log."
+  },
+  "3.0.18": {
+    "en": "Removed: Debugging info from the App Settings (diagnostic is to small to work with)."
   }
 }

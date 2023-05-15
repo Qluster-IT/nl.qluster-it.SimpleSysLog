@@ -43,7 +43,13 @@ class simpleLog extends Homey.App {
       homey = this.homey;
 
       if (process.env.DEBUG === '1' || false) {
+
+        this.log('Simple (Sys) Log onInit - debugger starting');
         require('inspector').open(9218, '0.0.0.0', true);
+        this.log('Simple (Sys) Log onInit - debugger connected');
+
+
+
         // if(this.homey.platform=='local' && this.homey.platformVersion==1) {      
         //   require('inspector').open(9218, '0.0.0.0', true);
         // } else {
@@ -70,6 +76,8 @@ class simpleLog extends Homey.App {
       }
       //else try{ require('inspector').open(9218, '0.0.0.0', false); } catch(ex){}
 
+      this.log('Simple (Sys) Log onInit - past debugger');
+
       this.Loggers = [[], [], [], [], [], [], [], []];
 
       this.BackLog = this.homey.settings.get("BackLog");
@@ -79,24 +87,30 @@ class simpleLog extends Homey.App {
       } else this.BackLog = this.BackLog.map(x => { x[2].timestamp = new Date(x[2].timestamp); return x; });
       //this.log(this.BackLog);
 
+      this.log('Simple (Sys) Log onInit - past BackLog');
+
       /// Conversion into the new BackLog model.
       let loggingDB = this.homey.settings.get("loggingDB");
+      this.log('Simple (Sys) Log onInit - Mutating BackLog');
       if (isArray(loggingDB)) {
 
-        this.addLogToDB('Mutating old Log to the new Simple (Sys) LOG', SIMPLE_LOG);
-
+        
+        this.log('Simple (Sys) Log onInit - Mutating BackLog: ' + loggingDB.length);
+      
         for (let i = 0; i < loggingDB.length; i++) {
           const log = loggingDB[i];
-          this.addLogToDB(log.data, log.group, { timestamp: log.date });
+          this.addLogToDB(log.data, log.group, { timestamp: log.date, save:false });
         }
+        this.homey.settings.set("BackLog", this.BackLog);
         this.homey.settings.unset("loggingDB");
       }
 
       this.addLogToDB('App "Simple (Sys) Log" started.', SIMPLE_LOG);
+    //throw new Error('test');
 
 
 
-
+      this.log('Simple (Sys) Log onInit - BL.init');
       //try {
       try {
         let bl = await BL.init({
@@ -106,7 +120,7 @@ class simpleLog extends Homey.App {
             "datetime",
             "json"
           ],
-          require:false
+          require: false
         });
         bl.ready.then(async () => {
           await this.initRealApp();
@@ -115,6 +129,8 @@ class simpleLog extends Homey.App {
       } catch (error) {
         this.homey.error('onInit BL init error:', error);
       }
+      
+      //this.log('Simple (Sys) Log onInit - BL.init');
       try {
 
         this.buildCards();
@@ -210,7 +226,7 @@ class simpleLog extends Homey.App {
     if (this.Log) await this.Log.destroy();
   }
 
-  async addLogToDB(data, group, { severity, facility, hostname, timestamp = new Date(), source = 'log' } = {}) {
+  async addLogToDB(data, group, { severity, facility, hostname, timestamp = new Date(), source = 'log', save } = {}) {
     if (!timestamp) timestamp = new Date();
     if (!source) source = 'log';
     if (typeof (timestamp) == 'number' || typeof (timestamp) == 'string') timestamp = new Date(timestamp)
@@ -225,7 +241,7 @@ class simpleLog extends Homey.App {
         let tomuch = this.BackLog.length - DBLIMIT;
         this.BackLog.splice(0, tomuch);
       }
-      this.homey.settings.set("BackLog", this.BackLog);
+      if(save!==false)this.homey.settings.set("BackLog", this.BackLog);
     }
     return true;
   }

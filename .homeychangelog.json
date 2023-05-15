@@ -211,5 +211,14 @@
   },
   "3.0.18": {
     "en": "Removed: Debugging info from the App Settings (diagnostic is to small to work with)."
+  },
+  "3.0.19": {
+    "en": "Debugging: Solving an issue with startup."
+  },
+  "3.0.20": {
+    "en": "Debugging: Solving an issue with startup from old version."
+  },
+  "3.0.21": {
+    "en": "Solved: Transforming old logs into the new format made the app crash with many logs."
   }
 }

@@ -187,5 +187,23 @@
   },
   "3.0.10": {
     "en": "Added: A Debug option in the App Settings - Settings for diagnostics."
+  },
+  "3.0.11": {
+    "en": "Added: More debugging options."
+  },
+  "3.0.12": {
+    "en": "Added: More debugging options."
+  },
+  "3.0.13": {
+    "en": "Added: Debugging logs."
+  },
+  "3.0.14": {
+    "en": "Added: Debugging logs."
+  },
+  "3.0.15": {
+    "en": "Added: Debugging logs."
+  },
+  "3.0.16": {
+    "en": "Improved: Automatic removal of old logs will only show a logline when there were logfiles to be deleted."
   }
 }

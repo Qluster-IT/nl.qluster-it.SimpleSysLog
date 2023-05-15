@@ -379,14 +379,23 @@
 					<div class="col-12 form-label" bl-translate>Automaticly remove logs older than x number of days.</div>
 					<div class="col-12 form-label" bl-translate>Leave empty to not automaticly remove logs rows.</div>
 					<div class="col-12 form-group form-floating">
-						<input type="number" class="form-control hy-nostyle" name="removeLogOlderThanDays" placeholder="Number of days to keep the log" ng-model="view.settings.removeLogOlderThanDays" ng-model-options="{ debounce: 300 }" minlength="1" min="1" step="1"/>
+						<input type="number" class="form-control hy-nostyle" name="removeLogOlderThanDays" placeholder="Number of days to keep the log" ng-model="view.settings.removeLogOlderThanDays" ng-model-options="{ debounce: 300 }" minlength="1" min="1" step="1" />
 						<label class="hy-nostyle" for="xlsxFilename" bl-translate>Number of days to keep the log</label>
-					</div>					
-					
-					<div class="col-12 form-label mt-2" bl-translate>Debug all logs (for diagnostic)</div>
+					</div>
+
+					<div class="col-12 form-label mt-2" bl-translate>Debug all logs (for diagnostic for developer only) - Heavy on memory</div>
 					<div class="col-12 form-group form-check form-switch">
 						<input class="form-check-input hy-nostyle" type="checkbox" role="switch" id="debugLogs" checked ng-model="view.settings.debugLogs" />
 						<label class="form-check-label" for="debugLogs">Debug</label>
+					</div>
+
+					<div class="col-12 form-label mt-2" bl-translate>Include a Logbook into the diagnostic (only on request of developer)</div>
+					<div class="col-12 form-group">
+						<select class="hy-nostyle" type="checkbox" role="switch" id="logBookDiagnostic" ng-model="view.logBookDiagnostic" ng-ignore-dirty>
+							<option></option>
+							<option ng-repeat="logBook in view.logBooks" value="{{logBook.id}}">{{logBook.id}}</option>
+						</select>
+						<button type="button" class="btn homey-button-primary-shadow-full btn-primary" ng-click="submitLogBookForDiagnostic(view.logBookDiagnostic)" ng-disabled="!view.logBookDiagnostic" bl-translate>Submit into diagnostic</button>
 					</div>
 				</div>
 			</div>

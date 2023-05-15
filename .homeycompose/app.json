@@ -1,6 +1,6 @@
 {
   "id": "nl.nielsdeklerk.log",
-  "version": "3.0.10",
+  "version": "3.0.16",
   "sdk": 3,
   "brandColor": "#BC274A",
   "name": {
@@ -79,7 +79,11 @@
   },
   "athomForumDiscussionId": 3052,
   "homeyCommunityTopicId": 77533,
-  "api": {
+  "api": {  
+    "internal": {
+      "method": "POST",
+      "path": "/internal/"
+    },
     "getLogDownloadUrl": {
       "method": "GET",
       "path": "/getlogdownloadurl/:returnType",

@@ -23,7 +23,7 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
     }])
     .controller("simplelogCtrl", ['$scope', '$rootScope', '$timeout', '$compile', '$q', '$bl', 'gridUtil', 'uiGridConstants', '$window', '$http', 'tmhDynamicLocale', function ($scope, $rootScope, $timeout, $compile, $q, $bl, gridUtil, uiGridConstants, $window, $http, tmhDynamicLocale) {
         const vars = $rootScope.vars = $scope.vars = { logCurrentPage: 1, logPerPage: 100, logs: [] };
-        const view = $rootScope.view = $scope.view = { lang: 'en', severities: {}, facilities: {}, id: 'log', settings: {}, showHints: false, downloadFileLink: undefined, gridLoaded: false };
+        const view = $rootScope.view = $scope.view = { lang: 'en', severities: {}, facilities: {}, id: 'log', settings: {}, showHints: false, downloadFileLink: undefined, gridLoaded: false, logBookDiagnostic:null, logBooks:null };
         $scope.homey = $window.Homey;
 
 
@@ -212,12 +212,20 @@ if (typeof window.angular !== 'undefined') angular.module('simplelog', [
                     view.isBusy = false;
                 });
             });
+            $bl.api("POST", "/internal", { action: 'getLogBookIDs' }, (x) => {
+                view.logBooks = x;
+            });
 
             homey.ready();
 
         };
         let columnWidhtSet = false;
 
+        $scope.submitLogBookForDiagnostic = function(logBookID) {
+            $bl.api("POST", "/internal", { action: 'submitLogBookForDiagnostic', logBookID }, (x) => {
+                view.logBookDiagnostic = null;
+            });
+        }
         $scope.logGridOptions = {
             paginationPageSizes: [10, 15, 20, 25, 50, 75, 100, 250],//, 500, 1000],
             paginationPageSize: 50,

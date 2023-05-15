@@ -36,67 +36,101 @@ function isArray(a) {
 //App Class...
 class simpleLog extends Homey.App {
   async onInit() {
-    this.log('Simple (Sys) Log onInit');
-    homey = this.homey;
-    if (process.env.DEBUG === '1' || false) {
-      try {
-        try {
-          
-          require('inspector').open(9229, '0.0.0.0', false);
-          require('inspector').close();
-          require('inspector').open(9218, '0.0.0.0', true);
-          //require('inspector').waitForDebugger();
-        } catch (error) {          
-          //require('inspector').open(9218, '0.0.0.0', false);
+    let cardsBuild = false;
+    try {
+
+      this.log('Simple (Sys) Log onInit');
+      homey = this.homey;
+
+      if (process.env.DEBUG === '1' || false) {
+        require('inspector').open(9218, '0.0.0.0', true);
+        // if(this.homey.platform=='local' && this.homey.platformVersion==1) {      
+        //   require('inspector').open(9218, '0.0.0.0', true);
+        // } else {
+        //   try {
+        //     require('inspector').waitForDebugger();          
+        //   } catch (error) {
+        //     require('inspector').open(9229, '0.0.0.0', false);
+        //   }
+        // }
+        // try {
+        //   try {
+
+        //     // require('inspector').open(9229, '0.0.0.0', false);
+        //     // require('inspector').close();
+        //     // require('inspector').open(9218, '0.0.0.0', true);
+        //     require('inspector').waitForDebugger();
+        //   } catch (error) {
+        //     require('inspector').open(9218, '0.0.0.0', true);
+        //   }
+        // }
+        // catch (error) {
+        //   //require('inspector').open(9218, '0.0.0.0', true);
+        // }
+      }
+      //else try{ require('inspector').open(9218, '0.0.0.0', false); } catch(ex){}
+
+      this.Loggers = [[], [], [], [], [], [], [], []];
+
+      this.BackLog = this.homey.settings.get("BackLog");
+      if (!isArray(this.BackLog)) {
+        this.BackLog = [];
+        this.homey.settings.set("BackLog", this.BackLog);
+      } else this.BackLog = this.BackLog.map(x => { x[2].timestamp = new Date(x[2].timestamp); return x; });
+      //this.log(this.BackLog);
+
+      /// Conversion into the new BackLog model.
+      let loggingDB = this.homey.settings.get("loggingDB");
+      if (isArray(loggingDB)) {
+
+        this.addLogToDB('Mutating old Log to the new Simple (Sys) LOG', SIMPLE_LOG);
+
+        for (let i = 0; i < loggingDB.length; i++) {
+          const log = loggingDB[i];
+          this.addLogToDB(log.data, log.group, { timestamp: log.date });
         }
+        this.homey.settings.unset("loggingDB");
       }
-      catch (error) {
-        //require('inspector').open(9218, '0.0.0.0', true);
+
+      this.addLogToDB('App "Simple (Sys) Log" started.', SIMPLE_LOG);
+
+
+
+
+      //try {
+      try {
+        let bl = await BL.init({
+          homey: this.homey,
+          modules: [
+            '_',
+            "datetime",
+            "json"
+          ]
+        });
+        bl.ready.then(async () => {
+          await this.initRealApp();
+        });
+
+      } catch (error) {
+        this.homey.error('onInit BL init error:', error);
+      }
+      try {
+
+        this.buildCards();
+        cardsBuild = true;
+      } catch (error) {
+
+      }
+
+    } catch (error) {
+      this.homey.error('onInit error:', error);
+      try {
+
+        if (!cardsBuild) this.buildCards();
+      } catch (error2) {
+        this.homey.error('onInit buildCards error:', error2);
       }
     }
-    //else try{ require('inspector').open(9218, '0.0.0.0', false); } catch(ex){}
-
-    this.Loggers = [[],[],[],[],[],[],[],[]];
-
-    this.BackLog = this.homey.settings.get("BackLog");
-    if (!isArray(this.BackLog)) {
-      this.BackLog = [];
-      this.homey.settings.set("BackLog", this.BackLog);
-    } else this.BackLog = this.BackLog.map(x=>{ x[2].timestamp = new Date(x[2].timestamp);return x;});
-    //this.log(this.BackLog);
-
-    /// Conversion into the new BackLog model.
-    let loggingDB = this.homey.settings.get("loggingDB");
-    if (isArray(loggingDB)) {
-
-      this.addLogToDB('Mutating old Log to the new Simple (Sys) LOG', SIMPLE_LOG);
-
-      for (let i = 0; i < loggingDB.length; i++) {
-        const log = loggingDB[i];
-        this.addLogToDB(log.data, log.group, { timestamp: log.date });
-      }
-      this.homey.settings.unset("loggingDB");
-    }
-
-    this.addLogToDB('App "Simple (Sys) Log" started.', SIMPLE_LOG);
-
-
-
-
-    //try {
-    let bl = await BL.init({
-      homey: this.homey,
-      modules: [
-        '_',
-        "datetime",
-        "json"
-      ]
-    });
-    bl.ready.then(async () => {
-      await this.initRealApp();
-    });
-
-    this.buildCards();
 
     this.log('Simple (Sys) Log onInit finished');
     //this.homey.log(this.homey.settings.get('___TEST___'));
@@ -116,12 +150,12 @@ class simpleLog extends Homey.App {
       this.homey.settings.unset("BackLog");
     }
 
-    
-    if(false) { //TEST
+
+    if (false) { //TEST
       let __test__ = BL.homey.settings.get('__test__');
-      if(__test__ && __test__.logs)__test__.logs.pop();
-      for (let i = 0; i < 100; i++) {        
-          BL.homey.settings.set('__test2__', "asd");  
+      if (__test__ && __test__.logs) __test__.logs.pop();
+      for (let i = 0; i < 100; i++) {
+        BL.homey.settings.set('__test2__', "asd");
       }
     }
 
@@ -143,7 +177,7 @@ class simpleLog extends Homey.App {
       }
     });
     this.getSettings();
-    
+
     this.log('Simple (Sys) Log initRealApp finished');
   }
 
@@ -156,15 +190,14 @@ class simpleLog extends Homey.App {
     if (!this.settings.xlsxFilename && (changed = true)) this.settings.xlsxFilename = "Logs_{[date('yyyy-MM-dd_HH-mm-ss')]}.xlsx";
     if (!this.settings.includeUtcInExcel && (changed = true)) this.settings.includeUtcInExcel = false;
     if (changed) this.homey.settings.set('settings', this.settings);
-    if(this.settings.removeLogOlderThanDays) this.updateAutomaticlyRemovalOfLogs(this.settings.removeLogOlderThanDays);
+    if (this.settings.removeLogOlderThanDays) this.updateAutomaticlyRemovalOfLogs(this.settings.removeLogOlderThanDays);
   }
 
   updateAutomaticlyRemovalOfLogs(days) {
-    if(days) this.automaticlyRemovalOfLogsTimer = this.homey.setInterval(async (days)=> {
-      this.homey.log('days', days);
+    if (days) this.automaticlyRemovalOfLogsTimer = this.homey.setInterval(async (days) => {
       await this.clearLog(days);
-    }, 60*60*1_000, days);
-    else if(this.automaticlyRemovalOfLogsTimer) {
+    }, 60 * 60 * 1_000, days);
+    else if (this.automaticlyRemovalOfLogsTimer) {
       this.homey.clearInterval(this.automaticlyRemovalOfLogsTimer);
       delete this.automaticlyRemovalOfLogsTimer;
     }
@@ -179,7 +212,7 @@ class simpleLog extends Homey.App {
   async addLogToDB(data, group, { severity, facility, hostname, timestamp = new Date(), source = 'log' } = {}) {
     if (!timestamp) timestamp = new Date();
     if (!source) source = 'log';
-    if(typeof(timestamp)=='number' || typeof(timestamp)=='string') timestamp = new Date(timestamp)
+    if (typeof (timestamp) == 'number' || typeof (timestamp) == 'string') timestamp = new Date(timestamp)
 
     let args = [data, group, { severity, facility, hostname, timestamp, source }];
 
@@ -211,8 +244,8 @@ class simpleLog extends Homey.App {
     await this.Log.writeLine(args);
 
     if (source === 'log') {
-      
-      let sev = Number.parseInt(severity ||'6');
+
+      let sev = Number.parseInt(severity || '6');
       for (let i = sev; i < this.Loggers.length; i++) {
         const loggers = this.Loggers[i];
         for (const logger of loggers) {
@@ -220,13 +253,13 @@ class simpleLog extends Homey.App {
         }
       }
     }
-      // for (const _severity of Object.keys(this.Loggers)) {
-      //   if (Number.parseInt(_severity) <= Number.parseInt(severity) && this.Loggers[_severity] && this.Loggers[_severity].length > 0)
+    // for (const _severity of Object.keys(this.Loggers)) {
+    //   if (Number.parseInt(_severity) <= Number.parseInt(severity) && this.Loggers[_severity] && this.Loggers[_severity].length > 0)
 
-      //     for (const logger of this.Loggers[_severity]) {
-      //       await logger.log({ data, group, severity: severity || '6', facility: facility || '16', timestamp, hostname });
-      //     }
-      // }
+    //     for (const logger of this.Loggers[_severity]) {
+    //       await logger.log({ data, group, severity: severity || '6', facility: facility || '16', timestamp, hostname });
+    //     }
+    // }
   }
 
   apiPutAddlog(data) {
@@ -278,14 +311,14 @@ class simpleLog extends Homey.App {
 
   buildCards() {
 
-     // FLOW Action Card, Input_group_log
-     let actionAutomater_log = this.homey.flow.getActionCard("Automater_log");
-     actionAutomater_log.registerRunListener(async (args, state) => {
-       await this.addLogToDB(args.log, args.group, args);
-       return true;
-     });
+    // FLOW Action Card, Input_group_log
+    let actionAutomater_log = this.homey.flow.getActionCard("Automater_log");
+    actionAutomater_log.registerRunListener(async (args, state) => {
+      await this.addLogToDB(args.log, args.group, args);
+      return true;
+    });
 
-     
+
 
     // FLOW Action Card, Input_log
     let actionInputLog = this.homey.flow.getActionCard("Input_log");
@@ -346,13 +379,13 @@ class simpleLog extends Homey.App {
     // FLOW Action Card, get_log
     let actionGetLog = this.homey.flow.getActionCard("get_log");
     actionGetLog.registerRunListener(async (args, state) => {
-      if (!this.Log && args.returnType==='json') return { log: JSON.stringify(await homey.app.getBackLog()) };
+      if (!this.Log && args.returnType === 'json') return { log: JSON.stringify(await homey.app.getBackLog()) };
       let s;
       try {
-        if(!this.Log)  throw new Error(this.homey.__('bllNotRunning'));
+        if (!this.Log) throw new Error(this.homey.__('bllNotRunning'));
         const t = await this.Log.getLogs(args);
         s = t.json || t.csv || t.xlsx;
-        if(!s) {
+        if (!s) {
           this.homey.log('s is empty, t is ', t, ', args is ', args);
         }
       } catch (error) {

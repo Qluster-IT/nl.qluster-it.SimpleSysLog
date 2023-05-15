@@ -2,6 +2,15 @@
 const { BL } = require("betterlogiclibrary");
 
 module.exports = {
+  async internal({ homey, body: { action, logBookID  } }) {
+    switch (action) {
+      case 'getLogBookIDs':
+        return homey.app.Log.LogBooks;
+      case 'submitLogBookForDiagnostic':
+        return homey.app.Log.submitLogBookForDiagnostic(logBookID);
+    }
+  },
+
   async getLogDownloadUrl({ homey, params: { returnType } }) {
     let callback = (link) => {
       homey.api.realtime('downloadFileReady', link)
@@ -19,7 +28,7 @@ module.exports = {
           homey.setTimeout(async () => {
             const logs = await homey.app.Log.getLogs({ returnType: 'csv' });
             await BL.setDownloadUrl({ link, text: logs.csv, callback });
-          },0);
+          }, 0);
           return link;
         }
           break;
@@ -50,7 +59,7 @@ module.exports = {
           homey.setTimeout(async () => {
             const logs = await homey.app.Log.getLogs({ returnType: 'json' });
             await BL.setDownloadUrl({ link, text: JSON.stringify(logs.logs), callback });
-          },0);
+          }, 0);
           return link;
         }
       }

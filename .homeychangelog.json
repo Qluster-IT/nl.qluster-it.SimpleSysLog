@@ -223,5 +223,8 @@
   },
   "3.0.22": {
     "en": "Bugfixing: Rows sometimes have empty messages, trying to find the issue."
+  },
+  "3.0.23": {
+    "en": "Resolved: Rows sometimes have empty messages, the are now automaticly fixed."
   }
 }

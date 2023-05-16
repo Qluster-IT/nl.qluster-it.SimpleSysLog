@@ -220,5 +220,8 @@
   },
   "3.0.21": {
     "en": "Solved: Transforming old logs into the new format made the app crash with many logs."
+  },
+  "3.0.22": {
+    "en": "Bugfixing: Rows sometimes have empty messages, trying to find the issue."
   }
 }

@@ -38,7 +38,9 @@
 
 	<script type="text/javascript">
 		console.log(window);
-		if (typeof window.angular === 'undefined') {
+		if (!window.hasOwnProperty('angular')) {
+		
+		//if (typeof window.angular === 'undefined') {
 			//Homey.alert('The Better Logic Library App needs to be installed to run the settings.\nInstall the Better Logic Library App to continue to use this app.');
 			let Homey;
 			let _id = -1;

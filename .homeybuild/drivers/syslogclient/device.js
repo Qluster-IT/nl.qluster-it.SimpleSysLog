@@ -166,7 +166,7 @@ class SyslogClientDevice extends Homey.Device {
 		// });
 	}
 
-	async log({ message, severity, facility, hostname, timestamp, data, group }) {
+	async log({ message, severity, facility, hostname, timestamp, data, group, source = 'syslogclient' }) {
 		if (severity) severity = Number.parseInt(severity); else severity = this.settings.severity;
 		if (facility) facility = Number.parseInt(facility); else facility = this.settings.facility;
 		const appName = group || this.appName;
@@ -179,7 +179,7 @@ class SyslogClientDevice extends Homey.Device {
 
 		if (!message && data) message = data;
 
-		if (message && this.settings.log_syslogs === true) this.homey.app.addLogToDB(message, appName, { facility, severity, timestamp, source: 'syslogclient' });
+		if (message && this.settings.log_syslogs === true && source!=='log' ) this.homey.app.addLogToDB(message, appName, { facility, severity, timestamp, source: 'syslogclient' });
 
 
 		opts.app = opts.app.replaceAll(' ', '\t');

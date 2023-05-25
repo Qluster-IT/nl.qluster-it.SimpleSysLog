@@ -273,7 +273,7 @@ class simpleLog extends Homey.App {
       for (let i = sev; i < this.Loggers.length; i++) {
         const loggers = this.Loggers[i];
         for (const logger of loggers) {
-          await logger.log({ data, group, severity: severity || '6', facility: facility || '16', timestamp, hostname });
+          await logger.log({ data, group, severity: severity || '6', facility: facility || '16', timestamp, hostname, source  });
         }
       }
     }

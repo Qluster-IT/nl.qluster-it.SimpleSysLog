@@ -229,5 +229,8 @@
   },
   "3.0.24": {
     "en": "Bugixing: Settingsscreen not opening correct on iOS."
+  },
+  "3.0.25": {
+    "en": "Bugixing: Having a Syslogclient setup might duplicate logs."
   }
 }

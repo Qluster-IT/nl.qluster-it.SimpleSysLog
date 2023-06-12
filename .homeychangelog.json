@@ -232,5 +232,8 @@
   },
   "3.0.25": {
     "en": "Bugixing: Having a Syslogclient setup might duplicate logs."
+  },
+  "3.0.26": {
+    "en": "Added: Setting to disable [Group] in the Timeline."
   }
 }

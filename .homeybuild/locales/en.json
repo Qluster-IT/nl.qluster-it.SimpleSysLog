@@ -37,7 +37,7 @@
     "Automaticly remove logs older than x number of days.":"Automaticly remove logs older than x number of days.",
     "Leave empty to not automaticly remove logs rows.":"Leave empty to not automaticly remove logs rows.",
     "Number of days to keep the log":"Number of days to keep the log",
-    "":"",
+    "Debug":"Debug",
     "":"",
     "":"",
     "":"",

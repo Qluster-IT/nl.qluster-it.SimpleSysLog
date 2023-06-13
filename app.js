@@ -1,7 +1,7 @@
 "use strict";
 const { BL } = require("betterlogiclibrary");
 const Homey = require("homey");
-const { Log } = require("./lib/Log");
+const { Log, SEVERITIES, FACILITIES } = require("./lib/Log");
 
 const DBLIMIT = 2000;
 
@@ -145,7 +145,7 @@ class simpleLog extends Homey.App {
         this.buildCards();
         cardsBuild = true;
       } catch (error) {
-
+        this.error(error);
       }
 
     } catch (error) {
@@ -217,7 +217,7 @@ class simpleLog extends Homey.App {
 
     if (changed) this.homey.settings.set('settings', this.settings);
     if (this.settings.removeLogOlderThanDays) this.updateAutomaticlyRemovalOfLogs(this.settings.removeLogOlderThanDays);
-    
+
   }
 
   updateAutomaticlyRemovalOfLogs(days) {
@@ -242,8 +242,13 @@ class simpleLog extends Homey.App {
     if (typeof (timestamp) == 'number' || typeof (timestamp) == 'string') timestamp = new Date(timestamp)
 
     let args = [data, group, { severity, facility, hostname, timestamp, source }];
-
-    if (this.Log) return await this._addLogToDB(...args);
+    
+    
+    if (this.Log) {
+      let r = await this._addLogToDB(...args);
+      await this.triggerLogGenerated(...args);
+      return r;
+    }
     else {
       if (!this.BackLog) this.BackLog = [];
       this.BackLog.push(args);
@@ -252,8 +257,22 @@ class simpleLog extends Homey.App {
         this.BackLog.splice(0, tomuch);
       }
       if (save !== false) this.homey.settings.set("BackLog", this.BackLog);
-    }
+    }    
+    await this.triggerLogGenerated(...args);
     return true;
+  }
+  async triggerLogGenerated(data, group, { severity, facility, hostname, timestamp, source }) {
+    if(!this.triggerLog_generated) return;
+    let _severity = severity ? SEVERITIES[severity] : '';
+    let _facility = facility ? FACILITIES[facility] : '';
+    severity = severity ? Number.parseInt(severity) : -1;
+    facility = facility ? Number.parseInt(facility) : -1;
+    return await this.triggerLog_generated.trigger({
+      log: data, group,
+      severity: _severity, severityId: severity,
+      facility: _facility, facilityId: facility,
+      hostname : hostname || '', timestamp:timestamp.getTime(), source : source || ''
+    }, { group, severity, facility });
   }
 
   /**
@@ -276,7 +295,7 @@ class simpleLog extends Homey.App {
       for (let i = sev; i < this.Loggers.length; i++) {
         const loggers = this.Loggers[i];
         for (const logger of loggers) {
-          await logger.log({ data, group, severity: severity || '6', facility: facility || '16', timestamp, hostname, source  });
+          await logger.log({ data, group, severity: severity || '6', facility: facility || '16', timestamp, hostname, source });
         }
       }
     }
@@ -345,6 +364,12 @@ class simpleLog extends Homey.App {
       return true;
     });
 
+    this.triggerLog_generated = this.homey.flow.getTriggerCard("Log_generated");
+    this.triggerLog_generated.registerRunListener(async (args, state) => {
+      return (!args.group || args.group == 'undefined' || args.group == state.group) &&
+        (!args.severity || args.severity == 'undefined' || args.severity == state.severity) &&
+        (!args.facility || args.facility == 'undefined' || args.facility == state.facility);
+    });
 
 
     // FLOW Action Card, Input_log
@@ -380,7 +405,7 @@ class simpleLog extends Homey.App {
     let actionInputGroupLogTimeline = this.homey.flow.getActionCard("Input_group_logtimeline");
     actionInputGroupLogTimeline.registerRunListener(async (args, state) => {
       await this.addLogToDB(args.log, args.group, args);
-      await this.addLogToTimeline((this.settings.groupInTimeline ? `[${args.group}] `: '') +  `${args.log}`);
+      await this.addLogToTimeline((this.settings.groupInTimeline ? `[${args.group}] ` : '') + `${args.log}`);
       return true;
     });
 

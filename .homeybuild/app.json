@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "nl.nielsdeklerk.log",
-  "version": "3.0.26",
+  "version": "3.0.27",
   "sdk": 3,
   "brandColor": "#BC274A",
   "name": {
@@ -109,6 +109,283 @@
     }
   },
   "flow": {
+    "triggers": [
+      {
+        "id": "Log_generated",
+        "title": {
+          "en": "A log is generated",
+          "nl": "Een log is toegevoegd"
+        },
+        "titleFormatted": {
+          "en": "When a log is generated (optionally: under [[group]] with [[severity]] of [[facility]])",
+          "nl": "Wanneer een log is toegevoegd (optioneel: onder [[group]] met [[severity]] van [[facility]])"
+        },
+        "args": [
+          {
+            "name": "group",
+            "required": false,
+            "type": "text",
+            "placeholder": {
+              "en": "App/group",
+              "nl": "App/groep"
+            }
+          },
+          {
+            "type": "dropdown",
+            "required": false,
+            "name": "severity",
+            "placeholder": {
+              "en": "Severity",
+              "nl": "Niveau"
+            },
+            "title": {
+              "en": "Severity",
+              "nl": "Niveau"
+            },
+            "values": [
+              {
+                "id": "0",
+                "label": {
+                  "en": "Emergency"
+                }
+              },
+              {
+                "id": "1",
+                "label": {
+                  "en": "Alert"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Critical"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Error"
+                }
+              },
+              {
+                "id": "4",
+                "label": {
+                  "en": "Warning"
+                }
+              },
+              {
+                "id": "5",
+                "label": {
+                  "en": "Notice"
+                }
+              },
+              {
+                "id": "6",
+                "label": {
+                  "en": "Info"
+                }
+              },
+              {
+                "id": "7",
+                "label": {
+                  "en": "Debug"
+                }
+              }
+            ]
+          },
+          {
+            "type": "dropdown",
+            "required": false,
+            "name": "facility",
+            "placeholder": {
+              "en": "Category",
+              "nl": "Categorie"
+            },
+            "values": [
+              {
+                "id": "0",
+                "label": {
+                  "en": "Kernel"
+                }
+              },
+              {
+                "id": "1",
+                "label": {
+                  "en": "User"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Mail"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "System"
+                }
+              },
+              {
+                "id": "4",
+                "label": {
+                  "en": "Authorization"
+                }
+              },
+              {
+                "id": "5",
+                "label": {
+                  "en": "Syslog"
+                }
+              },
+              {
+                "id": "6",
+                "label": {
+                  "en": "LPR"
+                }
+              },
+              {
+                "id": "7",
+                "label": {
+                  "en": "News"
+                }
+              },
+              {
+                "id": "8",
+                "label": {
+                  "en": "UUCP"
+                }
+              },
+              {
+                "id": "9",
+                "label": {
+                  "en": "Cron"
+                }
+              },
+              {
+                "id": "10",
+                "label": {
+                  "en": "Deamon"
+                }
+              },
+              {
+                "id": "11",
+                "label": {
+                  "en": "FTP"
+                }
+              },
+              {
+                "id": "12",
+                "label": {
+                  "en": "NTP"
+                }
+              },
+              {
+                "id": "13",
+                "label": {
+                  "en": "Security"
+                }
+              },
+              {
+                "id": "14",
+                "label": {
+                  "en": "Console"
+                }
+              },
+              {
+                "id": "15",
+                "label": {
+                  "en": "Clock"
+                }
+              },
+              {
+                "id": "16",
+                "label": {
+                  "en": "Flow"
+                }
+              },
+              {
+                "id": "17",
+                "label": {
+                  "en": "Device"
+                }
+              },
+              {
+                "id": "18",
+                "label": {
+                  "en": "App"
+                }
+              }
+            ]
+          }
+        ],
+        "tokens": [
+          {
+            "name": "log",
+            "type": "string",
+            "title": {
+              "en": "Log"
+            }
+          },
+          {
+            "name": "group",
+            "type": "string",
+            "title": {
+              "en": "Group"
+            }
+          },
+          {
+            "name": "severity",
+            "type": "string",
+            "title": {
+              "en": "Severity"
+            }
+          },
+          {
+            "name": "severityId",
+            "type": "number",
+            "title": {
+              "en": "Severity ID"
+            }
+          },
+          {
+            "name": "facility",
+            "type": "string",
+            "title": {
+              "en": "Facility"
+            }
+          },
+          {
+            "name": "facilityId",
+            "type": "number",
+            "title": {
+              "en": "Facility ID"
+            }
+          },
+          {
+            "name": "hostname",
+            "type": "string",
+            "title": {
+              "en": "Hostname"
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "number",
+            "title": {
+              "en": "Timestamp"
+            }
+          },
+          {
+            "name": "source",
+            "type": "string",
+            "title": {
+              "en": "Source"
+            }
+          }
+        ]
+      }
+    ],
     "actions": [
       {
         "id": "Automater",

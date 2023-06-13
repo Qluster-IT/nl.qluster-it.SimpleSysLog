@@ -241,5 +241,8 @@
   },
   "3.0.28": {
     "en": "Added: The facilities to all flowcards."
+  },
+  "3.0.29": {
+    "en": "Added: Hidden flowcards for the Script to add log to all flows."
   }
 }

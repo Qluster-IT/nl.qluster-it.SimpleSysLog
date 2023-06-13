@@ -364,6 +364,13 @@ class simpleLog extends Homey.App {
       return true;
     });
 
+    let actionAutomater_condition_log = this.homey.flow.getConditionCard("Automater_condition_log");
+    actionAutomater_condition_log.registerRunListener(async (args, state) => {
+      await this.addLogToDB(args.log, args.group, args);
+      return true;
+    });
+
+
     this.triggerLog_generated = this.homey.flow.getTriggerCard("Log_generated");
     this.triggerLog_generated.registerRunListener(async (args, state) => {
       return (!args.group || args.group == 'undefined' || args.group == state.group) &&

@@ -204,6 +204,30 @@
             "label": {
               "en": "App"
             }
+          },
+          {
+            "id": "19",
+            "label": {
+              "en": "Scene"
+            }
+          },
+          {
+            "id": "20",
+            "label": {
+              "en": "Trigger"
+            }
+          },
+          {
+            "id": "21",
+            "label": {
+              "en": "Condition"
+            }
+          },
+          {
+            "id": "22",
+            "label": {
+              "en": "Action"
+            }
           }
         ]
     }

@@ -33,15 +33,16 @@
 
 	<script type="text/javascript" src="../../net.i-dev.betterlogic/assets/js/bll.module.js"></script>
 	<link rel="stylesheet" href="../../net.i-dev.betterlogic/assets/css/bll.css" type="text/css" />
+	
 	<script type="text/javascript" src="simplelog.module.js"></script>
+
 	<link rel="stylesheet" href="../assets/css/default.css" type="text/css" />
 
 	<script type="text/javascript">
-		console.log(window);
-		console.log(window.hasOwnProperty('angular'));
-		if (!window.hasOwnProperty('angular')) {
 		
-		//if (typeof window.angular === 'undefined') {
+		if (!window.hasOwnProperty('angular')) {
+
+			//if (typeof window.angular === 'undefined') {
 			//Homey.alert('The Better Logic Library App needs to be installed to run the settings.\nInstall the Better Logic Library App to continue to use this app.');
 			let Homey;
 			let _id = -1;
@@ -50,13 +51,14 @@
 			let show_time;
 			let show_td;
 			let show_ft;
+			var loaded = false;
 
-			function onHomeyReady(HomeyReady) {
+			window.onHomeyReady = function(HomeyReady)  {
 				Homey = HomeyReady;
 				console.log("Get Ready...");
 				Homey.ready();
 				loaddisplayParameters();
-				refreshLog();
+				refreshLog();			
 			}
 
 			function clear_simpleLOG() {
@@ -159,7 +161,7 @@
 			}
 
 			function refreshLog() {
-				if (document.getElementById("show_refresh").checked === true) {
+				if (!loaded || document.getElementById("show_refresh").checked === true) {
 					show_log();
 				}
 				setTimeout(refreshLog, 1000);
@@ -170,7 +172,7 @@
 					_id = -1;
 				}
 				//console.log("Show some logging...");
-				Homey.get("BackLog", function (err, logging) {
+				Homey.get("BackLog", (err, logging) => {
 					if (err) {
 						document.getElementById("show_refresh").checked = false;
 						return console.error("Could not get log", err);
@@ -195,6 +197,7 @@
 							}
 						}
 						document.getElementById("logtextarea").innerHTML = log;
+						loaded = true;
 						_id = logging.length;
 					}
 				});
@@ -273,10 +276,11 @@
 				Homey.openURL(encodedUri);
 			}
 
-		} else {
-			function onHomeyReady(Homey) {
-				//if (typeof window.angular !== 'undefined') 
-				angular.bootstrap(document, ['simplelog']);
+		}
+		else {
+			window.onHomeyReady = function(Homey) {
+				window.angular.bootstrap(document, ['simplelog']);
+				
 			}
 		}
 
@@ -423,7 +427,7 @@
 						<input class="form-check-input hy-nostyle" type="checkbox" role="switch" id="debugLogs" checked ng-model="view.settings.debugLogs" />
 						<label class="form-check-label" for="debugLogs">Debug</label>
 					</div>
-<!-- 
+					<!-- 
 					<div class="col-12 form-label mt-2" bl-translate>Include a Logbook into the diagnostic (only on request of developer)</div>
 					<div class="col-12 form-group mt-2">
 						<select class="hy-nostyle" type="checkbox" role="switch" id="logBookDiagnostic" ng-model="view.logBookDiagnostic" ng-ignore-dirty>
@@ -484,12 +488,6 @@
 	</script>
 
 
-	<!-- <script>
-		function onHomeyReady(Homey) {
-			Homey.ready();
-			if (typeof window.angular !== 'undefined') angular.bootstrap(document, ['simplelog']);
-		}
-	</script> -->
 </body>
 
 </html>

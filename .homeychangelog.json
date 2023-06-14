@@ -244,5 +244,8 @@
   },
   "3.0.29": {
     "en": "Added: Hidden flowcards for the Script to add log to all flows."
+  },
+  "3.0.30": {
+    "en": "Resolved: \"Old\" Simple Log Startup on iOS devices."
   }
 }

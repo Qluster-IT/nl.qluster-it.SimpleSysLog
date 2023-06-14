@@ -2,16 +2,25 @@
 const { BL } = require("betterlogiclibrary");
 
 module.exports = {
-  async internal({ homey, body: { action, logBookID, type  } }) {
+  async internal({ homey, body: { action, logBookID, type } }) {
     switch (action) {
       case 'getLogBookIDs':
         return homey.app.Log.LogBooks;
       case 'submitLogBookForDiagnostic':
         return homey.app.Log.submitLogBookForDiagnostic(logBookID);
       case 'retrieveLogBookDiagnostic':
-        let s = homey.app.Log.retrieveLogBookDiagnostic(logBookID, );
-        if(type=='base64')  return Buffer.from(s).toString('base64');
+        let s = homey.app.Log.retrieveLogBookDiagnostic(logBookID,);
+        if (type == 'base64') return Buffer.from(s).toString('base64');
         else return s;
+      case 'writelogs':
+        let date = new Date();
+        for (let i = 0; i < 100; i++) {
+          date = new Date(date.setDate(date.getDate() - 1));
+          for (let j = 0; j < 10; j++) {
+            await homey.app.addLogToDB('Test message voor here is this', undefined, { severity: j === 0 ? 4 : undefined, timestamp: date });
+          }
+        }
+        break;
     }
   },
 

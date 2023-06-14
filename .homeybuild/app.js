@@ -165,6 +165,7 @@ class simpleLog extends Homey.App {
     this.log('Simple (Sys) Log initRealApp');
     this.Log = new Log({ filePath: '/userdata/' });
     await this.Log.init();
+
     if (this.BackLog) {
       for (let i = 0; i < this.BackLog.length; i++) {
         const backLog = this.BackLog[i];
@@ -189,7 +190,7 @@ class simpleLog extends Homey.App {
       //date = new Date(date.setMonth(date.getMonth()-8));
       for (let i = 0; i < 100; i++) {
         date = new Date(date.setDate(date.getDate() - 1));
-        for (let j = 0; j < 1000; j++) {
+        for (let j = 0; j < 10; j++) {
           await this.addLogToDB('Test message voor here is this', undefined, { severity: j === 0 ? 4 : undefined, timestamp: date });
         }
       }
@@ -235,7 +236,9 @@ class simpleLog extends Homey.App {
     //this.addLogToDB('SSL onUninit');
     if (this.Log) await this.Log.destroy();
   }
-
+  // addLogToDB(data, group, { severity, facility, hostname, timestamp = new Date(), source = 'log', save } = {}) {
+  //   return true;
+  // }
   async addLogToDB(data, group, { severity, facility, hostname, timestamp = new Date(), source = 'log', save } = {}) {
     if (!timestamp) timestamp = new Date();
     if (!source) source = 'log';
@@ -245,7 +248,11 @@ class simpleLog extends Homey.App {
     
     
     if (this.Log) {
+      // return true;
+      // let _r = await this._addLogToDB('', undefined);
+      // return true;
       let r = await this._addLogToDB(...args);
+      //return r;
       await this.triggerLogGenerated(...args);
       return r;
     }
@@ -268,7 +275,7 @@ class simpleLog extends Homey.App {
     severity = severity ? Number.parseInt(severity) : -1;
     facility = facility ? Number.parseInt(facility) : -1;
     return await this.triggerLog_generated.trigger({
-      log: data, group,
+      log: data, group : group || '',
       severity: _severity, severityId: severity,
       facility: _facility, facilityId: facility,
       hostname : hostname || '', timestamp:timestamp.getTime(), source : source || ''
@@ -285,8 +292,8 @@ class simpleLog extends Homey.App {
     // checkSurplusEntries();
     // loggingDB.push({ data, group, date: timestamp });
     // this.homey.settings.set("loggingDB", loggingDB);
-
-    let args = { message: data, app: group, severity, facility, hostname, timestamp };
+    //return;
+    const args = { message: data, app: group, severity, facility, hostname, timestamp };
     await this.Log.writeLine(args);
 
     if (source === 'log') {

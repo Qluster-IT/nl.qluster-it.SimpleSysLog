@@ -253,7 +253,8 @@ class simpleLog extends Homey.App {
       // return true;
       let r = await this._addLogToDB(...args);
       //return r;
-      await this.triggerLogGenerated(...args);
+      if (save !== false) this.triggerLogGenerated(...args);//.then(()=>{}).catch(()=>{});
+      //await this.triggerLogGenerated(...args);
       return r;
     }
     else {
@@ -265,21 +266,23 @@ class simpleLog extends Homey.App {
       }
       if (save !== false) this.homey.settings.set("BackLog", this.BackLog);
     }    
-    await this.triggerLogGenerated(...args);
+    if (save !== false) this.triggerLogGenerated(...args);//.then(()=>{}).catch(()=>{});
     return true;
   }
-  async triggerLogGenerated(data, group, { severity, facility, hostname, timestamp, source }) {
+
+  triggerLogGenerated(data, group, { severity, facility, hostname, timestamp, source }) {
     if(!this.triggerLog_generated) return;
     let _severity = severity ? SEVERITIES[severity] : '';
     let _facility = facility ? FACILITIES[facility] : '';
     severity = severity ? Number.parseInt(severity) : -1;
     facility = facility ? Number.parseInt(facility) : -1;
-    return await this.triggerLog_generated.trigger({
+    this.triggerLog_generated.trigger({
       log: data, group : group || '',
       severity: _severity, severityId: severity,
       facility: _facility, facilityId: facility,
       hostname : hostname || '', timestamp:timestamp.getTime(), source : source || ''
-    }, { group, severity, facility });
+    }, { group, severity, facility }).then(()=>{}).catch(()=>{});
+    return true;
   }
 
   /**

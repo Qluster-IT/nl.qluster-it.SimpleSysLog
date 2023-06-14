@@ -247,5 +247,11 @@
   },
   "3.0.30": {
     "en": "Resolved: \"Old\" Simple Log Startup on iOS devices."
+  },
+  "3.0.31": {
+    "en": "Improved: From now on, logs will be counted."
+  },
+  "3.0.32": {
+    "en": "Improved: From now on, logs will be counted."
   }
 }

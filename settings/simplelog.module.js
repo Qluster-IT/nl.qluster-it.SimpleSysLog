@@ -108,7 +108,8 @@ if (window.hasOwnProperty('angular'))
                 if (lastLog) opt.lastLog = lastLog;
 
                 await $bl.api("POST", "/", opt, (x) => {
-                    vars.logTotal = ($scope.logGridApi.pagination.getPage() - 1) * $scope.logGridOptions.paginationPageSize + (vars.logs = x.logs).length + 1;
+                    vars.logs = x.logs;
+                    vars.logTotal = x.count || (($scope.logGridApi.pagination.getPage() - 1) * $scope.logGridOptions.paginationPageSize + vars.logs.length + 1);
                     $scope.logGridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
                     $scope.logGridOptions.totalItems = vars.logTotal;
                     view.isBusy = false;

@@ -21,6 +21,9 @@ module.exports = {
           }
         }
         break;
+      case 'getCount':
+        return homey.app.Log.logCount;
+        break;
     }
   },
 

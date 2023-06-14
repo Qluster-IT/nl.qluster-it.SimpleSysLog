@@ -62,7 +62,8 @@ module.exports = {
           const link = await BL.getDownloadUrl({ contentType: 'text/json', filename });
           homey.setTimeout(async () => {
             const logs = await homey.app.Log.getLogs({ returnType: 'json' });
-            await BL.setDownloadUrl({ link, text: JSON.stringify(logs.logs), callback });
+            //const text = JSON.stringify(logs.logs);
+            await BL.setDownloadUrl({ link, text: logs.json, callback });
           }, 0);
           return link;
         }

@@ -253,5 +253,8 @@
   },
   "3.0.32": {
     "en": "Improved: From now on, logs will be counted."
+  },
+  "3.0.33": {
+    "en": "Resolved: Flowcard error because of a certain startup sequence."
   }
 }

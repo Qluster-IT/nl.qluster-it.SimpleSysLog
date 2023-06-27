@@ -60,32 +60,8 @@ class simpleLog extends Homey.App {
         if (debug) this.log('Simple (Sys) Log onInit - debugger connected');
 
 
-
-        // if(this.homey.platform=='local' && this.homey.platformVersion==1) {      
-        //   require('inspector').open(9218, '0.0.0.0', true);
-        // } else {
-        //   try {
-        //     require('inspector').waitForDebugger();          
-        //   } catch (error) {
-        //     require('inspector').open(9229, '0.0.0.0', false);
-        //   }
-        // }
-        // try {
-        //   try {
-
-        //     // require('inspector').open(9229, '0.0.0.0', false);
-        //     // require('inspector').close();
-        //     // require('inspector').open(9218, '0.0.0.0', true);
-        //     require('inspector').waitForDebugger();
-        //   } catch (error) {
-        //     require('inspector').open(9218, '0.0.0.0', true);
-        //   }
-        // }
-        // catch (error) {
-        //   //require('inspector').open(9218, '0.0.0.0', true);
-        // }
       }
-      //else try{ require('inspector').open(9218, '0.0.0.0', false); } catch(ex){}
+
 
       if (debug) this.log('Simple (Sys) Log onInit - past debugger');
 
@@ -118,6 +94,14 @@ class simpleLog extends Homey.App {
 
       this.addLogToDB('App "Simple (Sys) Log" started.', SIMPLE_LOG);
       //throw new Error('test');
+
+
+      this.homey.settings.on('set', async (settingName) => {
+        switch (settingName) {
+          case 'settings': this.getSettings(); break;
+        }
+      });
+      this.getSettings();
 
 
 
@@ -176,14 +160,6 @@ class simpleLog extends Homey.App {
     }
 
 
-    if (false) { //TEST
-      let __test__ = BL.homey.settings.get('__test__');
-      if (__test__ && __test__.logs) __test__.logs.pop();
-      for (let i = 0; i < 100; i++) {
-        BL.homey.settings.set('__test2__', "asd");
-      }
-    }
-
     if (false) {//&& process.env.DEBUG === '1') {
       let date = new Date();
       //await this.addLogToDB(date, 'DATE TEST');
@@ -196,12 +172,6 @@ class simpleLog extends Homey.App {
       }
     }
 
-    this.homey.settings.on('set', async (settingName) => {
-      switch (settingName) {
-        case 'settings': this.getSettings(); break;
-      }
-    });
-    this.getSettings();
 
     this.log('Simple (Sys) Log initRealApp finished');
   }
@@ -236,6 +206,7 @@ class simpleLog extends Homey.App {
     //this.addLogToDB('SSL onUninit');
     if (this.Log) await this.Log.destroy();
   }
+
   // addLogToDB(data, group, { severity, facility, hostname, timestamp = new Date(), source = 'log', save } = {}) {
   //   return true;
   // }
@@ -245,8 +216,8 @@ class simpleLog extends Homey.App {
     if (typeof (timestamp) == 'number' || typeof (timestamp) == 'string') timestamp = new Date(timestamp)
 
     let args = [data, group, { severity, facility, hostname, timestamp, source }];
-    
-    
+
+
     if (this.Log) {
       // return true;
       // let _r = await this._addLogToDB('', undefined);
@@ -265,23 +236,23 @@ class simpleLog extends Homey.App {
         this.BackLog.splice(0, tomuch);
       }
       if (save !== false) this.homey.settings.set("BackLog", this.BackLog);
-    }    
+    }
     if (save !== false) this.triggerLogGenerated(...args);//.then(()=>{}).catch(()=>{});
     return true;
   }
 
   triggerLogGenerated(data, group, { severity, facility, hostname, timestamp, source }) {
-    if(!this.triggerLog_generated) return;
+    if (!this.triggerLog_generated) return;
     let _severity = severity ? SEVERITIES[severity] : '';
     let _facility = facility ? FACILITIES[facility] : '';
     severity = severity ? Number.parseInt(severity) : -1;
     facility = facility ? Number.parseInt(facility) : -1;
     this.triggerLog_generated.trigger({
-      log: data, group : group || '',
+      log: data, group: group || '',
       severity: _severity, severityId: severity,
       facility: _facility, facilityId: facility,
-      hostname : hostname || '', timestamp:timestamp.getTime(), source : source || ''
-    }, { group, severity, facility }).then(()=>{}).catch(()=>{});
+      hostname: hostname || '', timestamp: timestamp.getTime(), source: source || ''
+    }, { group, severity, facility }).then(() => { }).catch(() => { });
     return true;
   }
 

@@ -69,8 +69,8 @@ if (window.hasOwnProperty('angular'))
                 Scene: 19,
                 Trigger: 20,
                 Condition: 21,
-                Action: 22
-                // Local7: 23
+                Action: 22,
+                Variable: 23
             };
 
             var severities = {

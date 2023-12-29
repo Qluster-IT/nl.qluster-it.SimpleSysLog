@@ -240,6 +240,12 @@
             "label": {
               "en": "Action"
             }
+          },
+          {
+            "id": "23",
+            "label": {
+              "en": "Variable"
+            }
           }
         ]
     }

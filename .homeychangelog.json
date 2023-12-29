@@ -259,5 +259,8 @@
   },
   "3.0.34": {
     "en": "Added: Flowcards now support BLL Coding."
+  },
+  "3.0.35": {
+    "en": "Added: Facility: Variable."
   }
 }

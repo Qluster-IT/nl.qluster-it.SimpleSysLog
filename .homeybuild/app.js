@@ -362,14 +362,16 @@ class simpleLog extends Homey.App {
 
     // FLOW Action Card, Input_log
     let actionInputLog = this.homey.flow.getActionCard("Input_log");
-    actionInputLog.registerRunListener(async (args, state) => {
+    actionInputLog.registerRunListener(async (args, state) => {      
+      args.log = await BL.decode(args.log);
       await this.addLogToDB(args.log, undefined, args);
       return true;
     });
 
     // FLOW Action Card, Input_logtimeline
     let actionInputLogTimeline = this.homey.flow.getActionCard("Input_logtimeline");
-    actionInputLogTimeline.registerRunListener(async (args, state) => {
+    actionInputLogTimeline.registerRunListener(async (args, state) => {      
+      args.log = await BL.decode(args.log);
       await this.addLogToDB(args.log, undefined, args);
       await this.addLogToTimeline(args.log);
       return true;
@@ -377,21 +379,24 @@ class simpleLog extends Homey.App {
 
     // FLOW Action Card, Input_timeline
     let actionInputTimeline = this.homey.flow.getActionCard("Input_timeline");
-    actionInputTimeline.registerRunListener(async (args, state) => {
+    actionInputTimeline.registerRunListener(async (args, state) => {      
+      args.log = await BL.decode(args.log);
       await this.addLogToTimeline(args.log);
       return true;
     });
 
     // FLOW Action Card, Input_group_log
     let actionInputGroupLog = this.homey.flow.getActionCard("Input_group_log");
-    actionInputGroupLog.registerRunListener(async (args, state) => {
+    actionInputGroupLog.registerRunListener(async (args, state) => {      
+      args.log = await BL.decode(args.log);
       await this.addLogToDB(args.log, args.group, args);
       return true;
     });
 
     // FLOW Action Card, Input_group_logtimeline
     let actionInputGroupLogTimeline = this.homey.flow.getActionCard("Input_group_logtimeline");
-    actionInputGroupLogTimeline.registerRunListener(async (args, state) => {
+    actionInputGroupLogTimeline.registerRunListener(async (args, state) => {      
+      args.log = await BL.decode(args.log);
       await this.addLogToDB(args.log, args.group, args);
       await this.addLogToTimeline((this.settings.groupInTimeline ? `[${args.group}] ` : '') + `${args.log}`);
       return true;

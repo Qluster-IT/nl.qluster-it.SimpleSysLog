@@ -13,8 +13,8 @@
       "name": "log",
       "type": "text",
       "placeholder": {
-        "en": "Message...",
-        "nl": "Bericht..."
+        "en": "Message... (* BLL supported)",
+        "nl": "Bericht... (* BLL ondersteund)"
       },
       "title": {
         "en": "Message",

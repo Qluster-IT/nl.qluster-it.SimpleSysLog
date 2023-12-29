@@ -256,5 +256,8 @@
   },
   "3.0.33": {
     "en": "Resolved: Flowcard error because of a certain startup sequence."
+  },
+  "3.0.34": {
+    "en": "Added: Flowcards now support BLL Coding."
   }
 }

@@ -262,5 +262,8 @@
   },
   "3.0.36": {
     "en": "Added: Facility: Variable."
+  },
+  "3.0.37": {
+    "en": "Resolved: Reading non existing files could make the app crash."
   }
 }

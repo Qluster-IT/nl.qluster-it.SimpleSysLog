@@ -3,10 +3,33 @@
   "deprecated": true,
   "title": {
     "en": "Automater",
-    "nl": "Automater"
+    "nl": "Automater",
+    "da": "Automatiser",
+    "de": "Automatisierer",
+    "es": "Automatizador",
+    "fr": "Automatiser",
+    "it": "Automatizzatore",
+    "no": "Automater",
+    "sv": "Automatisera",
+    "pl": "Automater",
+    "ru": "Автоматизатор",
+    "ko": "오토메이터",
+    "ar": "أوتوميتر"
   },
   "titleFormatted": {
-    "en": "Automater; name: [[group]], update: [[update]], updateCards: [[updateCards]], errorSeverity: [[errorSeverity]], triggerSeverity: [[triggerSeverity]], conditionSeverity: [[conditionSeverity]], actionSeverity: [[actionSeverity]]"
+    "en": "Automater; name: [[group]], update: [[update]], updateCards: [[updateCards]], errorSeverity: [[errorSeverity]], triggerSeverity: [[triggerSeverity]], conditionSeverity: [[conditionSeverity]], actionSeverity: [[actionSeverity]]",
+    "nl": "Automatisering; naam: [[group]], update: [[update]], updateKaarten: [[updateCards]], fouternst: [[errorSeverity]], triggerernst: [[triggerSeverity]], voorwaardenernst: [[conditionSeverity]], actierernst: [[actionSeverity]]",
+    "da": "Automatiser; navn: [[group]], opdatering: [[update]], opdateringskort: [[updateCards]], fejlalvorlighed: [[errorSeverity]], udløseralvorlighed: [[triggerSeverity]], betingelsesalvorlighed: [[conditionSeverity]], handlingalvorlighed: [[actionSeverity]]",
+    "de": "Automatisierer; Name: [[group]], Aktualisierung: [[update]], Aktualisierungskarten: [[updateCards]], Fehler-Schweregrad: [[errorSeverity]], Auslöser-Schweregrad: [[triggerSeverity]], Bedingung-Schweregrad: [[conditionSeverity]], Aktion-Schweregrad: [[actionSeverity]]",
+    "es": "Automatizador; nombre: [[group]], actualización: [[update]], actualizarTarjetas: [[updateCards]], gravedadError: [[errorSeverity]], gravedadDisparador: [[triggerSeverity]], gravedadCondición: [[conditionSeverity]], gravedadAcción: [[actionSeverity]]",
+    "fr": "Automatiser ; nom : [[group]], mise à jour : [[update]], mise à jour des cartes : [[updateCards]], gravité de l'erreur : [[errorSeverity]], gravité du déclencheur : [[triggerSeverity]], gravité de la condition : [[conditionSeverity]], gravité de l'action : [[actionSeverity]]",
+    "it": "Automatizzatore; nome: [[group]], aggiornamento: [[update]], aggiornaSchede: [[updateCards]], gravitàErrore: [[errorSeverity]], gravitàTrigger: [[triggerSeverity]], gravitàCondizione: [[conditionSeverity]], gravitàAzione: [[actionSeverity]]",
+    "no": "Automatiserer; navn: [[group]], oppdatering: [[update]], oppdaterKort: [[updateCards]], feilAlvorlighet: [[errorSeverity]], utløserAlvorlighet: [[triggerSeverity]], betingelseAlvorlighet: [[conditionSeverity]], handlingAlvorlighet: [[actionSeverity]]",
+    "sv": "Automatisera; namn: [[group]], uppdatering: [[update]], uppdateraKort: [[updateCards]], felallvarlighet: [[errorSeverity]], utlösarallvarlighet: [[triggerSeverity]], villkorsallvarlighet: [[conditionSeverity]], åtgärdsallvarlighet: [[actionSeverity]]",
+    "pl": "Automatyzator; nazwa: [[group]], aktualizacja: [[update]], aktualizujKarty: [[updateCards]], poziomBłędu: [[errorSeverity]], poziomWyzwalacza: [[triggerSeverity]], poziomWarunku: [[conditionSeverity]], poziomAkcji: [[actionSeverity]]",
+    "ru": "Автоматизатор; имя: [[group]], обновление: [[update]], обновлениеКарт: [[updateCards]], уровеньОшибки: [[errorSeverity]], уровеньТриггера: [[triggerSeverity]], уровеньУсловия: [[conditionSeverity]], уровеньДействия: [[actionSeverity]]",
+    "ko": "자동화기; 이름: [[group]], 업데이트: [[update]], 업데이트 카드: [[updateCards]], 오류 심각도: [[errorSeverity]], 트리거 심각도: [[triggerSeverity]], 조건 심각도: [[conditionSeverity]], 액션 심각도: [[actionSeverity]]",
+    "ar": "المؤتمت؛ الاسم: [[group]]، التحديث: [[update]]، تحديث البطاقات: [[updateCards]]، شدة الخطأ: [[errorSeverity]]، شدة المشغل: [[triggerSeverity]]، شدة الشرط: [[conditionSeverity]]، شدة الإجراء: [[actionSeverity]]"
   },
   "args": [
     {
@@ -14,11 +37,33 @@
       "type": "text",
       "placeholder": {
         "en": "Name",
-        "nl": "Naam"
+        "nl": "Naam",
+        "da": "Navn",
+        "de": "Name",
+        "es": "Nombre",
+        "fr": "Nom",
+        "it": "Nome",
+        "no": "Navn",
+        "sv": "Namn",
+        "pl": "Nazwa",
+        "ru": "Имя",
+        "ko": "이름",
+        "ar": "الاسم"
       },
       "title": {
         "en": "Name",
-        "nl": "Naam"
+        "nl": "Naam",
+        "da": "Navn",
+        "de": "Name",
+        "es": "Nombre",
+        "fr": "Nom",
+        "it": "Nome",
+        "no": "Navn",
+        "sv": "Namn",
+        "pl": "Nazwa",
+        "ru": "Имя",
+        "ko": "이름",
+        "ar": "الاسم"
       }
     },
     {
@@ -26,26 +71,70 @@
       "type": "checkbox",
       "placeholder": {
         "en": "Update",
-        "nl": "Update"
+        "nl": "Update",
+        "da": "Opdatering",
+        "de": "Aktualisieren",
+        "es": "Actualizar",
+        "fr": "Mise à jour",
+        "it": "Aggiorna",
+        "no": "Oppdater",
+        "sv": "Uppdatera",
+        "pl": "Aktualizacja",
+        "ru": "Обновить",
+        "ko": "업데이트",
+        "ar": "تحديث"
       },
       "title": {
         "en": "Update",
-        "nl": "Update"
+        "nl": "Update",
+        "da": "Opdatering",
+        "de": "Aktualisieren",
+        "es": "Actualizar",
+        "fr": "Mise à jour",
+        "it": "Aggiorna",
+        "no": "Oppdatering",
+        "sv": "Uppdatera",
+        "pl": "Aktualizacja",
+        "ru": "Обновить",
+        "ko": "업데이트",
+        "ar": "تحديث"
       },
-      "value":true
+      "value": true
     },
     {
       "name": "updateCards",
       "type": "checkbox",
       "placeholder": {
         "en": "Update Cards",
-        "nl": "Update kaarten"
+        "nl": "Update kaarten",
+        "da": "Opdater kort",
+        "de": "Aktualisierungskarten",
+        "es": "Actualizar Tarjetas",
+        "fr": "Mettre à jour les cartes",
+        "it": "Aggiorna Schede",
+        "no": "Oppdater kort",
+        "sv": "Uppdatera kort",
+        "pl": "Zaktualizuj Karty",
+        "ru": "Обновить карточки",
+        "ko": "카드 업데이트",
+        "ar": "تحديث البطاقات"
       },
       "title": {
         "en": "Update Cards",
-        "nl": "Update kaarten"
+        "nl": "Update kaarten",
+        "da": "Opdater kort",
+        "de": "Aktualisierungskarten",
+        "es": "Actualizar Tarjetas",
+        "fr": "Mettre à jour les cartes",
+        "it": "Aggiorna Schede",
+        "no": "Oppdater kort",
+        "sv": "Uppdatera kort",
+        "pl": "Zaktualizuj karty",
+        "ru": "Обновить карточки",
+        "ko": "카드 업데이트",
+        "ar": "تحديث البطاقات"
       },
-      "value":true
+      "value": true
     },
     {
       "type": "dropdown",
@@ -53,59 +142,177 @@
       "name": "errorSeverity",
       "placeholder": {
         "en": "Severity",
-        "nl": "Niveau"
+        "nl": "Niveau",
+        "da": "Alvorlighedsgrad",
+        "de": "Schweregrad",
+        "es": "Severidad",
+        "fr": "Gravité",
+        "it": "Gravità",
+        "no": "Alvorlighetsgrad",
+        "sv": "Allvarlighetsgrad",
+        "pl": "Waga",
+        "ru": "Серьезность",
+        "ko": "심각도",
+        "ar": "الخطورة"
       },
       "title": {
         "en": "Severity",
-        "nl": "Niveau"
+        "nl": "Niveau",
+        "da": "Alvorlighedsgrad",
+        "de": "Schweregrad",
+        "es": "Severidad",
+        "fr": "Gravité",
+        "it": "Gravità",
+        "no": "Alvorlighetsgrad",
+        "sv": "Allvarlighetsgrad",
+        "pl": "Waga",
+        "ru": "Серьезность",
+        "ko": "심각도",
+        "ar": "الخطورة"
       },
       "values": [
         {
           "id": "0",
           "label": {
-            "en": "Emergency"
+            "en": "Emergency",
+            "nl": "Noodgeval",
+            "da": "Nødsituation",
+            "de": "Notfall",
+            "es": "Emergencia",
+            "fr": "Urgence",
+            "it": "Emergenza",
+            "no": "Nødsituasjon",
+            "sv": "Nödsituation",
+            "pl": "Awaryjny",
+            "ru": "Аварийный",
+            "ko": "긴급",
+            "ar": "طوارئ"
           }
         },
         {
           "id": "1",
           "label": {
-            "en": "Alert"
+            "en": "Alert",
+            "nl": "Waarschuwing",
+            "da": "Alarm",
+            "de": "Alarm",
+            "es": "Alerta",
+            "fr": "Alerte",
+            "it": "Avviso",
+            "no": "Varsel",
+            "sv": "Varning",
+            "pl": "Alert",
+            "ru": "Оповещение",
+            "ko": "알림",
+            "ar": "تنبيه"
           }
         },
         {
           "id": "2",
           "label": {
-            "en": "Critical"
+            "en": "Critical",
+            "nl": "Kritiek",
+            "da": "Kritisk",
+            "de": "Kritisch",
+            "es": "Crítico",
+            "fr": "Critique",
+            "it": "Critico",
+            "no": "Kritisk",
+            "sv": "Kritisk",
+            "pl": "Krytyczny",
+            "ru": "Критический",
+            "ko": "중요",
+            "ar": "حرج"
           }
         },
         {
           "id": "3",
           "label": {
-            "en": "Error"
+            "en": "Error",
+            "nl": "Fout",
+            "da": "Fejl",
+            "de": "Fehler",
+            "es": "Error",
+            "fr": "Erreur",
+            "it": "Errore",
+            "no": "Feil",
+            "sv": "Fel",
+            "pl": "Błąd",
+            "ru": "Ошибка",
+            "ko": "오류",
+            "ar": "خطأ"
           }
         },
         {
           "id": "4",
           "label": {
-            "en": "Warning"
+            "en": "Warning",
+            "nl": "Waarschuwing",
+            "da": "Advarsel",
+            "de": "Warnung",
+            "es": "Advertencia",
+            "fr": "Avertissement",
+            "it": "Avviso",
+            "no": "Advarsel",
+            "sv": "Varning",
+            "pl": "Ostrzeżenie",
+            "ru": "Предупреждение",
+            "ko": "경고",
+            "ar": "تحذير"
           }
         },
         {
           "id": "5",
           "label": {
-            "en": "Notice"
+            "en": "Notice",
+            "nl": "Opmerking",
+            "da": "Bemærk",
+            "de": "Hinweis",
+            "es": "Aviso",
+            "fr": "Avis",
+            "it": "Avviso",
+            "no": "Merk",
+            "sv": "Meddelande",
+            "pl": "Powiadomienie",
+            "ru": "Уведомление",
+            "ko": "공지",
+            "ar": "تنبيه"
           }
         },
         {
           "id": "6",
           "label": {
-            "en": "Info"
+            "en": "Info",
+            "nl": "Info",
+            "da": "Info",
+            "de": "Info",
+            "es": "Información",
+            "fr": "Infos",
+            "it": "Informazioni",
+            "no": "Info",
+            "sv": "Info",
+            "pl": "Informacje",
+            "ru": "Информация",
+            "ko": "정보",
+            "ar": "معلومات"
           }
         },
         {
           "id": "7",
           "label": {
-            "en": "Debug"
+            "en": "Debug",
+            "nl": "Debuggen",
+            "da": "Debug",
+            "de": "Debuggen",
+            "es": "Depurar",
+            "fr": "Déboguer",
+            "it": "Debug",
+            "no": "Feilsøking",
+            "sv": "Felsökning",
+            "pl": "Debugowanie",
+            "ru": "Отладка",
+            "ko": "디버그",
+            "ar": "تصحيح الأخطاء"
           }
         }
       ]
@@ -116,59 +323,177 @@
       "name": "triggerSeverity",
       "placeholder": {
         "en": "Severity",
-        "nl": "Niveau"
+        "nl": "Niveau",
+        "da": "Alvorlighedsgrad",
+        "de": "Schweregrad",
+        "es": "Severidad",
+        "fr": "Gravité",
+        "it": "Gravità",
+        "no": "Alvorlighetsgrad",
+        "sv": "Allvarlighetsgrad",
+        "pl": "Waga",
+        "ru": "Серьезность",
+        "ko": "심각도",
+        "ar": "الخطورة"
       },
       "title": {
         "en": "Severity",
-        "nl": "Niveau"
+        "nl": "Niveau",
+        "da": "Alvorlighedsgrad",
+        "de": "Schweregrad",
+        "es": "Severidad",
+        "fr": "Gravité",
+        "it": "Gravità",
+        "no": "Alvorlighetsgrad",
+        "sv": "Allvarlighetsgrad",
+        "pl": "Waga",
+        "ru": "Серьезность",
+        "ko": "심각도",
+        "ar": "الخطورة"
       },
       "values": [
         {
           "id": "0",
           "label": {
-            "en": "Emergency"
+            "en": "Emergency",
+            "nl": "Noodgeval",
+            "da": "Nødsituation",
+            "de": "Notfall",
+            "es": "Emergencia",
+            "fr": "Urgence",
+            "it": "Emergenza",
+            "no": "Nødsituasjon",
+            "sv": "Nödsituation",
+            "pl": "Awaryjny",
+            "ru": "Аварийный случай",
+            "ko": "긴급",
+            "ar": "طارئ"
           }
         },
         {
           "id": "1",
           "label": {
-            "en": "Alert"
+            "en": "Alert",
+            "nl": "Waarschuwing",
+            "da": "Alarm",
+            "de": "Alarm",
+            "es": "Alerta",
+            "fr": "Alerte",
+            "it": "Avviso",
+            "no": "Varsel",
+            "sv": "Varning",
+            "pl": "Alert",
+            "ru": "Оповещение",
+            "ko": "알림",
+            "ar": "تنبيه"
           }
         },
         {
           "id": "2",
           "label": {
-            "en": "Critical"
+            "en": "Critical",
+            "nl": "Kritiek",
+            "da": "Kritisk",
+            "de": "Kritisch",
+            "es": "Crítico",
+            "fr": "Critique",
+            "it": "Critico",
+            "no": "Kritisk",
+            "sv": "Kritisk",
+            "pl": "Krytyczny",
+            "ru": "Критический",
+            "ko": "중요",
+            "ar": "حرج"
           }
         },
         {
           "id": "3",
           "label": {
-            "en": "Error"
+            "en": "Error",
+            "nl": "Fout",
+            "da": "Fejl",
+            "de": "Fehler",
+            "es": "Error",
+            "fr": "Erreur",
+            "it": "Errore",
+            "no": "Feil",
+            "sv": "Fel",
+            "pl": "Błąd",
+            "ru": "Ошибка",
+            "ko": "오류",
+            "ar": "خطأ"
           }
         },
         {
           "id": "4",
           "label": {
-            "en": "Warning"
+            "en": "Warning",
+            "nl": "Waarschuwing",
+            "da": "Advarsel",
+            "de": "Warnung",
+            "es": "Advertencia",
+            "fr": "Avertissement",
+            "it": "Avviso",
+            "no": "Advarsel",
+            "sv": "Varning",
+            "pl": "Ostrzeżenie",
+            "ru": "Предупреждение",
+            "ko": "경고",
+            "ar": "تحذير"
           }
         },
         {
           "id": "5",
           "label": {
-            "en": "Notice"
+            "en": "Notice",
+            "nl": "Opmerking",
+            "da": "Bemærk",
+            "de": "Hinweis",
+            "es": "Aviso",
+            "fr": "Avis",
+            "it": "Avviso",
+            "no": "Merk",
+            "sv": "Meddelande",
+            "pl": "Uwaga",
+            "ru": "Уведомление",
+            "ko": "공지",
+            "ar": "تنبيه"
           }
         },
         {
           "id": "6",
           "label": {
-            "en": "Info"
+            "en": "Info",
+            "nl": "Info",
+            "da": "Info",
+            "de": "Info",
+            "es": "Información",
+            "fr": "Infos",
+            "it": "Informazioni",
+            "no": "Info",
+            "sv": "Info",
+            "pl": "Informacje",
+            "ru": "Информация",
+            "ko": "정보",
+            "ar": "معلومات"
           }
         },
         {
           "id": "7",
           "label": {
-            "en": "Debug"
+            "en": "Debug",
+            "nl": "Debuggen",
+            "da": "Fejlfinding",
+            "de": "Debuggen",
+            "es": "Depurar",
+            "fr": "Déboguer",
+            "it": "Debug",
+            "no": "Feilsøking",
+            "sv": "Felsökning",
+            "pl": "Debugowanie",
+            "ru": "Отладка",
+            "ko": "디버그",
+            "ar": "تصحيح الأخطاء"
           }
         }
       ]
@@ -179,59 +504,177 @@
       "name": "conditionSeverity",
       "placeholder": {
         "en": "Severity",
-        "nl": "Niveau"
+        "nl": "Niveau",
+        "da": "Alvorlighedsgrad",
+        "de": "Schweregrad",
+        "es": "Severidad",
+        "fr": "Gravité",
+        "it": "Gravità",
+        "no": "Alvorlighetsgrad",
+        "sv": "Allvarlighetsgrad",
+        "pl": "Waga",
+        "ru": "Серьезность",
+        "ko": "심각도",
+        "ar": "الخطورة"
       },
       "title": {
         "en": "Severity",
-        "nl": "Niveau"
+        "nl": "Niveau",
+        "da": "Alvorlighedsgrad",
+        "de": "Schweregrad",
+        "es": "Severidad",
+        "fr": "Gravité",
+        "it": "Gravità",
+        "no": "Alvorlighetsgrad",
+        "sv": "Allvarlighetsgrad",
+        "pl": "Waga",
+        "ru": "Серьезность",
+        "ko": "심각도",
+        "ar": "الخطورة"
       },
       "values": [
         {
           "id": "0",
           "label": {
-            "en": "Emergency"
+            "en": "Emergency",
+            "nl": "Noodgeval",
+            "da": "Nødsituation",
+            "de": "Notfall",
+            "es": "Emergencia",
+            "fr": "Urgence",
+            "it": "Emergenza",
+            "no": "Nødsituasjon",
+            "sv": "Nödsituation",
+            "pl": "Awaryjny",
+            "ru": "Аварийная ситуация",
+            "ko": "긴급",
+            "ar": "طارئ"
           }
         },
         {
           "id": "1",
           "label": {
-            "en": "Alert"
+            "en": "Alert",
+            "nl": "Waarschuwing",
+            "da": "Alarm",
+            "de": "Alarm",
+            "es": "Alerta",
+            "fr": "Alerte",
+            "it": "Avviso",
+            "no": "Varsel",
+            "sv": "Varning",
+            "pl": "Alert",
+            "ru": "Оповещение",
+            "ko": "알림",
+            "ar": "تنبيه"
           }
         },
         {
           "id": "2",
           "label": {
-            "en": "Critical"
+            "en": "Critical",
+            "nl": "Kritiek",
+            "da": "Kritisk",
+            "de": "Kritisch",
+            "es": "Crítico",
+            "fr": "Critique",
+            "it": "Critico",
+            "no": "Kritisk",
+            "sv": "Kritisk",
+            "pl": "Krytyczny",
+            "ru": "Критический",
+            "ko": "중요",
+            "ar": "حرج"
           }
         },
         {
           "id": "3",
           "label": {
-            "en": "Error"
+            "en": "Error",
+            "nl": "Fout",
+            "da": "Fejl",
+            "de": "Fehler",
+            "es": "Error",
+            "fr": "Erreur",
+            "it": "Errore",
+            "no": "Feil",
+            "sv": "Fel",
+            "pl": "Błąd",
+            "ru": "Ошибка",
+            "ko": "오류",
+            "ar": "خطأ"
           }
         },
         {
           "id": "4",
           "label": {
-            "en": "Warning"
+            "en": "Warning",
+            "nl": "Waarschuwing",
+            "da": "Advarsel",
+            "de": "Warnung",
+            "es": "Advertencia",
+            "fr": "Avertissement",
+            "it": "Avviso",
+            "no": "Advarsel",
+            "sv": "Varning",
+            "pl": "Ostrzeżenie",
+            "ru": "Предупреждение",
+            "ko": "경고",
+            "ar": "تحذير"
           }
         },
         {
           "id": "5",
           "label": {
-            "en": "Notice"
+            "en": "Notice",
+            "nl": "Opmerking",
+            "da": "Bemærk",
+            "de": "Hinweis",
+            "es": "Aviso",
+            "fr": "Avis",
+            "it": "Avviso",
+            "no": "Varsel",
+            "sv": "Meddelande",
+            "pl": "Powiadomienie",
+            "ru": "Уведомление",
+            "ko": "공지",
+            "ar": "تنبيه"
           }
         },
         {
           "id": "6",
           "label": {
-            "en": "Info"
+            "en": "Info",
+            "nl": "Informatie",
+            "da": "Info",
+            "de": "Info",
+            "es": "Información",
+            "fr": "Infos",
+            "it": "Informazioni",
+            "no": "Info",
+            "sv": "Info",
+            "pl": "Informacje",
+            "ru": "Информация",
+            "ko": "정보",
+            "ar": "معلومات"
           }
         },
         {
           "id": "7",
           "label": {
-            "en": "Debug"
+            "en": "Debug",
+            "nl": "Debuggen",
+            "da": "Fejlfinding",
+            "de": "Debuggen",
+            "es": "Depurar",
+            "fr": "Déboguer",
+            "it": "Debug",
+            "no": "Feilsøking",
+            "sv": "Felsökning",
+            "pl": "Debugowanie",
+            "ru": "Отладка",
+            "ko": "디버그",
+            "ar": "تصحيح الأخطاء"
           }
         }
       ]
@@ -242,59 +685,177 @@
       "name": "actionSeverity",
       "placeholder": {
         "en": "Severity",
-        "nl": "Niveau"
+        "nl": "Niveau",
+        "da": "Alvorlighedsgrad",
+        "de": "Schweregrad",
+        "es": "Severidad",
+        "fr": "Gravité",
+        "it": "Gravità",
+        "no": "Alvorlighetsgrad",
+        "sv": "Allvarlighetsgrad",
+        "pl": "Waga",
+        "ru": "Серьезность",
+        "ko": "심각도",
+        "ar": "الخطورة"
       },
       "title": {
         "en": "Severity",
-        "nl": "Niveau"
+        "nl": "Niveau",
+        "da": "Alvorlighedsgrad",
+        "de": "Schweregrad",
+        "es": "Severidad",
+        "fr": "Gravité",
+        "it": "Gravità",
+        "no": "Alvorlighetsgrad",
+        "sv": "Allvarlighetsgrad",
+        "pl": "Waga",
+        "ru": "Серьезность",
+        "ko": "심각도",
+        "ar": "الخطورة"
       },
       "values": [
         {
           "id": "0",
           "label": {
-            "en": "Emergency"
+            "en": "Emergency",
+            "nl": "Noodgeval",
+            "da": "Nødsituation",
+            "de": "Notfall",
+            "es": "Emergencia",
+            "fr": "Urgence",
+            "it": "Emergenza",
+            "no": "Nødsituasjon",
+            "sv": "Nödsituation",
+            "pl": "Awaryjny",
+            "ru": "Аварийная ситуация",
+            "ko": "긴급",
+            "ar": "طوارئ"
           }
         },
         {
           "id": "1",
           "label": {
-            "en": "Alert"
+            "en": "Alert",
+            "nl": "Waarschuwing",
+            "da": "Alarm",
+            "de": "Alarm",
+            "es": "Alerta",
+            "fr": "Alerte",
+            "it": "Avviso",
+            "no": "Varsel",
+            "sv": "Varning",
+            "pl": "Alert",
+            "ru": "Оповещение",
+            "ko": "알림",
+            "ar": "تنبيه"
           }
         },
         {
           "id": "2",
           "label": {
-            "en": "Critical"
+            "en": "Critical",
+            "nl": "Kritiek",
+            "da": "Kritisk",
+            "de": "Kritisch",
+            "es": "Crítico",
+            "fr": "Critique",
+            "it": "Critico",
+            "no": "Kritisk",
+            "sv": "Kritisk",
+            "pl": "Krytyczny",
+            "ru": "Критический",
+            "ko": "중요",
+            "ar": "حرج"
           }
         },
         {
           "id": "3",
           "label": {
-            "en": "Error"
+            "en": "Error",
+            "nl": "Fout",
+            "da": "Fejl",
+            "de": "Fehler",
+            "es": "Error",
+            "fr": "Erreur",
+            "it": "Errore",
+            "no": "Feil",
+            "sv": "Fel",
+            "pl": "Błąd",
+            "ru": "Ошибка",
+            "ko": "오류",
+            "ar": "خطأ"
           }
         },
         {
           "id": "4",
           "label": {
-            "en": "Warning"
+            "en": "Warning",
+            "nl": "Waarschuwing",
+            "da": "Advarsel",
+            "de": "Warnung",
+            "es": "Advertencia",
+            "fr": "Avertissement",
+            "it": "Avviso",
+            "no": "Advarsel",
+            "sv": "Varning",
+            "pl": "Ostrzeżenie",
+            "ru": "Предупреждение",
+            "ko": "경고",
+            "ar": "تحذير"
           }
         },
         {
           "id": "5",
           "label": {
-            "en": "Notice"
+            "en": "Notice",
+            "nl": "Opmerking",
+            "da": "Bemærk",
+            "de": "Hinweis",
+            "es": "Aviso",
+            "fr": "Avis",
+            "it": "Avviso",
+            "no": "Varsel",
+            "sv": "Meddelande",
+            "pl": "Powiadomienie",
+            "ru": "Уведомление",
+            "ko": "공지사항",
+            "ar": "تنبيه"
           }
         },
         {
           "id": "6",
           "label": {
-            "en": "Info"
+            "en": "Info",
+            "nl": "Info",
+            "da": "Info",
+            "de": "Info",
+            "es": "Información",
+            "fr": "Infos",
+            "it": "Informazioni",
+            "no": "Info",
+            "sv": "Info",
+            "pl": "Informacje",
+            "ru": "Информация",
+            "ko": "정보",
+            "ar": "معلومات"
           }
         },
         {
           "id": "7",
           "label": {
-            "en": "Debug"
+            "en": "Debug",
+            "nl": "Debuggen",
+            "da": "Fejlfinding",
+            "de": "Debuggen",
+            "es": "Depurar",
+            "fr": "Déboguer",
+            "it": "Debug",
+            "no": "Feilsøking",
+            "sv": "Felsökning",
+            "pl": "Debugowanie",
+            "ru": "Отладка",
+            "ko": "디버그",
+            "ar": "تصحيح الأخطاء"
           }
         }
       ]

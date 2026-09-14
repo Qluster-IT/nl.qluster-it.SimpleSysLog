@@ -1,15 +1,38 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "nl.nielsdeklerk.log",
-  "version": "3.0.37",
+  "version": "3.1.0",
   "sdk": 3,
   "brandColor": "#BC274A",
   "name": {
-    "en": "Simple (Sys) Log"
+    "en": "Simple (Sys) Log",
+    "nl": "Simple (Sys) Log",
+    "da": "Simple (Sys) Log",
+    "de": "Simple (Sys) Log",
+    "es": "Simple (Sys) Log",
+    "fr": "Simple (Sys) Log",
+    "it": "Simple (Sys) Log",
+    "no": "Enkel (Sys) Logg",
+    "sv": "Simple (Sys) Log",
+    "pl": "Simple (Sys) Log",
+    "ru": "Простой (Сис) Лог",
+    "ko": "Simple (Sys) Log",
+    "ar": "سجل (سيز) بسيط"
   },
   "description": {
     "en": "Use this app for Simple (Sys) Logging.",
-    "nl": "Gebruik deze app voor Simpele (Sys) Logging."
+    "nl": "Gebruik deze app voor Simpele (Sys) Logging.",
+    "da": "Brug denne app til Simple (Sys) Logging.",
+    "de": "Verwende diese App für einfaches (Sys) Logging.",
+    "es": "Usa esta aplicación para el registro Simple (Sys).",
+    "fr": "Utilisez cette application pour un journal (Sys) simple.",
+    "it": "Usa questa app per il Simple (Sys) Logging.",
+    "no": "Bruk denne appen for enkel (Sys) logging.",
+    "sv": "Använd den här appen för enkel (Sys) loggning.",
+    "pl": "Użyj tej aplikacji do prostego logowania (Sys).",
+    "ru": "Используйте это приложение для простого (Sys) логирования.",
+    "ko": "이 앱을 사용하여 Simple (Sys) Logging을 하세요.",
+    "ar": "استخدم هذا التطبيق لتسجيل (Sys) بسيط."
   },
   "category": "tools",
   "images": {
@@ -114,11 +137,33 @@
         "id": "Log_generated",
         "title": {
           "en": "A log is generated",
-          "nl": "Een log is toegevoegd"
+          "nl": "Een log is toegevoegd",
+          "da": "En log er genereret",
+          "de": "Ein Protokoll wird erstellt.",
+          "es": "Se genera un registro",
+          "fr": "Un journal est généré",
+          "it": "Un registro è stato generato",
+          "no": "En logg er generert",
+          "sv": "En logg skapas",
+          "pl": "Został wygenerowany log",
+          "ru": "Создан журнал",
+          "ko": "로그가 생성되었습니다.",
+          "ar": "يتم إنشاء سجل"
         },
         "titleFormatted": {
           "en": "When a log is generated (optionally: under [[group]] with [[severity]] of [[facility]])",
-          "nl": "Wanneer een log is toegevoegd (optioneel: onder [[group]] met [[severity]] van [[facility]])"
+          "nl": "Wanneer een log is toegevoegd (optioneel: onder [[group]] met [[severity]] van [[facility]])",
+          "da": "Når en log bliver genereret (valgfrit: under [[group]] med [[severity]] af [[facility]])",
+          "de": "Wenn ein Log erstellt wird (optional: unter [[group]] mit [[severity]] von [[facility]])",
+          "es": "Cuando se genera un registro (opcionalmente: bajo [[group]] con [[severity]] de [[facility]])",
+          "fr": "Lorsqu'un journal est généré (facultativement : sous [[group]] avec [[severity]] de [[facility]])",
+          "it": "Quando viene generato un log (facoltativamente: sotto [[group]] con [[severity]] di [[facility]])",
+          "no": "Når en logg genereres (valgfritt: under [[group]] med [[severity]] av [[facility]])",
+          "sv": "När en logg genereras (valfritt: under [[group]] med [[severity]] av [[facility]])",
+          "pl": "Gdy zostanie wygenerowany log (opcjonalnie: w [[group]] z [[severity]] o [[facility]])",
+          "ru": "Когда создается лог (опционально: в [[group]] с [[severity]] уровня [[facility]])",
+          "ko": "로그가 생성될 때 (선택적으로: [[group]] 아래 [[facility]]의 [[severity]]로)",
+          "ar": "عندما يتم إنشاء سجل (اختياريًا: تحت [[group]] مع [[severity]] لـ [[facility]])"
         },
         "args": [
           {
@@ -127,7 +172,18 @@
             "type": "text",
             "placeholder": {
               "en": "App/group",
-              "nl": "App/groep"
+              "nl": "App/groep",
+              "da": "App/gruppe",
+              "de": "App/Gruppe",
+              "es": "App/grupo",
+              "fr": "App/groupe",
+              "it": "App/gruppo",
+              "no": "App/gruppe",
+              "sv": "App/grupp",
+              "pl": "Aplikacja/grupa",
+              "ru": "Приложение/группа",
+              "ko": "앱/그룹",
+              "ar": "تطبيق/مجموعة"
             }
           },
           {
@@ -136,59 +192,177 @@
             "name": "severity",
             "placeholder": {
               "en": "Severity",
-              "nl": "Niveau"
+              "nl": "Niveau",
+              "da": "Alvorlighedsgrad",
+              "de": "Schweregrad",
+              "es": "Severidad",
+              "fr": "Gravité",
+              "it": "Gravità",
+              "no": "Alvorlighetsgrad",
+              "sv": "Allvarlighetsgrad",
+              "pl": "Waga",
+              "ru": "Серьезность",
+              "ko": "심각도",
+              "ar": "الخطورة"
             },
             "title": {
               "en": "Severity",
-              "nl": "Niveau"
+              "nl": "Niveau",
+              "da": "Alvorlighedsgrad",
+              "de": "Schweregrad",
+              "es": "Severidad",
+              "fr": "Gravité",
+              "it": "Gravità",
+              "no": "Alvorlighetsgrad",
+              "sv": "Allvarlighetsgrad",
+              "pl": "Waga",
+              "ru": "Серьезность",
+              "ko": "심각도",
+              "ar": "الخطورة"
             },
             "values": [
               {
                 "id": "0",
                 "label": {
-                  "en": "Emergency"
+                  "en": "Emergency",
+                  "nl": "Noodgeval",
+                  "da": "Nødsituation",
+                  "de": "Notfall",
+                  "es": "Emergencia",
+                  "fr": "Urgence",
+                  "it": "Emergenza",
+                  "no": "Nødsituasjon",
+                  "sv": "Nödsituation",
+                  "pl": "Awaryjny",
+                  "ru": "Аварийный случай",
+                  "ko": "긴급",
+                  "ar": "طارئ"
                 }
               },
               {
                 "id": "1",
                 "label": {
-                  "en": "Alert"
+                  "en": "Alert",
+                  "nl": "Waarschuwing",
+                  "da": "Alarm",
+                  "de": "Alarm",
+                  "es": "Alerta",
+                  "fr": "Alerte",
+                  "it": "Avviso",
+                  "no": "Varsel",
+                  "sv": "Varning",
+                  "pl": "Alert",
+                  "ru": "Оповещение",
+                  "ko": "알림",
+                  "ar": "تنبيه"
                 }
               },
               {
                 "id": "2",
                 "label": {
-                  "en": "Critical"
+                  "en": "Critical",
+                  "nl": "Kritiek",
+                  "da": "Kritisk",
+                  "de": "Kritisch",
+                  "es": "Crítico",
+                  "fr": "Critique",
+                  "it": "Critico",
+                  "no": "Kritisk",
+                  "sv": "Kritisk",
+                  "pl": "Krytyczny",
+                  "ru": "Критический",
+                  "ko": "중요",
+                  "ar": "حرج"
                 }
               },
               {
                 "id": "3",
                 "label": {
-                  "en": "Error"
+                  "en": "Error",
+                  "nl": "Fout",
+                  "da": "Fejl",
+                  "de": "Fehler",
+                  "es": "Error",
+                  "fr": "Erreur",
+                  "it": "Errore",
+                  "no": "Feil",
+                  "sv": "Fel",
+                  "pl": "Błąd",
+                  "ru": "Ошибка",
+                  "ko": "오류",
+                  "ar": "خطأ"
                 }
               },
               {
                 "id": "4",
                 "label": {
-                  "en": "Warning"
+                  "en": "Warning",
+                  "nl": "Waarschuwing",
+                  "da": "Advarsel",
+                  "de": "Warnung",
+                  "es": "Advertencia",
+                  "fr": "Avertissement",
+                  "it": "Avviso",
+                  "no": "Advarsel",
+                  "sv": "Varning",
+                  "pl": "Ostrzeżenie",
+                  "ru": "Предупреждение",
+                  "ko": "경고",
+                  "ar": "تحذير"
                 }
               },
               {
                 "id": "5",
                 "label": {
-                  "en": "Notice"
+                  "en": "Notice",
+                  "nl": "Opmerking",
+                  "da": "Bemærk",
+                  "de": "Hinweis",
+                  "es": "Aviso",
+                  "fr": "Avis",
+                  "it": "Avviso",
+                  "no": "Merk",
+                  "sv": "Meddelande",
+                  "pl": "Powiadomienie",
+                  "ru": "Уведомление",
+                  "ko": "공지",
+                  "ar": "تنبيه"
                 }
               },
               {
                 "id": "6",
                 "label": {
-                  "en": "Info"
+                  "en": "Info",
+                  "nl": "Informatie",
+                  "da": "Info",
+                  "de": "Info",
+                  "es": "Información",
+                  "fr": "Infos",
+                  "it": "Informazioni",
+                  "no": "Info",
+                  "sv": "Info",
+                  "pl": "Informacje",
+                  "ru": "Информация",
+                  "ko": "정보",
+                  "ar": "معلومات"
                 }
               },
               {
                 "id": "7",
                 "label": {
-                  "en": "Debug"
+                  "en": "Debug",
+                  "nl": "Debuggen",
+                  "da": "Debug",
+                  "de": "Debuggen",
+                  "es": "Depurar",
+                  "fr": "Déboguer",
+                  "it": "Debug",
+                  "no": "Feilsøking",
+                  "sv": "Felsökning",
+                  "pl": "Debugowanie",
+                  "ru": "Отладка",
+                  "ko": "디버그",
+                  "ar": "تصحيح الأخطاء"
                 }
               }
             ]
@@ -199,145 +373,432 @@
             "name": "facility",
             "placeholder": {
               "en": "Category",
-              "nl": "Categorie"
+              "nl": "Categorie",
+              "da": "Kategori",
+              "de": "Kategorie",
+              "es": "Categoría",
+              "fr": "Catégorie",
+              "it": "Categoria",
+              "no": "Kategori",
+              "sv": "Kategori",
+              "pl": "Kategoria",
+              "ru": "Категория",
+              "ko": "카테고리",
+              "ar": "الفئة"
             },
             "values": [
               {
                 "id": "0",
                 "label": {
-                  "en": "Kernel"
+                  "en": "Kernel",
+                  "nl": "Kernel",
+                  "da": "Kernel",
+                  "de": "Kernel",
+                  "es": "Núcleo",
+                  "fr": "Noyau",
+                  "it": "Kernel",
+                  "no": "Kjerne",
+                  "sv": "Kernel",
+                  "pl": "Jądro",
+                  "ru": "Ядро",
+                  "ko": "커널",
+                  "ar": "النواة"
                 }
               },
               {
                 "id": "1",
                 "label": {
-                  "en": "User"
+                  "en": "User",
+                  "nl": "Gebruiker",
+                  "da": "Bruger",
+                  "de": "Benutzer",
+                  "es": "Usuario",
+                  "fr": "Utilisateur",
+                  "it": "Utente",
+                  "no": "Bruker",
+                  "sv": "Användare",
+                  "pl": "Użytkownik",
+                  "ru": "Пользователь",
+                  "ko": "사용자",
+                  "ar": "مستخدم"
                 }
               },
               {
                 "id": "2",
                 "label": {
-                  "en": "Mail"
+                  "en": "Mail",
+                  "nl": "E-mail",
+                  "da": "E-mail",
+                  "de": "E-Mail",
+                  "es": "Correo",
+                  "fr": "Courriel",
+                  "it": "Email",
+                  "no": "E-post",
+                  "sv": "E-post",
+                  "pl": "Poczta",
+                  "ru": "Почта",
+                  "ko": "메일",
+                  "ar": "بريد"
                 }
               },
               {
                 "id": "3",
                 "label": {
-                  "en": "System"
+                  "en": "System",
+                  "nl": "Systeem",
+                  "da": "System",
+                  "de": "System",
+                  "es": "Sistema",
+                  "fr": "Système",
+                  "it": "Sistema",
+                  "no": "Systemet",
+                  "sv": "System",
+                  "pl": "System",
+                  "ru": "Система",
+                  "ko": "시스템",
+                  "ar": "النظام"
                 }
               },
               {
                 "id": "4",
                 "label": {
-                  "en": "Authorization"
+                  "en": "Authorization",
+                  "nl": "Autorisatie",
+                  "da": "Autorisation",
+                  "de": "Autorisierung",
+                  "es": "Autorización",
+                  "fr": "Autorisation",
+                  "it": "Autorizzazione",
+                  "no": "Autorisasjon",
+                  "sv": "Auktorisering",
+                  "pl": "Autoryzacja",
+                  "ru": "Авторизация",
+                  "ko": "승인",
+                  "ar": "تفويض"
                 }
               },
               {
                 "id": "5",
                 "label": {
-                  "en": "Syslog"
+                  "en": "Syslog",
+                  "nl": "Syslog",
+                  "da": "Syslog",
+                  "de": "Syslog",
+                  "es": "Syslog",
+                  "fr": "Syslog",
+                  "it": "Syslog",
+                  "no": "Syslog",
+                  "sv": "Syslog",
+                  "pl": "Syslog",
+                  "ru": "Сислог",
+                  "ko": "시스로그",
+                  "ar": "سيسلوج"
                 }
               },
               {
                 "id": "6",
                 "label": {
-                  "en": "LPR"
+                  "en": "LPR",
+                  "nl": "LPR",
+                  "da": "LPR",
+                  "de": "LPR",
+                  "es": "LPR",
+                  "fr": "LPR",
+                  "it": "LPR",
+                  "no": "LPR",
+                  "sv": "LPR",
+                  "pl": "LPR",
+                  "ru": "Распознавание номерных знаков (LPR)",
+                  "ko": "LPR",
+                  "ar": "LPR"
                 }
               },
               {
                 "id": "7",
                 "label": {
-                  "en": "News"
+                  "en": "News",
+                  "nl": "Nieuws",
+                  "da": "Nyheder",
+                  "de": "Nachrichten",
+                  "es": "Noticias",
+                  "fr": "Actualités",
+                  "it": "Notizie",
+                  "no": "Nyheter",
+                  "sv": "Nyheter",
+                  "pl": "Aktualności",
+                  "ru": "Новости",
+                  "ko": "뉴스",
+                  "ar": "أخبار"
                 }
               },
               {
                 "id": "8",
                 "label": {
-                  "en": "UUCP"
+                  "en": "UUCP",
+                  "nl": "UUCP",
+                  "da": "UUCP",
+                  "de": "UUCP",
+                  "es": "UUCP",
+                  "fr": "UUCP",
+                  "it": "UUCP",
+                  "no": "UUCP",
+                  "sv": "UUCP",
+                  "pl": "UUCP",
+                  "ru": "UUCP",
+                  "ko": "UUCP",
+                  "ar": "UUCP"
                 }
               },
               {
                 "id": "9",
                 "label": {
-                  "en": "Cron"
+                  "en": "Cron",
+                  "nl": "Cron",
+                  "da": "Cron",
+                  "de": "Cron",
+                  "es": "Cron",
+                  "fr": "Cron",
+                  "it": "Cron",
+                  "no": "Cron",
+                  "sv": "Cron",
+                  "pl": "Cron",
+                  "ru": "Крон",
+                  "ko": "크론",
+                  "ar": "كرون"
                 }
               },
               {
                 "id": "10",
                 "label": {
-                  "en": "Deamon"
+                  "en": "Deamon",
+                  "nl": "Daemon",
+                  "da": "Daemon",
+                  "de": "Daemon",
+                  "es": "Daemon",
+                  "fr": "Daemon",
+                  "it": "Demone",
+                  "no": "Daemon",
+                  "sv": "Daemon",
+                  "pl": "Demon",
+                  "ru": "Демон",
+                  "ko": "데몬",
+                  "ar": "خادم الخلفية"
                 }
               },
               {
                 "id": "11",
                 "label": {
-                  "en": "FTP"
+                  "en": "FTP",
+                  "nl": "FTP",
+                  "da": "FTP",
+                  "de": "FTP",
+                  "es": "FTP",
+                  "fr": "FTP",
+                  "it": "FTP",
+                  "no": "FTP",
+                  "sv": "FTP",
+                  "pl": "FTP",
+                  "ru": "FTP",
+                  "ko": "FTP",
+                  "ar": "FTP"
                 }
               },
               {
                 "id": "12",
                 "label": {
-                  "en": "NTP"
+                  "en": "NTP",
+                  "nl": "NTP",
+                  "da": "NTP",
+                  "de": "NTP",
+                  "es": "NTP",
+                  "fr": "NTP",
+                  "it": "NTP",
+                  "no": "NTP",
+                  "sv": "NTP",
+                  "pl": "NTP",
+                  "ru": "NTP",
+                  "ko": "NTP (네트워크 시간 프로토콜)",
+                  "ar": "NTP (بروتوكول وقت الشبكة)"
                 }
               },
               {
                 "id": "13",
                 "label": {
-                  "en": "Security"
+                  "en": "Security",
+                  "nl": "Beveiliging",
+                  "da": "Sikkerhed",
+                  "de": "Sicherheit",
+                  "es": "Seguridad",
+                  "fr": "Sécurité",
+                  "it": "Sicurezza",
+                  "no": "Sikkerhet",
+                  "sv": "Säkerhet",
+                  "pl": "Bezpieczeństwo",
+                  "ru": "Безопасность",
+                  "ko": "보안",
+                  "ar": "الأمان"
                 }
               },
               {
                 "id": "14",
                 "label": {
-                  "en": "Console"
+                  "en": "Console",
+                  "nl": "Console",
+                  "da": "Konsol",
+                  "de": "Konsole",
+                  "es": "Consola",
+                  "fr": "Console",
+                  "it": "Console",
+                  "no": "Konsoll",
+                  "sv": "Konsol",
+                  "pl": "Konsola",
+                  "ru": "Консоль",
+                  "ko": "콘솔",
+                  "ar": "وحدة التحكم"
                 }
               },
               {
                 "id": "15",
                 "label": {
-                  "en": "Clock"
+                  "en": "Clock",
+                  "nl": "Klok",
+                  "da": "Ur",
+                  "de": "Uhr",
+                  "es": "Reloj",
+                  "fr": "Horloge",
+                  "it": "Orologio",
+                  "no": "Klokke",
+                  "sv": "Klocka",
+                  "pl": "Zegar",
+                  "ru": "Часы",
+                  "ko": "시계",
+                  "ar": "ساعة"
                 }
               },
               {
                 "id": "16",
                 "label": {
-                  "en": "Flow"
+                  "en": "Flow",
+                  "nl": "Flow",
+                  "da": "Flow",
+                  "de": "Flow",
+                  "es": "Flujo",
+                  "fr": "Flow",
+                  "it": "Flusso",
+                  "no": "Flyt",
+                  "sv": "Flöde",
+                  "pl": "Przepływ",
+                  "ru": "Поток",
+                  "ko": "플로우",
+                  "ar": "التدفق"
                 }
               },
               {
                 "id": "17",
                 "label": {
-                  "en": "Device"
+                  "en": "Device",
+                  "nl": "Apparaat",
+                  "da": "Enhed",
+                  "de": "Gerät",
+                  "es": "Dispositivo",
+                  "fr": "Appareil",
+                  "it": "Dispositivo",
+                  "no": "Enhet",
+                  "sv": "Enhet",
+                  "pl": "Urządzenie",
+                  "ru": "Устройство",
+                  "ko": "장치",
+                  "ar": "الجهاز"
                 }
               },
               {
                 "id": "18",
                 "label": {
-                  "en": "App"
+                  "en": "App",
+                  "nl": "App",
+                  "da": "App",
+                  "de": "App",
+                  "es": "Aplicación",
+                  "fr": "Application",
+                  "it": "App",
+                  "no": "App",
+                  "sv": "App",
+                  "pl": "Aplikacja",
+                  "ru": "Приложение",
+                  "ko": "앱",
+                  "ar": "تطبيق"
                 }
               },
               {
                 "id": "19",
                 "label": {
-                  "en": "Scene"
+                  "en": "Scene",
+                  "nl": "Scène",
+                  "da": "Scene",
+                  "de": "Szene",
+                  "es": "Escena",
+                  "fr": "Scène",
+                  "it": "Scena",
+                  "no": "Scene",
+                  "sv": "Scen",
+                  "pl": "Scena",
+                  "ru": "Сцена",
+                  "ko": "장면",
+                  "ar": "مشهد"
                 }
               },
               {
                 "id": "20",
                 "label": {
-                  "en": "Trigger"
+                  "en": "Trigger",
+                  "nl": "Trigger",
+                  "da": "Udløser",
+                  "de": "Auslöser",
+                  "es": "Disparador",
+                  "fr": "Déclencheur",
+                  "it": "Trigger",
+                  "no": "Utløser",
+                  "sv": "Trigger",
+                  "pl": "Wyzwalacz",
+                  "ru": "Триггер",
+                  "ko": "트리거",
+                  "ar": "مشغل"
                 }
               },
               {
                 "id": "21",
                 "label": {
-                  "en": "Condition"
+                  "en": "Condition",
+                  "nl": "Voorwaarde",
+                  "da": "Betingelse",
+                  "de": "Bedingung",
+                  "es": "Condición",
+                  "fr": "Condition",
+                  "it": "Condizione",
+                  "no": "Betingelse",
+                  "sv": "Villkor",
+                  "pl": "Warunek",
+                  "ru": "Условие",
+                  "ko": "조건",
+                  "ar": "شرط"
                 }
               },
               {
                 "id": "22",
                 "label": {
-                  "en": "Action"
+                  "en": "Action",
+                  "nl": "Actie",
+                  "da": "Handling",
+                  "de": "Aktion",
+                  "es": "Acción",
+                  "fr": "Action",
+                  "it": "Azione",
+                  "no": "Handling",
+                  "sv": "Åtgärd",
+                  "pl": "Akcja",
+                  "ru": "Действие",
+                  "ko": "작업",
+                  "ar": "إجراء"
                 }
               }
             ]
@@ -348,63 +809,171 @@
             "name": "log",
             "type": "string",
             "title": {
-              "en": "Log"
+              "en": "Log",
+              "nl": "Logboek",
+              "da": "Logfil",
+              "de": "Protokoll",
+              "es": "Registro",
+              "fr": "Journal",
+              "it": "Registro",
+              "no": "Logg",
+              "sv": "Logg",
+              "pl": "Dziennik",
+              "ru": "Журнал",
+              "ko": "로그",
+              "ar": "سجل"
             }
           },
           {
             "name": "group",
             "type": "string",
             "title": {
-              "en": "Group"
+              "en": "Group",
+              "nl": "Groep",
+              "da": "Gruppe",
+              "de": "Gruppe",
+              "es": "Grupo",
+              "fr": "Groupe",
+              "it": "Gruppo",
+              "no": "Gruppe",
+              "sv": "Grupp",
+              "pl": "Grupa",
+              "ru": "Группа",
+              "ko": "그룹",
+              "ar": "مجموعة"
             }
           },
           {
             "name": "severity",
             "type": "string",
             "title": {
-              "en": "Severity"
+              "en": "Severity",
+              "nl": "Ernstigheid",
+              "da": "Alvorlighedsgrad",
+              "de": "Schweregrad",
+              "es": "Severidad",
+              "fr": "Gravité",
+              "it": "Gravità",
+              "no": "Alvorlighetsgrad",
+              "sv": "Allvarlighetsgrad",
+              "pl": "Waga",
+              "ru": "Серьезность",
+              "ko": "심각도",
+              "ar": "الخطورة"
             }
           },
           {
             "name": "severityId",
             "type": "number",
             "title": {
-              "en": "Severity ID"
+              "en": "Severity ID",
+              "nl": "Ernstniveau-ID",
+              "da": "Alvorligheds-ID",
+              "de": "Schweregrad-ID",
+              "es": "ID de gravedad",
+              "fr": "ID de gravité",
+              "it": "ID Gravità",
+              "no": "Alvorlighets-ID",
+              "sv": "Allvarlighets-ID",
+              "pl": "Identyfikator poziomu ważności",
+              "ru": "Идентификатор уровня серьезности",
+              "ko": "심각도 ID",
+              "ar": "معرّف الشدة"
             }
           },
           {
             "name": "facility",
             "type": "string",
             "title": {
-              "en": "Facility"
+              "en": "Facility",
+              "nl": "Faciliteit",
+              "da": "Facilitet",
+              "de": "Einrichtung",
+              "es": "Instalación",
+              "fr": "Installation",
+              "it": "Struttura",
+              "no": "Fasilitet",
+              "sv": "Anläggning",
+              "pl": "Placówka",
+              "ru": "Объект",
+              "ko": "시설",
+              "ar": "مرفق"
             }
           },
           {
             "name": "facilityId",
             "type": "number",
             "title": {
-              "en": "Facility ID"
+              "en": "Facility ID",
+              "nl": "Faciliteit-ID",
+              "da": "Facilitets-ID",
+              "de": "Einrichtungs-ID",
+              "es": "ID de instalación",
+              "fr": "ID de l'installation",
+              "it": "ID struttura",
+              "no": "Facility ID",
+              "sv": "Anläggnings-ID",
+              "pl": "Identyfikator obiektu",
+              "ru": "ID объекта",
+              "ko": "시설 ID",
+              "ar": "معرّف المنشأة"
             }
           },
           {
             "name": "hostname",
             "type": "string",
             "title": {
-              "en": "Hostname"
+              "en": "Hostname",
+              "nl": "Hostnaam",
+              "da": "Værtsnavn",
+              "de": "Hostname",
+              "es": "Nombre del host",
+              "fr": "Nom d'hôte",
+              "it": "Nome host",
+              "no": "Vertsnavn",
+              "sv": "Värdnamn",
+              "pl": "Nazwa hosta",
+              "ru": "Имя хоста",
+              "ko": "호스트 이름",
+              "ar": "اسم المضيف"
             }
           },
           {
             "name": "timestamp",
             "type": "number",
             "title": {
-              "en": "Timestamp"
+              "en": "Timestamp",
+              "nl": "Tijdstempel",
+              "da": "Tidsstempel",
+              "de": "Zeitstempel",
+              "es": "Marca de tiempo",
+              "fr": "Horodatage",
+              "it": "Timestamp",
+              "no": "Tidsstempel",
+              "sv": "Tidsstämpel",
+              "pl": "Znacznik czasu",
+              "ru": "Отметка времени",
+              "ko": "타임스탬프",
+              "ar": "الطابع الزمني"
             }
           },
           {
             "name": "source",
             "type": "string",
             "title": {
-              "en": "Source"
+              "en": "Source",
+              "nl": "Bron",
+              "da": "Kilde",
+              "de": "Quelle",
+              "es": "Fuente",
+              "fr": "Source",
+              "it": "Fonte",
+              "no": "Kilde",
+              "sv": "Källa",
+              "pl": "Źródło",
+              "ru": "Источник",
+              "ko": "출처",
+              "ar": "المصدر"
             }
           }
         ]
@@ -416,11 +985,33 @@
         "deprecated": true,
         "title": {
           "en": "Add Something to the Simple Log",
-          "nl": "Voeg iets toe aan de Simple Log"
+          "nl": "Voeg iets toe aan de Simple Log",
+          "da": "Tilføj noget til Simple Log",
+          "de": "Etwas zum Simple Log hinzufügen",
+          "es": "Añadir algo al Simple Log",
+          "fr": "Ajouter quelque chose au Simple Log",
+          "it": "Aggiungi qualcosa al Simple Log",
+          "no": "Legg til noe i Simple Log",
+          "sv": "Lägg till något i Simple Log",
+          "pl": "Dodaj coś do Simple Log",
+          "ru": "Добавить что-то в Simple Log",
+          "ko": "Simple Log에 항목 추가하기",
+          "ar": "أضف شيئًا إلى السجل البسيط"
         },
         "titleFormatted": {
           "en": "[[log]]",
-          "nl": "[[log]]"
+          "nl": "[[log]]",
+          "da": "[[log]]",
+          "de": "[[log]]",
+          "es": "[[log]]",
+          "fr": "[[log]]",
+          "it": "[[log]]",
+          "no": "[[log]]",
+          "sv": "[[log]]",
+          "pl": "[[log]]",
+          "ru": "[[log]]",
+          "ko": "[[log]]",
+          "ar": "[[log]]"
         },
         "args": [
           {
@@ -428,11 +1019,33 @@
             "type": "text",
             "placeholder": {
               "en": "log",
-              "nl": "log"
+              "nl": "log",
+              "da": "log",
+              "de": "Protokoll",
+              "es": "registro",
+              "fr": "journal",
+              "it": "registro",
+              "no": "logg",
+              "sv": "logg",
+              "pl": "log",
+              "ru": "журнал",
+              "ko": "로그",
+              "ar": "سجل"
             },
             "title": {
               "en": "log",
-              "nl": "log"
+              "nl": "log",
+              "da": "log",
+              "de": "Protokoll",
+              "es": "registro",
+              "fr": "journal",
+              "it": "registro",
+              "no": "logg",
+              "sv": "logg",
+              "pl": "log",
+              "ru": "журнал",
+              "ko": "로그",
+              "ar": "سجل"
             }
           }
         ]
@@ -444,10 +1057,33 @@
         "deprecated": true,
         "title": {
           "en": "Automater",
-          "nl": "Automater"
+          "nl": "Automater",
+          "da": "Automatiser",
+          "de": "Automatisierer",
+          "es": "Automatizador",
+          "fr": "Automatiser",
+          "it": "Automatizzatore",
+          "no": "Automater",
+          "sv": "Automatisera",
+          "pl": "Automater",
+          "ru": "Автоматизатор",
+          "ko": "오토메이터",
+          "ar": "أوتوميتر"
         },
         "titleFormatted": {
-          "en": "Automater; name: [[group]], update: [[update]], updateCards: [[updateCards]], errorSeverity: [[errorSeverity]], triggerSeverity: [[triggerSeverity]], conditionSeverity: [[conditionSeverity]], actionSeverity: [[actionSeverity]]"
+          "en": "Automater; name: [[group]], update: [[update]], updateCards: [[updateCards]], errorSeverity: [[errorSeverity]], triggerSeverity: [[triggerSeverity]], conditionSeverity: [[conditionSeverity]], actionSeverity: [[actionSeverity]]",
+          "nl": "Automatisering; naam: [[group]], update: [[update]], updateKaarten: [[updateCards]], fouternst: [[errorSeverity]], triggerernst: [[triggerSeverity]], voorwaardenernst: [[conditionSeverity]], actierernst: [[actionSeverity]]",
+          "da": "Automatiser; navn: [[group]], opdatering: [[update]], opdateringskort: [[updateCards]], fejlalvorlighed: [[errorSeverity]], udløseralvorlighed: [[triggerSeverity]], betingelsesalvorlighed: [[conditionSeverity]], handlingalvorlighed: [[actionSeverity]]",
+          "de": "Automatisierer; Name: [[group]], Aktualisierung: [[update]], Aktualisierungskarten: [[updateCards]], Fehler-Schweregrad: [[errorSeverity]], Auslöser-Schweregrad: [[triggerSeverity]], Bedingung-Schweregrad: [[conditionSeverity]], Aktion-Schweregrad: [[actionSeverity]]",
+          "es": "Automatizador; nombre: [[group]], actualización: [[update]], actualizarTarjetas: [[updateCards]], gravedadError: [[errorSeverity]], gravedadDisparador: [[triggerSeverity]], gravedadCondición: [[conditionSeverity]], gravedadAcción: [[actionSeverity]]",
+          "fr": "Automatiser ; nom : [[group]], mise à jour : [[update]], mise à jour des cartes : [[updateCards]], gravité de l'erreur : [[errorSeverity]], gravité du déclencheur : [[triggerSeverity]], gravité de la condition : [[conditionSeverity]], gravité de l'action : [[actionSeverity]]",
+          "it": "Automatizzatore; nome: [[group]], aggiornamento: [[update]], aggiornaSchede: [[updateCards]], gravitàErrore: [[errorSeverity]], gravitàTrigger: [[triggerSeverity]], gravitàCondizione: [[conditionSeverity]], gravitàAzione: [[actionSeverity]]",
+          "no": "Automatiserer; navn: [[group]], oppdatering: [[update]], oppdaterKort: [[updateCards]], feilAlvorlighet: [[errorSeverity]], utløserAlvorlighet: [[triggerSeverity]], betingelseAlvorlighet: [[conditionSeverity]], handlingAlvorlighet: [[actionSeverity]]",
+          "sv": "Automatisera; namn: [[group]], uppdatering: [[update]], uppdateraKort: [[updateCards]], felallvarlighet: [[errorSeverity]], utlösarallvarlighet: [[triggerSeverity]], villkorsallvarlighet: [[conditionSeverity]], åtgärdsallvarlighet: [[actionSeverity]]",
+          "pl": "Automatyzator; nazwa: [[group]], aktualizacja: [[update]], aktualizujKarty: [[updateCards]], poziomBłędu: [[errorSeverity]], poziomWyzwalacza: [[triggerSeverity]], poziomWarunku: [[conditionSeverity]], poziomAkcji: [[actionSeverity]]",
+          "ru": "Автоматизатор; имя: [[group]], обновление: [[update]], обновлениеКарт: [[updateCards]], уровеньОшибки: [[errorSeverity]], уровеньТриггера: [[triggerSeverity]], уровеньУсловия: [[conditionSeverity]], уровеньДействия: [[actionSeverity]]",
+          "ko": "자동화기; 이름: [[group]], 업데이트: [[update]], 업데이트 카드: [[updateCards]], 오류 심각도: [[errorSeverity]], 트리거 심각도: [[triggerSeverity]], 조건 심각도: [[conditionSeverity]], 액션 심각도: [[actionSeverity]]",
+          "ar": "المؤتمت؛ الاسم: [[group]]، التحديث: [[update]]، تحديث البطاقات: [[updateCards]]، شدة الخطأ: [[errorSeverity]]، شدة المشغل: [[triggerSeverity]]، شدة الشرط: [[conditionSeverity]]، شدة الإجراء: [[actionSeverity]]"
         },
         "args": [
           {
@@ -455,11 +1091,33 @@
             "type": "text",
             "placeholder": {
               "en": "Name",
-              "nl": "Naam"
+              "nl": "Naam",
+              "da": "Navn",
+              "de": "Name",
+              "es": "Nombre",
+              "fr": "Nom",
+              "it": "Nome",
+              "no": "Navn",
+              "sv": "Namn",
+              "pl": "Nazwa",
+              "ru": "Имя",
+              "ko": "이름",
+              "ar": "الاسم"
             },
             "title": {
               "en": "Name",
-              "nl": "Naam"
+              "nl": "Naam",
+              "da": "Navn",
+              "de": "Name",
+              "es": "Nombre",
+              "fr": "Nom",
+              "it": "Nome",
+              "no": "Navn",
+              "sv": "Namn",
+              "pl": "Nazwa",
+              "ru": "Имя",
+              "ko": "이름",
+              "ar": "الاسم"
             }
           },
           {
@@ -467,11 +1125,33 @@
             "type": "checkbox",
             "placeholder": {
               "en": "Update",
-              "nl": "Update"
+              "nl": "Update",
+              "da": "Opdatering",
+              "de": "Aktualisieren",
+              "es": "Actualizar",
+              "fr": "Mise à jour",
+              "it": "Aggiorna",
+              "no": "Oppdater",
+              "sv": "Uppdatera",
+              "pl": "Aktualizacja",
+              "ru": "Обновить",
+              "ko": "업데이트",
+              "ar": "تحديث"
             },
             "title": {
               "en": "Update",
-              "nl": "Update"
+              "nl": "Update",
+              "da": "Opdatering",
+              "de": "Aktualisieren",
+              "es": "Actualizar",
+              "fr": "Mise à jour",
+              "it": "Aggiorna",
+              "no": "Oppdatering",
+              "sv": "Uppdatera",
+              "pl": "Aktualizacja",
+              "ru": "Обновить",
+              "ko": "업데이트",
+              "ar": "تحديث"
             },
             "value": true
           },
@@ -480,11 +1160,33 @@
             "type": "checkbox",
             "placeholder": {
               "en": "Update Cards",
-              "nl": "Update kaarten"
+              "nl": "Update kaarten",
+              "da": "Opdater kort",
+              "de": "Aktualisierungskarten",
+              "es": "Actualizar Tarjetas",
+              "fr": "Mettre à jour les cartes",
+              "it": "Aggiorna Schede",
+              "no": "Oppdater kort",
+              "sv": "Uppdatera kort",
+              "pl": "Zaktualizuj Karty",
+              "ru": "Обновить карточки",
+              "ko": "카드 업데이트",
+              "ar": "تحديث البطاقات"
             },
             "title": {
               "en": "Update Cards",
-              "nl": "Update kaarten"
+              "nl": "Update kaarten",
+              "da": "Opdater kort",
+              "de": "Aktualisierungskarten",
+              "es": "Actualizar Tarjetas",
+              "fr": "Mettre à jour les cartes",
+              "it": "Aggiorna Schede",
+              "no": "Oppdater kort",
+              "sv": "Uppdatera kort",
+              "pl": "Zaktualizuj karty",
+              "ru": "Обновить карточки",
+              "ko": "카드 업데이트",
+              "ar": "تحديث البطاقات"
             },
             "value": true
           },
@@ -494,59 +1196,177 @@
             "name": "errorSeverity",
             "placeholder": {
               "en": "Severity",
-              "nl": "Niveau"
+              "nl": "Niveau",
+              "da": "Alvorlighedsgrad",
+              "de": "Schweregrad",
+              "es": "Severidad",
+              "fr": "Gravité",
+              "it": "Gravità",
+              "no": "Alvorlighetsgrad",
+              "sv": "Allvarlighetsgrad",
+              "pl": "Waga",
+              "ru": "Серьезность",
+              "ko": "심각도",
+              "ar": "الخطورة"
             },
             "title": {
               "en": "Severity",
-              "nl": "Niveau"
+              "nl": "Niveau",
+              "da": "Alvorlighedsgrad",
+              "de": "Schweregrad",
+              "es": "Severidad",
+              "fr": "Gravité",
+              "it": "Gravità",
+              "no": "Alvorlighetsgrad",
+              "sv": "Allvarlighetsgrad",
+              "pl": "Waga",
+              "ru": "Серьезность",
+              "ko": "심각도",
+              "ar": "الخطورة"
             },
             "values": [
               {
                 "id": "0",
                 "label": {
-                  "en": "Emergency"
+                  "en": "Emergency",
+                  "nl": "Noodgeval",
+                  "da": "Nødsituation",
+                  "de": "Notfall",
+                  "es": "Emergencia",
+                  "fr": "Urgence",
+                  "it": "Emergenza",
+                  "no": "Nødsituasjon",
+                  "sv": "Nödsituation",
+                  "pl": "Awaryjny",
+                  "ru": "Аварийный",
+                  "ko": "긴급",
+                  "ar": "طوارئ"
                 }
               },
               {
                 "id": "1",
                 "label": {
-                  "en": "Alert"
+                  "en": "Alert",
+                  "nl": "Waarschuwing",
+                  "da": "Alarm",
+                  "de": "Alarm",
+                  "es": "Alerta",
+                  "fr": "Alerte",
+                  "it": "Avviso",
+                  "no": "Varsel",
+                  "sv": "Varning",
+                  "pl": "Alert",
+                  "ru": "Оповещение",
+                  "ko": "알림",
+                  "ar": "تنبيه"
                 }
               },
               {
                 "id": "2",
                 "label": {
-                  "en": "Critical"
+                  "en": "Critical",
+                  "nl": "Kritiek",
+                  "da": "Kritisk",
+                  "de": "Kritisch",
+                  "es": "Crítico",
+                  "fr": "Critique",
+                  "it": "Critico",
+                  "no": "Kritisk",
+                  "sv": "Kritisk",
+                  "pl": "Krytyczny",
+                  "ru": "Критический",
+                  "ko": "중요",
+                  "ar": "حرج"
                 }
               },
               {
                 "id": "3",
                 "label": {
-                  "en": "Error"
+                  "en": "Error",
+                  "nl": "Fout",
+                  "da": "Fejl",
+                  "de": "Fehler",
+                  "es": "Error",
+                  "fr": "Erreur",
+                  "it": "Errore",
+                  "no": "Feil",
+                  "sv": "Fel",
+                  "pl": "Błąd",
+                  "ru": "Ошибка",
+                  "ko": "오류",
+                  "ar": "خطأ"
                 }
               },
               {
                 "id": "4",
                 "label": {
-                  "en": "Warning"
+                  "en": "Warning",
+                  "nl": "Waarschuwing",
+                  "da": "Advarsel",
+                  "de": "Warnung",
+                  "es": "Advertencia",
+                  "fr": "Avertissement",
+                  "it": "Avviso",
+                  "no": "Advarsel",
+                  "sv": "Varning",
+                  "pl": "Ostrzeżenie",
+                  "ru": "Предупреждение",
+                  "ko": "경고",
+                  "ar": "تحذير"
                 }
               },
               {
                 "id": "5",
                 "label": {
-                  "en": "Notice"
+                  "en": "Notice",
+                  "nl": "Opmerking",
+                  "da": "Bemærk",
+                  "de": "Hinweis",
+                  "es": "Aviso",
+                  "fr": "Avis",
+                  "it": "Avviso",
+                  "no": "Merk",
+                  "sv": "Meddelande",
+                  "pl": "Powiadomienie",
+                  "ru": "Уведомление",
+                  "ko": "공지",
+                  "ar": "تنبيه"
                 }
               },
               {
                 "id": "6",
                 "label": {
-                  "en": "Info"
+                  "en": "Info",
+                  "nl": "Info",
+                  "da": "Info",
+                  "de": "Info",
+                  "es": "Información",
+                  "fr": "Infos",
+                  "it": "Informazioni",
+                  "no": "Info",
+                  "sv": "Info",
+                  "pl": "Informacje",
+                  "ru": "Информация",
+                  "ko": "정보",
+                  "ar": "معلومات"
                 }
               },
               {
                 "id": "7",
                 "label": {
-                  "en": "Debug"
+                  "en": "Debug",
+                  "nl": "Debuggen",
+                  "da": "Debug",
+                  "de": "Debuggen",
+                  "es": "Depurar",
+                  "fr": "Déboguer",
+                  "it": "Debug",
+                  "no": "Feilsøking",
+                  "sv": "Felsökning",
+                  "pl": "Debugowanie",
+                  "ru": "Отладка",
+                  "ko": "디버그",
+                  "ar": "تصحيح الأخطاء"
                 }
               }
             ]
@@ -557,59 +1377,177 @@
             "name": "triggerSeverity",
             "placeholder": {
               "en": "Severity",
-              "nl": "Niveau"
+              "nl": "Niveau",
+              "da": "Alvorlighedsgrad",
+              "de": "Schweregrad",
+              "es": "Severidad",
+              "fr": "Gravité",
+              "it": "Gravità",
+              "no": "Alvorlighetsgrad",
+              "sv": "Allvarlighetsgrad",
+              "pl": "Waga",
+              "ru": "Серьезность",
+              "ko": "심각도",
+              "ar": "الخطورة"
             },
             "title": {
               "en": "Severity",
-              "nl": "Niveau"
+              "nl": "Niveau",
+              "da": "Alvorlighedsgrad",
+              "de": "Schweregrad",
+              "es": "Severidad",
+              "fr": "Gravité",
+              "it": "Gravità",
+              "no": "Alvorlighetsgrad",
+              "sv": "Allvarlighetsgrad",
+              "pl": "Waga",
+              "ru": "Серьезность",
+              "ko": "심각도",
+              "ar": "الخطورة"
             },
             "values": [
               {
                 "id": "0",
                 "label": {
-                  "en": "Emergency"
+                  "en": "Emergency",
+                  "nl": "Noodgeval",
+                  "da": "Nødsituation",
+                  "de": "Notfall",
+                  "es": "Emergencia",
+                  "fr": "Urgence",
+                  "it": "Emergenza",
+                  "no": "Nødsituasjon",
+                  "sv": "Nödsituation",
+                  "pl": "Awaryjny",
+                  "ru": "Аварийный случай",
+                  "ko": "긴급",
+                  "ar": "طارئ"
                 }
               },
               {
                 "id": "1",
                 "label": {
-                  "en": "Alert"
+                  "en": "Alert",
+                  "nl": "Waarschuwing",
+                  "da": "Alarm",
+                  "de": "Alarm",
+                  "es": "Alerta",
+                  "fr": "Alerte",
+                  "it": "Avviso",
+                  "no": "Varsel",
+                  "sv": "Varning",
+                  "pl": "Alert",
+                  "ru": "Оповещение",
+                  "ko": "알림",
+                  "ar": "تنبيه"
                 }
               },
               {
                 "id": "2",
                 "label": {
-                  "en": "Critical"
+                  "en": "Critical",
+                  "nl": "Kritiek",
+                  "da": "Kritisk",
+                  "de": "Kritisch",
+                  "es": "Crítico",
+                  "fr": "Critique",
+                  "it": "Critico",
+                  "no": "Kritisk",
+                  "sv": "Kritisk",
+                  "pl": "Krytyczny",
+                  "ru": "Критический",
+                  "ko": "중요",
+                  "ar": "حرج"
                 }
               },
               {
                 "id": "3",
                 "label": {
-                  "en": "Error"
+                  "en": "Error",
+                  "nl": "Fout",
+                  "da": "Fejl",
+                  "de": "Fehler",
+                  "es": "Error",
+                  "fr": "Erreur",
+                  "it": "Errore",
+                  "no": "Feil",
+                  "sv": "Fel",
+                  "pl": "Błąd",
+                  "ru": "Ошибка",
+                  "ko": "오류",
+                  "ar": "خطأ"
                 }
               },
               {
                 "id": "4",
                 "label": {
-                  "en": "Warning"
+                  "en": "Warning",
+                  "nl": "Waarschuwing",
+                  "da": "Advarsel",
+                  "de": "Warnung",
+                  "es": "Advertencia",
+                  "fr": "Avertissement",
+                  "it": "Avviso",
+                  "no": "Advarsel",
+                  "sv": "Varning",
+                  "pl": "Ostrzeżenie",
+                  "ru": "Предупреждение",
+                  "ko": "경고",
+                  "ar": "تحذير"
                 }
               },
               {
                 "id": "5",
                 "label": {
-                  "en": "Notice"
+                  "en": "Notice",
+                  "nl": "Opmerking",
+                  "da": "Bemærk",
+                  "de": "Hinweis",
+                  "es": "Aviso",
+                  "fr": "Avis",
+                  "it": "Avviso",
+                  "no": "Merk",
+                  "sv": "Meddelande",
+                  "pl": "Uwaga",
+                  "ru": "Уведомление",
+                  "ko": "공지",
+                  "ar": "تنبيه"
                 }
               },
               {
                 "id": "6",
                 "label": {
-                  "en": "Info"
+                  "en": "Info",
+                  "nl": "Info",
+                  "da": "Info",
+                  "de": "Info",
+                  "es": "Información",
+                  "fr": "Infos",
+                  "it": "Informazioni",
+                  "no": "Info",
+                  "sv": "Info",
+                  "pl": "Informacje",
+                  "ru": "Информация",
+                  "ko": "정보",
+                  "ar": "معلومات"
                 }
               },
               {
                 "id": "7",
                 "label": {
-                  "en": "Debug"
+                  "en": "Debug",
+                  "nl": "Debuggen",
+                  "da": "Fejlfinding",
+                  "de": "Debuggen",
+                  "es": "Depurar",
+                  "fr": "Déboguer",
+                  "it": "Debug",
+                  "no": "Feilsøking",
+                  "sv": "Felsökning",
+                  "pl": "Debugowanie",
+                  "ru": "Отладка",
+                  "ko": "디버그",
+                  "ar": "تصحيح الأخطاء"
                 }
               }
             ]
@@ -620,59 +1558,177 @@
             "name": "conditionSeverity",
             "placeholder": {
               "en": "Severity",
-              "nl": "Niveau"
+              "nl": "Niveau",
+              "da": "Alvorlighedsgrad",
+              "de": "Schweregrad",
+              "es": "Severidad",
+              "fr": "Gravité",
+              "it": "Gravità",
+              "no": "Alvorlighetsgrad",
+              "sv": "Allvarlighetsgrad",
+              "pl": "Waga",
+              "ru": "Серьезность",
+              "ko": "심각도",
+              "ar": "الخطورة"
             },
             "title": {
               "en": "Severity",
-              "nl": "Niveau"
+              "nl": "Niveau",
+              "da": "Alvorlighedsgrad",
+              "de": "Schweregrad",
+              "es": "Severidad",
+              "fr": "Gravité",
+              "it": "Gravità",
+              "no": "Alvorlighetsgrad",
+              "sv": "Allvarlighetsgrad",
+              "pl": "Waga",
+              "ru": "Серьезность",
+              "ko": "심각도",
+              "ar": "الخطورة"
             },
             "values": [
               {
                 "id": "0",
                 "label": {
-                  "en": "Emergency"
+                  "en": "Emergency",
+                  "nl": "Noodgeval",
+                  "da": "Nødsituation",
+                  "de": "Notfall",
+                  "es": "Emergencia",
+                  "fr": "Urgence",
+                  "it": "Emergenza",
+                  "no": "Nødsituasjon",
+                  "sv": "Nödsituation",
+                  "pl": "Awaryjny",
+                  "ru": "Аварийная ситуация",
+                  "ko": "긴급",
+                  "ar": "طارئ"
                 }
               },
               {
                 "id": "1",
                 "label": {
-                  "en": "Alert"
+                  "en": "Alert",
+                  "nl": "Waarschuwing",
+                  "da": "Alarm",
+                  "de": "Alarm",
+                  "es": "Alerta",
+                  "fr": "Alerte",
+                  "it": "Avviso",
+                  "no": "Varsel",
+                  "sv": "Varning",
+                  "pl": "Alert",
+                  "ru": "Оповещение",
+                  "ko": "알림",
+                  "ar": "تنبيه"
                 }
               },
               {
                 "id": "2",
                 "label": {
-                  "en": "Critical"
+                  "en": "Critical",
+                  "nl": "Kritiek",
+                  "da": "Kritisk",
+                  "de": "Kritisch",
+                  "es": "Crítico",
+                  "fr": "Critique",
+                  "it": "Critico",
+                  "no": "Kritisk",
+                  "sv": "Kritisk",
+                  "pl": "Krytyczny",
+                  "ru": "Критический",
+                  "ko": "중요",
+                  "ar": "حرج"
                 }
               },
               {
                 "id": "3",
                 "label": {
-                  "en": "Error"
+                  "en": "Error",
+                  "nl": "Fout",
+                  "da": "Fejl",
+                  "de": "Fehler",
+                  "es": "Error",
+                  "fr": "Erreur",
+                  "it": "Errore",
+                  "no": "Feil",
+                  "sv": "Fel",
+                  "pl": "Błąd",
+                  "ru": "Ошибка",
+                  "ko": "오류",
+                  "ar": "خطأ"
                 }
               },
               {
                 "id": "4",
                 "label": {
-                  "en": "Warning"
+                  "en": "Warning",
+                  "nl": "Waarschuwing",
+                  "da": "Advarsel",
+                  "de": "Warnung",
+                  "es": "Advertencia",
+                  "fr": "Avertissement",
+                  "it": "Avviso",
+                  "no": "Advarsel",
+                  "sv": "Varning",
+                  "pl": "Ostrzeżenie",
+                  "ru": "Предупреждение",
+                  "ko": "경고",
+                  "ar": "تحذير"
                 }
               },
               {
                 "id": "5",
                 "label": {
-                  "en": "Notice"
+                  "en": "Notice",
+                  "nl": "Opmerking",
+                  "da": "Bemærk",
+                  "de": "Hinweis",
+                  "es": "Aviso",
+                  "fr": "Avis",
+                  "it": "Avviso",
+                  "no": "Varsel",
+                  "sv": "Meddelande",
+                  "pl": "Powiadomienie",
+                  "ru": "Уведомление",
+                  "ko": "공지",
+                  "ar": "تنبيه"
                 }
               },
               {
                 "id": "6",
                 "label": {
-                  "en": "Info"
+                  "en": "Info",
+                  "nl": "Informatie",
+                  "da": "Info",
+                  "de": "Info",
+                  "es": "Información",
+                  "fr": "Infos",
+                  "it": "Informazioni",
+                  "no": "Info",
+                  "sv": "Info",
+                  "pl": "Informacje",
+                  "ru": "Информация",
+                  "ko": "정보",
+                  "ar": "معلومات"
                 }
               },
               {
                 "id": "7",
                 "label": {
-                  "en": "Debug"
+                  "en": "Debug",
+                  "nl": "Debuggen",
+                  "da": "Fejlfinding",
+                  "de": "Debuggen",
+                  "es": "Depurar",
+                  "fr": "Déboguer",
+                  "it": "Debug",
+                  "no": "Feilsøking",
+                  "sv": "Felsökning",
+                  "pl": "Debugowanie",
+                  "ru": "Отладка",
+                  "ko": "디버그",
+                  "ar": "تصحيح الأخطاء"
                 }
               }
             ]
@@ -683,59 +1739,177 @@
             "name": "actionSeverity",
             "placeholder": {
               "en": "Severity",
-              "nl": "Niveau"
+              "nl": "Niveau",
+              "da": "Alvorlighedsgrad",
+              "de": "Schweregrad",
+              "es": "Severidad",
+              "fr": "Gravité",
+              "it": "Gravità",
+              "no": "Alvorlighetsgrad",
+              "sv": "Allvarlighetsgrad",
+              "pl": "Waga",
+              "ru": "Серьезность",
+              "ko": "심각도",
+              "ar": "الخطورة"
             },
             "title": {
               "en": "Severity",
-              "nl": "Niveau"
+              "nl": "Niveau",
+              "da": "Alvorlighedsgrad",
+              "de": "Schweregrad",
+              "es": "Severidad",
+              "fr": "Gravité",
+              "it": "Gravità",
+              "no": "Alvorlighetsgrad",
+              "sv": "Allvarlighetsgrad",
+              "pl": "Waga",
+              "ru": "Серьезность",
+              "ko": "심각도",
+              "ar": "الخطورة"
             },
             "values": [
               {
                 "id": "0",
                 "label": {
-                  "en": "Emergency"
+                  "en": "Emergency",
+                  "nl": "Noodgeval",
+                  "da": "Nødsituation",
+                  "de": "Notfall",
+                  "es": "Emergencia",
+                  "fr": "Urgence",
+                  "it": "Emergenza",
+                  "no": "Nødsituasjon",
+                  "sv": "Nödsituation",
+                  "pl": "Awaryjny",
+                  "ru": "Аварийная ситуация",
+                  "ko": "긴급",
+                  "ar": "طوارئ"
                 }
               },
               {
                 "id": "1",
                 "label": {
-                  "en": "Alert"
+                  "en": "Alert",
+                  "nl": "Waarschuwing",
+                  "da": "Alarm",
+                  "de": "Alarm",
+                  "es": "Alerta",
+                  "fr": "Alerte",
+                  "it": "Avviso",
+                  "no": "Varsel",
+                  "sv": "Varning",
+                  "pl": "Alert",
+                  "ru": "Оповещение",
+                  "ko": "알림",
+                  "ar": "تنبيه"
                 }
               },
               {
                 "id": "2",
                 "label": {
-                  "en": "Critical"
+                  "en": "Critical",
+                  "nl": "Kritiek",
+                  "da": "Kritisk",
+                  "de": "Kritisch",
+                  "es": "Crítico",
+                  "fr": "Critique",
+                  "it": "Critico",
+                  "no": "Kritisk",
+                  "sv": "Kritisk",
+                  "pl": "Krytyczny",
+                  "ru": "Критический",
+                  "ko": "중요",
+                  "ar": "حرج"
                 }
               },
               {
                 "id": "3",
                 "label": {
-                  "en": "Error"
+                  "en": "Error",
+                  "nl": "Fout",
+                  "da": "Fejl",
+                  "de": "Fehler",
+                  "es": "Error",
+                  "fr": "Erreur",
+                  "it": "Errore",
+                  "no": "Feil",
+                  "sv": "Fel",
+                  "pl": "Błąd",
+                  "ru": "Ошибка",
+                  "ko": "오류",
+                  "ar": "خطأ"
                 }
               },
               {
                 "id": "4",
                 "label": {
-                  "en": "Warning"
+                  "en": "Warning",
+                  "nl": "Waarschuwing",
+                  "da": "Advarsel",
+                  "de": "Warnung",
+                  "es": "Advertencia",
+                  "fr": "Avertissement",
+                  "it": "Avviso",
+                  "no": "Advarsel",
+                  "sv": "Varning",
+                  "pl": "Ostrzeżenie",
+                  "ru": "Предупреждение",
+                  "ko": "경고",
+                  "ar": "تحذير"
                 }
               },
               {
                 "id": "5",
                 "label": {
-                  "en": "Notice"
+                  "en": "Notice",
+                  "nl": "Opmerking",
+                  "da": "Bemærk",
+                  "de": "Hinweis",
+                  "es": "Aviso",
+                  "fr": "Avis",
+                  "it": "Avviso",
+                  "no": "Varsel",
+                  "sv": "Meddelande",
+                  "pl": "Powiadomienie",
+                  "ru": "Уведомление",
+                  "ko": "공지사항",
+                  "ar": "تنبيه"
                 }
               },
               {
                 "id": "6",
                 "label": {
-                  "en": "Info"
+                  "en": "Info",
+                  "nl": "Info",
+                  "da": "Info",
+                  "de": "Info",
+                  "es": "Información",
+                  "fr": "Infos",
+                  "it": "Informazioni",
+                  "no": "Info",
+                  "sv": "Info",
+                  "pl": "Informacje",
+                  "ru": "Информация",
+                  "ko": "정보",
+                  "ar": "معلومات"
                 }
               },
               {
                 "id": "7",
                 "label": {
-                  "en": "Debug"
+                  "en": "Debug",
+                  "nl": "Debuggen",
+                  "da": "Fejlfinding",
+                  "de": "Debuggen",
+                  "es": "Depurar",
+                  "fr": "Déboguer",
+                  "it": "Debug",
+                  "no": "Feilsøking",
+                  "sv": "Felsökning",
+                  "pl": "Debugowanie",
+                  "ru": "Отладка",
+                  "ko": "디버그",
+                  "ar": "تصحيح الأخطاء"
                 }
               }
             ]
@@ -747,11 +1921,33 @@
         "deprecated": true,
         "title": {
           "en": "Add Something to the Simple Log",
-          "nl": "Voeg iets toe aan de Simple Log"
+          "nl": "Voeg iets toe aan de Simple Log",
+          "da": "Tilføj noget til Simple Log",
+          "de": "Füge etwas zum Simple Log hinzu",
+          "es": "Añadir algo al Simple Log",
+          "fr": "Ajouter quelque chose au Simple Log",
+          "it": "Aggiungi qualcosa al Simple Log",
+          "no": "Legg til noe i Simple Log",
+          "sv": "Lägg till något i Simple Log",
+          "pl": "Dodaj coś do Simple Log",
+          "ru": "Добавить что-то в Simple Log",
+          "ko": "Simple Log에 항목 추가하기",
+          "ar": "أضف شيئًا إلى السجل البسيط"
         },
         "titleFormatted": {
           "en": "[[log]]",
-          "nl": "[[log]]"
+          "nl": "[[log]]",
+          "da": "[[log]]",
+          "de": "[[log]]",
+          "es": "[[log]]",
+          "fr": "[[log]]",
+          "it": "[[log]]",
+          "no": "[[log]]",
+          "sv": "[[log]]",
+          "pl": "[[log]]",
+          "ru": "[[log]]",
+          "ko": "[[log]]",
+          "ar": "[[log]]"
         },
         "args": [
           {
@@ -759,11 +1955,33 @@
             "type": "text",
             "placeholder": {
               "en": "log",
-              "nl": "log"
+              "nl": "log",
+              "da": "log",
+              "de": "Protokoll",
+              "es": "registro",
+              "fr": "journal",
+              "it": "registro",
+              "no": "logg",
+              "sv": "logg",
+              "pl": "log",
+              "ru": "журнал",
+              "ko": "로그",
+              "ar": "سجل"
             },
             "title": {
               "en": "log",
-              "nl": "log"
+              "nl": "log",
+              "da": "log",
+              "de": "Protokoll",
+              "es": "registro",
+              "fr": "journal",
+              "it": "registro",
+              "no": "logg",
+              "sv": "logg",
+              "pl": "log",
+              "ru": "журнал",
+              "ko": "로그",
+              "ar": "سجل"
             }
           }
         ]
@@ -772,22 +1990,66 @@
         "id": "Clear_log",
         "title": {
           "en": "Clear  the whole Log",
-          "nl": "Verwijder de complete Log"
+          "nl": "Verwijder de complete Log",
+          "da": "Ryd hele loggen",
+          "de": "Gesamtes Log löschen",
+          "es": "Borrar todo el registro",
+          "fr": "Effacer tout le journal",
+          "it": "Cancella tutto il Log",
+          "no": "Tøm hele loggen",
+          "sv": "Rensa hela loggen",
+          "pl": "Wyczyść cały dziennik",
+          "ru": "Очистить весь журнал",
+          "ko": "전체 로그 지우기",
+          "ar": "مسح السجل بالكامل"
         },
         "titleFormatted": {
           "en": "Clear  the whole Log",
-          "nl": "Verwijder de complete Log"
+          "nl": "Verwijder de complete Log",
+          "da": "Ryd hele loggen",
+          "de": "Gesamtes Log löschen",
+          "es": "Borrar todo el registro",
+          "fr": "Effacer tout le journal",
+          "it": "Cancella tutto il Log",
+          "no": "Tøm hele loggen",
+          "sv": "Rensa hela loggen",
+          "pl": "Wyczyść cały dziennik",
+          "ru": "Очистить весь журнал",
+          "ko": "전체 로그 지우기",
+          "ar": "مسح السجل بالكامل"
         }
       },
       {
         "id": "Clear_log_Older",
         "title": {
           "en": "Clear log data older then (Days)",
-          "nl": "Verwijder log data ouder dan (dagen)"
+          "nl": "Verwijder log data ouder dan (dagen)",
+          "da": "Ryd logdata ældre end (dage)",
+          "de": "Lösche Protokolldaten, die älter sind als (Tage)",
+          "es": "Borrar datos del registro anteriores a (Días)",
+          "fr": "Effacer les données du journal datant de plus de (jours)",
+          "it": "Cancella i dati di log più vecchi di (Giorni)",
+          "no": "Slett loggdata eldre enn (dager)",
+          "sv": "Rensa loggdata äldre än (Dagar)",
+          "pl": "Wyczyść dane logu starsze niż (dni)",
+          "ru": "Очистить данные журнала старше (дней)",
+          "ko": "(일) 이전의 로그 데이터를 삭제하세요.",
+          "ar": "مسح بيانات السجل الأقدم من (أيام)"
         },
         "titleFormatted": {
           "en": "Clear Log data older than [[days]] Days",
-          "nl": "Verwijder Log data ouder dan [[days]] dagen"
+          "nl": "Verwijder Log data ouder dan [[days]] dagen",
+          "da": "Ryd logdata ældre end [[days]] dage",
+          "de": "Lösche Protokolldaten, die älter als [[days]] Tage sind.",
+          "es": "Borrar datos del registro de hace más de [[days]] días",
+          "fr": "Effacer les données du journal datant de plus de [[days]] jours",
+          "it": "Cancella i dati del registro più vecchi di [[days]] giorni",
+          "no": "Slett loggdata eldre enn [[days]] dager",
+          "sv": "Rensa loggdata äldre än [[days]] dagar",
+          "pl": "Wyczyść dane dziennika starsze niż [[days]] dni",
+          "ru": "Очистить данные журнала старше [[days]] дней",
+          "ko": "[[days]]일보다 오래된 로그 데이터를 삭제하세요.",
+          "ar": "مسح بيانات السجل الأقدم من [[days]] يومًا"
         },
         "args": [
           {
@@ -795,11 +2057,33 @@
             "type": "number",
             "placeholder": {
               "en": "Number of Days",
-              "nl": "Aantal dagen"
+              "nl": "Aantal dagen",
+              "da": "Antal dage",
+              "de": "Anzahl der Tage",
+              "es": "Número de días",
+              "fr": "Nombre de jours",
+              "it": "Numero di giorni",
+              "no": "Antall dager",
+              "sv": "Antal dagar",
+              "pl": "Liczba dni",
+              "ru": "Количество дней",
+              "ko": "일 수",
+              "ar": "عدد الأيام"
             },
             "title": {
               "en": "Number",
-              "nl": "Aantal"
+              "nl": "Aantal",
+              "da": "Nummer",
+              "de": "Nummer",
+              "es": "Número",
+              "fr": "Nombre",
+              "it": "Numero",
+              "no": "Nummer",
+              "sv": "Nummer",
+              "pl": "Numer",
+              "ru": "Номер",
+              "ko": "번호",
+              "ar": "رقم"
             }
           }
         ]
@@ -808,11 +2092,33 @@
         "id": "get_log",
         "title": {
           "en": "Get the (whole) log",
-          "nl": "Ontvang het (hele) logboek"
+          "nl": "Ontvang het (hele) logboek",
+          "da": "Hent hele loggen",
+          "de": "Hole das (gesamte) Logbuch",
+          "es": "Obtén el registro (completo)",
+          "fr": "Obtenez le journal (complet)",
+          "it": "Ottieni il registro (completo)",
+          "no": "Hent hele loggen",
+          "sv": "Hämta hela loggen",
+          "pl": "Pobierz (cały) dziennik",
+          "ru": "Получить (весь) журнал",
+          "ko": "전체 로그 가져오기",
+          "ar": "احصل على (السجل) الكامل"
         },
         "titleFormatted": {
           "en": "Get the (whole) Log as [[returnType]]",
-          "nl": "Ontvang de (hele) Log als [[returnType]]"
+          "nl": "Ontvang de (hele) Log als [[returnType]]",
+          "da": "Få hele loggen som [[returnType]]",
+          "de": "Erhalte das (gesamte) Log als [[returnType]]",
+          "es": "Obtén el registro (completo) como [[returnType]]",
+          "fr": "Obtenez le journal (complet) en tant que [[returnType]]",
+          "it": "Ottieni il Log (completo) come [[returnType]]",
+          "no": "Få hele loggen som [[returnType]]",
+          "sv": "Hämta hela loggen som [[returnType]]",
+          "pl": "Pobierz (cały) dziennik jako [[returnType]]",
+          "ru": "Получить (весь) журнал как [[returnType]]",
+          "ko": "전체 로그를 [[returnType]]로 가져오기",
+          "ar": "احصل على السجل (كامل) كـ [[returnType]]"
         },
         "args": [
           {
@@ -820,41 +2126,123 @@
             "name": "returnType",
             "placeholder": {
               "en": "Choose the Format",
-              "nl": "Kies het format"
+              "nl": "Kies het format",
+              "da": "Vælg formatet",
+              "de": "Wähle das Format",
+              "es": "Elige el formato",
+              "fr": "Choisissez le format",
+              "it": "Scegli il formato",
+              "no": "Velg formatet",
+              "sv": "Välj format",
+              "pl": "Wybierz format",
+              "ru": "Выберите формат",
+              "ko": "형식을 선택하세요",
+              "ar": "اختر التنسيق"
             },
             "title": {
               "en": "Format",
-              "nl": "Format"
+              "nl": "Format",
+              "da": "Format",
+              "de": "Format",
+              "es": "Formato",
+              "fr": "Format",
+              "it": "Formato",
+              "no": "Formatere",
+              "sv": "Format",
+              "pl": "Formatowanie",
+              "ru": "Формат",
+              "ko": "형식",
+              "ar": "تنسيق"
             },
             "values": [
               {
                 "id": "json",
                 "label": {
-                  "en": "JSON"
+                  "en": "JSON",
+                  "nl": "JSON",
+                  "da": "JSON",
+                  "de": "JSON",
+                  "es": "JSON",
+                  "fr": "JSON",
+                  "it": "JSON",
+                  "no": "JSON",
+                  "sv": "JSON",
+                  "pl": "JSON",
+                  "ru": "JSON",
+                  "ko": "JSON",
+                  "ar": "JSON"
                 }
               },
               {
                 "id": "json_base64",
                 "label": {
-                  "en": "JSON (base64)"
+                  "en": "JSON (base64)",
+                  "nl": "JSON (base64)",
+                  "da": "JSON (base64)",
+                  "de": "JSON (base64)",
+                  "es": "JSON (base64)",
+                  "fr": "JSON (base64)",
+                  "it": "JSON (base64)",
+                  "no": "JSON (base64)",
+                  "sv": "JSON (base64)",
+                  "pl": "JSON (base64)",
+                  "ru": "JSON (base64)",
+                  "ko": "JSON (base64)",
+                  "ar": "JSON (base64)"
                 }
               },
               {
                 "id": "csv",
                 "label": {
-                  "en": "CSV"
+                  "en": "CSV",
+                  "nl": "CSV",
+                  "da": "CSV",
+                  "de": "CSV",
+                  "es": "CSV",
+                  "fr": "CSV",
+                  "it": "CSV",
+                  "no": "CSV",
+                  "sv": "CSV",
+                  "pl": "CSV",
+                  "ru": "CSV",
+                  "ko": "CSV",
+                  "ar": "CSV"
                 }
               },
               {
                 "id": "csv_base64",
                 "label": {
-                  "en": "CSV (base64)"
+                  "en": "CSV (base64)",
+                  "nl": "CSV (base64)",
+                  "da": "CSV (base64)",
+                  "de": "CSV (base64)",
+                  "es": "CSV (base64)",
+                  "fr": "CSV (base64)",
+                  "it": "CSV (base64)",
+                  "no": "CSV (base64)",
+                  "sv": "CSV (base64)",
+                  "pl": "CSV (base64)",
+                  "ru": "CSV (base64)",
+                  "ko": "CSV (base64)",
+                  "ar": "CSV (base64)"
                 }
               },
               {
                 "id": "xlsx_base64",
                 "label": {
-                  "en": "Excel (base64)"
+                  "en": "Excel (base64)",
+                  "nl": "Excel (base64)",
+                  "da": "Excel (base64)",
+                  "de": "Excel (base64)",
+                  "es": "Excel (base64)",
+                  "fr": "Excel (base64)",
+                  "it": "Excel (base64)",
+                  "no": "Excel (base64)",
+                  "sv": "Excel (base64)",
+                  "pl": "Excel (base64)",
+                  "ru": "Excel (base64)",
+                  "ko": "엑셀 (base64)",
+                  "ar": "إكسل (base64)"
                 }
               }
             ]
@@ -865,7 +2253,19 @@
             "name": "log",
             "type": "string",
             "title": {
-              "en": "Log"
+              "en": "Log",
+              "nl": "Logboek",
+              "da": "Logfil",
+              "de": "Protokoll",
+              "es": "Registro",
+              "fr": "Journal",
+              "it": "Registro",
+              "no": "Logg",
+              "sv": "Logg",
+              "pl": "Dziennik",
+              "ru": "Журнал",
+              "ko": "로그",
+              "ar": "سجل"
             },
             "example": "[\n  {\n    \"data\": \"Cleared all logging data\",\n    \"group\": \"Simple Log\",\n    \"date\": \"2022-12-29T09:38:30.249Z\"\n  },\n  {\n    \"data\": \"badkamer: 60\",\n    \"date\": \"2022-12-29T09:39:32.172Z\"\n  },"
           }
@@ -875,11 +2275,33 @@
         "id": "Input_group_log",
         "title": {
           "en": "Add Something to the Simple Log",
-          "nl": "Voeg iets toe aan de Simple Log"
+          "nl": "Voeg iets toe aan de Simple Log",
+          "da": "Tilføj noget til Simple Log",
+          "de": "Füge etwas zum Simple Log hinzu",
+          "es": "Añadir algo al Simple Log",
+          "fr": "Ajouter quelque chose au Simple Log",
+          "it": "Aggiungi qualcosa al Simple Log",
+          "no": "Legg til noe i Simple Log",
+          "sv": "Lägg till något i Simple Log",
+          "pl": "Dodaj coś do Simple Log",
+          "ru": "Добавить что-то в Simple Log",
+          "ko": "Simple Log에 항목 추가하기",
+          "ar": "أضف شيئًا إلى السجل البسيط"
         },
         "titleFormatted": {
           "en": "Add [[log]] to the Log under [[group]] with [[severity]] of [[facility]]",
-          "nl": "Voeg [[log]] toe aan de Log onder [[group]] met [[severity]] van [[facility]]"
+          "nl": "Voeg [[log]] toe aan de Log onder [[group]] met [[severity]] van [[facility]]",
+          "da": "Tilføj [[log]] til loggen under [[group]] med [[severity]] af [[facility]]",
+          "de": "Füge [[log]] zum Log unter [[group]] mit [[severity]] von [[facility]] hinzu.",
+          "es": "Añadir [[log]] al Registro bajo [[group]] con [[severity]] de [[facility]]",
+          "fr": "Ajoutez [[log]] au journal sous [[group]] avec [[severity]] de [[facility]]",
+          "it": "Aggiungi [[log]] al Registro sotto [[group]] con [[severity]] di [[facility]]",
+          "no": "Legg til [[log]] i loggen under [[group]] med [[severity]] av [[facility]]",
+          "sv": "Lägg till [[log]] i loggen under [[group]] med [[severity]] av [[facility]]",
+          "pl": "Dodaj [[log]] do dziennika w grupie [[group]] z [[severity]] o [[facility]]",
+          "ru": "Добавить [[log]] в журнал под [[group]] с [[severity]] уровня [[facility]]",
+          "ko": "[[log]]을(를) [[facility]]의 [[severity]]로 [[group]] 아래 로그에 추가하세요.",
+          "ar": "أضف [[log]] إلى السجل تحت [[group]] مع [[severity]] لـ [[facility]]"
         },
         "args": [
           {
@@ -887,11 +2309,33 @@
             "type": "text",
             "placeholder": {
               "en": "Message... (* BLL supported)",
-              "nl": "Bericht... (* BLL ondersteund)"
+              "nl": "Bericht... (* BLL ondersteund)",
+              "da": "Besked... (* BLL understøttet)",
+              "de": "Nachricht... (* BLL unterstützt)",
+              "es": "Mensaje... (* BLL compatible)",
+              "fr": "Message... (* BLL pris en charge)",
+              "it": "Messaggio... (* Supportato BLL)",
+              "no": "Melding... (* BLL støttet)",
+              "sv": "Meddelande... (* BLL stöds)",
+              "pl": "Wiadomość... (* obsługiwane BLL)",
+              "ru": "Сообщение... (* Поддержка BLL)",
+              "ko": "메시지... (* BLL 지원됨)",
+              "ar": "رسالة... (* يدعم BLL)"
             },
             "title": {
               "en": "Message",
-              "nl": "Bericht"
+              "nl": "Bericht",
+              "da": "Besked",
+              "de": "Nachricht",
+              "es": "Mensaje",
+              "fr": "Message",
+              "it": "Messaggio",
+              "no": "Melding",
+              "sv": "Meddelande",
+              "pl": "Wiadomość",
+              "ru": "Сообщение",
+              "ko": "메시지",
+              "ar": "رسالة"
             }
           },
           {
@@ -900,7 +2344,18 @@
             "type": "text",
             "placeholder": {
               "en": "App/group",
-              "nl": "App/groep"
+              "nl": "App/groep",
+              "da": "App/gruppe",
+              "de": "App/Gruppe",
+              "es": "App/grupo",
+              "fr": "App/groupe",
+              "it": "App/gruppo",
+              "no": "App/gruppe",
+              "sv": "App/grupp",
+              "pl": "Aplikacja/grupa",
+              "ru": "Приложение/группа",
+              "ko": "앱/그룹",
+              "ar": "تطبيق/مجموعة"
             }
           },
           {
@@ -909,59 +2364,177 @@
             "name": "severity",
             "placeholder": {
               "en": "Severity",
-              "nl": "Niveau"
+              "nl": "Niveau",
+              "da": "Alvorlighedsgrad",
+              "de": "Schweregrad",
+              "es": "Severidad",
+              "fr": "Gravité",
+              "it": "Gravità",
+              "no": "Alvorlighetsgrad",
+              "sv": "Allvarlighetsgrad",
+              "pl": "Waga",
+              "ru": "Серьезность",
+              "ko": "심각도",
+              "ar": "الخطورة"
             },
             "title": {
               "en": "Severity",
-              "nl": "Niveau"
+              "nl": "Niveau",
+              "da": "Alvorlighedsgrad",
+              "de": "Schweregrad",
+              "es": "Severidad",
+              "fr": "Gravité",
+              "it": "Gravità",
+              "no": "Alvorlighetsgrad",
+              "sv": "Allvarlighetsgrad",
+              "pl": "Waga",
+              "ru": "Серьезность",
+              "ko": "심각도",
+              "ar": "الخطورة"
             },
             "values": [
               {
                 "id": "0",
                 "label": {
-                  "en": "Emergency"
+                  "en": "Emergency",
+                  "nl": "Noodgeval",
+                  "da": "Nødsituation",
+                  "de": "Notfall",
+                  "es": "Emergencia",
+                  "fr": "Urgence",
+                  "it": "Emergenza",
+                  "no": "Nødsituasjon",
+                  "sv": "Nödsituation",
+                  "pl": "Awaryjny",
+                  "ru": "Аварийная ситуация",
+                  "ko": "긴급",
+                  "ar": "طوارئ"
                 }
               },
               {
                 "id": "1",
                 "label": {
-                  "en": "Alert"
+                  "en": "Alert",
+                  "nl": "Waarschuwing",
+                  "da": "Alarm",
+                  "de": "Alarm",
+                  "es": "Alerta",
+                  "fr": "Alerte",
+                  "it": "Avviso",
+                  "no": "Varsel",
+                  "sv": "Varning",
+                  "pl": "Alert",
+                  "ru": "Оповещение",
+                  "ko": "알림",
+                  "ar": "تنبيه"
                 }
               },
               {
                 "id": "2",
                 "label": {
-                  "en": "Critical"
+                  "en": "Critical",
+                  "nl": "Kritiek",
+                  "da": "Kritisk",
+                  "de": "Kritisch",
+                  "es": "Crítico",
+                  "fr": "Critique",
+                  "it": "Critico",
+                  "no": "Kritisk",
+                  "sv": "Kritisk",
+                  "pl": "Krytyczny",
+                  "ru": "Критический",
+                  "ko": "중요",
+                  "ar": "حرج"
                 }
               },
               {
                 "id": "3",
                 "label": {
-                  "en": "Error"
+                  "en": "Error",
+                  "nl": "Fout",
+                  "da": "Fejl",
+                  "de": "Fehler",
+                  "es": "Error",
+                  "fr": "Erreur",
+                  "it": "Errore",
+                  "no": "Feil",
+                  "sv": "Fel",
+                  "pl": "Błąd",
+                  "ru": "Ошибка",
+                  "ko": "오류",
+                  "ar": "خطأ"
                 }
               },
               {
                 "id": "4",
                 "label": {
-                  "en": "Warning"
+                  "en": "Warning",
+                  "nl": "Waarschuwing",
+                  "da": "Advarsel",
+                  "de": "Warnung",
+                  "es": "Advertencia",
+                  "fr": "Avertissement",
+                  "it": "Avviso",
+                  "no": "Advarsel",
+                  "sv": "Varning",
+                  "pl": "Ostrzeżenie",
+                  "ru": "Предупреждение",
+                  "ko": "경고",
+                  "ar": "تحذير"
                 }
               },
               {
                 "id": "5",
                 "label": {
-                  "en": "Notice"
+                  "en": "Notice",
+                  "nl": "Opmerking",
+                  "da": "Bemærk",
+                  "de": "Hinweis",
+                  "es": "Aviso",
+                  "fr": "Avis",
+                  "it": "Avviso",
+                  "no": "Varsel",
+                  "sv": "Meddelande",
+                  "pl": "Powiadomienie",
+                  "ru": "Уведомление",
+                  "ko": "공지",
+                  "ar": "تنبيه"
                 }
               },
               {
                 "id": "6",
                 "label": {
-                  "en": "Info"
+                  "en": "Info",
+                  "nl": "Info",
+                  "da": "Info",
+                  "de": "Info",
+                  "es": "Información",
+                  "fr": "Infos",
+                  "it": "Informazioni",
+                  "no": "Info",
+                  "sv": "Info",
+                  "pl": "Informacje",
+                  "ru": "Информация",
+                  "ko": "정보",
+                  "ar": "معلومات"
                 }
               },
               {
                 "id": "7",
                 "label": {
-                  "en": "Debug"
+                  "en": "Debug",
+                  "nl": "Debuggen",
+                  "da": "Debug",
+                  "de": "Debuggen",
+                  "es": "Depurar",
+                  "fr": "Déboguer",
+                  "it": "Debugging",
+                  "no": "Feilsøking",
+                  "sv": "Felsökning",
+                  "pl": "Debugowanie",
+                  "ru": "Отладка",
+                  "ko": "디버그",
+                  "ar": "تصحيح الأخطاء"
                 }
               }
             ]
@@ -972,151 +2545,450 @@
             "name": "facility",
             "placeholder": {
               "en": "Category",
-              "nl": "Categorie"
+              "nl": "Categorie",
+              "da": "Kategori",
+              "de": "Kategorie",
+              "es": "Categoría",
+              "fr": "Catégorie",
+              "it": "Categoria",
+              "no": "Kategori",
+              "sv": "Kategori",
+              "pl": "Kategoria",
+              "ru": "Категория",
+              "ko": "카테고리",
+              "ar": "الفئة"
             },
             "values": [
               {
                 "id": "0",
                 "label": {
-                  "en": "Kernel"
+                  "en": "Kernel",
+                  "nl": "Kernel",
+                  "da": "Kernel",
+                  "de": "Kernel",
+                  "es": "Kernel",
+                  "fr": "Noyau",
+                  "it": "Kernel",
+                  "no": "Kjerne",
+                  "sv": "Kernel",
+                  "pl": "Jądro",
+                  "ru": "Ядро",
+                  "ko": "커널",
+                  "ar": "النواة"
                 }
               },
               {
                 "id": "1",
                 "label": {
-                  "en": "User"
+                  "en": "User",
+                  "nl": "Gebruiker",
+                  "da": "Bruger",
+                  "de": "Benutzer",
+                  "es": "Usuario",
+                  "fr": "Utilisateur",
+                  "it": "Utente",
+                  "no": "Bruker",
+                  "sv": "Användare",
+                  "pl": "Użytkownik",
+                  "ru": "Пользователь",
+                  "ko": "사용자",
+                  "ar": "مستخدم"
                 }
               },
               {
                 "id": "2",
                 "label": {
-                  "en": "Mail"
+                  "en": "Mail",
+                  "nl": "E-mail",
+                  "da": "E-mail",
+                  "de": "E-Mail",
+                  "es": "Correo",
+                  "fr": "Courriel",
+                  "it": "Posta",
+                  "no": "E-post",
+                  "sv": "E-post",
+                  "pl": "Poczta",
+                  "ru": "Почта",
+                  "ko": "메일",
+                  "ar": "بريد"
                 }
               },
               {
                 "id": "3",
                 "label": {
-                  "en": "System"
+                  "en": "System",
+                  "nl": "Systeem",
+                  "da": "System",
+                  "de": "System",
+                  "es": "Sistema",
+                  "fr": "Système",
+                  "it": "Sistema",
+                  "no": "Systemet",
+                  "sv": "Systemet",
+                  "pl": "System",
+                  "ru": "Система",
+                  "ko": "시스템",
+                  "ar": "النظام"
                 }
               },
               {
                 "id": "4",
                 "label": {
-                  "en": "Authorization"
+                  "en": "Authorization",
+                  "nl": "Autorisatie",
+                  "da": "Autorisation",
+                  "de": "Autorisierung",
+                  "es": "Autorización",
+                  "fr": "Autorisation",
+                  "it": "Autorizzazione",
+                  "no": "Autorisasjon",
+                  "sv": "Auktorisering",
+                  "pl": "Autoryzacja",
+                  "ru": "Авторизация",
+                  "ko": "승인",
+                  "ar": "تفويض"
                 }
               },
               {
                 "id": "5",
                 "label": {
-                  "en": "Syslog"
+                  "en": "Syslog",
+                  "nl": "Syslog",
+                  "da": "Syslog",
+                  "de": "Syslog",
+                  "es": "Syslog",
+                  "fr": "Syslog",
+                  "it": "Syslog",
+                  "no": "Syslog",
+                  "sv": "Syslog",
+                  "pl": "Syslog",
+                  "ru": "Сислог",
+                  "ko": "시스로그",
+                  "ar": "Syslog"
                 }
               },
               {
                 "id": "6",
                 "label": {
-                  "en": "LPR"
+                  "en": "LPR",
+                  "nl": "LPR",
+                  "da": "LPR",
+                  "de": "LPR",
+                  "es": "LPR",
+                  "fr": "LPR",
+                  "it": "LPR",
+                  "no": "LPR",
+                  "sv": "LPR",
+                  "pl": "LPR",
+                  "ru": "Распознавание автомобильных номеров (LPR)",
+                  "ko": "LPR",
+                  "ar": "LPR"
                 }
               },
               {
                 "id": "7",
                 "label": {
-                  "en": "News"
+                  "en": "News",
+                  "nl": "Nieuws",
+                  "da": "Nyheder",
+                  "de": "Nachrichten",
+                  "es": "Noticias",
+                  "fr": "Actualités",
+                  "it": "Notizie",
+                  "no": "Nyheter",
+                  "sv": "Nyheter",
+                  "pl": "Aktualności",
+                  "ru": "Новости",
+                  "ko": "뉴스",
+                  "ar": "أخبار"
                 }
               },
               {
                 "id": "8",
                 "label": {
-                  "en": "UUCP"
+                  "en": "UUCP",
+                  "nl": "UUCP",
+                  "da": "UUCP",
+                  "de": "UUCP",
+                  "es": "UUCP",
+                  "fr": "UUCP",
+                  "it": "UUCP",
+                  "no": "UUCP",
+                  "sv": "UUCP",
+                  "pl": "UUCP",
+                  "ru": "UUCP",
+                  "ko": "UUCP",
+                  "ar": "UUCP"
                 }
               },
               {
                 "id": "9",
                 "label": {
-                  "en": "Cron"
+                  "en": "Cron",
+                  "nl": "Cron",
+                  "da": "Cron",
+                  "de": "Cron",
+                  "es": "Cron",
+                  "fr": "Cron",
+                  "it": "Cron",
+                  "no": "Cron",
+                  "sv": "Cron",
+                  "pl": "Cron",
+                  "ru": "Крон",
+                  "ko": "크론",
+                  "ar": "كرون"
                 }
               },
               {
                 "id": "10",
                 "label": {
-                  "en": "Deamon"
+                  "en": "Deamon",
+                  "nl": "Daemon",
+                  "da": "Daemon",
+                  "de": "Daemon",
+                  "es": "Daemon",
+                  "fr": "Daemon",
+                  "it": "Demone",
+                  "no": "Daemon",
+                  "sv": "Daemon",
+                  "pl": "Demon",
+                  "ru": "Демон",
+                  "ko": "데몬",
+                  "ar": "خادم الخلفية"
                 }
               },
               {
                 "id": "11",
                 "label": {
-                  "en": "FTP"
+                  "en": "FTP",
+                  "nl": "FTP",
+                  "da": "FTP",
+                  "de": "FTP",
+                  "es": "FTP",
+                  "fr": "FTP",
+                  "it": "FTP",
+                  "no": "FTP",
+                  "sv": "FTP",
+                  "pl": "FTP",
+                  "ru": "FTP",
+                  "ko": "FTP",
+                  "ar": "FTP"
                 }
               },
               {
                 "id": "12",
                 "label": {
-                  "en": "NTP"
+                  "en": "NTP",
+                  "nl": "NTP",
+                  "da": "NTP",
+                  "de": "NTP",
+                  "es": "NTP",
+                  "fr": "NTP",
+                  "it": "NTP",
+                  "no": "NTP",
+                  "sv": "NTP",
+                  "pl": "NTP",
+                  "ru": "NTP",
+                  "ko": "NTP (네트워크 시간 프로토콜)",
+                  "ar": "NTP (بروتوكول وقت الشبكة)"
                 }
               },
               {
                 "id": "13",
                 "label": {
-                  "en": "Security"
+                  "en": "Security",
+                  "nl": "Beveiliging",
+                  "da": "Sikkerhed",
+                  "de": "Sicherheit",
+                  "es": "Seguridad",
+                  "fr": "Sécurité",
+                  "it": "Sicurezza",
+                  "no": "Sikkerhet",
+                  "sv": "Säkerhet",
+                  "pl": "Bezpieczeństwo",
+                  "ru": "Безопасность",
+                  "ko": "보안",
+                  "ar": "الأمان"
                 }
               },
               {
                 "id": "14",
                 "label": {
-                  "en": "Console"
+                  "en": "Console",
+                  "nl": "Console",
+                  "da": "Konsol",
+                  "de": "Konsole",
+                  "es": "Consola",
+                  "fr": "Console",
+                  "it": "Console",
+                  "no": "Konsoll",
+                  "sv": "Konsol",
+                  "pl": "Konsola",
+                  "ru": "Консоль",
+                  "ko": "콘솔",
+                  "ar": "وحدة التحكم"
                 }
               },
               {
                 "id": "15",
                 "label": {
-                  "en": "Clock"
+                  "en": "Clock",
+                  "nl": "Klok",
+                  "da": "Ur",
+                  "de": "Uhr",
+                  "es": "Reloj",
+                  "fr": "Horloge",
+                  "it": "Orologio",
+                  "no": "Klokke",
+                  "sv": "Klocka",
+                  "pl": "Zegar",
+                  "ru": "Часы",
+                  "ko": "시계",
+                  "ar": "ساعة"
                 }
               },
               {
                 "id": "16",
                 "label": {
-                  "en": "Flow"
+                  "en": "Flow",
+                  "nl": "Flow",
+                  "da": "Flow",
+                  "de": "Flow",
+                  "es": "Flujo",
+                  "fr": "Flux",
+                  "it": "Flusso",
+                  "no": "Flyt",
+                  "sv": "Flöde",
+                  "pl": "Przepływ",
+                  "ru": "Поток",
+                  "ko": "플로우",
+                  "ar": "التدفق"
                 }
               },
               {
                 "id": "17",
                 "label": {
-                  "en": "Device"
+                  "en": "Device",
+                  "nl": "Apparaat",
+                  "da": "Enhed",
+                  "de": "Gerät",
+                  "es": "Dispositivo",
+                  "fr": "Appareil",
+                  "it": "Dispositivo",
+                  "no": "Enhet",
+                  "sv": "Enhet",
+                  "pl": "Urządzenie",
+                  "ru": "Устройство",
+                  "ko": "장치",
+                  "ar": "الجهاز"
                 }
               },
               {
                 "id": "18",
                 "label": {
-                  "en": "App"
+                  "en": "App",
+                  "nl": "App",
+                  "da": "App",
+                  "de": "App",
+                  "es": "App",
+                  "fr": "Application",
+                  "it": "App",
+                  "no": "App",
+                  "sv": "App",
+                  "pl": "Aplikacja",
+                  "ru": "Приложение",
+                  "ko": "앱",
+                  "ar": "تطبيق"
                 }
               },
               {
                 "id": "19",
                 "label": {
-                  "en": "Scene"
+                  "en": "Scene",
+                  "nl": "Scène",
+                  "da": "Scene",
+                  "de": "Szene",
+                  "es": "Escena",
+                  "fr": "Scène",
+                  "it": "Scena",
+                  "no": "Scene",
+                  "sv": "Scen",
+                  "pl": "Scena",
+                  "ru": "Сцена",
+                  "ko": "장면",
+                  "ar": "مشهد"
                 }
               },
               {
                 "id": "20",
                 "label": {
-                  "en": "Trigger"
+                  "en": "Trigger",
+                  "nl": "Trigger",
+                  "da": "Udløser",
+                  "de": "Auslöser",
+                  "es": "Disparador",
+                  "fr": "Déclencheur",
+                  "it": "Trigger",
+                  "no": "Utløser",
+                  "sv": "Trigger",
+                  "pl": "Wyzwalacz",
+                  "ru": "Триггер",
+                  "ko": "트리거",
+                  "ar": "مشغل"
                 }
               },
               {
                 "id": "21",
                 "label": {
-                  "en": "Condition"
+                  "en": "Condition",
+                  "nl": "Voorwaarde",
+                  "da": "Betingelse",
+                  "de": "Bedingung",
+                  "es": "Condición",
+                  "fr": "Condition",
+                  "it": "Condizione",
+                  "no": "Betingelse",
+                  "sv": "Villkor",
+                  "pl": "Warunek",
+                  "ru": "Условие",
+                  "ko": "조건",
+                  "ar": "شرط"
                 }
               },
               {
                 "id": "22",
                 "label": {
-                  "en": "Action"
+                  "en": "Action",
+                  "nl": "Actie",
+                  "da": "Handling",
+                  "de": "Aktion",
+                  "es": "Acción",
+                  "fr": "Action",
+                  "it": "Azione",
+                  "no": "Handling",
+                  "sv": "Åtgärd",
+                  "pl": "Akcja",
+                  "ru": "Действие",
+                  "ko": "작업",
+                  "ar": "إجراء"
                 }
               },
               {
                 "id": "23",
                 "label": {
-                  "en": "Variable"
+                  "en": "Variable",
+                  "nl": "Variabele",
+                  "da": "Variabel",
+                  "de": "Variable",
+                  "es": "Variable",
+                  "fr": "Variable",
+                  "it": "Variabile",
+                  "no": "Variabel",
+                  "sv": "Variabel",
+                  "pl": "Zmienna",
+                  "ru": "Переменная",
+                  "ko": "변수",
+                  "ar": "متغير"
                 }
               }
             ]
@@ -1127,11 +2999,33 @@
         "id": "Input_group_logtimeline",
         "title": {
           "en": "Add Something to the Timeline and the Log",
-          "nl": "Voeg iets toe aan de Tijdslijn en de Log"
+          "nl": "Voeg iets toe aan de Tijdslijn en de Log",
+          "da": "Tilføj noget til tidslinjen og loggen",
+          "de": "Füge etwas zur Zeitleiste und zum Log hinzu",
+          "es": "Añadir algo a la línea de tiempo y al registro",
+          "fr": "Ajoutez quelque chose à la chronologie et au journal",
+          "it": "Aggiungi qualcosa alla Timeline e al Registro",
+          "no": "Legg til noe i tidslinjen og loggen",
+          "sv": "Lägg till något i tidslinjen och loggen",
+          "pl": "Dodaj coś do Osi czasu i Dziennika",
+          "ru": "Добавить что-то в Хронологию и Журнал",
+          "ko": "타임라인과 로그에 항목 추가하기",
+          "ar": "أضف شيئًا إلى الجدول الزمني والسجل"
         },
         "titleFormatted": {
           "en": "Add [[log]] to the Timeline and the Log under [[group]] with [[severity]] of [[facility]]",
-          "nl": "Voeg [[log]] toe aan de Tijdslijn en de Log onder [[group]] met [[severity]] van [[facility]]"
+          "nl": "Voeg [[log]] toe aan de Tijdslijn en de Log onder [[group]] met [[severity]] van [[facility]]",
+          "da": "Tilføj [[log]] til Tidslinjen og Loggen under [[group]] med [[severity]] af [[facility]]",
+          "de": "Füge [[log]] zur Timeline und dem Log unter [[group]] mit [[severity]] von [[facility]] hinzu.",
+          "es": "Agrega [[log]] a la Línea de tiempo y al Registro bajo [[group]] con [[severity]] de [[facility]]",
+          "fr": "Ajoutez [[log]] à la Chronologie et au Journal sous [[group]] avec [[severity]] de [[facility]]",
+          "it": "Aggiungi [[log]] alla Timeline e al Registro sotto [[group]] con [[severity]] di [[facility]]",
+          "no": "Legg til [[log]] i tidslinjen og loggen under [[group]] med [[severity]] av [[facility]]",
+          "sv": "Lägg till [[log]] i tidslinjen och loggen under [[group]] med [[severity]] av [[facility]]",
+          "pl": "Dodaj [[log]] do Osi czasu i Dziennika w ramach [[group]] z [[severity]] [[facility]]",
+          "ru": "Добавить [[log]] в Хронологию и Журнал под [[group]] с [[severity]] из [[facility]]",
+          "ko": "[[log]]을(를) [[facility]]의 [[severity]]로 [[group]] 아래 타임라인과 로그에 추가하세요.",
+          "ar": "أضف [[log]] إلى الجدول الزمني والسجل تحت [[group]] مع [[severity]] لـ [[facility]]"
         },
         "args": [
           {
@@ -1139,11 +3033,33 @@
             "type": "text",
             "placeholder": {
               "en": "Message... (* BLL supported)",
-              "nl": "Bericht... (* BLL ondersteund)"
+              "nl": "Bericht... (* BLL ondersteund)",
+              "da": "Besked... (* BLL understøttet)",
+              "de": "Nachricht... (* BLL unterstützt)",
+              "es": "Mensaje... (* BLL compatible)",
+              "fr": "Message... (* BLL pris en charge)",
+              "it": "Messaggio... (* Supportato BLL)",
+              "no": "Melding... (* BLL støttet)",
+              "sv": "Meddelande... (* BLL stöds)",
+              "pl": "Wiadomość... (* Obsługiwane BLL)",
+              "ru": "Сообщение... (* Поддержка BLL)",
+              "ko": "메시지... (* BLL 지원됨)",
+              "ar": "رسالة... (* يدعم BLL)"
             },
             "title": {
               "en": "Message",
-              "nl": "Bericht"
+              "nl": "Bericht",
+              "da": "Besked",
+              "de": "Nachricht",
+              "es": "Mensaje",
+              "fr": "Message",
+              "it": "Messaggio",
+              "no": "Melding",
+              "sv": "Meddelande",
+              "pl": "Wiadomość",
+              "ru": "Сообщение",
+              "ko": "메시지",
+              "ar": "رسالة"
             }
           },
           {
@@ -1152,7 +3068,18 @@
             "type": "text",
             "placeholder": {
               "en": "App/group",
-              "nl": "App/groep"
+              "nl": "App/groep",
+              "da": "App/gruppe",
+              "de": "App/Gruppe",
+              "es": "App/grupo",
+              "fr": "App/groupe",
+              "it": "App/gruppo",
+              "no": "App/gruppe",
+              "sv": "App/grupp",
+              "pl": "Aplikacja/grupa",
+              "ru": "Приложение/группа",
+              "ko": "앱/그룹",
+              "ar": "تطبيق/مجموعة"
             }
           },
           {
@@ -1161,59 +3088,177 @@
             "name": "severity",
             "placeholder": {
               "en": "Severity",
-              "nl": "Niveau"
+              "nl": "Niveau",
+              "da": "Alvorlighedsgrad",
+              "de": "Schweregrad",
+              "es": "Severidad",
+              "fr": "Gravité",
+              "it": "Gravità",
+              "no": "Alvorlighetsgrad",
+              "sv": "Allvarlighetsgrad",
+              "pl": "Waga",
+              "ru": "Серьезность",
+              "ko": "심각도",
+              "ar": "الخطورة"
             },
             "title": {
               "en": "Severity",
-              "nl": "Niveau"
+              "nl": "Niveau",
+              "da": "Alvorlighedsgrad",
+              "de": "Schweregrad",
+              "es": "Severidad",
+              "fr": "Gravité",
+              "it": "Gravità",
+              "no": "Alvorlighetsgrad",
+              "sv": "Allvarlighetsgrad",
+              "pl": "Waga",
+              "ru": "Серьезность",
+              "ko": "심각도",
+              "ar": "الخطورة"
             },
             "values": [
               {
                 "id": "0",
                 "label": {
-                  "en": "Emergency"
+                  "en": "Emergency",
+                  "nl": "Noodgeval",
+                  "da": "Nødsituation",
+                  "de": "Notfall",
+                  "es": "Emergencia",
+                  "fr": "Urgence",
+                  "it": "Emergenza",
+                  "no": "Nødsituasjon",
+                  "sv": "Nödsituation",
+                  "pl": "Awaryjny",
+                  "ru": "Аварийный",
+                  "ko": "긴급",
+                  "ar": "طوارئ"
                 }
               },
               {
                 "id": "1",
                 "label": {
-                  "en": "Alert"
+                  "en": "Alert",
+                  "nl": "Waarschuwing",
+                  "da": "Alarm",
+                  "de": "Alarm",
+                  "es": "Alerta",
+                  "fr": "Alerte",
+                  "it": "Avviso",
+                  "no": "Varsel",
+                  "sv": "Varning",
+                  "pl": "Alert",
+                  "ru": "Оповещение",
+                  "ko": "알림",
+                  "ar": "تنبيه"
                 }
               },
               {
                 "id": "2",
                 "label": {
-                  "en": "Critical"
+                  "en": "Critical",
+                  "nl": "Kritiek",
+                  "da": "Kritisk",
+                  "de": "Kritisch",
+                  "es": "Crítico",
+                  "fr": "Critique",
+                  "it": "Critico",
+                  "no": "Kritisk",
+                  "sv": "Kritisk",
+                  "pl": "Krytyczny",
+                  "ru": "Критический",
+                  "ko": "중요",
+                  "ar": "حرج"
                 }
               },
               {
                 "id": "3",
                 "label": {
-                  "en": "Error"
+                  "en": "Error",
+                  "nl": "Fout",
+                  "da": "Fejl",
+                  "de": "Fehler",
+                  "es": "Error",
+                  "fr": "Erreur",
+                  "it": "Errore",
+                  "no": "Feil",
+                  "sv": "Fel",
+                  "pl": "Błąd",
+                  "ru": "Ошибка",
+                  "ko": "오류",
+                  "ar": "خطأ"
                 }
               },
               {
                 "id": "4",
                 "label": {
-                  "en": "Warning"
+                  "en": "Warning",
+                  "nl": "Waarschuwing",
+                  "da": "Advarsel",
+                  "de": "Warnung",
+                  "es": "Advertencia",
+                  "fr": "Avertissement",
+                  "it": "Avviso",
+                  "no": "Advarsel",
+                  "sv": "Varning",
+                  "pl": "Ostrzeżenie",
+                  "ru": "Предупреждение",
+                  "ko": "경고",
+                  "ar": "تحذير"
                 }
               },
               {
                 "id": "5",
                 "label": {
-                  "en": "Notice"
+                  "en": "Notice",
+                  "nl": "Opmerking",
+                  "da": "Bemærk",
+                  "de": "Hinweis",
+                  "es": "Aviso",
+                  "fr": "Avis",
+                  "it": "Avviso",
+                  "no": "Varsel",
+                  "sv": "Meddelande",
+                  "pl": "Powiadomienie",
+                  "ru": "Уведомление",
+                  "ko": "공지사항",
+                  "ar": "تنبيه"
                 }
               },
               {
                 "id": "6",
                 "label": {
-                  "en": "Info"
+                  "en": "Info",
+                  "nl": "Informatie",
+                  "da": "Info",
+                  "de": "Info",
+                  "es": "Información",
+                  "fr": "Infos",
+                  "it": "Informazioni",
+                  "no": "Info",
+                  "sv": "Info",
+                  "pl": "Informacje",
+                  "ru": "Информация",
+                  "ko": "정보",
+                  "ar": "معلومات"
                 }
               },
               {
                 "id": "7",
                 "label": {
-                  "en": "Debug"
+                  "en": "Debug",
+                  "nl": "Debuggen",
+                  "da": "Fejlfinding",
+                  "de": "Debuggen",
+                  "es": "Depurar",
+                  "fr": "Déboguer",
+                  "it": "Debugging",
+                  "no": "Feilsøking",
+                  "sv": "Felsökning",
+                  "pl": "Debugowanie",
+                  "ru": "Отладка",
+                  "ko": "디버그",
+                  "ar": "تصحيح الأخطاء"
                 }
               }
             ]
@@ -1224,151 +3269,450 @@
             "name": "facility",
             "placeholder": {
               "en": "Category",
-              "nl": "Categorie"
+              "nl": "Categorie",
+              "da": "Kategori",
+              "de": "Kategorie",
+              "es": "Categoría",
+              "fr": "Catégorie",
+              "it": "Categoria",
+              "no": "Kategori",
+              "sv": "Kategori",
+              "pl": "Kategoria",
+              "ru": "Категория",
+              "ko": "카테고리",
+              "ar": "الفئة"
             },
             "values": [
               {
                 "id": "0",
                 "label": {
-                  "en": "Kernel"
+                  "en": "Kernel",
+                  "nl": "Kernel",
+                  "da": "Kernel",
+                  "de": "Kernel",
+                  "es": "Núcleo",
+                  "fr": "Noyau",
+                  "it": "Kernel",
+                  "no": "Kjerne",
+                  "sv": "Kernel",
+                  "pl": "Jądro",
+                  "ru": "Ядро",
+                  "ko": "커널",
+                  "ar": "النواة"
                 }
               },
               {
                 "id": "1",
                 "label": {
-                  "en": "User"
+                  "en": "User",
+                  "nl": "Gebruiker",
+                  "da": "Bruger",
+                  "de": "Benutzer",
+                  "es": "Usuario",
+                  "fr": "Utilisateur",
+                  "it": "Utente",
+                  "no": "Bruker",
+                  "sv": "Användare",
+                  "pl": "Użytkownik",
+                  "ru": "Пользователь",
+                  "ko": "사용자",
+                  "ar": "مستخدم"
                 }
               },
               {
                 "id": "2",
                 "label": {
-                  "en": "Mail"
+                  "en": "Mail",
+                  "nl": "E-mail",
+                  "da": "Mail",
+                  "de": "E-Mail",
+                  "es": "Correo",
+                  "fr": "Courriel",
+                  "it": "Posta",
+                  "no": "E-post",
+                  "sv": "E-post",
+                  "pl": "Poczta",
+                  "ru": "Почта",
+                  "ko": "메일",
+                  "ar": "بريد"
                 }
               },
               {
                 "id": "3",
                 "label": {
-                  "en": "System"
+                  "en": "System",
+                  "nl": "Systeem",
+                  "da": "System",
+                  "de": "System",
+                  "es": "Sistema",
+                  "fr": "Système",
+                  "it": "Sistema",
+                  "no": "Systemet",
+                  "sv": "System",
+                  "pl": "System",
+                  "ru": "Система",
+                  "ko": "시스템",
+                  "ar": "النظام"
                 }
               },
               {
                 "id": "4",
                 "label": {
-                  "en": "Authorization"
+                  "en": "Authorization",
+                  "nl": "Autorisatie",
+                  "da": "Autorisation",
+                  "de": "Autorisierung",
+                  "es": "Autorización",
+                  "fr": "Autorisation",
+                  "it": "Autorizzazione",
+                  "no": "Autorisasjon",
+                  "sv": "Auktorisering",
+                  "pl": "Autoryzacja",
+                  "ru": "Авторизация",
+                  "ko": "승인",
+                  "ar": "تفويض"
                 }
               },
               {
                 "id": "5",
                 "label": {
-                  "en": "Syslog"
+                  "en": "Syslog",
+                  "nl": "Syslog",
+                  "da": "Syslog",
+                  "de": "Syslog",
+                  "es": "Syslog",
+                  "fr": "Syslog",
+                  "it": "Syslog",
+                  "no": "Syslog",
+                  "sv": "Syslog",
+                  "pl": "Syslog",
+                  "ru": "Сислог",
+                  "ko": "시스로그",
+                  "ar": "Syslog"
                 }
               },
               {
                 "id": "6",
                 "label": {
-                  "en": "LPR"
+                  "en": "LPR",
+                  "nl": "LPR",
+                  "da": "LPR",
+                  "de": "LPR",
+                  "es": "LPR",
+                  "fr": "LPR",
+                  "it": "LPR",
+                  "no": "LPR",
+                  "sv": "LPR",
+                  "pl": "LPR",
+                  "ru": "Распознавание номерных знаков (LPR)",
+                  "ko": "LPR",
+                  "ar": "LPR"
                 }
               },
               {
                 "id": "7",
                 "label": {
-                  "en": "News"
+                  "en": "News",
+                  "nl": "Nieuws",
+                  "da": "Nyheder",
+                  "de": "Nachrichten",
+                  "es": "Noticias",
+                  "fr": "Actualités",
+                  "it": "Notizie",
+                  "no": "Nyheter",
+                  "sv": "Nyheter",
+                  "pl": "Aktualności",
+                  "ru": "Новости",
+                  "ko": "뉴스",
+                  "ar": "أخبار"
                 }
               },
               {
                 "id": "8",
                 "label": {
-                  "en": "UUCP"
+                  "en": "UUCP",
+                  "nl": "UUCP",
+                  "da": "UUCP",
+                  "de": "UUCP",
+                  "es": "UUCP",
+                  "fr": "UUCP",
+                  "it": "UUCP",
+                  "no": "UUCP",
+                  "sv": "UUCP",
+                  "pl": "UUCP",
+                  "ru": "UUCP",
+                  "ko": "UUCP",
+                  "ar": "UUCP"
                 }
               },
               {
                 "id": "9",
                 "label": {
-                  "en": "Cron"
+                  "en": "Cron",
+                  "nl": "Cron",
+                  "da": "Cron",
+                  "de": "Cron",
+                  "es": "Cron",
+                  "fr": "Cron",
+                  "it": "Cron",
+                  "no": "Cron",
+                  "sv": "Cron",
+                  "pl": "Cron",
+                  "ru": "Крон",
+                  "ko": "크론",
+                  "ar": "كرون"
                 }
               },
               {
                 "id": "10",
                 "label": {
-                  "en": "Deamon"
+                  "en": "Deamon",
+                  "nl": "Daemon",
+                  "da": "Daemon",
+                  "de": "Daemon",
+                  "es": "Daemon",
+                  "fr": "Daemon",
+                  "it": "Demone",
+                  "no": "Daemon",
+                  "sv": "Daemon",
+                  "pl": "Demon",
+                  "ru": "Демон",
+                  "ko": "데몬",
+                  "ar": "خادم الخلفية"
                 }
               },
               {
                 "id": "11",
                 "label": {
-                  "en": "FTP"
+                  "en": "FTP",
+                  "nl": "FTP",
+                  "da": "FTP",
+                  "de": "FTP",
+                  "es": "FTP",
+                  "fr": "FTP",
+                  "it": "FTP",
+                  "no": "FTP",
+                  "sv": "FTP",
+                  "pl": "FTP",
+                  "ru": "FTP",
+                  "ko": "FTP",
+                  "ar": "FTP"
                 }
               },
               {
                 "id": "12",
                 "label": {
-                  "en": "NTP"
+                  "en": "NTP",
+                  "nl": "NTP",
+                  "da": "NTP",
+                  "de": "NTP",
+                  "es": "NTP",
+                  "fr": "NTP",
+                  "it": "NTP",
+                  "no": "NTP",
+                  "sv": "NTP",
+                  "pl": "NTP",
+                  "ru": "NTP",
+                  "ko": "NTP (네트워크 시간 프로토콜)",
+                  "ar": "NTP (بروتوكول وقت الشبكة)"
                 }
               },
               {
                 "id": "13",
                 "label": {
-                  "en": "Security"
+                  "en": "Security",
+                  "nl": "Beveiliging",
+                  "da": "Sikkerhed",
+                  "de": "Sicherheit",
+                  "es": "Seguridad",
+                  "fr": "Sécurité",
+                  "it": "Sicurezza",
+                  "no": "Sikkerhet",
+                  "sv": "Säkerhet",
+                  "pl": "Bezpieczeństwo",
+                  "ru": "Безопасность",
+                  "ko": "보안",
+                  "ar": "الأمان"
                 }
               },
               {
                 "id": "14",
                 "label": {
-                  "en": "Console"
+                  "en": "Console",
+                  "nl": "Console",
+                  "da": "Konsol",
+                  "de": "Konsole",
+                  "es": "Consola",
+                  "fr": "Console",
+                  "it": "Console",
+                  "no": "Konsoll",
+                  "sv": "Konsol",
+                  "pl": "Konsola",
+                  "ru": "Консоль",
+                  "ko": "콘솔",
+                  "ar": "وحدة التحكم"
                 }
               },
               {
                 "id": "15",
                 "label": {
-                  "en": "Clock"
+                  "en": "Clock",
+                  "nl": "Klok",
+                  "da": "Ur",
+                  "de": "Uhr",
+                  "es": "Reloj",
+                  "fr": "Horloge",
+                  "it": "Orologio",
+                  "no": "Klokke",
+                  "sv": "Klocka",
+                  "pl": "Zegar",
+                  "ru": "Часы",
+                  "ko": "시계",
+                  "ar": "ساعة"
                 }
               },
               {
                 "id": "16",
                 "label": {
-                  "en": "Flow"
+                  "en": "Flow",
+                  "nl": "Flow",
+                  "da": "Flow",
+                  "de": "Flow",
+                  "es": "Flujo",
+                  "fr": "Flux",
+                  "it": "Flusso",
+                  "no": "Flyt",
+                  "sv": "Flöde",
+                  "pl": "Przepływ",
+                  "ru": "Поток",
+                  "ko": "플로우",
+                  "ar": "التدفق"
                 }
               },
               {
                 "id": "17",
                 "label": {
-                  "en": "Device"
+                  "en": "Device",
+                  "nl": "Apparaat",
+                  "da": "Enhed",
+                  "de": "Gerät",
+                  "es": "Dispositivo",
+                  "fr": "Appareil",
+                  "it": "Dispositivo",
+                  "no": "Enhet",
+                  "sv": "Enhet",
+                  "pl": "Urządzenie",
+                  "ru": "Устройство",
+                  "ko": "장치",
+                  "ar": "الجهاز"
                 }
               },
               {
                 "id": "18",
                 "label": {
-                  "en": "App"
+                  "en": "App",
+                  "nl": "App",
+                  "da": "App",
+                  "de": "App",
+                  "es": "Aplicación",
+                  "fr": "Application",
+                  "it": "App",
+                  "no": "App",
+                  "sv": "App",
+                  "pl": "Aplikacja",
+                  "ru": "Приложение",
+                  "ko": "앱",
+                  "ar": "تطبيق"
                 }
               },
               {
                 "id": "19",
                 "label": {
-                  "en": "Scene"
+                  "en": "Scene",
+                  "nl": "Scène",
+                  "da": "Scene",
+                  "de": "Szene",
+                  "es": "Escena",
+                  "fr": "Scène",
+                  "it": "Scena",
+                  "no": "Scene",
+                  "sv": "Scen",
+                  "pl": "Scena",
+                  "ru": "Сцена",
+                  "ko": "장면",
+                  "ar": "مشهد"
                 }
               },
               {
                 "id": "20",
                 "label": {
-                  "en": "Trigger"
+                  "en": "Trigger",
+                  "nl": "Trigger",
+                  "da": "Udløser",
+                  "de": "Auslöser",
+                  "es": "Disparador",
+                  "fr": "Déclencheur",
+                  "it": "Attivatore",
+                  "no": "Utløser",
+                  "sv": "Trigger",
+                  "pl": "Wyzwalacz",
+                  "ru": "Триггер",
+                  "ko": "트리거",
+                  "ar": "مشغل"
                 }
               },
               {
                 "id": "21",
                 "label": {
-                  "en": "Condition"
+                  "en": "Condition",
+                  "nl": "Voorwaarde",
+                  "da": "Betingelse",
+                  "de": "Bedingung",
+                  "es": "Condición",
+                  "fr": "Condition",
+                  "it": "Condizione",
+                  "no": "Betingelse",
+                  "sv": "Villkor",
+                  "pl": "Warunek",
+                  "ru": "Условие",
+                  "ko": "조건",
+                  "ar": "شرط"
                 }
               },
               {
                 "id": "22",
                 "label": {
-                  "en": "Action"
+                  "en": "Action",
+                  "nl": "Actie",
+                  "da": "Handling",
+                  "de": "Aktion",
+                  "es": "Acción",
+                  "fr": "Action",
+                  "it": "Azione",
+                  "no": "Handling",
+                  "sv": "Åtgärd",
+                  "pl": "Akcja",
+                  "ru": "Действие",
+                  "ko": "작업",
+                  "ar": "إجراء"
                 }
               },
               {
                 "id": "23",
                 "label": {
-                  "en": "Variable"
+                  "en": "Variable",
+                  "nl": "Variabele",
+                  "da": "Variabel",
+                  "de": "Variable",
+                  "es": "Variable",
+                  "fr": "Variable",
+                  "it": "Variabile",
+                  "no": "Variabel",
+                  "sv": "Variabel",
+                  "pl": "Zmienna",
+                  "ru": "Переменная",
+                  "ko": "변수",
+                  "ar": "متغير"
                 }
               }
             ]
@@ -1379,11 +3723,33 @@
         "id": "Input_log",
         "title": {
           "en": "Add Something to the Log",
-          "nl": "Voeg iets toe aan de Log"
+          "nl": "Voeg iets toe aan de Log",
+          "da": "Tilføj noget til loggen",
+          "de": "Etwas zum Log hinzufügen",
+          "es": "Añadir algo al registro",
+          "fr": "Ajouter quelque chose au journal",
+          "it": "Aggiungi qualcosa al registro",
+          "no": "Legg til noe i loggen",
+          "sv": "Lägg till något i loggen",
+          "pl": "Dodaj coś do dziennika",
+          "ru": "Добавить что-то в журнал",
+          "ko": "로그에 항목 추가하기",
+          "ar": "أضف شيئًا إلى السجل"
         },
         "titleFormatted": {
           "en": "Add [[log]] to the Log",
-          "nl": "Voeg [[log]] toe aan de Log"
+          "nl": "Voeg [[log]] toe aan de Log",
+          "da": "Tilføj [[log]] til loggen",
+          "de": "Füge [[log]] zum Log hinzu",
+          "es": "Añadir [[log]] al registro",
+          "fr": "Ajouter [[log]] au journal",
+          "it": "Aggiungi [[log]] al registro",
+          "no": "Legg til [[log]] i loggen",
+          "sv": "Lägg till [[log]] i loggen",
+          "pl": "Dodaj [[log]] do dziennika",
+          "ru": "Добавить [[log]] в журнал",
+          "ko": "[[log]]을(를) 로그에 추가하세요.",
+          "ar": "أضف [[log]] إلى السجل"
         },
         "args": [
           {
@@ -1391,11 +3757,33 @@
             "type": "text",
             "placeholder": {
               "en": "Message... (* BLL supported)",
-              "nl": "Bericht... (* BLL ondersteund)"
+              "nl": "Bericht... (* BLL ondersteund)",
+              "da": "Besked... (* BLL understøttet)",
+              "de": "Nachricht... (* BLL unterstützt)",
+              "es": "Mensaje... (* BLL compatible)",
+              "fr": "Message... (* BLL pris en charge)",
+              "it": "Messaggio... (* Supportato BLL)",
+              "no": "Melding... (* BLL støttet)",
+              "sv": "Meddelande... (* BLL stöds)",
+              "pl": "Wiadomość... (* obsługiwane BLL)",
+              "ru": "Сообщение... (* Поддержка BLL)",
+              "ko": "메시지... (* BLL 지원됨)",
+              "ar": "رسالة... (* يدعم BLL)"
             },
             "title": {
               "en": "Message",
-              "nl": "Bericht"
+              "nl": "Bericht",
+              "da": "Besked",
+              "de": "Nachricht",
+              "es": "Mensaje",
+              "fr": "Message",
+              "it": "Messaggio",
+              "no": "Melding",
+              "sv": "Meddelande",
+              "pl": "Wiadomość",
+              "ru": "Сообщение",
+              "ko": "메시지",
+              "ar": "رسالة"
             }
           }
         ]
@@ -1404,11 +3792,33 @@
         "id": "Input_logtimeline",
         "title": {
           "en": "Add Something to the Timeline and the Log",
-          "nl": "Voeg iets toe aan de Tijdslijn en de Log"
+          "nl": "Voeg iets toe aan de Tijdslijn en de Log",
+          "da": "Tilføj noget til tidslinjen og loggen",
+          "de": "Füge etwas zur Zeitleiste und zum Log hinzu",
+          "es": "Añadir algo a la línea de tiempo y al registro",
+          "fr": "Ajoutez quelque chose à la chronologie et au journal",
+          "it": "Aggiungi qualcosa alla Timeline e al Log",
+          "no": "Legg til noe i tidslinjen og loggen",
+          "sv": "Lägg till något i tidslinjen och loggen",
+          "pl": "Dodaj coś do Osi czasu i Dziennika",
+          "ru": "Добавьте что-нибудь в Хронологию и Журнал",
+          "ko": "타임라인과 로그에 항목 추가하기",
+          "ar": "أضف شيئًا إلى الجدول الزمني والسجل"
         },
         "titleFormatted": {
           "en": "Add [[log]] to the Timeline and the Log",
-          "nl": "Voeg [[log]] toe aan de Tijdslijn en de Log"
+          "nl": "Voeg [[log]] toe aan de Tijdslijn en de Log",
+          "da": "Tilføj [[log]] til tidslinjen og loggen",
+          "de": "Füge [[log]] zur Timeline und zum Log hinzu.",
+          "es": "Añadir [[log]] a la Línea de tiempo y al Registro",
+          "fr": "Ajouter [[log]] à la Chronologie et au Journal",
+          "it": "Aggiungi [[log]] alla Timeline e al Log",
+          "no": "Legg til [[log]] i tidslinjen og loggen",
+          "sv": "Lägg till [[log]] i tidslinjen och loggen",
+          "pl": "Dodaj [[log]] do Osi czasu i Dziennika",
+          "ru": "Добавить [[log]] в Хронологию и Журнал",
+          "ko": "[[log]]을(를) 타임라인과 로그에 추가하세요.",
+          "ar": "إضافة [[log]] إلى الجدول الزمني والسجل"
         },
         "args": [
           {
@@ -1416,11 +3826,33 @@
             "type": "text",
             "placeholder": {
               "en": "Message... (* BLL supported)",
-              "nl": "Bericht... (* BLL ondersteund)"
+              "nl": "Bericht... (* BLL ondersteund)",
+              "da": "Besked... (* BLL understøttet)",
+              "de": "Nachricht... (* BLL unterstützt)",
+              "es": "Mensaje... (* BLL compatible)",
+              "fr": "Message... (* BLL pris en charge)",
+              "it": "Messaggio... (* Supportato BLL)",
+              "no": "Melding... (* BLL støttet)",
+              "sv": "Meddelande... (* BLL stöds)",
+              "pl": "Wiadomość... (* Obsługiwane BLL)",
+              "ru": "Сообщение... (* Поддержка BLL)",
+              "ko": "메시지... (* BLL 지원됨)",
+              "ar": "رسالة... (* يدعم BLL)"
             },
             "title": {
               "en": "Message",
-              "nl": "Bericht"
+              "nl": "Bericht",
+              "da": "Besked",
+              "de": "Nachricht",
+              "es": "Mensaje",
+              "fr": "Message",
+              "it": "Messaggio",
+              "no": "Melding",
+              "sv": "Meddelande",
+              "pl": "Wiadomość",
+              "ru": "Сообщение",
+              "ko": "메시지",
+              "ar": "رسالة"
             }
           }
         ]
@@ -1429,11 +3861,33 @@
         "id": "Input_timeline",
         "title": {
           "en": "Add Something to the Timeline",
-          "nl": "Voeg iets toe aan de Tijdslijn"
+          "nl": "Voeg iets toe aan de Tijdslijn",
+          "da": "Tilføj noget til tidslinjen",
+          "de": "Füge etwas zur Zeitleiste hinzu",
+          "es": "Añadir algo a la línea de tiempo",
+          "fr": "Ajouter quelque chose à la chronologie",
+          "it": "Aggiungi qualcosa alla Timeline",
+          "no": "Legg til noe i tidslinjen",
+          "sv": "Lägg till något i tidslinjen",
+          "pl": "Dodaj coś do osi czasu",
+          "ru": "Добавить что-то в хронологию",
+          "ko": "타임라인에 추가하기",
+          "ar": "أضف شيئًا إلى الجدول الزمني"
         },
         "titleFormatted": {
           "en": "Add [[log]] to the Timeline",
-          "nl": "Voeg [[log]] toe aan de Tijdslijn"
+          "nl": "Voeg [[log]] toe aan de Tijdslijn",
+          "da": "Tilføj [[log]] til tidslinjen",
+          "de": "Füge [[log]] zur Timeline hinzu",
+          "es": "Añadir [[log]] a la Línea de tiempo",
+          "fr": "Ajouter [[log]] à la chronologie",
+          "it": "Aggiungi [[log]] alla Timeline",
+          "no": "Legg til [[log]] i tidslinjen",
+          "sv": "Lägg till [[log]] i tidslinjen",
+          "pl": "Dodaj [[log]] do Osi czasu",
+          "ru": "Добавить [[log]] в Хронологию",
+          "ko": "[[log]]을(를) 타임라인에 추가하세요.",
+          "ar": "أضف [[log]] إلى الجدول الزمني"
         },
         "args": [
           {
@@ -1441,11 +3895,33 @@
             "type": "text",
             "placeholder": {
               "en": "Message... (* BLL supported)",
-              "nl": "Bericht... (* BLL ondersteund)"
+              "nl": "Bericht... (* BLL ondersteund)",
+              "da": "Besked... (* BLL understøttet)",
+              "de": "Nachricht... (* BLL unterstützt)",
+              "es": "Mensaje... (* BLL compatible)",
+              "fr": "Message... (* BLL pris en charge)",
+              "it": "Messaggio... (* Supportato BLL)",
+              "no": "Melding... (* BLL støttet)",
+              "sv": "Meddelande... (* BLL stöds)",
+              "pl": "Wiadomość... (* Obsługiwane BLL)",
+              "ru": "Сообщение... (* Поддержка BLL)",
+              "ko": "메시지... (* BLL 지원됨)",
+              "ar": "رسالة... (* يدعم BLL)"
             },
             "title": {
               "en": "Message",
-              "nl": "Bericht"
+              "nl": "Bericht",
+              "da": "Besked",
+              "de": "Nachricht",
+              "es": "Mensaje",
+              "fr": "Message",
+              "it": "Messaggio",
+              "no": "Melding",
+              "sv": "Meddelande",
+              "pl": "Wiadomość",
+              "ru": "Сообщение",
+              "ko": "메시지",
+              "ar": "رسالة"
             }
           }
         ]
@@ -1455,11 +3931,33 @@
         "highlight": true,
         "title": {
           "en": "Add Something to the Syslog",
-          "nl": "Voeg iets toe aan de Syslog"
+          "nl": "Voeg iets toe aan de Syslog",
+          "da": "Tilføj noget til Syslog",
+          "de": "Etwas zum Syslog hinzufügen",
+          "es": "Añadir algo al Syslog",
+          "fr": "Ajouter quelque chose au Syslog",
+          "it": "Aggiungi qualcosa al Syslog",
+          "no": "Legg til noe i Syslog",
+          "sv": "Lägg till något i Syslog",
+          "pl": "Dodaj coś do Syslogu",
+          "ru": "Добавить что-то в Syslog",
+          "ko": "시스템 로그에 추가하기",
+          "ar": "أضف شيئًا إلى Syslog"
         },
         "titleFormatted": {
           "en": "Add [[message]] to the Syslog under [[group]] with level [[severity]] of [[facility]]",
-          "nl": "Voeg [[message]] toe aan de Syslog onder [[group]] met niveau [[severity]] van [[facility]]"
+          "nl": "Voeg [[message]] toe aan de Syslog onder [[group]] met niveau [[severity]] van [[facility]]",
+          "da": "Tilføj [[message]] til Syslog under [[group]] med niveau [[severity]] af [[facility]]",
+          "de": "Füge [[message]] zum Syslog unter [[group]] mit dem Level [[severity]] von [[facility]] hinzu.",
+          "es": "Agrega [[message]] al Syslog bajo [[group]] con nivel [[severity]] de [[facility]]",
+          "fr": "Ajoutez [[message]] au Syslog sous [[group]] avec le niveau [[severity]] de [[facility]]",
+          "it": "Aggiungi [[message]] al Syslog sotto [[group]] con livello [[severity]] di [[facility]]",
+          "no": "Legg til [[message]] i Syslog under [[group]] med nivå [[severity]] av [[facility]]",
+          "sv": "Lägg till [[message]] i Syslog under [[group]] med nivå [[severity]] av [[facility]]",
+          "pl": "Dodaj [[message]] do Syslog w grupie [[group]] z poziomem [[severity]] w [[facility]]",
+          "ru": "Добавить [[message]] в Syslog под [[group]] с уровнем [[severity]] для [[facility]]",
+          "ko": "[[message]]를 [[facility]]의 [[severity]] 수준으로 [[group]]의 Syslog에 추가하세요.",
+          "ar": "أضف [[message]] إلى Syslog تحت [[group]] بمستوى [[severity]] من [[facility]]"
         },
         "args": [
           {
@@ -1472,11 +3970,33 @@
             "type": "text",
             "placeholder": {
               "en": "Message...",
-              "nl": "Bericht..."
+              "nl": "Bericht...",
+              "da": "Besked...",
+              "de": "Nachricht...",
+              "es": "Mensaje...",
+              "fr": "Message...",
+              "it": "Messaggio...",
+              "no": "Melding...",
+              "sv": "Meddelande...",
+              "pl": "Wiadomość...",
+              "ru": "Сообщение...",
+              "ko": "메시지...",
+              "ar": "رسالة..."
             },
             "title": {
               "en": "Message",
-              "nl": "Bericht"
+              "nl": "Bericht",
+              "da": "Besked",
+              "de": "Nachricht",
+              "es": "Mensaje",
+              "fr": "Message",
+              "it": "Messaggio",
+              "no": "Melding",
+              "sv": "Meddelande",
+              "pl": "Wiadomość",
+              "ru": "Сообщение",
+              "ko": "메시지",
+              "ar": "رسالة"
             }
           },
           {
@@ -1485,7 +4005,18 @@
             "type": "text",
             "placeholder": {
               "en": "App/group",
-              "nl": "App/groep"
+              "nl": "App/groep",
+              "da": "App/gruppe",
+              "de": "App/Gruppe",
+              "es": "App/grupo",
+              "fr": "App/groupe",
+              "it": "App/gruppo",
+              "no": "App/gruppe",
+              "sv": "App/grupp",
+              "pl": "Aplikacja/grupa",
+              "ru": "Приложение/группа",
+              "ko": "앱/그룹",
+              "ar": "تطبيق/مجموعة"
             }
           },
           {
@@ -1494,55 +4025,162 @@
             "name": "severity",
             "placeholder": {
               "en": "Info",
-              "nl": "Info"
+              "nl": "Info",
+              "da": "Info",
+              "de": "Info",
+              "es": "Información",
+              "fr": "Infos",
+              "it": "Informazioni",
+              "no": "Info",
+              "sv": "Info",
+              "pl": "Informacje",
+              "ru": "Информация",
+              "ko": "정보",
+              "ar": "معلومات"
             },
             "values": [
               {
                 "id": "0",
                 "label": {
-                  "en": "Emergency"
+                  "en": "Emergency",
+                  "nl": "Noodgeval",
+                  "da": "Nødsituation",
+                  "de": "Notfall",
+                  "es": "Emergencia",
+                  "fr": "Urgence",
+                  "it": "Emergenza",
+                  "no": "Nødsituasjon",
+                  "sv": "Nödsituation",
+                  "pl": "Awaryjny",
+                  "ru": "Аварийный случай",
+                  "ko": "긴급",
+                  "ar": "طوارئ"
                 }
               },
               {
                 "id": "1",
                 "label": {
-                  "en": "Alert"
+                  "en": "Alert",
+                  "nl": "Waarschuwing",
+                  "da": "Alarm",
+                  "de": "Alarm",
+                  "es": "Alerta",
+                  "fr": "Alerte",
+                  "it": "Avviso",
+                  "no": "Varsel",
+                  "sv": "Varning",
+                  "pl": "Alert",
+                  "ru": "Оповещение",
+                  "ko": "알림",
+                  "ar": "تنبيه"
                 }
               },
               {
                 "id": "2",
                 "label": {
-                  "en": "Critical"
+                  "en": "Critical",
+                  "nl": "Kritiek",
+                  "da": "Kritisk",
+                  "de": "Kritisch",
+                  "es": "Crítico",
+                  "fr": "Critique",
+                  "it": "Critico",
+                  "no": "Kritisk",
+                  "sv": "Kritisk",
+                  "pl": "Krytyczny",
+                  "ru": "Критический",
+                  "ko": "중요",
+                  "ar": "حرج"
                 }
               },
               {
                 "id": "3",
                 "label": {
-                  "en": "Error"
+                  "en": "Error",
+                  "nl": "Fout",
+                  "da": "Fejl",
+                  "de": "Fehler",
+                  "es": "Error",
+                  "fr": "Erreur",
+                  "it": "Errore",
+                  "no": "Feil",
+                  "sv": "Fel",
+                  "pl": "Błąd",
+                  "ru": "Ошибка",
+                  "ko": "오류",
+                  "ar": "خطأ"
                 }
               },
               {
                 "id": "4",
                 "label": {
-                  "en": "Warning"
+                  "en": "Warning",
+                  "nl": "Waarschuwing",
+                  "da": "Advarsel",
+                  "de": "Warnung",
+                  "es": "Advertencia",
+                  "fr": "Avertissement",
+                  "it": "Avviso",
+                  "no": "Advarsel",
+                  "sv": "Varning",
+                  "pl": "Ostrzeżenie",
+                  "ru": "Предупреждение",
+                  "ko": "경고",
+                  "ar": "تحذير"
                 }
               },
               {
                 "id": "5",
                 "label": {
-                  "en": "Notice"
+                  "en": "Notice",
+                  "nl": "Opmerking",
+                  "da": "Bemærk",
+                  "de": "Hinweis",
+                  "es": "Aviso",
+                  "fr": "Avis",
+                  "it": "Avviso",
+                  "no": "Varsel",
+                  "sv": "Meddelande",
+                  "pl": "Powiadomienie",
+                  "ru": "Уведомление",
+                  "ko": "공지",
+                  "ar": "تنبيه"
                 }
               },
               {
                 "id": "6",
                 "label": {
-                  "en": "Info"
+                  "en": "Info",
+                  "nl": "Info",
+                  "da": "Info",
+                  "de": "Info",
+                  "es": "Información",
+                  "fr": "Infos",
+                  "it": "Informazioni",
+                  "no": "Info",
+                  "sv": "Info",
+                  "pl": "Informacje",
+                  "ru": "Информация",
+                  "ko": "정보",
+                  "ar": "معلومات"
                 }
               },
               {
                 "id": "7",
                 "label": {
-                  "en": "Debug"
+                  "en": "Debug",
+                  "nl": "Debuggen",
+                  "da": "Fejlfinding",
+                  "de": "Debuggen",
+                  "es": "Depurar",
+                  "fr": "Déboguer",
+                  "it": "Debug",
+                  "no": "Feilsøking",
+                  "sv": "Felsökning",
+                  "pl": "Debugowanie",
+                  "ru": "Отладка",
+                  "ko": "디버그",
+                  "ar": "تصحيح الأخطاء"
                 }
               }
             ]
@@ -1553,145 +4191,432 @@
             "name": "facility",
             "placeholder": {
               "en": "Category",
-              "nl": "Categorie"
+              "nl": "Categorie",
+              "da": "Kategori",
+              "de": "Kategorie",
+              "es": "Categoría",
+              "fr": "Catégorie",
+              "it": "Categoria",
+              "no": "Kategori",
+              "sv": "Kategori",
+              "pl": "Kategoria",
+              "ru": "Категория",
+              "ko": "카테고리",
+              "ar": "الفئة"
             },
             "values": [
               {
                 "id": "0",
                 "label": {
-                  "en": "Kernel"
+                  "en": "Kernel",
+                  "nl": "Kernel",
+                  "da": "Kernel",
+                  "de": "Kernel",
+                  "es": "Núcleo",
+                  "fr": "Noyau",
+                  "it": "Kernel",
+                  "no": "Kjerne",
+                  "sv": "Kärna",
+                  "pl": "Jądro",
+                  "ru": "Ядро",
+                  "ko": "커널",
+                  "ar": "النواة"
                 }
               },
               {
                 "id": "1",
                 "label": {
-                  "en": "User"
+                  "en": "User",
+                  "nl": "Gebruiker",
+                  "da": "Bruger",
+                  "de": "Benutzer",
+                  "es": "Usuario",
+                  "fr": "Utilisateur",
+                  "it": "Utente",
+                  "no": "Bruker",
+                  "sv": "Användare",
+                  "pl": "Użytkownik",
+                  "ru": "Пользователь",
+                  "ko": "사용자",
+                  "ar": "مستخدم"
                 }
               },
               {
                 "id": "2",
                 "label": {
-                  "en": "Mail"
+                  "en": "Mail",
+                  "nl": "E-mail",
+                  "da": "Mail",
+                  "de": "E-Mail",
+                  "es": "Correo",
+                  "fr": "Courriel",
+                  "it": "Posta",
+                  "no": "E-post",
+                  "sv": "E-post",
+                  "pl": "Poczta",
+                  "ru": "Почта",
+                  "ko": "메일",
+                  "ar": "بريد"
                 }
               },
               {
                 "id": "3",
                 "label": {
-                  "en": "System"
+                  "en": "System",
+                  "nl": "Systeem",
+                  "da": "System",
+                  "de": "System",
+                  "es": "Sistema",
+                  "fr": "Système",
+                  "it": "Sistema",
+                  "no": "Systemet",
+                  "sv": "Systemet",
+                  "pl": "System",
+                  "ru": "Система",
+                  "ko": "시스템",
+                  "ar": "النظام"
                 }
               },
               {
                 "id": "4",
                 "label": {
-                  "en": "Authorization"
+                  "en": "Authorization",
+                  "nl": "Autorisatie",
+                  "da": "Autorisation",
+                  "de": "Autorisierung",
+                  "es": "Autorización",
+                  "fr": "Autorisation",
+                  "it": "Autorizzazione",
+                  "no": "Autorisasjon",
+                  "sv": "Auktorisering",
+                  "pl": "Autoryzacja",
+                  "ru": "Авторизация",
+                  "ko": "승인",
+                  "ar": "تفويض"
                 }
               },
               {
                 "id": "5",
                 "label": {
-                  "en": "Syslog"
+                  "en": "Syslog",
+                  "nl": "Syslog",
+                  "da": "Syslog",
+                  "de": "Syslog",
+                  "es": "Syslog",
+                  "fr": "Syslog",
+                  "it": "Syslog",
+                  "no": "Syslog",
+                  "sv": "Syslog",
+                  "pl": "Syslog",
+                  "ru": "Сислог",
+                  "ko": "시스로그",
+                  "ar": "Syslog"
                 }
               },
               {
                 "id": "6",
                 "label": {
-                  "en": "LPR"
+                  "en": "LPR",
+                  "nl": "LPR",
+                  "da": "LPR",
+                  "de": "LPR",
+                  "es": "LPR",
+                  "fr": "LPR",
+                  "it": "LPR",
+                  "no": "LPR",
+                  "sv": "LPR",
+                  "pl": "LPR",
+                  "ru": "LPR",
+                  "ko": "LPR",
+                  "ar": "LPR"
                 }
               },
               {
                 "id": "7",
                 "label": {
-                  "en": "News"
+                  "en": "News",
+                  "nl": "Nieuws",
+                  "da": "Nyheder",
+                  "de": "Nachrichten",
+                  "es": "Noticias",
+                  "fr": "Actualités",
+                  "it": "Notizie",
+                  "no": "Nyheter",
+                  "sv": "Nyheter",
+                  "pl": "Aktualności",
+                  "ru": "Новости",
+                  "ko": "뉴스",
+                  "ar": "أخبار"
                 }
               },
               {
                 "id": "8",
                 "label": {
-                  "en": "UUCP"
+                  "en": "UUCP",
+                  "nl": "UUCP",
+                  "da": "UUCP",
+                  "de": "UUCP",
+                  "es": "UUCP",
+                  "fr": "UUCP",
+                  "it": "UUCP",
+                  "no": "UUCP",
+                  "sv": "UUCP",
+                  "pl": "UUCP",
+                  "ru": "UUCP",
+                  "ko": "UUCP",
+                  "ar": "UUCP"
                 }
               },
               {
                 "id": "9",
                 "label": {
-                  "en": "Cron"
+                  "en": "Cron",
+                  "nl": "Cron",
+                  "da": "Cron",
+                  "de": "Cron",
+                  "es": "Cron",
+                  "fr": "Cron",
+                  "it": "Cron",
+                  "no": "Cron",
+                  "sv": "Cron",
+                  "pl": "Cron",
+                  "ru": "Крон",
+                  "ko": "크론",
+                  "ar": "كرون"
                 }
               },
               {
                 "id": "10",
                 "label": {
-                  "en": "Deamon"
+                  "en": "Deamon",
+                  "nl": "Daemon",
+                  "da": "Daemon",
+                  "de": "Daemon",
+                  "es": "Daemon",
+                  "fr": "Daemon",
+                  "it": "Demone",
+                  "no": "Daemon",
+                  "sv": "Daemon",
+                  "pl": "Demon",
+                  "ru": "Демон",
+                  "ko": "데몬",
+                  "ar": "خادم الخلفية"
                 }
               },
               {
                 "id": "11",
                 "label": {
-                  "en": "FTP"
+                  "en": "FTP",
+                  "nl": "FTP",
+                  "da": "FTP",
+                  "de": "FTP",
+                  "es": "FTP",
+                  "fr": "FTP",
+                  "it": "FTP",
+                  "no": "FTP",
+                  "sv": "FTP",
+                  "pl": "FTP",
+                  "ru": "FTP",
+                  "ko": "FTP",
+                  "ar": "FTP"
                 }
               },
               {
                 "id": "12",
                 "label": {
-                  "en": "NTP"
+                  "en": "NTP",
+                  "nl": "NTP",
+                  "da": "NTP",
+                  "de": "NTP",
+                  "es": "NTP",
+                  "fr": "NTP",
+                  "it": "NTP",
+                  "no": "NTP",
+                  "sv": "NTP",
+                  "pl": "NTP",
+                  "ru": "NTP",
+                  "ko": "NTP (네트워크 시간 프로토콜)",
+                  "ar": "NTP (بروتوكول وقت الشبكة)"
                 }
               },
               {
                 "id": "13",
                 "label": {
-                  "en": "Security"
+                  "en": "Security",
+                  "nl": "Beveiliging",
+                  "da": "Sikkerhed",
+                  "de": "Sicherheit",
+                  "es": "Seguridad",
+                  "fr": "Sécurité",
+                  "it": "Sicurezza",
+                  "no": "Sikkerhet",
+                  "sv": "Säkerhet",
+                  "pl": "Bezpieczeństwo",
+                  "ru": "Безопасность",
+                  "ko": "보안",
+                  "ar": "الأمان"
                 }
               },
               {
                 "id": "14",
                 "label": {
-                  "en": "Console"
+                  "en": "Console",
+                  "nl": "Console",
+                  "da": "Konsol",
+                  "de": "Konsole",
+                  "es": "Consola",
+                  "fr": "Console",
+                  "it": "Console",
+                  "no": "Konsoll",
+                  "sv": "Konsol",
+                  "pl": "Konsola",
+                  "ru": "Консоль",
+                  "ko": "콘솔",
+                  "ar": "وحدة التحكم"
                 }
               },
               {
                 "id": "15",
                 "label": {
-                  "en": "Clock"
+                  "en": "Clock",
+                  "nl": "Klok",
+                  "da": "Ur",
+                  "de": "Uhr",
+                  "es": "Reloj",
+                  "fr": "Horloge",
+                  "it": "Orologio",
+                  "no": "Klokke",
+                  "sv": "Klocka",
+                  "pl": "Zegar",
+                  "ru": "Часы",
+                  "ko": "시계",
+                  "ar": "ساعة"
                 }
               },
               {
                 "id": "16",
                 "label": {
-                  "en": "Flow"
+                  "en": "Flow",
+                  "nl": "Flow",
+                  "da": "Flow",
+                  "de": "Flow",
+                  "es": "Flujo",
+                  "fr": "Flux",
+                  "it": "Flusso",
+                  "no": "Flyt",
+                  "sv": "Flöde",
+                  "pl": "Przepływ",
+                  "ru": "Поток",
+                  "ko": "플로우",
+                  "ar": "التدفق"
                 }
               },
               {
                 "id": "17",
                 "label": {
-                  "en": "Device"
+                  "en": "Device",
+                  "nl": "Apparaat",
+                  "da": "Enhed",
+                  "de": "Gerät",
+                  "es": "Dispositivo",
+                  "fr": "Appareil",
+                  "it": "Dispositivo",
+                  "no": "Enhet",
+                  "sv": "Enhet",
+                  "pl": "Urządzenie",
+                  "ru": "Устройство",
+                  "ko": "장치",
+                  "ar": "الجهاز"
                 }
               },
               {
                 "id": "18",
                 "label": {
-                  "en": "App"
+                  "en": "App",
+                  "nl": "App",
+                  "da": "App",
+                  "de": "App",
+                  "es": "Aplicación",
+                  "fr": "Application",
+                  "it": "App",
+                  "no": "App",
+                  "sv": "App",
+                  "pl": "Aplikacja",
+                  "ru": "Приложение",
+                  "ko": "앱",
+                  "ar": "تطبيق"
                 }
               },
               {
                 "id": "19",
                 "label": {
-                  "en": "Scene"
+                  "en": "Scene",
+                  "nl": "Scène",
+                  "da": "Scene",
+                  "de": "Szene",
+                  "es": "Escena",
+                  "fr": "Scène",
+                  "it": "Scena",
+                  "no": "Scene",
+                  "sv": "Scen",
+                  "pl": "Scena",
+                  "ru": "Сцена",
+                  "ko": "장면",
+                  "ar": "مشهد"
                 }
               },
               {
                 "id": "20",
                 "label": {
-                  "en": "Trigger"
+                  "en": "Trigger",
+                  "nl": "Trigger",
+                  "da": "Udløser",
+                  "de": "Auslöser",
+                  "es": "Disparador",
+                  "fr": "Déclencheur",
+                  "it": "Trigger",
+                  "no": "Utløser",
+                  "sv": "Trigger",
+                  "pl": "Wyzwalacz",
+                  "ru": "Триггер",
+                  "ko": "트리거",
+                  "ar": "مشغل"
                 }
               },
               {
                 "id": "21",
                 "label": {
-                  "en": "Condition"
+                  "en": "Condition",
+                  "nl": "Voorwaarde",
+                  "da": "Betingelse",
+                  "de": "Bedingung",
+                  "es": "Condición",
+                  "fr": "Condition",
+                  "it": "Condizione",
+                  "no": "Betingelse",
+                  "sv": "Villkor",
+                  "pl": "Warunek",
+                  "ru": "Условие",
+                  "ko": "조건",
+                  "ar": "شرط"
                 }
               },
               {
                 "id": "22",
                 "label": {
-                  "en": "Action"
+                  "en": "Action",
+                  "nl": "Actie",
+                  "da": "Handling",
+                  "de": "Aktion",
+                  "es": "Acción",
+                  "fr": "Action",
+                  "it": "Azione",
+                  "no": "Handling",
+                  "sv": "Åtgärd",
+                  "pl": "Akcja",
+                  "ru": "Действие",
+                  "ko": "작업",
+                  "ar": "إجراء"
                 }
               }
             ]
@@ -1707,7 +4632,17 @@
       "name": {
         "en": "Syslog client",
         "nl": "Syslog client",
-        "de": "Syslog client"
+        "da": "Syslog-klient",
+        "de": "Syslog client",
+        "es": "Cliente de Syslog",
+        "fr": "Client Syslog",
+        "it": "Client Syslog",
+        "no": "Syslog-klient",
+        "sv": "Syslog-klient",
+        "pl": "Klient syslog",
+        "ru": "Клиент Syslog",
+        "ko": "Syslog 클라이언트",
+        "ar": "عميل Syslog"
       },
       "images": {
         "large": "/drivers/syslogclient/assets/images/large.png",
@@ -1736,7 +4671,19 @@
           "id": "server",
           "type": "text",
           "label": {
-            "en": "Server"
+            "en": "Server",
+            "nl": "Server",
+            "da": "Server",
+            "de": "Server",
+            "es": "Servidor",
+            "fr": "Serveur",
+            "it": "Server",
+            "no": "Server",
+            "sv": "Server",
+            "pl": "Serwer",
+            "ru": "Сервер",
+            "ko": "서버",
+            "ar": "خادم"
           },
           "value": "",
           "placeholder": "192.168.1.100"
@@ -1745,7 +4692,19 @@
           "id": "port",
           "type": "number",
           "label": {
-            "en": "Port"
+            "en": "Port",
+            "nl": "Poort",
+            "da": "Port",
+            "de": "Port",
+            "es": "Puerto",
+            "fr": "Port",
+            "it": "Porta",
+            "no": "Port",
+            "sv": "Port",
+            "pl": "Port",
+            "ru": "Порт",
+            "ko": "포트",
+            "ar": "منفذ"
           },
           "min": 1,
           "max": 65536,
@@ -1756,7 +4715,19 @@
           "id": "useRfc5424",
           "type": "checkbox",
           "label": {
-            "en": "Use Rfc5424 (IETF/NON-BSD)"
+            "en": "Use Rfc5424 (IETF/NON-BSD)",
+            "nl": "Gebruik Rfc5424 (IETF/NON-BSD)",
+            "da": "Brug Rfc5424 (IETF/NON-BSD)",
+            "de": "Verwende Rfc5424 (IETF/NON-BSD)",
+            "es": "Usar Rfc5424 (IETF/NON-BSD)",
+            "fr": "Utiliser Rfc5424 (IETF/NON-BSD)",
+            "it": "Usa Rfc5424 (IETF/NON-BSD)",
+            "no": "Bruk Rfc5424 (IETF/NON-BSD)",
+            "sv": "Använd Rfc5424 (IETF/NON-BSD)",
+            "pl": "Użyj Rfc5424 (IETF/NON-BSD)",
+            "ru": "Используйте Rfc5424 (IETF/NON-BSD)",
+            "ko": "Rfc5424 (IETF/NON-BSD) 사용",
+            "ar": "استخدم Rfc5424 (IETF/NON-BSD)"
           },
           "value": false
         },
@@ -1764,7 +4735,19 @@
           "id": "appName",
           "type": "text",
           "label": {
-            "en": "(This) App name"
+            "en": "(This) App name",
+            "nl": "App-naam",
+            "da": "(Denne) App-navn",
+            "de": "App-Name",
+            "es": "Nombre de la app (este)",
+            "fr": "Nom de l'application",
+            "it": "Nome dell'app",
+            "no": "App-navn",
+            "sv": "(Denna) App-namn",
+            "pl": "Nazwa aplikacji (ta)",
+            "ru": "(Это) название приложения",
+            "ko": "앱 이름",
+            "ar": "اسم التطبيق"
           },
           "value": "Homey"
         },
@@ -1772,7 +4755,19 @@
           "id": "hostname",
           "type": "text",
           "label": {
-            "en": "(This) Hostname"
+            "en": "(This) Hostname",
+            "nl": "(Dit) Hostnaam",
+            "da": "(Denne) Værtsnavn",
+            "de": "(Dieser) Hostname",
+            "es": "(Este) Nombre de host",
+            "fr": "(Ce) Nom d'hôte",
+            "it": "(Questo) Nome host",
+            "no": "(Denne) vertsnavn",
+            "sv": "(Denna) Värdnamn",
+            "pl": "(Ten) Nazwa hosta",
+            "ru": "(Этот) Имя хоста",
+            "ko": "(이) 호스트 이름",
+            "ar": "(هذا) اسم المضيف"
           },
           "value": "",
           "placeholder": "Homey"
@@ -1781,7 +4776,19 @@
           "id": "log_syslogs",
           "type": "checkbox",
           "label": {
-            "en": "Log all Syslogs to the default Simple Log."
+            "en": "Log all Syslogs to the default Simple Log.",
+            "nl": "Log alle Syslogs naar de standaard Simple Log.",
+            "da": "Log alle Syslogs til den standard Simple Log.",
+            "de": "Protokolliere alle Syslogs im Standard-Simple-Log.",
+            "es": "Registra todos los Syslogs en el Simple Log predeterminado.",
+            "fr": "Enregistrez tous les Syslogs dans le journal Simple Log par défaut.",
+            "it": "Registra tutti i Syslog nel Simple Log predefinito.",
+            "no": "Logg alle Syslogs til den forhåndsdefinerte Simple Log.",
+            "sv": "Logga alla Sysloggar till den förvalda Simple Log.",
+            "pl": "Zapisuj wszystkie Syslogi do domyślnego Simple Log.",
+            "ru": "Записывайте все системные журналы в журнал по умолчанию Simple Log.",
+            "ko": "모든 시스템 로그를 기본 Simple Log에 기록하세요.",
+            "ar": "سجل جميع سجلات النظام في السجل البسيط الافتراضي."
           },
           "value": true
         },
@@ -1789,7 +4796,19 @@
           "id": "autolog_severity",
           "type": "dropdown",
           "label": {
-            "en": "Log all default Logs to this Syslog from Level:"
+            "en": "Log all default Logs to this Syslog from Level:",
+            "nl": "Log alle standaardlogs naar deze Syslog vanaf niveau:",
+            "da": "Log alle standardlogfiler til denne Syslog fra niveau:",
+            "de": "Protokolliere alle Standardprotokolle in diesem Syslog ab Stufe:",
+            "es": "Registra todos los registros predeterminados en este Syslog desde el nivel:",
+            "fr": "Enregistrez tous les journaux par défaut dans ce Syslog à partir du niveau :",
+            "it": "Registra tutti i Log predefiniti in questo Syslog a partire dal Livello:",
+            "no": "Logg alle standardlogger til denne Sysloggen fra nivå:",
+            "sv": "Logga alla standardloggar till denna Syslog från nivå:",
+            "pl": "Zapisuj wszystkie domyślne logi do tego Sysloga od poziomu:",
+            "ru": "Записывать все стандартные логи в этот Syslog с уровня:",
+            "ko": "모든 기본 로그를 이 Syslog에 기록합니다. 레벨:",
+            "ar": "سجل جميع السجلات الافتراضية إلى هذا Syslog من المستوى:"
           },
           "value": "",
           "placeholder": "",
@@ -1797,55 +4816,163 @@
             {
               "id": "",
               "label": {
-                "en": "No"
+                "en": "No",
+                "nl": "Nee",
+                "da": "Nej",
+                "de": "Nein",
+                "es": "No",
+                "fr": "Non",
+                "it": "No",
+                "no": "Nei",
+                "sv": "Nej",
+                "pl": "Nie",
+                "ru": "Нет",
+                "ko": "아니요",
+                "ar": "لا"
               }
             },
             {
               "id": "0",
               "label": {
-                "en": "Emergency"
+                "en": "Emergency",
+                "nl": "Noodgeval",
+                "da": "Nødsituation",
+                "de": "Notfall",
+                "es": "Emergencia",
+                "fr": "Urgence",
+                "it": "Emergenza",
+                "no": "Nødsituasjon",
+                "sv": "Nödsituation",
+                "pl": "Awaria",
+                "ru": "Аварийная ситуация",
+                "ko": "긴급",
+                "ar": "طوارئ"
               }
             },
             {
               "id": "1",
               "label": {
-                "en": "Alert"
+                "en": "Alert",
+                "nl": "Waarschuwing",
+                "da": "Alarm",
+                "de": "Alarm",
+                "es": "Alerta",
+                "fr": "Alerte",
+                "it": "Avviso",
+                "no": "Varsel",
+                "sv": "Varning",
+                "pl": "Alert",
+                "ru": "Оповещение",
+                "ko": "알림",
+                "ar": "تنبيه"
               }
             },
             {
               "id": "2",
               "label": {
-                "en": "Critical"
+                "en": "Critical",
+                "nl": "Kritiek",
+                "da": "Kritisk",
+                "de": "Kritisch",
+                "es": "Crítico",
+                "fr": "Critique",
+                "it": "Critico",
+                "no": "Kritisk",
+                "sv": "Kritisk",
+                "pl": "Krytyczny",
+                "ru": "Критический",
+                "ko": "중요",
+                "ar": "حرج"
               }
             },
             {
               "id": "3",
               "label": {
-                "en": "Error"
+                "en": "Error",
+                "nl": "Fout",
+                "da": "Fejl",
+                "de": "Fehler",
+                "es": "Error",
+                "fr": "Erreur",
+                "it": "Errore",
+                "no": "Feil",
+                "sv": "Fel",
+                "pl": "Błąd",
+                "ru": "Ошибка",
+                "ko": "오류",
+                "ar": "خطأ"
               }
             },
             {
               "id": "4",
               "label": {
-                "en": "Warning"
+                "en": "Warning",
+                "nl": "Waarschuwing",
+                "da": "Advarsel",
+                "de": "Warnung",
+                "es": "Advertencia",
+                "fr": "Avertissement",
+                "it": "Avviso",
+                "no": "Advarsel",
+                "sv": "Varning",
+                "pl": "Ostrzeżenie",
+                "ru": "Предупреждение",
+                "ko": "경고",
+                "ar": "تحذير"
               }
             },
             {
               "id": "5",
               "label": {
-                "en": "Notice"
+                "en": "Notice",
+                "nl": "Opmerking",
+                "da": "Bemærk",
+                "de": "Hinweis",
+                "es": "Aviso",
+                "fr": "Avis",
+                "it": "Avviso",
+                "no": "Merk",
+                "sv": "Meddelande",
+                "pl": "Powiadomienie",
+                "ru": "Уведомление",
+                "ko": "공지",
+                "ar": "تنبيه"
               }
             },
             {
               "id": "6",
               "label": {
-                "en": "Info"
+                "en": "Info",
+                "nl": "Info",
+                "da": "Info",
+                "de": "Info",
+                "es": "Información",
+                "fr": "Infos",
+                "it": "Informazioni",
+                "no": "Info",
+                "sv": "Info",
+                "pl": "Informacje",
+                "ru": "Информация",
+                "ko": "정보",
+                "ar": "معلومات"
               }
             },
             {
               "id": "7",
               "label": {
-                "en": "Debug"
+                "en": "Debug",
+                "nl": "Debuggen",
+                "da": "Fejlfinding",
+                "de": "Debuggen",
+                "es": "Depurar",
+                "fr": "Déboguer",
+                "it": "Debug",
+                "no": "Feilsøking",
+                "sv": "Felsökning",
+                "pl": "Debugowanie",
+                "ru": "Отладка",
+                "ko": "디버그",
+                "ar": "تصحيح الأخطاء"
               }
             }
           ]
@@ -1854,7 +4981,19 @@
           "id": "transport",
           "type": "dropdown",
           "label": {
-            "en": "Transport mode"
+            "en": "Transport mode",
+            "nl": "Vervoersmodus",
+            "da": "Transporttilstand",
+            "de": "Transportmodus",
+            "es": "Modo de transporte",
+            "fr": "Mode de transport",
+            "it": "Modalità di trasporto",
+            "no": "Transportmodus",
+            "sv": "Transportläge",
+            "pl": "Tryb transportu",
+            "ru": "Режим транспортировки",
+            "ko": "운송 모드",
+            "ar": "وضع النقل"
           },
           "value": "tcp",
           "placeholder": "",
@@ -1862,13 +5001,37 @@
             {
               "id": "tcp",
               "label": {
-                "en": "tcp"
+                "en": "tcp",
+                "nl": "tcp",
+                "da": "tcp",
+                "de": "tcp",
+                "es": "tcp",
+                "fr": "tcp",
+                "it": "tcp",
+                "no": "tcp",
+                "sv": "tcp",
+                "pl": "tcp",
+                "ru": "tcp",
+                "ko": "tcp",
+                "ar": "تي سي بي"
               }
             },
             {
               "id": "udp",
               "label": {
-                "en": "udp"
+                "en": "udp",
+                "nl": "udp",
+                "da": "udp",
+                "de": "udp",
+                "es": "udp",
+                "fr": "udp",
+                "it": "udp",
+                "no": "udp",
+                "sv": "udp",
+                "pl": "udp",
+                "ru": "udp",
+                "ko": "UDP",
+                "ar": "UDP (بروتوكول بيانات المستخدم)"
               }
             }
           ]
@@ -1881,7 +5044,17 @@
       "name": {
         "en": "Syslog server",
         "nl": "Syslog server",
-        "de": "Syslog server"
+        "da": "Syslog-server",
+        "de": "Syslog server",
+        "es": "Servidor Syslog",
+        "fr": "Serveur Syslog",
+        "it": "Server Syslog",
+        "no": "Syslog-server",
+        "sv": "Syslog-server",
+        "pl": "Serwer syslog",
+        "ru": "Сервер Syslog",
+        "ko": "Syslog 서버",
+        "ar": "خادم Syslog"
       },
       "images": {
         "large": "/drivers/syslogserver/assets/images/large.png",
@@ -1910,7 +5083,19 @@
           "id": "port",
           "type": "number",
           "label": {
-            "en": "Port"
+            "en": "Port",
+            "nl": "Poort",
+            "da": "Port",
+            "de": "Port",
+            "es": "Puerto",
+            "fr": "Port",
+            "it": "Porta",
+            "no": "Port",
+            "sv": "Port",
+            "pl": "Port",
+            "ru": "Порт",
+            "ko": "포트",
+            "ar": "منفذ"
           },
           "min": 1,
           "max": 65536,
@@ -1921,7 +5106,19 @@
           "id": "transport",
           "type": "dropdown",
           "label": {
-            "en": "Transport mode"
+            "en": "Transport mode",
+            "nl": "Vervoersmodus",
+            "da": "Transporttilstand",
+            "de": "Transportmodus",
+            "es": "Modo de transporte",
+            "fr": "Mode de transport",
+            "it": "Modalità di trasporto",
+            "no": "Transportmodus",
+            "sv": "Transportläge",
+            "pl": "Tryb transportu",
+            "ru": "Режим транспортировки",
+            "ko": "운송 모드",
+            "ar": "وضع النقل"
           },
           "value": "tcp",
           "placeholder": "",
@@ -1929,13 +5126,37 @@
             {
               "id": "tcp",
               "label": {
-                "en": "tcp"
+                "en": "tcp",
+                "nl": "tcp",
+                "da": "tcp",
+                "de": "tcp",
+                "es": "tcp",
+                "fr": "tcp",
+                "it": "tcp",
+                "no": "tcp",
+                "sv": "tcp",
+                "pl": "tcp",
+                "ru": "tcp",
+                "ko": "tcp",
+                "ar": "تي سي بي"
               }
             },
             {
               "id": "udp",
               "label": {
-                "en": "udp"
+                "en": "udp",
+                "nl": "udp",
+                "da": "udp",
+                "de": "udp",
+                "es": "udp",
+                "fr": "udp",
+                "it": "udp",
+                "no": "udp",
+                "sv": "udp",
+                "pl": "udp",
+                "ru": "udp",
+                "ko": "UDP",
+                "ar": "UDP (بروتوكول بيانات المستخدم)"
               }
             }
           ]
@@ -1944,7 +5165,19 @@
           "id": "appName",
           "type": "text",
           "label": {
-            "en": "(This) App name"
+            "en": "(This) App name",
+            "nl": "App-naam",
+            "da": "App-navn",
+            "de": "App-Name",
+            "es": "Nombre de la app (este)",
+            "fr": "Nom de l'application (This)",
+            "it": "Nome dell'app",
+            "no": "App-navn",
+            "sv": "(App) Namn",
+            "pl": "Nazwa aplikacji (ta)",
+            "ru": "(Это) название приложения",
+            "ko": "앱 이름",
+            "ar": "اسم التطبيق"
           },
           "value": ""
         },
@@ -1952,7 +5185,19 @@
           "id": "hostname",
           "type": "text",
           "label": {
-            "en": "(This) Hostname"
+            "en": "(This) Hostname",
+            "nl": "(Dit) Hostnaam",
+            "da": "(Denne) Værtsnavn",
+            "de": "(Dieser) Hostname",
+            "es": "(Este) Nombre de host",
+            "fr": "(Ce) Nom d'hôte",
+            "it": "(Questo) Nome host",
+            "no": "(Denne) vertsnavn",
+            "sv": "(Denna) Värdnamn",
+            "pl": "(Ten) Nazwa hosta",
+            "ru": "(Этот) Имя хоста",
+            "ko": "(이) 호스트 이름",
+            "ar": "(هذا) اسم المضيف"
           },
           "value": ""
         },
@@ -1960,7 +5205,19 @@
           "id": "log_syslogs",
           "type": "checkbox",
           "label": {
-            "en": "Log all received Syslogs to the default Simple Log."
+            "en": "Log all received Syslogs to the default Simple Log.",
+            "nl": "Log alle ontvangen Syslogs naar de standaard Simple Log.",
+            "da": "Log alle modtagne Syslogs til den standard Simple Log.",
+            "de": "Protokolliere alle empfangenen Syslogs im Standard-Simple-Log.",
+            "es": "Registra todos los Syslogs recibidos en el Log Simple predeterminado.",
+            "fr": "Enregistrez tous les Syslogs reçus dans le journal Simple par défaut.",
+            "it": "Registra tutti i Syslog ricevuti nel Simple Log predefinito.",
+            "no": "Logg alle mottatte Syslogs til den forhåndsinnstilte Simple Log.",
+            "sv": "Logga alla mottagna Sysloggar till den förvalda Simple Log.",
+            "pl": "Zapisuj wszystkie otrzymane Syslogi do domyślnego prostego dziennika.",
+            "ru": "Записывайте все полученные Syslog в журнал по умолчанию Simple Log.",
+            "ko": "수신된 모든 Syslog를 기본 Simple Log에 기록하세요.",
+            "ar": "سجل جميع سجلات النظام المستلمة في السجل البسيط الافتراضي."
           },
           "value": true
         }

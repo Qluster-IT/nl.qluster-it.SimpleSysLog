@@ -2,12 +2,34 @@
   "id": "Log_generated",
   "title": {
     "en": "A log is generated",
-    "nl": "Een log is toegevoegd"
+    "nl": "Een log is toegevoegd",
+    "da": "En log er genereret",
+    "de": "Ein Protokoll wird erstellt.",
+    "es": "Se genera un registro",
+    "fr": "Un journal est généré",
+    "it": "Un registro è stato generato",
+    "no": "En logg er generert",
+    "sv": "En logg skapas",
+    "pl": "Został wygenerowany log",
+    "ru": "Создан журнал",
+    "ko": "로그가 생성되었습니다.",
+    "ar": "يتم إنشاء سجل"
   },
   "titleFormatted": {
     "en": "When a log is generated (optionally: under [[group]] with [[severity]] of [[facility]])",
-    "nl": "Wanneer een log is toegevoegd (optioneel: onder [[group]] met [[severity]] van [[facility]])"
-},
+    "nl": "Wanneer een log is toegevoegd (optioneel: onder [[group]] met [[severity]] van [[facility]])",
+    "da": "Når en log bliver genereret (valgfrit: under [[group]] med [[severity]] af [[facility]])",
+    "de": "Wenn ein Log erstellt wird (optional: unter [[group]] mit [[severity]] von [[facility]])",
+    "es": "Cuando se genera un registro (opcionalmente: bajo [[group]] con [[severity]] de [[facility]])",
+    "fr": "Lorsqu'un journal est généré (facultativement : sous [[group]] avec [[severity]] de [[facility]])",
+    "it": "Quando viene generato un log (facoltativamente: sotto [[group]] con [[severity]] di [[facility]])",
+    "no": "Når en logg genereres (valgfritt: under [[group]] med [[severity]] av [[facility]])",
+    "sv": "När en logg genereras (valfritt: under [[group]] med [[severity]] av [[facility]])",
+    "pl": "Gdy zostanie wygenerowany log (opcjonalnie: w [[group]] z [[severity]] o [[facility]])",
+    "ru": "Когда создается лог (опционально: в [[group]] с [[severity]] уровня [[facility]])",
+    "ko": "로그가 생성될 때 (선택적으로: [[group]] 아래 [[facility]]의 [[severity]]로)",
+    "ar": "عندما يتم إنشاء سجل (اختياريًا: تحت [[group]] مع [[severity]] لـ [[facility]])"
+  },
   "args": [
     {
       "name": "group",
@@ -15,221 +37,636 @@
       "type": "text",
       "placeholder": {
         "en": "App/group",
-        "nl": "App/groep"
+        "nl": "App/groep",
+        "da": "App/gruppe",
+        "de": "App/Gruppe",
+        "es": "App/grupo",
+        "fr": "App/groupe",
+        "it": "App/gruppo",
+        "no": "App/gruppe",
+        "sv": "App/grupp",
+        "pl": "Aplikacja/grupa",
+        "ru": "Приложение/группа",
+        "ko": "앱/그룹",
+        "ar": "تطبيق/مجموعة"
       }
     },
     {
-        "type": "dropdown",
-        "required": false,
-        "name": "severity",
-        "placeholder": {
-          "en": "Severity",
-          "nl": "Niveau"
-        },
-        "title":{
-          "en":"Severity",
-          "nl":"Niveau"
-        },
-        "values": [
-          {
-            "id": "0",
-            "label": {
-              "en": "Emergency"
-            }
-          },
-          {
-            "id": "1",
-            "label": {
-              "en": "Alert"
-            }
-          },
-          {
-            "id": "2",
-            "label": {
-              "en": "Critical"
-            }
-          },
-          {
-            "id": "3",
-            "label": {
-              "en": "Error"
-            }
-          },
-          {
-            "id": "4",
-            "label": {
-              "en": "Warning"
-            }
-          },
-          {
-            "id": "5",
-            "label": {
-              "en": "Notice"
-            }
-          },
-          {
-            "id": "6",
-            "label": {
-              "en": "Info"
-            }
-          },
-          {
-            "id": "7",
-            "label": {
-              "en": "Debug"
-            }
+      "type": "dropdown",
+      "required": false,
+      "name": "severity",
+      "placeholder": {
+        "en": "Severity",
+        "nl": "Niveau",
+        "da": "Alvorlighedsgrad",
+        "de": "Schweregrad",
+        "es": "Severidad",
+        "fr": "Gravité",
+        "it": "Gravità",
+        "no": "Alvorlighetsgrad",
+        "sv": "Allvarlighetsgrad",
+        "pl": "Waga",
+        "ru": "Серьезность",
+        "ko": "심각도",
+        "ar": "الخطورة"
+      },
+      "title": {
+        "en": "Severity",
+        "nl": "Niveau",
+        "da": "Alvorlighedsgrad",
+        "de": "Schweregrad",
+        "es": "Severidad",
+        "fr": "Gravité",
+        "it": "Gravità",
+        "no": "Alvorlighetsgrad",
+        "sv": "Allvarlighetsgrad",
+        "pl": "Waga",
+        "ru": "Серьезность",
+        "ko": "심각도",
+        "ar": "الخطورة"
+      },
+      "values": [
+        {
+          "id": "0",
+          "label": {
+            "en": "Emergency",
+            "nl": "Noodgeval",
+            "da": "Nødsituation",
+            "de": "Notfall",
+            "es": "Emergencia",
+            "fr": "Urgence",
+            "it": "Emergenza",
+            "no": "Nødsituasjon",
+            "sv": "Nödsituation",
+            "pl": "Awaryjny",
+            "ru": "Аварийный случай",
+            "ko": "긴급",
+            "ar": "طارئ"
           }
-        ]
+        },
+        {
+          "id": "1",
+          "label": {
+            "en": "Alert",
+            "nl": "Waarschuwing",
+            "da": "Alarm",
+            "de": "Alarm",
+            "es": "Alerta",
+            "fr": "Alerte",
+            "it": "Avviso",
+            "no": "Varsel",
+            "sv": "Varning",
+            "pl": "Alert",
+            "ru": "Оповещение",
+            "ko": "알림",
+            "ar": "تنبيه"
+          }
+        },
+        {
+          "id": "2",
+          "label": {
+            "en": "Critical",
+            "nl": "Kritiek",
+            "da": "Kritisk",
+            "de": "Kritisch",
+            "es": "Crítico",
+            "fr": "Critique",
+            "it": "Critico",
+            "no": "Kritisk",
+            "sv": "Kritisk",
+            "pl": "Krytyczny",
+            "ru": "Критический",
+            "ko": "중요",
+            "ar": "حرج"
+          }
+        },
+        {
+          "id": "3",
+          "label": {
+            "en": "Error",
+            "nl": "Fout",
+            "da": "Fejl",
+            "de": "Fehler",
+            "es": "Error",
+            "fr": "Erreur",
+            "it": "Errore",
+            "no": "Feil",
+            "sv": "Fel",
+            "pl": "Błąd",
+            "ru": "Ошибка",
+            "ko": "오류",
+            "ar": "خطأ"
+          }
+        },
+        {
+          "id": "4",
+          "label": {
+            "en": "Warning",
+            "nl": "Waarschuwing",
+            "da": "Advarsel",
+            "de": "Warnung",
+            "es": "Advertencia",
+            "fr": "Avertissement",
+            "it": "Avviso",
+            "no": "Advarsel",
+            "sv": "Varning",
+            "pl": "Ostrzeżenie",
+            "ru": "Предупреждение",
+            "ko": "경고",
+            "ar": "تحذير"
+          }
+        },
+        {
+          "id": "5",
+          "label": {
+            "en": "Notice",
+            "nl": "Opmerking",
+            "da": "Bemærk",
+            "de": "Hinweis",
+            "es": "Aviso",
+            "fr": "Avis",
+            "it": "Avviso",
+            "no": "Merk",
+            "sv": "Meddelande",
+            "pl": "Powiadomienie",
+            "ru": "Уведомление",
+            "ko": "공지",
+            "ar": "تنبيه"
+          }
+        },
+        {
+          "id": "6",
+          "label": {
+            "en": "Info",
+            "nl": "Informatie",
+            "da": "Info",
+            "de": "Info",
+            "es": "Información",
+            "fr": "Infos",
+            "it": "Informazioni",
+            "no": "Info",
+            "sv": "Info",
+            "pl": "Informacje",
+            "ru": "Информация",
+            "ko": "정보",
+            "ar": "معلومات"
+          }
+        },
+        {
+          "id": "7",
+          "label": {
+            "en": "Debug",
+            "nl": "Debuggen",
+            "da": "Debug",
+            "de": "Debuggen",
+            "es": "Depurar",
+            "fr": "Déboguer",
+            "it": "Debug",
+            "no": "Feilsøking",
+            "sv": "Felsökning",
+            "pl": "Debugowanie",
+            "ru": "Отладка",
+            "ko": "디버그",
+            "ar": "تصحيح الأخطاء"
+          }
+        }
+      ]
     },
     {
-        "type": "dropdown",
-        "required": false,
-        "name": "facility",
-        "placeholder": {
-          "en": "Category",
-          "nl": "Categorie"
-        },
-        "values": [
-          {
-            "id": "0",
-            "label": {
-              "en": "Kernel"
-            }
-          },
-          {
-            "id": "1",
-            "label": {
-              "en": "User"
-            }
-          },
-          {
-            "id": "2",
-            "label": {
-              "en": "Mail"
-            }
-          },
-          {
-            "id": "3",
-            "label": {
-              "en": "System"
-            }
-          },
-          
-          {
-            "id": "4",
-            "label": {
-              "en": "Authorization"
-            }
-          },
-          {
-            "id": "5",
-            "label": {
-              "en": "Syslog"
-            }
-          },
-          {
-            "id": "6",
-            "label": {
-              "en": "LPR"
-            }
-          },
-          {
-            "id": "7",
-            "label": {
-              "en": "News"
-            }
-          },
-          {
-            "id": "8",
-            "label": {
-              "en": "UUCP"
-            }
-          },
-          {
-            "id": "9",
-            "label": {
-              "en": "Cron"
-            }
-          },
-          {
-            "id": "10",
-            "label": {
-              "en": "Deamon"
-            }
-          },
-          {
-            "id": "11",
-            "label": {
-              "en": "FTP"
-            }
-          },
-          {
-            "id": "12",
-            "label": {
-              "en": "NTP"
-            }
-          },
-          {
-            "id": "13",
-            "label": {
-              "en": "Security"
-            }
-          },
-          {
-            "id": "14",
-            "label": {
-              "en": "Console"
-            }
-          },
-          {
-            "id": "15",
-            "label": {
-              "en": "Clock"
-            }
-          },
-          {
-            "id": "16",
-            "label": {
-              "en": "Flow"
-            }
-          },
-          {
-            "id": "17",
-            "label": {
-              "en": "Device"
-            }
-          },
-          {
-            "id": "18",
-            "label": {
-              "en": "App"
-            }
-          },
-          {
-            "id": "19",
-            "label": {
-              "en": "Scene"
-            }
-          },
-          {
-            "id": "20",
-            "label": {
-              "en": "Trigger"
-            }
-          },
-          {
-            "id": "21",
-            "label": {
-              "en": "Condition"
-            }
-          },
-          {
-            "id": "22",
-            "label": {
-              "en": "Action"
-            }
+      "type": "dropdown",
+      "required": false,
+      "name": "facility",
+      "placeholder": {
+        "en": "Category",
+        "nl": "Categorie",
+        "da": "Kategori",
+        "de": "Kategorie",
+        "es": "Categoría",
+        "fr": "Catégorie",
+        "it": "Categoria",
+        "no": "Kategori",
+        "sv": "Kategori",
+        "pl": "Kategoria",
+        "ru": "Категория",
+        "ko": "카테고리",
+        "ar": "الفئة"
+      },
+      "values": [
+        {
+          "id": "0",
+          "label": {
+            "en": "Kernel",
+            "nl": "Kernel",
+            "da": "Kernel",
+            "de": "Kernel",
+            "es": "Núcleo",
+            "fr": "Noyau",
+            "it": "Kernel",
+            "no": "Kjerne",
+            "sv": "Kernel",
+            "pl": "Jądro",
+            "ru": "Ядро",
+            "ko": "커널",
+            "ar": "النواة"
           }
-        ]
+        },
+        {
+          "id": "1",
+          "label": {
+            "en": "User",
+            "nl": "Gebruiker",
+            "da": "Bruger",
+            "de": "Benutzer",
+            "es": "Usuario",
+            "fr": "Utilisateur",
+            "it": "Utente",
+            "no": "Bruker",
+            "sv": "Användare",
+            "pl": "Użytkownik",
+            "ru": "Пользователь",
+            "ko": "사용자",
+            "ar": "مستخدم"
+          }
+        },
+        {
+          "id": "2",
+          "label": {
+            "en": "Mail",
+            "nl": "E-mail",
+            "da": "E-mail",
+            "de": "E-Mail",
+            "es": "Correo",
+            "fr": "Courriel",
+            "it": "Email",
+            "no": "E-post",
+            "sv": "E-post",
+            "pl": "Poczta",
+            "ru": "Почта",
+            "ko": "메일",
+            "ar": "بريد"
+          }
+        },
+        {
+          "id": "3",
+          "label": {
+            "en": "System",
+            "nl": "Systeem",
+            "da": "System",
+            "de": "System",
+            "es": "Sistema",
+            "fr": "Système",
+            "it": "Sistema",
+            "no": "Systemet",
+            "sv": "System",
+            "pl": "System",
+            "ru": "Система",
+            "ko": "시스템",
+            "ar": "النظام"
+          }
+        },
+        {
+          "id": "4",
+          "label": {
+            "en": "Authorization",
+            "nl": "Autorisatie",
+            "da": "Autorisation",
+            "de": "Autorisierung",
+            "es": "Autorización",
+            "fr": "Autorisation",
+            "it": "Autorizzazione",
+            "no": "Autorisasjon",
+            "sv": "Auktorisering",
+            "pl": "Autoryzacja",
+            "ru": "Авторизация",
+            "ko": "승인",
+            "ar": "تفويض"
+          }
+        },
+        {
+          "id": "5",
+          "label": {
+            "en": "Syslog",
+            "nl": "Syslog",
+            "da": "Syslog",
+            "de": "Syslog",
+            "es": "Syslog",
+            "fr": "Syslog",
+            "it": "Syslog",
+            "no": "Syslog",
+            "sv": "Syslog",
+            "pl": "Syslog",
+            "ru": "Сислог",
+            "ko": "시스로그",
+            "ar": "سيسلوج"
+          }
+        },
+        {
+          "id": "6",
+          "label": {
+            "en": "LPR",
+            "nl": "LPR",
+            "da": "LPR",
+            "de": "LPR",
+            "es": "LPR",
+            "fr": "LPR",
+            "it": "LPR",
+            "no": "LPR",
+            "sv": "LPR",
+            "pl": "LPR",
+            "ru": "Распознавание номерных знаков (LPR)",
+            "ko": "LPR",
+            "ar": "LPR"
+          }
+        },
+        {
+          "id": "7",
+          "label": {
+            "en": "News",
+            "nl": "Nieuws",
+            "da": "Nyheder",
+            "de": "Nachrichten",
+            "es": "Noticias",
+            "fr": "Actualités",
+            "it": "Notizie",
+            "no": "Nyheter",
+            "sv": "Nyheter",
+            "pl": "Aktualności",
+            "ru": "Новости",
+            "ko": "뉴스",
+            "ar": "أخبار"
+          }
+        },
+        {
+          "id": "8",
+          "label": {
+            "en": "UUCP",
+            "nl": "UUCP",
+            "da": "UUCP",
+            "de": "UUCP",
+            "es": "UUCP",
+            "fr": "UUCP",
+            "it": "UUCP",
+            "no": "UUCP",
+            "sv": "UUCP",
+            "pl": "UUCP",
+            "ru": "UUCP",
+            "ko": "UUCP",
+            "ar": "UUCP"
+          }
+        },
+        {
+          "id": "9",
+          "label": {
+            "en": "Cron",
+            "nl": "Cron",
+            "da": "Cron",
+            "de": "Cron",
+            "es": "Cron",
+            "fr": "Cron",
+            "it": "Cron",
+            "no": "Cron",
+            "sv": "Cron",
+            "pl": "Cron",
+            "ru": "Крон",
+            "ko": "크론",
+            "ar": "كرون"
+          }
+        },
+        {
+          "id": "10",
+          "label": {
+            "en": "Deamon",
+            "nl": "Daemon",
+            "da": "Daemon",
+            "de": "Daemon",
+            "es": "Daemon",
+            "fr": "Daemon",
+            "it": "Demone",
+            "no": "Daemon",
+            "sv": "Daemon",
+            "pl": "Demon",
+            "ru": "Демон",
+            "ko": "데몬",
+            "ar": "خادم الخلفية"
+          }
+        },
+        {
+          "id": "11",
+          "label": {
+            "en": "FTP",
+            "nl": "FTP",
+            "da": "FTP",
+            "de": "FTP",
+            "es": "FTP",
+            "fr": "FTP",
+            "it": "FTP",
+            "no": "FTP",
+            "sv": "FTP",
+            "pl": "FTP",
+            "ru": "FTP",
+            "ko": "FTP",
+            "ar": "FTP"
+          }
+        },
+        {
+          "id": "12",
+          "label": {
+            "en": "NTP",
+            "nl": "NTP",
+            "da": "NTP",
+            "de": "NTP",
+            "es": "NTP",
+            "fr": "NTP",
+            "it": "NTP",
+            "no": "NTP",
+            "sv": "NTP",
+            "pl": "NTP",
+            "ru": "NTP",
+            "ko": "NTP (네트워크 시간 프로토콜)",
+            "ar": "NTP (بروتوكول وقت الشبكة)"
+          }
+        },
+        {
+          "id": "13",
+          "label": {
+            "en": "Security",
+            "nl": "Beveiliging",
+            "da": "Sikkerhed",
+            "de": "Sicherheit",
+            "es": "Seguridad",
+            "fr": "Sécurité",
+            "it": "Sicurezza",
+            "no": "Sikkerhet",
+            "sv": "Säkerhet",
+            "pl": "Bezpieczeństwo",
+            "ru": "Безопасность",
+            "ko": "보안",
+            "ar": "الأمان"
+          }
+        },
+        {
+          "id": "14",
+          "label": {
+            "en": "Console",
+            "nl": "Console",
+            "da": "Konsol",
+            "de": "Konsole",
+            "es": "Consola",
+            "fr": "Console",
+            "it": "Console",
+            "no": "Konsoll",
+            "sv": "Konsol",
+            "pl": "Konsola",
+            "ru": "Консоль",
+            "ko": "콘솔",
+            "ar": "وحدة التحكم"
+          }
+        },
+        {
+          "id": "15",
+          "label": {
+            "en": "Clock",
+            "nl": "Klok",
+            "da": "Ur",
+            "de": "Uhr",
+            "es": "Reloj",
+            "fr": "Horloge",
+            "it": "Orologio",
+            "no": "Klokke",
+            "sv": "Klocka",
+            "pl": "Zegar",
+            "ru": "Часы",
+            "ko": "시계",
+            "ar": "ساعة"
+          }
+        },
+        {
+          "id": "16",
+          "label": {
+            "en": "Flow",
+            "nl": "Flow",
+            "da": "Flow",
+            "de": "Flow",
+            "es": "Flujo",
+            "fr": "Flow",
+            "it": "Flusso",
+            "no": "Flyt",
+            "sv": "Flöde",
+            "pl": "Przepływ",
+            "ru": "Поток",
+            "ko": "플로우",
+            "ar": "التدفق"
+          }
+        },
+        {
+          "id": "17",
+          "label": {
+            "en": "Device",
+            "nl": "Apparaat",
+            "da": "Enhed",
+            "de": "Gerät",
+            "es": "Dispositivo",
+            "fr": "Appareil",
+            "it": "Dispositivo",
+            "no": "Enhet",
+            "sv": "Enhet",
+            "pl": "Urządzenie",
+            "ru": "Устройство",
+            "ko": "장치",
+            "ar": "الجهاز"
+          }
+        },
+        {
+          "id": "18",
+          "label": {
+            "en": "App",
+            "nl": "App",
+            "da": "App",
+            "de": "App",
+            "es": "Aplicación",
+            "fr": "Application",
+            "it": "App",
+            "no": "App",
+            "sv": "App",
+            "pl": "Aplikacja",
+            "ru": "Приложение",
+            "ko": "앱",
+            "ar": "تطبيق"
+          }
+        },
+        {
+          "id": "19",
+          "label": {
+            "en": "Scene",
+            "nl": "Scène",
+            "da": "Scene",
+            "de": "Szene",
+            "es": "Escena",
+            "fr": "Scène",
+            "it": "Scena",
+            "no": "Scene",
+            "sv": "Scen",
+            "pl": "Scena",
+            "ru": "Сцена",
+            "ko": "장면",
+            "ar": "مشهد"
+          }
+        },
+        {
+          "id": "20",
+          "label": {
+            "en": "Trigger",
+            "nl": "Trigger",
+            "da": "Udløser",
+            "de": "Auslöser",
+            "es": "Disparador",
+            "fr": "Déclencheur",
+            "it": "Trigger",
+            "no": "Utløser",
+            "sv": "Trigger",
+            "pl": "Wyzwalacz",
+            "ru": "Триггер",
+            "ko": "트리거",
+            "ar": "مشغل"
+          }
+        },
+        {
+          "id": "21",
+          "label": {
+            "en": "Condition",
+            "nl": "Voorwaarde",
+            "da": "Betingelse",
+            "de": "Bedingung",
+            "es": "Condición",
+            "fr": "Condition",
+            "it": "Condizione",
+            "no": "Betingelse",
+            "sv": "Villkor",
+            "pl": "Warunek",
+            "ru": "Условие",
+            "ko": "조건",
+            "ar": "شرط"
+          }
+        },
+        {
+          "id": "22",
+          "label": {
+            "en": "Action",
+            "nl": "Actie",
+            "da": "Handling",
+            "de": "Aktion",
+            "es": "Acción",
+            "fr": "Action",
+            "it": "Azione",
+            "no": "Handling",
+            "sv": "Åtgärd",
+            "pl": "Akcja",
+            "ru": "Действие",
+            "ko": "작업",
+            "ar": "إجراء"
+          }
+        }
+      ]
     }
   ],
   "tokens": [
@@ -237,64 +674,172 @@
       "name": "log",
       "type": "string",
       "title": {
-        "en": "Log"
-      }      
+        "en": "Log",
+        "nl": "Logboek",
+        "da": "Logfil",
+        "de": "Protokoll",
+        "es": "Registro",
+        "fr": "Journal",
+        "it": "Registro",
+        "no": "Logg",
+        "sv": "Logg",
+        "pl": "Dziennik",
+        "ru": "Журнал",
+        "ko": "로그",
+        "ar": "سجل"
+      }
     },
     {
       "name": "group",
       "type": "string",
       "title": {
-        "en": "Group"
-      }      
+        "en": "Group",
+        "nl": "Groep",
+        "da": "Gruppe",
+        "de": "Gruppe",
+        "es": "Grupo",
+        "fr": "Groupe",
+        "it": "Gruppo",
+        "no": "Gruppe",
+        "sv": "Grupp",
+        "pl": "Grupa",
+        "ru": "Группа",
+        "ko": "그룹",
+        "ar": "مجموعة"
+      }
     },
     {
       "name": "severity",
       "type": "string",
       "title": {
-        "en": "Severity"
-      }      
+        "en": "Severity",
+        "nl": "Ernstigheid",
+        "da": "Alvorlighedsgrad",
+        "de": "Schweregrad",
+        "es": "Severidad",
+        "fr": "Gravité",
+        "it": "Gravità",
+        "no": "Alvorlighetsgrad",
+        "sv": "Allvarlighetsgrad",
+        "pl": "Waga",
+        "ru": "Серьезность",
+        "ko": "심각도",
+        "ar": "الخطورة"
+      }
     },
     {
       "name": "severityId",
       "type": "number",
       "title": {
-        "en": "Severity ID"
-      }      
+        "en": "Severity ID",
+        "nl": "Ernstniveau-ID",
+        "da": "Alvorligheds-ID",
+        "de": "Schweregrad-ID",
+        "es": "ID de gravedad",
+        "fr": "ID de gravité",
+        "it": "ID Gravità",
+        "no": "Alvorlighets-ID",
+        "sv": "Allvarlighets-ID",
+        "pl": "Identyfikator poziomu ważności",
+        "ru": "Идентификатор уровня серьезности",
+        "ko": "심각도 ID",
+        "ar": "معرّف الشدة"
+      }
     },
     {
       "name": "facility",
       "type": "string",
       "title": {
-        "en": "Facility"
-      }      
+        "en": "Facility",
+        "nl": "Faciliteit",
+        "da": "Facilitet",
+        "de": "Einrichtung",
+        "es": "Instalación",
+        "fr": "Installation",
+        "it": "Struttura",
+        "no": "Fasilitet",
+        "sv": "Anläggning",
+        "pl": "Placówka",
+        "ru": "Объект",
+        "ko": "시설",
+        "ar": "مرفق"
+      }
     },
     {
       "name": "facilityId",
       "type": "number",
       "title": {
-        "en": "Facility ID"
-      }      
+        "en": "Facility ID",
+        "nl": "Faciliteit-ID",
+        "da": "Facilitets-ID",
+        "de": "Einrichtungs-ID",
+        "es": "ID de instalación",
+        "fr": "ID de l'installation",
+        "it": "ID struttura",
+        "no": "Facility ID",
+        "sv": "Anläggnings-ID",
+        "pl": "Identyfikator obiektu",
+        "ru": "ID объекта",
+        "ko": "시설 ID",
+        "ar": "معرّف المنشأة"
+      }
     },
     {
       "name": "hostname",
       "type": "string",
       "title": {
-        "en": "Hostname"
-      }      
+        "en": "Hostname",
+        "nl": "Hostnaam",
+        "da": "Værtsnavn",
+        "de": "Hostname",
+        "es": "Nombre del host",
+        "fr": "Nom d'hôte",
+        "it": "Nome host",
+        "no": "Vertsnavn",
+        "sv": "Värdnamn",
+        "pl": "Nazwa hosta",
+        "ru": "Имя хоста",
+        "ko": "호스트 이름",
+        "ar": "اسم المضيف"
+      }
     },
     {
       "name": "timestamp",
       "type": "number",
       "title": {
-        "en": "Timestamp"
-      }      
+        "en": "Timestamp",
+        "nl": "Tijdstempel",
+        "da": "Tidsstempel",
+        "de": "Zeitstempel",
+        "es": "Marca de tiempo",
+        "fr": "Horodatage",
+        "it": "Timestamp",
+        "no": "Tidsstempel",
+        "sv": "Tidsstämpel",
+        "pl": "Znacznik czasu",
+        "ru": "Отметка времени",
+        "ko": "타임스탬프",
+        "ar": "الطابع الزمني"
+      }
     },
     {
       "name": "source",
       "type": "string",
       "title": {
-        "en": "Source"
-      }      
+        "en": "Source",
+        "nl": "Bron",
+        "da": "Kilde",
+        "de": "Quelle",
+        "es": "Fuente",
+        "fr": "Source",
+        "it": "Fonte",
+        "no": "Kilde",
+        "sv": "Källa",
+        "pl": "Źródło",
+        "ru": "Источник",
+        "ko": "출처",
+        "ar": "المصدر"
+      }
     }
   ]
 }

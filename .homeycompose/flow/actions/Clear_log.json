@@ -2,10 +2,32 @@
   "id": "Clear_log",
   "title": {
     "en": "Clear  the whole Log",
-    "nl": "Verwijder de complete Log"
+    "nl": "Verwijder de complete Log",
+    "da": "Ryd hele loggen",
+    "de": "Gesamtes Log löschen",
+    "es": "Borrar todo el registro",
+    "fr": "Effacer tout le journal",
+    "it": "Cancella tutto il Log",
+    "no": "Tøm hele loggen",
+    "sv": "Rensa hela loggen",
+    "pl": "Wyczyść cały dziennik",
+    "ru": "Очистить весь журнал",
+    "ko": "전체 로그 지우기",
+    "ar": "مسح السجل بالكامل"
   },
   "titleFormatted": {
     "en": "Clear  the whole Log",
-    "nl": "Verwijder de complete Log"
+    "nl": "Verwijder de complete Log",
+    "da": "Ryd hele loggen",
+    "de": "Gesamtes Log löschen",
+    "es": "Borrar todo el registro",
+    "fr": "Effacer tout le journal",
+    "it": "Cancella tutto il Log",
+    "no": "Tøm hele loggen",
+    "sv": "Rensa hela loggen",
+    "pl": "Wyczyść cały dziennik",
+    "ru": "Очистить весь журнал",
+    "ko": "전체 로그 지우기",
+    "ar": "مسح السجل بالكامل"
   }
 }

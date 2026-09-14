@@ -2,11 +2,33 @@
   "id": "Input_log",
   "title": {
     "en": "Add Something to the Log",
-    "nl": "Voeg iets toe aan de Log"
+    "nl": "Voeg iets toe aan de Log",
+    "da": "Tilføj noget til loggen",
+    "de": "Etwas zum Log hinzufügen",
+    "es": "Añadir algo al registro",
+    "fr": "Ajouter quelque chose au journal",
+    "it": "Aggiungi qualcosa al registro",
+    "no": "Legg til noe i loggen",
+    "sv": "Lägg till något i loggen",
+    "pl": "Dodaj coś do dziennika",
+    "ru": "Добавить что-то в журнал",
+    "ko": "로그에 항목 추가하기",
+    "ar": "أضف شيئًا إلى السجل"
   },
   "titleFormatted": {
     "en": "Add [[log]] to the Log",
-    "nl": "Voeg [[log]] toe aan de Log"
+    "nl": "Voeg [[log]] toe aan de Log",
+    "da": "Tilføj [[log]] til loggen",
+    "de": "Füge [[log]] zum Log hinzu",
+    "es": "Añadir [[log]] al registro",
+    "fr": "Ajouter [[log]] au journal",
+    "it": "Aggiungi [[log]] al registro",
+    "no": "Legg til [[log]] i loggen",
+    "sv": "Lägg till [[log]] i loggen",
+    "pl": "Dodaj [[log]] do dziennika",
+    "ru": "Добавить [[log]] в журнал",
+    "ko": "[[log]]을(를) 로그에 추가하세요.",
+    "ar": "أضف [[log]] إلى السجل"
   },
   "args": [
     {
@@ -14,11 +36,33 @@
       "type": "text",
       "placeholder": {
         "en": "Message... (* BLL supported)",
-        "nl": "Bericht... (* BLL ondersteund)"
+        "nl": "Bericht... (* BLL ondersteund)",
+        "da": "Besked... (* BLL understøttet)",
+        "de": "Nachricht... (* BLL unterstützt)",
+        "es": "Mensaje... (* BLL compatible)",
+        "fr": "Message... (* BLL pris en charge)",
+        "it": "Messaggio... (* Supportato BLL)",
+        "no": "Melding... (* BLL støttet)",
+        "sv": "Meddelande... (* BLL stöds)",
+        "pl": "Wiadomość... (* obsługiwane BLL)",
+        "ru": "Сообщение... (* Поддержка BLL)",
+        "ko": "메시지... (* BLL 지원됨)",
+        "ar": "رسالة... (* يدعم BLL)"
       },
       "title": {
         "en": "Message",
-        "nl": "Bericht"
+        "nl": "Bericht",
+        "da": "Besked",
+        "de": "Nachricht",
+        "es": "Mensaje",
+        "fr": "Message",
+        "it": "Messaggio",
+        "no": "Melding",
+        "sv": "Meddelande",
+        "pl": "Wiadomość",
+        "ru": "Сообщение",
+        "ko": "메시지",
+        "ar": "رسالة"
       }
     }
   ]

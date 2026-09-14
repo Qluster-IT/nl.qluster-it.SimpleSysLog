@@ -2,53 +2,157 @@
   "id": "get_log",
   "title": {
     "en": "Get the (whole) log",
-    "nl": "Ontvang het (hele) logboek"
+    "nl": "Ontvang het (hele) logboek",
+    "da": "Hent hele loggen",
+    "de": "Hole das (gesamte) Logbuch",
+    "es": "Obtén el registro (completo)",
+    "fr": "Obtenez le journal (complet)",
+    "it": "Ottieni il registro (completo)",
+    "no": "Hent hele loggen",
+    "sv": "Hämta hela loggen",
+    "pl": "Pobierz (cały) dziennik",
+    "ru": "Получить (весь) журнал",
+    "ko": "전체 로그 가져오기",
+    "ar": "احصل على (السجل) الكامل"
   },
   "titleFormatted": {
     "en": "Get the (whole) Log as [[returnType]]",
-    "nl": "Ontvang de (hele) Log als [[returnType]]"
+    "nl": "Ontvang de (hele) Log als [[returnType]]",
+    "da": "Få hele loggen som [[returnType]]",
+    "de": "Erhalte das (gesamte) Log als [[returnType]]",
+    "es": "Obtén el registro (completo) como [[returnType]]",
+    "fr": "Obtenez le journal (complet) en tant que [[returnType]]",
+    "it": "Ottieni il Log (completo) come [[returnType]]",
+    "no": "Få hele loggen som [[returnType]]",
+    "sv": "Hämta hela loggen som [[returnType]]",
+    "pl": "Pobierz (cały) dziennik jako [[returnType]]",
+    "ru": "Получить (весь) журнал как [[returnType]]",
+    "ko": "전체 로그를 [[returnType]]로 가져오기",
+    "ar": "احصل على السجل (كامل) كـ [[returnType]]"
   },
   "args": [
     {
       "type": "dropdown",
-      "name": "returnType",      
+      "name": "returnType",
       "placeholder": {
         "en": "Choose the Format",
-        "nl": "Kies het format"
-      },      
+        "nl": "Kies het format",
+        "da": "Vælg formatet",
+        "de": "Wähle das Format",
+        "es": "Elige el formato",
+        "fr": "Choisissez le format",
+        "it": "Scegli il formato",
+        "no": "Velg formatet",
+        "sv": "Välj format",
+        "pl": "Wybierz format",
+        "ru": "Выберите формат",
+        "ko": "형식을 선택하세요",
+        "ar": "اختر التنسيق"
+      },
       "title": {
         "en": "Format",
-        "nl": "Format"
+        "nl": "Format",
+        "da": "Format",
+        "de": "Format",
+        "es": "Formato",
+        "fr": "Format",
+        "it": "Formato",
+        "no": "Formatere",
+        "sv": "Format",
+        "pl": "Formatowanie",
+        "ru": "Формат",
+        "ko": "형식",
+        "ar": "تنسيق"
       },
       "values": [
         {
           "id": "json",
           "label": {
-            "en": "JSON"
+            "en": "JSON",
+            "nl": "JSON",
+            "da": "JSON",
+            "de": "JSON",
+            "es": "JSON",
+            "fr": "JSON",
+            "it": "JSON",
+            "no": "JSON",
+            "sv": "JSON",
+            "pl": "JSON",
+            "ru": "JSON",
+            "ko": "JSON",
+            "ar": "JSON"
           }
         },
         {
           "id": "json_base64",
           "label": {
-            "en": "JSON (base64)"
+            "en": "JSON (base64)",
+            "nl": "JSON (base64)",
+            "da": "JSON (base64)",
+            "de": "JSON (base64)",
+            "es": "JSON (base64)",
+            "fr": "JSON (base64)",
+            "it": "JSON (base64)",
+            "no": "JSON (base64)",
+            "sv": "JSON (base64)",
+            "pl": "JSON (base64)",
+            "ru": "JSON (base64)",
+            "ko": "JSON (base64)",
+            "ar": "JSON (base64)"
           }
         },
         {
           "id": "csv",
           "label": {
-            "en": "CSV"
+            "en": "CSV",
+            "nl": "CSV",
+            "da": "CSV",
+            "de": "CSV",
+            "es": "CSV",
+            "fr": "CSV",
+            "it": "CSV",
+            "no": "CSV",
+            "sv": "CSV",
+            "pl": "CSV",
+            "ru": "CSV",
+            "ko": "CSV",
+            "ar": "CSV"
           }
         },
         {
           "id": "csv_base64",
           "label": {
-            "en": "CSV (base64)"
+            "en": "CSV (base64)",
+            "nl": "CSV (base64)",
+            "da": "CSV (base64)",
+            "de": "CSV (base64)",
+            "es": "CSV (base64)",
+            "fr": "CSV (base64)",
+            "it": "CSV (base64)",
+            "no": "CSV (base64)",
+            "sv": "CSV (base64)",
+            "pl": "CSV (base64)",
+            "ru": "CSV (base64)",
+            "ko": "CSV (base64)",
+            "ar": "CSV (base64)"
           }
         },
         {
           "id": "xlsx_base64",
           "label": {
-            "en": "Excel (base64)"
+            "en": "Excel (base64)",
+            "nl": "Excel (base64)",
+            "da": "Excel (base64)",
+            "de": "Excel (base64)",
+            "es": "Excel (base64)",
+            "fr": "Excel (base64)",
+            "it": "Excel (base64)",
+            "no": "Excel (base64)",
+            "sv": "Excel (base64)",
+            "pl": "Excel (base64)",
+            "ru": "Excel (base64)",
+            "ko": "엑셀 (base64)",
+            "ar": "إكسل (base64)"
           }
         }
       ]
@@ -59,7 +163,19 @@
       "name": "log",
       "type": "string",
       "title": {
-        "en": "Log"
+        "en": "Log",
+        "nl": "Logboek",
+        "da": "Logfil",
+        "de": "Protokoll",
+        "es": "Registro",
+        "fr": "Journal",
+        "it": "Registro",
+        "no": "Logg",
+        "sv": "Logg",
+        "pl": "Dziennik",
+        "ru": "Журнал",
+        "ko": "로그",
+        "ar": "سجل"
       },
       "example": "[\n  {\n    \"data\": \"Cleared all logging data\",\n    \"group\": \"Simple Log\",\n    \"date\": \"2022-12-29T09:38:30.249Z\"\n  },\n  {\n    \"data\": \"badkamer: 60\",\n    \"date\": \"2022-12-29T09:39:32.172Z\"\n  },"
     }

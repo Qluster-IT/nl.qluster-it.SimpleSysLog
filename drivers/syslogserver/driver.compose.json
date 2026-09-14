@@ -1,91 +1,185 @@
 {
-	"id": "syslogserver",
-	"_deprecated":true,
-	"name": {
-		"en": "Syslog server",
-		"nl": "Syslog server",
-		"de": "Syslog server"
-	},
-	"images": {
-		"large": "{{driverAssetsPath}}/images/large.png",
-		"small": "{{driverAssetsPath}}/images/small.png"
-	},
-	"capabilities":[],
-	"class": "other",	
-	"pair": [
-		{
-			"id": "list_devices",
-			"template": "list_devices",
-			"navigation": {
-				"next": "add_devices"
-			},
-			"options": {
-				"singular": true
-			}
-		},
-		{
-			"id": "add_devices",
-			"template": "add_devices"
-		}
-	],	
-    "settings": [		
-		{
-		  "id": "port",
-		  "type": "number",
-		  "label": {
-			"en": "Port"
-		  },
-		  "min": 1,
-		  "max": 65536,
-		  "step": 1,
-		  "value" : 514
-		},
-		{
-			"id": "transport",
-			"type": "dropdown",
-			"label": {
-				"en": "Transport mode"
-			},
-			"value" : "tcp",
-			"placeholder" : "",
-			"values": [
-				{
-					"id": "tcp",
-					"label": {
-					  "en": "tcp"
-					}
-				},
-				{
-				  "id": "udp",
-				  "label": {
-					"en": "udp"
-				  }
-				}
-			  ]
-		},
-		{
-			"id": "appName",
-			"type": "text",
-			"label": {
-				"en": "(This) App name"
-			},
-			"value" : ""	  
-		},
-		{
-			"id": "hostname",
-			"type": "text",
-			"label": {
-				"en": "(This) Hostname"
-			},
-			"value" : ""
-		},		
-		{
-			"id": "log_syslogs",
-			"type": "checkbox",
-			"label": {
-			  "en": "Log all received Syslogs to the default Simple Log."
-			},
-			"value" : true
-		}
-	]
+  "id": "syslogserver",
+  "_deprecated": true,
+  "name": {
+    "en": "Syslog server",
+    "nl": "Syslog server",
+    "da": "Syslog-server",
+    "de": "Syslog server",
+    "es": "Servidor Syslog",
+    "fr": "Serveur Syslog",
+    "it": "Server Syslog",
+    "no": "Syslog-server",
+    "sv": "Syslog-server",
+    "pl": "Serwer syslog",
+    "ru": "Сервер Syslog",
+    "ko": "Syslog 서버",
+    "ar": "خادم Syslog"
+  },
+  "images": {
+    "large": "{{driverAssetsPath}}/images/large.png",
+    "small": "{{driverAssetsPath}}/images/small.png"
+  },
+  "capabilities": [],
+  "class": "other",
+  "pair": [
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": {
+        "next": "add_devices"
+      },
+      "options": {
+        "singular": true
+      }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ],
+  "settings": [
+    {
+      "id": "port",
+      "type": "number",
+      "label": {
+        "en": "Port",
+        "nl": "Poort",
+        "da": "Port",
+        "de": "Port",
+        "es": "Puerto",
+        "fr": "Port",
+        "it": "Porta",
+        "no": "Port",
+        "sv": "Port",
+        "pl": "Port",
+        "ru": "Порт",
+        "ko": "포트",
+        "ar": "منفذ"
+      },
+      "min": 1,
+      "max": 65536,
+      "step": 1,
+      "value": 514
+    },
+    {
+      "id": "transport",
+      "type": "dropdown",
+      "label": {
+        "en": "Transport mode",
+        "nl": "Vervoersmodus",
+        "da": "Transporttilstand",
+        "de": "Transportmodus",
+        "es": "Modo de transporte",
+        "fr": "Mode de transport",
+        "it": "Modalità di trasporto",
+        "no": "Transportmodus",
+        "sv": "Transportläge",
+        "pl": "Tryb transportu",
+        "ru": "Режим транспортировки",
+        "ko": "운송 모드",
+        "ar": "وضع النقل"
+      },
+      "value": "tcp",
+      "placeholder": "",
+      "values": [
+        {
+          "id": "tcp",
+          "label": {
+            "en": "tcp",
+            "nl": "tcp",
+            "da": "tcp",
+            "de": "tcp",
+            "es": "tcp",
+            "fr": "tcp",
+            "it": "tcp",
+            "no": "tcp",
+            "sv": "tcp",
+            "pl": "tcp",
+            "ru": "tcp",
+            "ko": "tcp",
+            "ar": "تي سي بي"
+          }
+        },
+        {
+          "id": "udp",
+          "label": {
+            "en": "udp",
+            "nl": "udp",
+            "da": "udp",
+            "de": "udp",
+            "es": "udp",
+            "fr": "udp",
+            "it": "udp",
+            "no": "udp",
+            "sv": "udp",
+            "pl": "udp",
+            "ru": "udp",
+            "ko": "UDP",
+            "ar": "UDP (بروتوكول بيانات المستخدم)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "appName",
+      "type": "text",
+      "label": {
+        "en": "(This) App name",
+        "nl": "App-naam",
+        "da": "App-navn",
+        "de": "App-Name",
+        "es": "Nombre de la app (este)",
+        "fr": "Nom de l'application (This)",
+        "it": "Nome dell'app",
+        "no": "App-navn",
+        "sv": "(App) Namn",
+        "pl": "Nazwa aplikacji (ta)",
+        "ru": "(Это) название приложения",
+        "ko": "앱 이름",
+        "ar": "اسم التطبيق"
+      },
+      "value": ""
+    },
+    {
+      "id": "hostname",
+      "type": "text",
+      "label": {
+        "en": "(This) Hostname",
+        "nl": "(Dit) Hostnaam",
+        "da": "(Denne) Værtsnavn",
+        "de": "(Dieser) Hostname",
+        "es": "(Este) Nombre de host",
+        "fr": "(Ce) Nom d'hôte",
+        "it": "(Questo) Nome host",
+        "no": "(Denne) vertsnavn",
+        "sv": "(Denna) Värdnamn",
+        "pl": "(Ten) Nazwa hosta",
+        "ru": "(Этот) Имя хоста",
+        "ko": "(이) 호스트 이름",
+        "ar": "(هذا) اسم المضيف"
+      },
+      "value": ""
+    },
+    {
+      "id": "log_syslogs",
+      "type": "checkbox",
+      "label": {
+        "en": "Log all received Syslogs to the default Simple Log.",
+        "nl": "Log alle ontvangen Syslogs naar de standaard Simple Log.",
+        "da": "Log alle modtagne Syslogs til den standard Simple Log.",
+        "de": "Protokolliere alle empfangenen Syslogs im Standard-Simple-Log.",
+        "es": "Registra todos los Syslogs recibidos en el Log Simple predeterminado.",
+        "fr": "Enregistrez tous les Syslogs reçus dans le journal Simple par défaut.",
+        "it": "Registra tutti i Syslog ricevuti nel Simple Log predefinito.",
+        "no": "Logg alle mottatte Syslogs til den forhåndsinnstilte Simple Log.",
+        "sv": "Logga alla mottagna Sysloggar till den förvalda Simple Log.",
+        "pl": "Zapisuj wszystkie otrzymane Syslogi do domyślnego prostego dziennika.",
+        "ru": "Записывайте все полученные Syslog в журнал по умолчанию Simple Log.",
+        "ko": "수신된 모든 Syslog를 기본 Simple Log에 기록하세요.",
+        "ar": "سجل جميع سجلات النظام المستلمة في السجل البسيط الافتراضي."
+      },
+      "value": true
+    }
+  ]
 }

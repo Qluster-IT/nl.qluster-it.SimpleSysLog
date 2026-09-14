@@ -1,26 +1,70 @@
 {
   "id": "Automater_condition_log",
-  "deprecated":true,
+  "deprecated": true,
   "title": {
     "en": "Add Something to the Simple Log",
-    "nl": "Voeg iets toe aan de Simple Log"
+    "nl": "Voeg iets toe aan de Simple Log",
+    "da": "Tilføj noget til Simple Log",
+    "de": "Etwas zum Simple Log hinzufügen",
+    "es": "Añadir algo al Simple Log",
+    "fr": "Ajouter quelque chose au Simple Log",
+    "it": "Aggiungi qualcosa al Simple Log",
+    "no": "Legg til noe i Simple Log",
+    "sv": "Lägg till något i Simple Log",
+    "pl": "Dodaj coś do Simple Log",
+    "ru": "Добавить что-то в Simple Log",
+    "ko": "Simple Log에 항목 추가하기",
+    "ar": "أضف شيئًا إلى السجل البسيط"
   },
   "titleFormatted": {
     "en": "[[log]]",
-    "nl": "[[log]]"
-},
+    "nl": "[[log]]",
+    "da": "[[log]]",
+    "de": "[[log]]",
+    "es": "[[log]]",
+    "fr": "[[log]]",
+    "it": "[[log]]",
+    "no": "[[log]]",
+    "sv": "[[log]]",
+    "pl": "[[log]]",
+    "ru": "[[log]]",
+    "ko": "[[log]]",
+    "ar": "[[log]]"
+  },
   "args": [
     {
-        "name": "log",
-        "type": "text",
-        "placeholder":{
-          "en":"log",
-          "nl":"log"
-        },
-        "title":{
-          "en":"log",
-          "nl":"log"
-        }
+      "name": "log",
+      "type": "text",
+      "placeholder": {
+        "en": "log",
+        "nl": "log",
+        "da": "log",
+        "de": "Protokoll",
+        "es": "registro",
+        "fr": "journal",
+        "it": "registro",
+        "no": "logg",
+        "sv": "logg",
+        "pl": "log",
+        "ru": "журнал",
+        "ko": "로그",
+        "ar": "سجل"
+      },
+      "title": {
+        "en": "log",
+        "nl": "log",
+        "da": "log",
+        "de": "Protokoll",
+        "es": "registro",
+        "fr": "journal",
+        "it": "registro",
+        "no": "logg",
+        "sv": "logg",
+        "pl": "log",
+        "ru": "журнал",
+        "ko": "로그",
+        "ar": "سجل"
+      }
     }
   ]
 }

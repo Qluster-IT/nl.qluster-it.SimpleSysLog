@@ -2,24 +2,68 @@
   "id": "Input_logtimeline",
   "title": {
     "en": "Add Something to the Timeline and the Log",
-    "nl": "Voeg iets toe aan de Tijdslijn en de Log"
+    "nl": "Voeg iets toe aan de Tijdslijn en de Log",
+    "da": "Tilføj noget til tidslinjen og loggen",
+    "de": "Füge etwas zur Zeitleiste und zum Log hinzu",
+    "es": "Añadir algo a la línea de tiempo y al registro",
+    "fr": "Ajoutez quelque chose à la chronologie et au journal",
+    "it": "Aggiungi qualcosa alla Timeline e al Log",
+    "no": "Legg til noe i tidslinjen og loggen",
+    "sv": "Lägg till något i tidslinjen och loggen",
+    "pl": "Dodaj coś do Osi czasu i Dziennika",
+    "ru": "Добавьте что-нибудь в Хронологию и Журнал",
+    "ko": "타임라인과 로그에 항목 추가하기",
+    "ar": "أضف شيئًا إلى الجدول الزمني والسجل"
   },
   "titleFormatted": {
     "en": "Add [[log]] to the Timeline and the Log",
-    "nl": "Voeg [[log]] toe aan de Tijdslijn en de Log"
-},
+    "nl": "Voeg [[log]] toe aan de Tijdslijn en de Log",
+    "da": "Tilføj [[log]] til tidslinjen og loggen",
+    "de": "Füge [[log]] zur Timeline und zum Log hinzu.",
+    "es": "Añadir [[log]] a la Línea de tiempo y al Registro",
+    "fr": "Ajouter [[log]] à la Chronologie et au Journal",
+    "it": "Aggiungi [[log]] alla Timeline e al Log",
+    "no": "Legg til [[log]] i tidslinjen og loggen",
+    "sv": "Lägg till [[log]] i tidslinjen och loggen",
+    "pl": "Dodaj [[log]] do Osi czasu i Dziennika",
+    "ru": "Добавить [[log]] в Хронологию и Журнал",
+    "ko": "[[log]]을(를) 타임라인과 로그에 추가하세요.",
+    "ar": "إضافة [[log]] إلى الجدول الزمني والسجل"
+  },
   "args": [
     {
-        "name": "log",
-        "type": "text",
-        "placeholder":{
-          "en":"Message... (* BLL supported)",
-          "nl":"Bericht... (* BLL ondersteund)"
-        },
-        "title":{
-          "en":"Message",
-          "nl":"Bericht"
-        }
+      "name": "log",
+      "type": "text",
+      "placeholder": {
+        "en": "Message... (* BLL supported)",
+        "nl": "Bericht... (* BLL ondersteund)",
+        "da": "Besked... (* BLL understøttet)",
+        "de": "Nachricht... (* BLL unterstützt)",
+        "es": "Mensaje... (* BLL compatible)",
+        "fr": "Message... (* BLL pris en charge)",
+        "it": "Messaggio... (* Supportato BLL)",
+        "no": "Melding... (* BLL støttet)",
+        "sv": "Meddelande... (* BLL stöds)",
+        "pl": "Wiadomość... (* Obsługiwane BLL)",
+        "ru": "Сообщение... (* Поддержка BLL)",
+        "ko": "메시지... (* BLL 지원됨)",
+        "ar": "رسالة... (* يدعم BLL)"
+      },
+      "title": {
+        "en": "Message",
+        "nl": "Bericht",
+        "da": "Besked",
+        "de": "Nachricht",
+        "es": "Mensaje",
+        "fr": "Message",
+        "it": "Messaggio",
+        "no": "Melding",
+        "sv": "Meddelande",
+        "pl": "Wiadomość",
+        "ru": "Сообщение",
+        "ko": "메시지",
+        "ar": "رسالة"
+      }
     }
   ]
 }

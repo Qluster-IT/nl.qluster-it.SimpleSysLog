@@ -1,14 +1,37 @@
 {
   "id": "nl.nielsdeklerk.log",
-  "version": "3.0.37",
+  "version": "3.1.0",
   "sdk": 3,
   "brandColor": "#BC274A",
   "name": {
-    "en": "Simple (Sys) Log"
+    "en": "Simple (Sys) Log",
+    "nl": "Simple (Sys) Log",
+    "da": "Simple (Sys) Log",
+    "de": "Simple (Sys) Log",
+    "es": "Simple (Sys) Log",
+    "fr": "Simple (Sys) Log",
+    "it": "Simple (Sys) Log",
+    "no": "Enkel (Sys) Logg",
+    "sv": "Simple (Sys) Log",
+    "pl": "Simple (Sys) Log",
+    "ru": "Простой (Сис) Лог",
+    "ko": "Simple (Sys) Log",
+    "ar": "سجل (سيز) بسيط"
   },
   "description": {
-    "en": "Use this app for Simple (Sys) Logging.",    
-    "nl": "Gebruik deze app voor Simpele (Sys) Logging."
+    "en": "Use this app for Simple (Sys) Logging.",
+    "nl": "Gebruik deze app voor Simpele (Sys) Logging.",
+    "da": "Brug denne app til Simple (Sys) Logging.",
+    "de": "Verwende diese App für einfaches (Sys) Logging.",
+    "es": "Usa esta aplicación para el registro Simple (Sys).",
+    "fr": "Utilisez cette application pour un journal (Sys) simple.",
+    "it": "Usa questa app per il Simple (Sys) Logging.",
+    "no": "Bruk denne appen for enkel (Sys) logging.",
+    "sv": "Använd den här appen för enkel (Sys) loggning.",
+    "pl": "Użyj tej aplikacji do prostego logowania (Sys).",
+    "ru": "Используйте это приложение для простого (Sys) логирования.",
+    "ko": "이 앱을 사용하여 Simple (Sys) Logging을 하세요.",
+    "ar": "استخدم هذا التطبيق لتسجيل (Sys) بسيط."
   },
   "category": "tools",
   "images": {
@@ -79,7 +102,7 @@
   },
   "athomForumDiscussionId": 3052,
   "homeyCommunityTopicId": 77533,
-  "api": {  
+  "api": {
     "internal": {
       "method": "POST",
       "path": "/internal/"

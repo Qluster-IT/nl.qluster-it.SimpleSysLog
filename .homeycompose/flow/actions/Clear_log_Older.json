@@ -2,23 +2,67 @@
   "id": "Clear_log_Older",
   "title": {
     "en": "Clear log data older then (Days)",
-    "nl": "Verwijder log data ouder dan (dagen)"
+    "nl": "Verwijder log data ouder dan (dagen)",
+    "da": "Ryd logdata ældre end (dage)",
+    "de": "Lösche Protokolldaten, die älter sind als (Tage)",
+    "es": "Borrar datos del registro anteriores a (Días)",
+    "fr": "Effacer les données du journal datant de plus de (jours)",
+    "it": "Cancella i dati di log più vecchi di (Giorni)",
+    "no": "Slett loggdata eldre enn (dager)",
+    "sv": "Rensa loggdata äldre än (Dagar)",
+    "pl": "Wyczyść dane logu starsze niż (dni)",
+    "ru": "Очистить данные журнала старше (дней)",
+    "ko": "(일) 이전의 로그 데이터를 삭제하세요.",
+    "ar": "مسح بيانات السجل الأقدم من (أيام)"
   },
   "titleFormatted": {
     "en": "Clear Log data older than [[days]] Days",
-    "nl": "Verwijder Log data ouder dan [[days]] dagen"
-},
+    "nl": "Verwijder Log data ouder dan [[days]] dagen",
+    "da": "Ryd logdata ældre end [[days]] dage",
+    "de": "Lösche Protokolldaten, die älter als [[days]] Tage sind.",
+    "es": "Borrar datos del registro de hace más de [[days]] días",
+    "fr": "Effacer les données du journal datant de plus de [[days]] jours",
+    "it": "Cancella i dati del registro più vecchi di [[days]] giorni",
+    "no": "Slett loggdata eldre enn [[days]] dager",
+    "sv": "Rensa loggdata äldre än [[days]] dagar",
+    "pl": "Wyczyść dane dziennika starsze niż [[days]] dni",
+    "ru": "Очистить данные журнала старше [[days]] дней",
+    "ko": "[[days]]일보다 오래된 로그 데이터를 삭제하세요.",
+    "ar": "مسح بيانات السجل الأقدم من [[days]] يومًا"
+  },
   "args": [
     {
       "name": "days",
       "type": "number",
-      "placeholder":{
-        "en":"Number of Days",
-        "nl":"Aantal dagen"
+      "placeholder": {
+        "en": "Number of Days",
+        "nl": "Aantal dagen",
+        "da": "Antal dage",
+        "de": "Anzahl der Tage",
+        "es": "Número de días",
+        "fr": "Nombre de jours",
+        "it": "Numero di giorni",
+        "no": "Antall dager",
+        "sv": "Antal dagar",
+        "pl": "Liczba dni",
+        "ru": "Количество дней",
+        "ko": "일 수",
+        "ar": "عدد الأيام"
       },
-      "title":{
-        "en":"Number",
-        "nl":"Aantal"
+      "title": {
+        "en": "Number",
+        "nl": "Aantal",
+        "da": "Nummer",
+        "de": "Nummer",
+        "es": "Número",
+        "fr": "Nombre",
+        "it": "Numero",
+        "no": "Nummer",
+        "sv": "Nummer",
+        "pl": "Numer",
+        "ru": "Номер",
+        "ko": "번호",
+        "ar": "رقم"
       }
     }
   ]

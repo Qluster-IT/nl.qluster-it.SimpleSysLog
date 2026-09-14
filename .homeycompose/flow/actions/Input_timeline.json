@@ -2,11 +2,33 @@
   "id": "Input_timeline",
   "title": {
     "en": "Add Something to the Timeline",
-    "nl": "Voeg iets toe aan de Tijdslijn"
+    "nl": "Voeg iets toe aan de Tijdslijn",
+    "da": "Tilføj noget til tidslinjen",
+    "de": "Füge etwas zur Zeitleiste hinzu",
+    "es": "Añadir algo a la línea de tiempo",
+    "fr": "Ajouter quelque chose à la chronologie",
+    "it": "Aggiungi qualcosa alla Timeline",
+    "no": "Legg til noe i tidslinjen",
+    "sv": "Lägg till något i tidslinjen",
+    "pl": "Dodaj coś do osi czasu",
+    "ru": "Добавить что-то в хронологию",
+    "ko": "타임라인에 추가하기",
+    "ar": "أضف شيئًا إلى الجدول الزمني"
   },
   "titleFormatted": {
     "en": "Add [[log]] to the Timeline",
-    "nl": "Voeg [[log]] toe aan de Tijdslijn"
+    "nl": "Voeg [[log]] toe aan de Tijdslijn",
+    "da": "Tilføj [[log]] til tidslinjen",
+    "de": "Füge [[log]] zur Timeline hinzu",
+    "es": "Añadir [[log]] a la Línea de tiempo",
+    "fr": "Ajouter [[log]] à la chronologie",
+    "it": "Aggiungi [[log]] alla Timeline",
+    "no": "Legg til [[log]] i tidslinjen",
+    "sv": "Lägg till [[log]] i tidslinjen",
+    "pl": "Dodaj [[log]] do Osi czasu",
+    "ru": "Добавить [[log]] в Хронологию",
+    "ko": "[[log]]을(를) 타임라인에 추가하세요.",
+    "ar": "أضف [[log]] إلى الجدول الزمني"
   },
   "args": [
     {
@@ -14,11 +36,33 @@
       "type": "text",
       "placeholder": {
         "en": "Message... (* BLL supported)",
-        "nl": "Bericht... (* BLL ondersteund)"
+        "nl": "Bericht... (* BLL ondersteund)",
+        "da": "Besked... (* BLL understøttet)",
+        "de": "Nachricht... (* BLL unterstützt)",
+        "es": "Mensaje... (* BLL compatible)",
+        "fr": "Message... (* BLL pris en charge)",
+        "it": "Messaggio... (* Supportato BLL)",
+        "no": "Melding... (* BLL støttet)",
+        "sv": "Meddelande... (* BLL stöds)",
+        "pl": "Wiadomość... (* Obsługiwane BLL)",
+        "ru": "Сообщение... (* Поддержка BLL)",
+        "ko": "메시지... (* BLL 지원됨)",
+        "ar": "رسالة... (* يدعم BLL)"
       },
       "title": {
         "en": "Message",
-        "nl": "Bericht"
+        "nl": "Bericht",
+        "da": "Besked",
+        "de": "Nachricht",
+        "es": "Mensaje",
+        "fr": "Message",
+        "it": "Messaggio",
+        "no": "Melding",
+        "sv": "Meddelande",
+        "pl": "Wiadomość",
+        "ru": "Сообщение",
+        "ko": "메시지",
+        "ar": "رسالة"
       }
     }
   ]

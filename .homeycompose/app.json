@@ -1,6 +1,6 @@
 {
   "id": "nl.nielsdeklerk.log",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "sdk": 3,
   "brandColor": "#BC274A",
   "name": {
@@ -11,12 +11,12 @@
     "es": "Simple (Sys) Log",
     "fr": "Simple (Sys) Log",
     "it": "Simple (Sys) Log",
-    "no": "Enkel (Sys) Logg",
+    "no": "Simple (Sys) Log",
     "sv": "Simple (Sys) Log",
     "pl": "Simple (Sys) Log",
-    "ru": "Простой (Сис) Лог",
+    "ru": "Simple (Sys) Log",
     "ko": "Simple (Sys) Log",
-    "ar": "سجل (سيز) بسيط"
+    "ar": "Simple (Sys) Log"
   },
   "description": {
     "en": "Use this app for Simple (Sys) Logging.",

@@ -5226,6 +5226,7 @@
   ],
   "widgets": {
     "log-table": {
+      "deprecated": true,
       "name": {
         "en": "Log (table)"
       },
@@ -5236,9 +5237,21 @@
           "method": "GET",
           "path": "/getlanguage"
         },
+        "getSettings": {
+          "method": "GET",
+          "path": "/getsettings/:widgetId"
+        },
         "log": {
           "method": "POST",
           "path": "/log"
+        },
+        "getLogs": {
+          "method": "GET",
+          "path": "/"
+        },
+        "queryLogs": {
+          "method": "POST",
+          "path": "/"
         }
       },
       "id": "log-table"

@@ -38,6 +38,7 @@ if (window.hasOwnProperty('angular'))
             function api(method, path, body) {
                 //return Homey.api(method, path, body);
                 let defer = $q.defer();
+                log('api: ' + method + ', ' + path, body);
                 Homey.api(method, path, body)
                 .then(result=> $scope.$apply(() => defer.resolve(result)))
                 .catch(result=> $scope.$apply(() => defer.reject(result)));
@@ -45,7 +46,7 @@ if (window.hasOwnProperty('angular'))
             }
 
             function log(message, exception) {
-                api('POST', '/log', {message, exception});
+                Homey.api('POST', '/log', {message, exception});
             }
 
             log('Homey:' + homey!=null);
@@ -53,9 +54,7 @@ if (window.hasOwnProperty('angular'))
             
             $bl.init(homey, $scope);
 
-
-
-            let a = api('GET', '/getlanguage')
+            api('GET', '/getlanguage')
                 .then((x) => ($scope.view.lang = x) & localeSetter.set(x))
                 .catch(x => { });
 
@@ -113,6 +112,7 @@ if (window.hasOwnProperty('angular'))
                 }
 
             async function loadLogs({ severity, facility, hostname, lastLog } = {}) {
+                log('loadLogs');
                 if (view.isBusy) return;//view.isBusy;
                 view.isBusy = true;
                 //let opt = { take: vars.logPerPage, skip: (vars.logCurrentPage - 1) * vars.logPerPage, timestampFormat: 'datetime' };
@@ -123,7 +123,7 @@ if (window.hasOwnProperty('angular'))
 
                 if (lastLog) opt.lastLog = lastLog;
 
-                await $bl.api("POST", "/", opt, (x) => {
+                await api("POST", "/", opt).then((x) => {
                     vars.logs = x.logs;
                     vars.logTotal = x.count || (($scope.logGridApi.pagination.getPage() - 1) * $scope.logGridOptions.paginationPageSize + vars.logs.length + 1);
                     $scope.logGridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
@@ -204,7 +204,8 @@ if (window.hasOwnProperty('angular'))
                 
                 $scope.__ = __;
                 let loaded = false;
-                api('get', "getsettings/"+ Homey.getWidgetInstanceId()).then (async (x) => {
+                api('GET', "/getsettings/"+ Homey.getWidgetInstanceId()).then (async (x) => {
+                    log('getsettings done');
                     view.settings = (x = x || {});
                     await gridDefer.promise;
                     if (view.settings.logGridState) {
@@ -221,6 +222,7 @@ if (window.hasOwnProperty('angular'))
                         loadLogs();
                     }
                 });
+                
                 await gridDefer.promise;
                 
                 homey.ready();
@@ -230,7 +232,6 @@ if (window.hasOwnProperty('angular'))
             let columnWidhtSet = false;
 
 
-            try {
 
             $scope.logGridOptions = {
                 paginationPageSizes: [10, 15, 20, 25, 50, 75, 100, 250],//, 500, 1000],
@@ -519,12 +520,8 @@ if (window.hasOwnProperty('angular'))
                 // rowTemplate:                                
                 //         '<div ng-dblclick="grid.appScope.onDblClick(row)" ng-repeat="(colRenderIndex, col) in colContainer.renderedColumns track by col.colDef.name" class="ui-grid-cell" ng-class="{ \'ui-grid-row-header-cell\': col.isRowHeader }" ui-grid-cell ></div>'
             };
-        } catch (ex) { 
-            var aa = new Error();
-            //aa.
-            log(ex.stack);
-        }
-        log(111);
+        
+            
 
 
             $scope.saveSettings = function () {

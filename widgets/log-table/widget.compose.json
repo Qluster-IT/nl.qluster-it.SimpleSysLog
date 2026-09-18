@@ -1,4 +1,5 @@
 {
+  "deprecated":true,
   "name": {
     "en": "Log (table)"
   },
@@ -9,13 +10,21 @@
       "method": "GET",
       "path": "/getlanguage"
     },
-    "getsettings": {
+    "getSettings": {
       "method": "GET",
       "path": "/getsettings/:widgetId"
     },
     "log": {
       "method": "POST",
       "path": "/log"
+    },
+    "getLogs": {
+      "method": "GET",
+      "path": "/"
+    },
+    "queryLogs": {
+      "method": "POST",
+      "path": "/"
     }
   }
 }

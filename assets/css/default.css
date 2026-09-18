@@ -28,7 +28,9 @@ body:not(.ng-scope)> .oldLogView {
 }
 
 
-
+.ui-grid-header-cell {
+    display: inline-block;
+}
 
 
 .logline {

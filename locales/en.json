@@ -20,7 +20,7 @@
     "CSV filename (* BLL supported)":"CSV filename (* BLL supported)",
     "JSON filename (* BLL supported)":"JSON filename (* BLL supported)",
     "Save":"Save",    
-    "Reset columns":"Reset kolommen",
+    "Reset columns":"Reset columns",
     "Refresh Log":"Refresh Log",
     "Include UTC in Excel":"Include UTC in Excel",
     "Close":"Close",
@@ -37,9 +37,5 @@
     "Automaticly remove logs older than x number of days.":"Automaticly remove logs older than x number of days.",
     "Leave empty to not automaticly remove logs rows.":"Leave empty to not automaticly remove logs rows.",
     "Number of days to keep the log":"Number of days to keep the log",
-    "Debug":"Debug",
-    "":"",
-    "":"",
-    "":"",
-    "":""
+    "Debug":"Debug"
 }

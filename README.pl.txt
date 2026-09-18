@@ -1,35 +1,22 @@
-Nowy i ulepszony prosty (Sys) Log.
+Nowy i ulepszony Simple (Sys) Log.
 
-Ta aplikacja umożliwia dodawanie logów i/lub powiadomień do Twoich Flow.
-Opcjonalnie, log może zawierać, obok swojej wiadomości, Aplikację/grupę, poziom ważności i urządzenie.
+Ta aplikacja umożliwia dodawanie logów i/lub powiadomień do Twoich Przepływów. Dodatkowo log może zawierać, oprócz wiadomości, Aplikację/grupę, poziom powagi i obiekt.
 
-Możesz także połączyć się z wieloma klientami Syslog, aby a) wysłać określoną wiadomość i b) mieć wysyłane tam wszystkie domyślne wiadomości (o określonych poziomach ważności).
+Możesz również połączyć się z wieloma klientami Syslog, aby a) wysyłać określone wiadomości oraz b) wysyłać tam wszystkie domyślne wiadomości (z pewnymi poziomami powagi).
 
-I wreszcie, możesz utworzyć urządzenie serwera Syslog, aby umożliwić połączenie się innym klientom Syslog, które zostaną zapisane w prostym (Sys) Logu.
+I wreszcie, możesz utworzyć urządzenie Serwera Syslog, aby inni klienci Syslog mogli się połączyć, co zostanie zapisane w Simple (Sys) Log.
 
-Ta nowa wersja zapisuje logi do plików, a nie w pamięci, co zapewnia znacznie większy log niż wcześniej.
+Ta nowa wersja zapisuje logi do plików, a nie w pamięci, zapewniając znacznie większy dziennik niż wcześniej.
 
-Istnieje całkowicie nowa strona Ustawień, z interfejsem przypominającym Syslog, w której możesz:
-* Obracać ekran dla lepszego widoku na urządzeniu mobilnym lub innym ekranie krajobrazowym.
-* Wyszukiwać i filtrować określone wiadomości, daty itp.
-* Ukrywać lub przenosić kolumny.
-* Zapisz filtry lub kolumny jako domyślne.
-* Pobierz kompletny log jako ładnie sformatowany plik Excel, Csv lub JSON, w aplikacji mobilnej, narzędziach developerskich lub wewnątrz Flows.
+Jest zupełnie nowa strona Ustawień, z interfejsem w stylu Syslog, na której możesz:
+* Obracać ekran dla lepszego widoku na urządzeniu mobilnym lub innym ekranie w trybie krajobrazowym.
+* Wyszukiwać i filtrować konkretne wiadomości, daty itp.
+* Ukrywać lub przesuwać kolumny.
+* Zapisuj filtry lub kolumny jako domyślne.
+* Pobierać kompletny dziennik w formacie Excel, Csv lub JSON, zarówno w aplikacji mobilnej, narzędziach deweloperskich, jak i wewnątrz przepływów.
 
+Możesz użyć końcowych punktów API do uzyskania dostępu do logu.
 
-API
+Zobacz temat na Forum Społecznościowym, aby uzyskać przykłady i informacje.
 
-Można używać następujących punktów końcowych API:
-- Pobierz dane logu:
-  GET /api/app/nl.nielsdeklerk.log/
-- Dodaj dane logu:
-  PUT /api/app/nl.nielsdeklerk.log/addlog/
-  Content-Type: application/json
-  {"log": "Test 1,2,3", "group": "TEST", "severity" : 6, "facility": 5, "timestamp":new Date() }
-  * Tylko log jest wymagany, reszta jest opcjonalna.
-- Wyczyść log
-  GET /api/app/nl.nielsdeklerk.log/clearlog
-- 
-
-
-* Ta aplikacja wciąż działa jako samodzielna aplikacja, jak to było wcześniej, jednak aby włączyć wszystkie funkcje i nowy interfejs, wymagana jest instalacja aplikacji Better Logic Library App.
+* Ta aplikacja wciąż działa jako samodzielna aplikacja, jak wcześniej. Jednak aby włączyć wszystkie funkcje i nowy interfejs, wymaga zainstalowania aplikacji Better Logic Library.

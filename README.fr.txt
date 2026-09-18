@@ -1,34 +1,22 @@
-La nouvelle et améliorée Simple (Sys) Log.
+Le nouveau et amélioré Simple (Sys) Log.
 
-Cette application vous permet d'ajouter des journaux et/ou des notifications à vos Flows. Optionnellement, un journal peut inclure, en plus de son message, une application/groupe, une gravité et une installation.
+Cette application permet d'ajouter des journaux et/ou des notifications à vos Flows. Optionnellement, un journal peut avoir, en plus de son message, une App/groupe, une sévérité et une installation.
 
-Vous pouvez également vous connecter à plusieurs clients Syslog pour a) envoyer des messages spécifiques et b) faire envoyer tous les messages par défaut (avec certaines gravités) là-bas.
+Vous pouvez également vous connecter à plusieurs clients Syslog pour a) envoyer un message spécifique et b) envoyer tous les messages par défaut (avec certaines sévérités) là-bas.
 
-Et enfin, mais pas le moindre, vous pouvez créer un appareil serveur Syslog, pour permettre à d'autres clients Syslog de s'y connecter, qui seront inscrits dans le Simple (Sys) Log.
+Et enfin, vous pouvez créer un appareil serveur Syslog, pour permettre à d'autres clients Syslog de se connecter, qui seront inscrits dans le Simple (Sys) Log.
 
-Cette nouvelle version enregistre les journaux dans des fichiers et non plus en mémoire, offrant ainsi un journal beaucoup plus large qu'auparavant.
+Cette nouvelle version enregistre les journaux dans des fichiers et non dans la mémoire, offrant un journal bien plus grand qu'avant.
 
 Il y a une toute nouvelle page de paramètres, avec une interface de type Syslog, dans laquelle vous pouvez :
-* Faire pivoter l'écran pour une meilleure vue sur un appareil mobile ou autre écran en mode paysage.
-* Rechercher et filtrer des messages spécifiques, des dates, etc.
+* Faire pivoter l'écran pour une meilleure vue sur un appareil Mobile ou autre écran en mode paysage.
+* Rechercher et filtrer des messages, des dates, etc.
 * Masquer ou déplacer des colonnes.
-* Enregistrer les filtres ou les colonnes par défaut.
-* Télécharger le journal complet sous forme de fichier Excel, CSV ou JSON joliment formaté, dans l'application mobile, les outils de développement ou dans les flows.
+* Enregistrer les filtres ou colonnes comme par défaut.
+* Télécharger le journal complet sous forme d'Excel, Csv ou JSON joliment formaté, dans l'application Mobile, les outils de développement ou au sein des flows.
 
+Vous pouvez utiliser les points de terminaison de l'API pour accéder au journal.
 
-API
+Voir le sujet sur le Forum Communautaire pour des exemples et des informations.
 
-Les points d'accès API suivants peuvent être utilisés :
-- Obtenir des données de journal :
-  GET /api/app/nl.nielsdeklerk.log/
-- Ajouter des données de journal :
-  PUT /api/app/nl.nielsdeklerk.log/addlog/
-  Content-Type: application/json
-  {"log": "Test 1,2,3", "group": "TEST", "severity" : 6, "facility": 5, "timestamp": new Date() }
-  * Seul le journal est requis, le reste est optionnel.
-- Effacer le journal :
-  GET /api/app/nl.nielsdeklerk.log/clearlog
-- 
-
-
-* Cette application fonctionne toujours comme une application autonome comme auparavant, cependant, pour activer toutes les fonctionnalités et la nouvelle interface, il est nécessaire d'installer l'application Better Logic Library.
+* Cette application fonctionne encore comme une application autonome comme auparavant. Cependant, pour activer toutes les fonctionnalités et la nouvelle interface, l'application Better Logic Library App doit être installée.

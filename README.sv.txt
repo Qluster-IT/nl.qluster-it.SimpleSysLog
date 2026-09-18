@@ -1,34 +1,23 @@
 Den nya och förbättrade Simple (Sys) Log.
 
-Den här appen gör det möjligt att lägga till loggning och/eller notifikationer i dina Flows. Valfritt kan en logg ha, förutom sitt meddelande, en App/grupp, allvarlighetsgrad och källa.
+Den här appen gör det möjligt att lägga till loggning och/eller notifikationer till dina Flows. Valfritt kan en logg ha, utöver sitt meddelande, en App/grupp, allvarlighetsgrad och anläggning.
 
-Du kan också ansluta till flera Syslog-klienter för att a) skicka specifikt meddelande och b) låta alla standardmeddelanden (med vissa allvarlighetsgrader) skickas dit.
+Du kan också ansluta till flera Syslog-klienter för att a) skicka specifika meddelanden och b) få alla standardmeddelanden (med vissa allvarlighetsgrader) skickade dit.
 
-Och sist men inte minst, du kan skapa en Syslog Server-enhet, för att låta andra Syslog-klienter ansluta till, som kommer att skrivas in i Simple (Sys) Log.
+Och sist men inte minst kan du skapa en Syslog Server-enhet, som låter andra Syslog-klienter ansluta till, vilket kommer att skrivas in i Simple (Sys) Log.
 
-Denna nya version sparar loggarna i filer och inte i minnet, vilket möjliggör en mycket större logg än tidigare.
+Den här nya versionen sparar loggarna i filer och inte i minnet, vilket ger en mycket större logg än tidigare.
 
-Det finns en helt ny inställningssida, med ett Syslog-liknande gränssnitt, där du kan:
-* Rotera skärmen för en bättre vy på en mobil eller annan enhet i liggande läge.
+Det finns en helt ny Inställningssida, med ett Syslog-liknande gränssnitt, där du kan:
+* Rotera skärmen för en bättre vy på en Mobil eller annan landskapsskärmsenhet.
 * Söka och filtrera specifika meddelanden, datum, etc.
-* Dölja eller flytta kolumner.
-* Spara filter eller kolumner som standard.
-* Ladda ner hela loggen som fint formaterad Excel, Csv eller JSON, i mobilappen, utvecklarverktyg eller inom flows.
+* Dölj eller flytta kolumner.
+* Spara filtren eller kolumnerna som standard.
+* Ladda ner den fullständiga loggen som snyggt formaterad Excel, Csv eller JSON, i Mobil-appen, Utvecklarverktyg eller inom flows.
 
 
-API
+Du kan använda API-endpunkterna för att komma åt loggen.
 
-Följande API-slutpunkter kan användas:
-- Hämta loggdata:
-  GET /api/app/nl.nielsdeklerk.log/
-- Lägg till loggdata:
-  PUT /api/app/nl.nielsdeklerk.log/addlog/
-  Content-Type: application/json
-  {"log": "Test 1,2,3", "group": "TEST", "severity": 6, "facility": 5, "timestamp":new Date() }
-  * Bara logg är obligatoriskt, resten är valfritt.
-- Rensa logg:
-  GET /api/app/nl.nielsdeklerk.log/clearlog
-- 
+Se ämnet på Community Forum för exempel och information.
 
-
-* Denna app fungerar fortfarande som en fristående app som tidigare, men för att aktivera alla funktioner och det nya gränssnittet, krävs det att Better Logic Library App är installerad.
+* Den här appen fungerar fortfarande som en fristående app precis som tidigare. Men för att möjliggöra alla funktioner och det nya gränssnittet krävs att Better Logic Library App är installerad.

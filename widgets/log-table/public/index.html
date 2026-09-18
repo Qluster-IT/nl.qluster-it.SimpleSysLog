@@ -1,0 +1,125 @@
+<html>
+  <head>
+
+    <script type="text/javascript" src="../../../net.i-dev.betterlogic/assets/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../../../net.i-dev.betterlogic/assets/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../../net.i-dev.betterlogic/assets/js/jquery.ui.touch-punch.js"></script>
+    <link rel="stylesheet" href="../../../net.i-dev.betterlogic/assets/css/jquery-ui.css" type="text/css" />
+
+
+    <script type="text/javascript" src="../../../net.i-dev.betterlogic/assets/js/angular.min.js"></script>
+    <script type="text/javascript" src="../../../net.i-dev.betterlogic/assets/js/angular-animate.min.js"></script>
+    <script type="text/javascript" src="../../../net.i-dev.betterlogic/assets/js/angular-touch.min.js"></script>
+    <script type="text/javascript" src="../../../net.i-dev.betterlogic/assets/js/angular-dynamic-locale.js"></script>
+
+
+    <script type="text/javascript" src="../../../net.i-dev.betterlogic/assets/js/lodash.min.js"></script>
+
+    <link rel="stylesheet" href="../../../net.i-dev.betterlogic/assets/css/fontawesome.min.css" type="text/css" />
+
+    <link rel="stylesheet" href="../../../net.i-dev.betterlogic/assets/css/bootstrap.min.css" type="text/css" />
+    <script type="text/javascript" src="../../../net.i-dev.betterlogic/assets/js/bootstrap.bundle.min.js"></script>
+
+
+    <script type="text/javascript" src="../../../net.i-dev.betterlogic/assets/js/ui-bootstrap-tpls-2.5.0.min.js"></script>
+
+    <link rel="stylesheet" href="../../../net.i-dev.betterlogic/assets/css/ui-grid.min.css" type="text/css" />
+    <script type="text/javascript" src="../../../net.i-dev.betterlogic/assets/js/ui-grid.min.js"></script>
+
+
+    <script type="text/javascript" src="../../../net.i-dev.betterlogic/assets/js/bll.module.js"></script>
+    <link rel="stylesheet" href="../../../net.i-dev.betterlogic/assets/css/bll.css" type="text/css" />
+    
+    
+	<script type="text/javascript" src="log-table.module.js"></script>
+	<link rel="stylesheet" href="../assets/css/default.css" type="text/css" />
+ 
+
+    
+    <script type="text/javascript">
+		let Homey;
+		function api(method, path, body) {
+			return Homey.api(method, path, body);
+		}
+
+		function log(message, exception) {
+			api('POST', '/log', {message, exception});
+		}
+
+
+      function onHomeyReady(homey) {
+        Homey = homey;
+		window.Homey = homey;
+		
+		log('onHomeyReady');
+		try {
+			window.angular.bootstrap(document, ['simplelog']);	
+		} catch (error) {
+			log(error.message, error);
+		}
+        //
+        
+      }
+    </script>
+    
+  </head>
+
+  <body class="homey-widget" ng-controller="simplelogCtrl as simplelog" class="index h-100 overflow-hidden" ng-class="{rotated90:view.settings.rotated90}" ui-i18n="{{view.lang}}">
+	
+	<div class="main-view overflow-hidden" ng-show="!view.id || view.id=='log'">
+		<div class="busyOverlay" ng-show="view.isBusy"></div>
+		
+		<div class="d-flex flex-column overflow-hidden h-100">			
+			<div class="flex-grow-1 overflow-y-auto">
+				<div ui-grid="logGridOptions" class="log-grid" ui-grid-auto-resize ui-grid-resize-columns ui-grid-selection ui-grid-pagination ui-grid-move-columns ui-grid-save-state> </div>
+			</div>
+		</div>
+	</div>
+	
+
+	<script type="text/ng-template" id="custom-date-filter.html">
+		<div class="modal-content col-md-12 col-md-offset-0 col-sm-12 col-sm-offset-0 col-xs-12 col-xs-offset-0">		
+			<div class="modal-header">
+				<p class="modal-title well custom-date-filter-header">
+				<span class="custom-date-filter-title-text">
+					{{ custom.title }} {{custom.filterDate | date:'dd MMMM yyyy'}}
+				</span>
+				</p>
+			</div>
+	
+			<div class="row modal-body custom-date-filter-container-row">			
+				<form name="custom.customDateFilterForm"
+					ng-submit="custom.setFilterDate(custom.filterDate)"
+					no-validation>
+	
+					<div class="row custom-filter-date-input-row">					
+						<div class="well col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-10 col-xs-offset-1 custom-date-filter-input">						
+							<div uib-datepicker ng-model="custom.filterDate" 
+								min-date="custom.minDate" 
+								max-date="custom.maxDate"
+								ng-change="custom.filterDateChanged()"
+								class="well well-sm">
+							</div>		
+						</div>		
+					</div>
+		
+					<div class="row modal-footer custom-date-filter-submit-buttons-row">		
+						<div class="custom-date-filter-submit-buttons-div col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1">			
+							<!-- <button class="btn hy-nostyle btn-success btn-lg custom-date-filter-submit-button" -->
+								<button class="btn homey-button-primary-shadow btn-lg custom-date-filter-submit-button"
+									type="submit" data-i18n="Apply" bl-translate>Apply</button>
+			
+							<button type="button"
+									class="btn homey-button-secondary-shadow btn-lg custom-date-filter-cancel-button"
+									ng-click="custom.cancelDateFilter()" data-i18n="Cancel" bl-translate>Cancel</button>  
+						</div>  
+					</div>  
+				</form>	
+			</div>	
+		</div>	  
+	</script>
+
+
+</body>
+
+</html>

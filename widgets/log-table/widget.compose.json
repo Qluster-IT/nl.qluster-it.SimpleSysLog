@@ -1,0 +1,21 @@
+{
+  "name": {
+    "en": "Log (table)"
+  },
+  "height": 400,
+  "settings": [],
+  "api": {
+    "getLanguage": {
+      "method": "GET",
+      "path": "/getlanguage"
+    },
+    "getsettings": {
+      "method": "GET",
+      "path": "/getsettings/:widgetId"
+    },
+    "log": {
+      "method": "POST",
+      "path": "/log"
+    }
+  }
+}

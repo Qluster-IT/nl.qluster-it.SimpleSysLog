@@ -39,7 +39,7 @@
     "large": "assets/images/large.png",
     "small": "assets/images/small.png"
   },
-  "compatibility": ">=5.0.0",
+  "compatibility": ">=12.3.0",
   "author": {
     "name": "Arie J. Godschalk",
     "email": "arie@qluster-it.nl"
@@ -5223,5 +5223,25 @@
         }
       ]
     }
-  ]
+  ],
+  "widgets": {
+    "log-table": {
+      "name": {
+        "en": "Log (table)"
+      },
+      "height": 400,
+      "settings": [],
+      "api": {
+        "getLanguage": {
+          "method": "GET",
+          "path": "/getlanguage"
+        },
+        "log": {
+          "method": "POST",
+          "path": "/log"
+        }
+      },
+      "id": "log-table"
+    }
+  }
 }

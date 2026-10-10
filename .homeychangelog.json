@@ -1363,5 +1363,20 @@
     "ru": "Переведено: Переведено на все поддерживаемые языки.",
     "ko": "번역됨: 모든 지원 언어로 번역되었습니다.",
     "ar": "مترجم: مترجم إلى جميع اللغات المدعومة."
+  },
+  "3.1.2": {
+    "en": "Added: Search tag for the Store.",
+    "nl": "Toegevoegd: Zoeklabel voor de Store.",
+    "da": "Tilføjet: Søgetag til Butikken.",
+    "de": "Hinzugefügt: Such-Tag für den Store.",
+    "es": "Añadido: Etiqueta de búsqueda para la Tienda.",
+    "fr": "Ajouté : Tag de recherche pour le Store.",
+    "it": "Aggiunto: Tag di ricerca per lo Store.",
+    "no": "Lagt til: Søketagg for butikken.",
+    "sv": "Tillagd: Sök tagg för butiken.",
+    "pl": "Dodano: Tag wyszukiwania dla Sklepu.",
+    "ru": "Добавлено: Поисковый тег для Магазина.",
+    "ko": "추가됨: 스토어에 대한 검색 태그.",
+    "ar": "تمت الإضافة: علامة البحث للمتجر."
   }
 }

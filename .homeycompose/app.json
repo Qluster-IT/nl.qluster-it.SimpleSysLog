@@ -1,6 +1,6 @@
 {
   "id": "nl.nielsdeklerk.log",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "sdk": 3,
   "brandColor": "#BC274A",
   "name": {
@@ -55,6 +55,8 @@
     ],
     "nl": [
       "Log",
+      "Tools",
+      "simple",
       "sys",
       "syslog",
       "bll",
@@ -62,6 +64,98 @@
     ],
     "de": [
       "Log",
+      "Tools",
+      "simple",
+      "sys",
+      "syslog",
+      "bll",
+      "ssl"
+    ],    
+    "da": [
+      "Log",
+      "Tools",
+      "simple",
+      "sys",
+      "syslog",
+      "bll",
+      "ssl"
+    ],    
+    "es": [
+      "Log",
+      "Tools",
+      "simple",
+      "sys",
+      "syslog",
+      "bll",
+      "ssl"
+    ],    
+    "fr": [
+      "Log",
+      "Tools",
+      "simple",
+      "sys",
+      "syslog",
+      "bll",
+      "ssl"
+    ],    
+    "it": [
+      "Log",
+      "Tools",
+      "simple",
+      "sys",
+      "syslog",
+      "bll",
+      "ssl"
+    ],    
+    "no": [
+      "Log",
+      "Tools",
+      "simple",
+      "sys",
+      "syslog",
+      "bll",
+      "ssl"
+    ],    
+    "sv": [
+      "Log",
+      "Tools",
+      "simple",
+      "sys",
+      "syslog",
+      "bll",
+      "ssl"
+    ],    
+    "pl": [
+      "Log",
+      "Tools",
+      "simple",
+      "sys",
+      "syslog",
+      "bll",
+      "ssl"
+    ],    
+    "ru": [
+      "Log",
+      "Tools",
+      "simple",
+      "sys",
+      "syslog",
+      "bll",
+      "ssl"
+    ],    
+    "ko": [
+      "Log",
+      "Tools",
+      "simple",
+      "sys",
+      "syslog",
+      "bll",
+      "ssl"
+    ],    
+    "ar": [
+      "Log",
+      "Tools",
+      "simple",
       "sys",
       "syslog",
       "bll",

@@ -448,7 +448,7 @@ if (window.hasOwnProperty('angular'))
                 ],
                 gridMenuCustomItems: [
                     {
-                        icon: 'fa-solid fa-wrench',
+                        icon: 'fa fa-solid fa-wrench',
                         title: __('Settings'),
                         action: function ($event) {
                             view.id = 'settings';
@@ -456,7 +456,7 @@ if (window.hasOwnProperty('angular'))
                         order: 0
                     },
                     {
-                        icon: 'fa-solid fa-arrows-rotate',
+                        icon: 'fa fa-solid fa-arrows-rotate',
                         title: __('Refresh Log'),
                         action: function ($event) {
 
@@ -465,7 +465,7 @@ if (window.hasOwnProperty('angular'))
                         order: 2
                     },
                     {
-                        icon: 'fa-solid fa-file-excel',
+                        icon: 'fa fa-solid fa-file-excel',
                         title: __('Export as Excel'),
                         action: function ($event) {
                             $scope.downloadFile('xlsx');
@@ -473,7 +473,7 @@ if (window.hasOwnProperty('angular'))
                         order: 9
                     },
                     {
-                        icon: 'fa-solid fa-file-csv',
+                        icon: 'fa fa-solid fa-file-csv',
                         title: __('Export as CSV'),
                         action: function ($event) {
                             $scope.downloadFile('csv');
@@ -481,7 +481,7 @@ if (window.hasOwnProperty('angular'))
                         order: 10
                     },
                     {
-                        icon: 'fa-solid fa-file-code',
+                        icon: 'fa fa-solid fa-file-code',
                         title: __('Export as JSON'),
                         action: function ($event) {
                             $scope.downloadFile('json');
@@ -489,7 +489,7 @@ if (window.hasOwnProperty('angular'))
                         order: 11
                     },
                     {
-                        icon: 'fa-solid fa-floppy-disk',
+                        icon: 'fa fa-solid fa-floppy-disk',
                         title: __('Save columns'),
                         action: function ($event) {
                             let state = $scope.logGridApi.saveState.save();
@@ -508,7 +508,7 @@ if (window.hasOwnProperty('angular'))
                         order: 200
                     },
                     {
-                        icon: 'fa-solid fa-info',
+                        icon: 'fa fa-solid fa-info',
                         title: __('Show hints'),
                         action: function ($event) {
                             view.showHints = true;

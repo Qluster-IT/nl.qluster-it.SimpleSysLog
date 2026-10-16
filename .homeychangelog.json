@@ -1393,5 +1393,20 @@
     "ru": "Решено: Ошибка в API при неиспользовании BLL.",
     "ko": "해결됨: BLL을 사용하지 않을 때 API의 오류.",
     "ar": "تم الحل: خطأ في واجهة برمجة التطبيقات عند عدم استخدام BLL."
+  },
+  "3.1.4": {
+    "en": "Resolved: Issues with Homeys FontAwesome v5.",
+    "nl": "Opgelost: Problemen met Homeys FontAwesome v5.",
+    "da": "Løst: Problemer med Homeys FontAwesome v5.",
+    "de": "Behoben: Probleme mit Homeys FontAwesome v5.",
+    "es": "Resuelto: Problemas con FontAwesome v5 de Homey.",
+    "fr": "Résolu : Problèmes avec FontAwesome v5 de Homey.",
+    "it": "Risolto: Problemi con FontAwesome v5 di Homey.",
+    "no": "Løst: Problemer med Homeys FontAwesome v5.",
+    "sv": "Löst: Problem med Homeys FontAwesome v5.",
+    "pl": "Rozwiązano: Problemy z FontAwesome v5 w Homey.",
+    "ru": "Решено: Проблемы с FontAwesome v5 в Homey.",
+    "ko": "해결됨: Homey의 FontAwesome v5 문제.",
+    "ar": "تم الحل: مشاكل مع Homeys FontAwesome v5."
   }
 }

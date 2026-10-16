@@ -36,6 +36,7 @@ function isArray(a) {
 
 //App Class...
 class simpleLog extends Homey.App {
+
   async onInit() {
     let cardsBuild = false;
 
@@ -43,6 +44,7 @@ class simpleLog extends Homey.App {
 
       this.log('Simple (Sys) Log onInit');
       homey = this.homey;
+      this.usingNewLog = !!await this.homey.settings.get("UsingNewLog");
 
       if (process.env.DEBUG === '1' || false) {
 
@@ -145,8 +147,10 @@ class simpleLog extends Homey.App {
     if (debug) this.log('Simple (Sys) Log onInit finished');
   }
 
-  async initRealApp() {
+  async initRealApp() {    
     this.log('Simple (Sys) Log initRealApp');
+    this.homey.settings.set("UsingNewLog", true);
+    this.usingNewLog = true;
     this.Log = new Log({ filePath: '/userdata/' });
     await this.Log.init();
 

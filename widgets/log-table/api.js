@@ -19,7 +19,7 @@ module.exports = {
   async getLogs({ homey }) {
     homey.log('getLogs');
 
-    if (!homey.app.Log) return homey.app.getLogFromBackLog();
+    if (!homey.app.Log) return homey.app.getBackLog();
     //if(!homey.app.Log) throw new Error(homey.__('bllNotStartedYet'));
     let result = await homey.app.Log.getLogs({ maxSizeKb: 900 });//BL._.take(, 1000);
     return result;

@@ -3,6 +3,7 @@ const { BL } = require("betterlogiclibrary");
 
 module.exports = {
   async internal({ homey, body: { action, logBookID, type } }) {
+    if(!homey.app.Log) throw new Error(homey.__('bllNotStartedYet'));
     switch (action) {
       case 'getLogBookIDs':
         return homey.app.Log.LogBooks;
@@ -91,7 +92,12 @@ module.exports = {
 
   async getLogs({ homey }) {
 
-    if (!homey.app.Log) return homey.app.getLogFromBackLog();
+    if (!homey.app.Log) {
+      if(homey.app.usingNewLog) 
+        throw new Error(homey.__('bllNotStartedYet'));
+      else 
+        return homey.app.getBackLog();
+    }
     //if(!homey.app.Log) throw new Error(homey.__('bllNotStartedYet'));
     let result = await homey.app.Log.getLogs({ maxSizeKb: 900 });//BL._.take(, 1000);
     return result;

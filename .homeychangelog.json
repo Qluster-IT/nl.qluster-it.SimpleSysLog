@@ -1380,6 +1380,18 @@
     "ar": "تمت الإضافة: علامة البحث للمتجر."
   },
   "3.1.3": {
-    "en": "Resolved: Fault in the API when not using BLL."
+    "en": "Resolved: Fault in the API when not using BLL.",
+    "nl": "Opgelost: Fout in de API bij het niet gebruiken van BLL.",
+    "da": "Løst: Fejl i API'en, når BLL ikke bruges.",
+    "de": "Behoben: Fehler in der API bei Nichtverwendung von BLL.",
+    "es": "Resuelto: Fallo en la API al no usar BLL.",
+    "fr": "Résolu : Problème dans l'API lorsqu'on n'utilise pas BLL.",
+    "it": "Risolto: Errore nell'API quando non si utilizza BLL.",
+    "no": "Løst: Feil i API-en når BLL ikke brukes.",
+    "sv": "Löst: Fel i API:et när BLL inte används.",
+    "pl": "Rozwiązano: Błąd w API przy braku użycia BLL.",
+    "ru": "Решено: Ошибка в API при неиспользовании BLL.",
+    "ko": "해결됨: BLL을 사용하지 않을 때 API의 오류.",
+    "ar": "تم الحل: خطأ في واجهة برمجة التطبيقات عند عدم استخدام BLL."
   }
 }

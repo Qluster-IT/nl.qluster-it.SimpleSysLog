@@ -38,4 +38,6 @@
   "Number of days to keep the log": "Antal dage til at beholde loggen",
   "Debug": "Fejlretning",
   "": ""
+    ,
+    "Auto refresh":"Automatisk opdatering"
 }

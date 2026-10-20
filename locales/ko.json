@@ -38,4 +38,6 @@
   "Number of days to keep the log": "로그를 유지할 일수",
   "Debug": "디버그",
   "": ""
+    ,
+    "Auto refresh":"자동 새로고침"
 }

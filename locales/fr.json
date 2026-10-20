@@ -38,4 +38,6 @@
   "Number of days to keep the log": "Nombre de jours pour conserver le journal",
   "Debug": "Déboguer",
   "": ""
+    ,
+    "Auto refresh":"Rafraîchissement automatique"
 }

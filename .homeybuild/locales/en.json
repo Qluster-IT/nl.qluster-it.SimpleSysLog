@@ -38,4 +38,6 @@
     "Leave empty to not automaticly remove logs rows.":"Leave empty to not automaticly remove logs rows.",
     "Number of days to keep the log":"Number of days to keep the log",
     "Debug":"Debug"
+    ,
+    "Auto refresh":"Auto refresh"
 }

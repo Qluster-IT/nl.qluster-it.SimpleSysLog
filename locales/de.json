@@ -38,4 +38,6 @@
   "Number of days to keep the log": "Anzahl der Tage, um das Protokoll zu behalten",
   "Debug": "Debug",
   "": ""
+    ,
+    "Auto refresh":"Automatische Aktualisierung"
 }

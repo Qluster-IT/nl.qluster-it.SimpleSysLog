@@ -38,4 +38,6 @@
   "Number of days to keep the log": "Liczba dni przechowywania dziennika",
   "Debug": "Debugowanie",
   "": ""
+    ,
+    "Auto refresh":"Automatyczne odświeżanie"
 }

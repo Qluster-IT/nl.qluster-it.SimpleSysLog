@@ -38,4 +38,6 @@
   "Number of days to keep the log": "Número de días para mantener el registro",
   "Debug": "Depuración",
   "": ""
+    ,
+    "Auto refresh":"Actualización automática"
 }

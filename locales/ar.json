@@ -38,4 +38,6 @@
   "Number of days to keep the log": "عدد الأيام للاحتفاظ بالسجل",
   "Debug": "تصحيح",
   "": ""
+    ,
+    "Auto refresh":"تحديث تلقائي"
 }

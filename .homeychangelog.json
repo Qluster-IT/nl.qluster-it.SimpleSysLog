@@ -1408,5 +1408,20 @@
     "ru": "Решено: Проблемы с FontAwesome v5 в Homey.",
     "ko": "해결됨: Homey의 FontAwesome v5 문제.",
     "ar": "تم الحل: مشاكل مع Homeys FontAwesome v5."
+  },
+  "3.1.5": {
+    "en": "Added: Automatic refresh in the App Settings (in preparation of the upcoming widget).",
+    "nl": "Toegevoegd: Automatische verversing in de App-instellingen (ter voorbereiding op de aankomende widget).",
+    "da": "Tilføjet: Automatisk opdatering i app-indstillingerne (som forberedelse til den kommende widget).",
+    "de": "Hinzugefügt: Automatische Aktualisierung in den App-Einstellungen (zur Vorbereitung auf das kommende Widget).",
+    "es": "Añadido: Actualización automática en la Configuración de la App (en preparación para el próximo widget).",
+    "fr": "Ajouté : Actualisation automatique dans les paramètres de l'application (en préparation du futur widget).",
+    "it": "Aggiunto: Aggiornamento automatico nelle Impostazioni dell'App (in preparazione del prossimo widget).",
+    "no": "Lagt til: Automatisk oppdatering i appinnstillingene (som forberedelse til den kommende widgeten).",
+    "sv": "Tillagt: Automatisk uppdatering i appinställningarna (som förberedelse för den kommande widgeten).",
+    "pl": "Dodano: Automatyczne odświeżanie w ustawieniach aplikacji (w ramach przygotowań do nadchodzącego widżetu).",
+    "ru": "Добавлено: Автоматическое обновление в настройках приложения (в преддверии предстоящего виджета).",
+    "ko": "추가됨: 앱 설정에서 자동 새로 고침 기능 (다가오는 위젯 준비 중).",
+    "ar": "تمت الإضافة: التحديث التلقائي في إعدادات التطبيق (استعدادًا للأداة القادمة)."
   }
 }

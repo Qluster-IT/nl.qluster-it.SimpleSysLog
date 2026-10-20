@@ -38,4 +38,6 @@
   "Number of days to keep the log": "Antall dager å beholde loggen",
   "Debug": "Feilsøking",
   "": ""
+    ,
+    "Auto refresh":"Automatisk oppdatering"
 }

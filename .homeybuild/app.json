@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "nl.nielsdeklerk.log",
-  "version": "3.1.5",
+  "version": "3.1.6",
   "sdk": 3,
   "brandColor": "#BC274A",
   "name": {
@@ -191,9 +191,9 @@
       }
     ]
   },
-  "source": "https://bitbucket.org/QlusterIT/nl.qluster-it.simplelog/",
+  "source": "https://github.com/Qluster-IT/nl.qluster-it.SimpleSysLog/",
   "bugs": {
-    "url": "https://bitbucket.org/QlusterIT/nl.qluster-it.simplelog/issues"
+    "url": "https://github.com/Qluster-IT/nl.qluster-it.SimpleSysLog/issues"
   },
   "athomForumDiscussionId": 3052,
   "homeyCommunityTopicId": 77533,

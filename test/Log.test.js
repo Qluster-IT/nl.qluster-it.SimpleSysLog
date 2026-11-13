@@ -5,7 +5,6 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const { finished } = require('node:stream/promises');
-const { Readable } = require('node:stream');
 const test = require('node:test');
 const { BL } = require('betterlogiclibrary');
 const { Log } = require('../lib/Log');
@@ -142,18 +141,31 @@ test('unmatched app and hostname searches skip logbook reads and preserve empty 
   assert.equal(reads, 1);
 });
 
-test('cursor lookups destroy their input streams on match, nonmatch, and invalid headers', async t => {
+test('cursor lookups close their index files on match, nonmatch, and invalid headers', async t => {
   const log = await createLog(t);
   const timestamp = new Date(2026, 0, 2, 12, 0, 0);
   await log.writeLine({ message: 'cursor', severity: 6, timestamp });
   const book = log.getLogBook(timestamp);
   await Promise.all([flush(book.indexStream), flush(book.logStream)]);
-  const inputs = [];
-  const readIndexChunks = book.readIndexChunks.bind(book);
-  t.mock.method(book, 'readIndexChunks', input => {
-    inputs.push(input);
-    return readIndexChunks(input);
+  let opened = 0;
+  let closed = 0;
+  const indexFDs = new Set();
+  const open = fs.open.bind(fs);
+  const close = fs.close.bind(fs);
+  t.mock.method(fs, 'open', (...args) => {
+    const callback = args.pop();
+    return open(...args, (error, fd) => {
+      if (!error && args[0] === book.indexFile) {
+        opened++;
+        indexFDs.add(fd);
+      }
+      callback(error, fd);
+    });
   });
+  t.mock.method(fs, 'close', (fd, callback) => close(fd, error => {
+    if (!error && indexFDs.delete(fd)) closed++;
+    callback(error);
+  }));
 
   assert.equal(await book.cursorRowMatches({}, 0), true);
   assert.equal(await book.cursorRowMatches({ severity: 5 }, 0), false);
@@ -161,29 +173,193 @@ test('cursor lookups destroy their input streams on match, nonmatch, and invalid
   fs.writeFileSync(book.indexFile, 'invalid header\n');
   await assert.rejects(book.cursorRowMatches({}, 0), /Invalid log index header/);
   await assert.rejects(book.getLogs(), /Invalid log index header/);
-  assert.equal(inputs.length, 5);
-  assert.ok(inputs.every(input => input.destroyed));
+  assert.equal(opened, 5);
+  assert.equal(closed, opened);
 });
 
 test('chunked indexes preserve split rows, CRLF, and an unterminated final row', async t => {
   const log = await createLog(t);
   const book = log.getLogBook(new Date(2026, 0, 2, 12));
-  const input = Readable.from(['#SimpleSys', 'LogIndexV2\r', '\n0;0;4', ';0;;;;\r\n\n1;4;4;1;;;;']);
+  fs.mkdirSync(book.path, { recursive: true });
+  const text = '#SimpleSysLogIndexV2\r\n0;0;4;0;;;;\r\n\n1;4;4;1;\u00a06;;;';
+  fs.writeFileSync(book.indexFile, text);
   const chunks = [];
-  for await (const chunk of book.readIndexChunks(input)) chunks.push(chunk);
-  assert.equal(chunks.join(''), '#SimpleSysLogIndexV2\r\n0;0;4;0;;;;\r\n\n1;4;4;1;;;;');
-  assert.equal(input.destroyed, true);
+  for await (const chunk of book.readIndexChunks(Buffer.alloc(1))) chunks.push(chunk);
+  assert.equal(chunks.join(''), text);
+});
 
-  const failure = Readable.from((async function* () {
-    yield 'first\n';
-    throw new Error('test index read failure');
-  })());
+test('index readers close files after read errors and report close errors', async t => {
+  const log = await createLog(t);
+  const book = log.getLogBook(new Date(2026, 0, 2, 12));
+  fs.mkdirSync(book.path, { recursive: true });
+  fs.writeFileSync(book.indexFile, 'first\nsecond\n');
+  let closed = 0;
+  const indexFDs = new Set();
+  const open = fs.open.bind(fs);
+  const read = fs.read.bind(fs);
+  const close = fs.close.bind(fs);
+  let failRead = true;
+  let reads = 0;
+  t.mock.method(fs, 'open', (...args) => {
+    const callback = args.pop();
+    return open(...args, (error, fd) => {
+      if (!error && args[0] === book.indexFile) indexFDs.add(fd);
+      callback(error, fd);
+    });
+  });
+  t.mock.method(fs, 'read', (fd, buffer, offset, length, position, callback) => {
+    if (indexFDs.has(fd) && failRead && reads++) return process.nextTick(callback, new Error('test index read failure'));
+    return read(fd, buffer, offset, length, position, callback);
+  });
+  t.mock.method(fs, 'close', (fd, callback) => close(fd, error => {
+    const isIndex = indexFDs.delete(fd);
+    if (!error && isIndex) closed++;
+    callback(error || (isIndex && !failRead ? new Error('test index close failure') : null));
+  }));
   await assert.rejects(async () => {
-    for await (const chunk of book.readIndexChunks(failure)) {
+    for await (const chunk of book.readIndexChunks(Buffer.alloc(6))) {
       assert.equal(chunk, 'first\n');
     }
   }, /test index read failure/);
-  assert.equal(failure.destroyed, true);
+  failRead = false;
+  await assert.rejects(async () => {
+    for await (const chunk of book.readIndexChunks()) assert.equal(chunk, 'first\nsecond\n');
+  }, /test index close failure/);
+  assert.equal(closed, 2);
+});
+
+test('paged and export queries reuse one index buffer per request, isolated from concurrent queries', async t => {
+  const log = await createLog(t);
+  for (let day = 1; day <= 4; day++) {
+    await log.writeLine({ message: `day ${day} café 🌙`, timestamp: new Date(2026, 0, day, 12) });
+  }
+  const expected = JSON.parse((await log.getLogs({ returnType: 'json' })).json);
+  const buffers = new Set();
+  for (const book of Object.values(log.LogBooks)) {
+    const readIndexChunks = book.readIndexChunks.bind(book);
+    t.mock.method(book, 'readIndexChunks', buffer => {
+      buffers.add(buffer);
+      return readIndexChunks(buffer);
+    });
+  }
+
+  const first = await log.getLogs({ take: 2, skip: 1 });
+  assert.deepEqual(first.logs.map(entry => entry.message), expected.slice(1, 3).map(entry => entry.message));
+  assert.equal(buffers.size, 1);
+  const [firstBuffer] = buffers;
+  assert.ok(Buffer.isBuffer(firstBuffer));
+  assert.ok(firstBuffer.length <= 16384);
+  buffers.clear();
+
+  const [paged, exported] = await Promise.all([
+    log.getLogs({ take: 2, skip: 1 }),
+    log.getLogs({ returnType: 'json' })
+  ]);
+  assert.deepEqual(paged, first);
+  assert.deepEqual(JSON.parse(exported.json), expected);
+  assert.equal(buffers.size, 2);
+  assert.equal(buffers.has(firstBuffer), false);
+});
+
+test('warm paging skips daily indexes that cannot improve the page, without pruning exports', async t => {
+  const log = await createLog(t);
+  for (let day = 1; day <= 6; day++) {
+    for (let entry = 0; entry < 2; entry++) {
+      await log.writeLine({
+        message: `day ${day} entry ${entry}`, severity: entry ? 5 : 6,
+        timestamp: new Date(2026, 0, day, 12, 0, entry)
+      });
+    }
+  }
+  let reads = 0;
+  for (const book of Object.values(log.LogBooks)) {
+    const readIndexChunks = book.readIndexChunks.bind(book);
+    t.mock.method(book, 'readIndexChunks', buffer => {
+      reads++;
+      return readIndexChunks(buffer);
+    });
+  }
+  const cold = await log.getLogs({ take: 2 });
+  assert.equal(reads, 6);
+  reads = 0;
+  assert.deepEqual(await log.getLogs({ take: 2 }), cold);
+  assert.equal(reads, 1);
+  t.diagnostic('Repeated newest-page queries read 1 daily index instead of 6');
+
+  reads = 0;
+  const filtered = await log.getLogs({ take: 2, severity: 6 });
+  assert.deepEqual(filtered.logs.map(entry => entry.message), ['day 6 entry 0', 'day 5 entry 0']);
+  assert.equal(reads, 2);
+  reads = 0;
+  const exported = await log.getLogs({ returnType: 'json' });
+  assert.equal(JSON.parse(exported.json).length, 12);
+  assert.equal(reads, 6);
+});
+
+test('timestamp bounds include filtered-out and out-of-day records, invalidate on appends, and preserve ties', async t => {
+  const log = await createLog(t);
+  const oldDate = new Date(2026, 0, 2, 12);
+  const newDate = new Date(2026, 0, 3, 12);
+  await log.writeLine({ message: 'older', severity: 6, timestamp: oldDate });
+  await log.writeLine({ message: 'newer', severity: 6, timestamp: newDate });
+  const oldBook = log.getLogBook(oldDate);
+  const newBook = log.getLogBook(newDate);
+  await oldBook.writeLine({ message: 'hidden future', severity: 5, timestamp: new Date(2026, 0, 4, 12) });
+  assert.equal((await log.getLogs({ take: 1, severity: 6 })).logs[0].message, 'newer');
+  assert.equal((await log.getLogs({ take: 1 })).logs[0].message, 'hidden future');
+
+  const future = new Date(2026, 0, 5, 12);
+  await oldBook.writeLine({ message: 'later future', timestamp: future });
+  assert.equal(oldBook.maxIndexedTimestamp, undefined);
+  assert.equal((await log.getLogs({ take: 1 })).logs[0].message, 'later future');
+  await newBook.writeLine({ message: 'tie in newer book', timestamp: future });
+  assert.equal((await log.getLogs({ take: 1 })).logs[0].message, 'tie in newer book');
+});
+
+test('a queued write invalidates timestamp bounds before index initialization resumes', async t => {
+  const log = await createLog(t);
+  const oldDate = new Date(2026, 0, 2, 12);
+  await log.writeLine({ message: 'older', timestamp: oldDate });
+  await log.writeLine({ message: 'newer', timestamp: new Date(2026, 0, 3, 12) });
+  await log.getLogs({ take: 1 });
+  const book = log.getLogBook(oldDate);
+  assert.notEqual(book.maxIndexedTimestamp, undefined);
+  const ensureIndexFormat = book.ensureIndexFormat.bind(book);
+  let release;
+  const gate = new Promise(resolve => { release = resolve; });
+  book.ensureIndexFormat = async () => {
+    await gate;
+    return ensureIndexFormat();
+  };
+  const writing = book.writeLine({ message: 'queued future', timestamp: new Date(2026, 0, 4, 12) });
+  try {
+    assert.equal(book.maxIndexedTimestamp, undefined);
+    assert.equal((await log.getLogs({ take: 1 })).logs[0].message, 'newer');
+    assert.equal(book.maxIndexedTimestamp, undefined);
+  } finally {
+    release();
+    await writing;
+  }
+  assert.equal((await log.getLogs({ take: 1 })).logs[0].message, 'queued future');
+});
+
+test('an append after index EOF prevents caching an incomplete timestamp bound', async t => {
+  const log = await createLog(t);
+  const oldDate = new Date(2026, 0, 2, 12);
+  await log.writeLine({ message: 'older', timestamp: oldDate });
+  await log.writeLine({ message: 'newer', timestamp: new Date(2026, 0, 3, 12) });
+  await log.getLogs({ take: 1 });
+  const book = log.getLogBook(oldDate);
+  await book.writeLine({ message: 'older append', timestamp: oldDate });
+  const readIndexChunks = book.readIndexChunks.bind(book);
+  const reader = t.mock.method(book, 'readIndexChunks', async function* (buffer) {
+    for await (const chunk of readIndexChunks(buffer)) yield chunk;
+    await book.writeLine({ message: 'concurrent future', timestamp: new Date(2026, 0, 4, 12) });
+  });
+  assert.equal((await log.getLogs({ take: 1 })).logs[0].message, 'newer');
+  assert.equal(book.maxIndexedTimestamp, undefined);
+  reader.mock.restore();
+  assert.equal((await log.getLogs({ take: 1 })).logs[0].message, 'concurrent future');
 });
 
 test('numeric index scanning preserves legacy integer parsing and rejects invalid offsets', async t => {

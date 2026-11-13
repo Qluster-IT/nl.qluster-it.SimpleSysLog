@@ -665,6 +665,24 @@
             "ko": "작업",
             "ar": "إجراء"
           }
+        },
+        {
+          "id": "23",
+          "label": {
+            "en": "Variable",
+            "nl": "Variabele",
+            "da": "Variabel",
+            "de": "Variable",
+            "es": "Variable",
+            "fr": "Variable",
+            "it": "Variabile",
+            "no": "Variabel",
+            "sv": "Variabel",
+            "pl": "Zmienna",
+            "ru": "Переменная",
+            "ko": "변수",
+            "ar": "متغير"
+          }
         }
       ]
     }

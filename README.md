@@ -26,14 +26,24 @@ This bounded path applies when `skip + take` is at most 10,000.
 Searches still scan candidate message contents; unbounded queries and exports
 require memory for their matching results.
 App and hostname searches with no matching names skip logbook reads entirely.
-Cursor lookups explicitly release their index streams, including on early returns.
+Cursor lookups explicitly close their index files, including on early returns.
 Bounded paging reuses compact numeric candidates as newer entries replace older
 ones. Dates and app/hostname names are materialized only for the returned page,
-not for skipped records, without retaining a cache between requests.
-Index scans process 16 KiB chunks rather than creating asynchronous work for every
-row. Numeric fields share a reusable parsing buffer, and paged result IDs are
-created only for selected records. This reduces RSS pressure without forced
-garbage collection; Node.js may still retain allocated memory for reuse.
+not for skipped records, without retaining result objects between requests.
+V2 index scans use bounded asynchronous file reads instead of creating a Node.js
+read stream and its async-iterator machinery for every daily logbook. Each query
+reuses one 16 KiB index buffer across its daily books, including exports; concurrent
+queries have separate buffers. File handles close before scans finish or return
+early, and no index contents are cached between requests.
+Complete scans remember only the maximum indexed timestamp per daily book, so
+later paged queries can skip books that cannot improve the selected page.
+Bounds include all rows regardless of filters or book dates. Writes invalidate
+them immediately, and scans overlapping writes do not establish new bounds.
+Exports remain complete scans; messages and index rows are not cached.
+Numeric index parsing avoids per-row arrays and unnecessary boxed numbers.
+Paged result IDs are created only for selected records. This reduces allocation
+pressure without forced garbage collection; Node.js may still retain allocated
+memory for reuse.
 Automatic retention keeps a single cleanup timer across settings reloads and
 releases it when retention is disabled or the app shuts down.
 Inactive daily logbooks release their write streams after pending writes finish.

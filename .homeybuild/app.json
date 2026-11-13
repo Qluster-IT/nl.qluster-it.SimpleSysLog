@@ -898,6 +898,24 @@
                   "ko": "작업",
                   "ar": "إجراء"
                 }
+              },
+              {
+                "id": "23",
+                "label": {
+                  "en": "Variable",
+                  "nl": "Variabele",
+                  "da": "Variabel",
+                  "de": "Variable",
+                  "es": "Variable",
+                  "fr": "Variable",
+                  "it": "Variabile",
+                  "no": "Variabel",
+                  "sv": "Variabel",
+                  "pl": "Zmienna",
+                  "ru": "Переменная",
+                  "ko": "변수",
+                  "ar": "متغير"
+                }
               }
             ]
           }
@@ -2441,19 +2459,19 @@
             "required": false,
             "type": "text",
             "placeholder": {
-              "en": "App/group",
-              "nl": "App/groep",
-              "da": "App/gruppe",
-              "de": "App/Gruppe",
-              "es": "App/grupo",
-              "fr": "App/groupe",
-              "it": "App/gruppo",
-              "no": "App/gruppe",
-              "sv": "App/grupp",
-              "pl": "Aplikacja/grupa",
-              "ru": "Приложение/группа",
-              "ko": "앱/그룹",
-              "ar": "تطبيق/مجموعة"
+              "en": "App/group (* BLL supported)",
+              "nl": "App/groep (* BLL ondersteund)",
+              "da": "App/gruppe (* BLL understøttet)",
+              "de": "App/Gruppe (* BLL unterstützt)",
+              "es": "App/grupo (* BLL compatible)",
+              "fr": "App/groupe (* BLL pris en charge)",
+              "it": "App/gruppo (* Supportato BLL)",
+              "no": "App/gruppe (* BLL støttet)",
+              "sv": "App/grupp (* BLL stöds)",
+              "pl": "Aplikacja/grupa (* obsługiwane BLL)",
+              "ru": "Приложение/группа (* Поддержка BLL)",
+              "ko": "앱/그룹 (* BLL 지원됨)",
+              "ar": "تطبيق/مجموعة (* يدعم BLL)"
             }
           },
           {
@@ -3165,19 +3183,19 @@
             "required": false,
             "type": "text",
             "placeholder": {
-              "en": "App/group",
-              "nl": "App/groep",
-              "da": "App/gruppe",
-              "de": "App/Gruppe",
-              "es": "App/grupo",
-              "fr": "App/groupe",
-              "it": "App/gruppo",
-              "no": "App/gruppe",
-              "sv": "App/grupp",
-              "pl": "Aplikacja/grupa",
-              "ru": "Приложение/группа",
-              "ko": "앱/그룹",
-              "ar": "تطبيق/مجموعة"
+              "en": "App/group (* BLL supported)",
+              "nl": "App/groep (* BLL ondersteund)",
+              "da": "App/gruppe (* BLL understøttet)",
+              "de": "App/Gruppe (* BLL unterstützt)",
+              "es": "App/grupo (* BLL compatible)",
+              "fr": "App/groupe (* BLL pris en charge)",
+              "it": "App/gruppo (* Supportato BLL)",
+              "no": "App/gruppe (* BLL støttet)",
+              "sv": "App/grupp (* BLL stöds)",
+              "pl": "Aplikacja/grupa (* obsługiwane BLL)",
+              "ru": "Приложение/группа (* Поддержка BLL)",
+              "ko": "앱/그룹 (* BLL 지원됨)",
+              "ar": "تطبيق/مجموعة (* يدعم BLL)"
             }
           },
           {
@@ -4067,19 +4085,19 @@
             "name": "message",
             "type": "text",
             "placeholder": {
-              "en": "Message...",
-              "nl": "Bericht...",
-              "da": "Besked...",
-              "de": "Nachricht...",
-              "es": "Mensaje...",
-              "fr": "Message...",
-              "it": "Messaggio...",
-              "no": "Melding...",
-              "sv": "Meddelande...",
-              "pl": "Wiadomość...",
-              "ru": "Сообщение...",
-              "ko": "메시지...",
-              "ar": "رسالة..."
+              "en": "Message... (* BLL supported)",
+              "nl": "Bericht... (* BLL ondersteund)",
+              "da": "Besked... (* BLL understøttet)",
+              "de": "Nachricht... (* BLL unterstützt)",
+              "es": "Mensaje... (* BLL compatible)",
+              "fr": "Message... (* BLL pris en charge)",
+              "it": "Messaggio... (* Supportato BLL)",
+              "no": "Melding... (* BLL støttet)",
+              "sv": "Meddelande... (* BLL stöds)",
+              "pl": "Wiadomość... (* obsługiwane BLL)",
+              "ru": "Сообщение... (* Поддержка BLL)",
+              "ko": "메시지... (* BLL 지원됨)",
+              "ar": "رسالة... (* يدعم BLL)"
             },
             "title": {
               "en": "Message",
@@ -4102,19 +4120,19 @@
             "required": false,
             "type": "text",
             "placeholder": {
-              "en": "App/group",
-              "nl": "App/groep",
-              "da": "App/gruppe",
-              "de": "App/Gruppe",
-              "es": "App/grupo",
-              "fr": "App/groupe",
-              "it": "App/gruppo",
-              "no": "App/gruppe",
-              "sv": "App/grupp",
-              "pl": "Aplikacja/grupa",
-              "ru": "Приложение/группа",
-              "ko": "앱/그룹",
-              "ar": "تطبيق/مجموعة"
+              "en": "App/group (* BLL supported)",
+              "nl": "App/groep (* BLL ondersteund)",
+              "da": "App/gruppe (* BLL understøttet)",
+              "de": "App/Gruppe (* BLL unterstützt)",
+              "es": "App/grupo (* BLL compatible)",
+              "fr": "App/groupe (* BLL pris en charge)",
+              "it": "App/gruppo (* Supportato BLL)",
+              "no": "App/gruppe (* BLL støttet)",
+              "sv": "App/grupp (* BLL stöds)",
+              "pl": "Aplikacja/grupa (* obsługiwane BLL)",
+              "ru": "Приложение/группа (* Поддержка BLL)",
+              "ko": "앱/그룹 (* BLL 지원됨)",
+              "ar": "تطبيق/مجموعة (* يدعم BLL)"
             }
           },
           {
@@ -4715,6 +4733,24 @@
                   "ru": "Действие",
                   "ko": "작업",
                   "ar": "إجراء"
+                }
+              },
+              {
+                "id": "23",
+                "label": {
+                  "en": "Variable",
+                  "nl": "Variabele",
+                  "da": "Variabel",
+                  "de": "Variable",
+                  "es": "Variable",
+                  "fr": "Variable",
+                  "it": "Variabile",
+                  "no": "Variabel",
+                  "sv": "Variabel",
+                  "pl": "Zmienna",
+                  "ru": "Переменная",
+                  "ko": "변수",
+                  "ar": "متغير"
                 }
               }
             ]

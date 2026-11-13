@@ -70,19 +70,19 @@
       "required": false,
       "type": "text",
       "placeholder": {
-        "en": "App/group",
-        "nl": "App/groep",
-        "da": "App/gruppe",
-        "de": "App/Gruppe",
-        "es": "App/grupo",
-        "fr": "App/groupe",
-        "it": "App/gruppo",
-        "no": "App/gruppe",
-        "sv": "App/grupp",
-        "pl": "Aplikacja/grupa",
-        "ru": "Приложение/группа",
-        "ko": "앱/그룹",
-        "ar": "تطبيق/مجموعة"
+        "en": "App/group (* BLL supported)",
+        "nl": "App/groep (* BLL ondersteund)",
+        "da": "App/gruppe (* BLL understøttet)",
+        "de": "App/Gruppe (* BLL unterstützt)",
+        "es": "App/grupo (* BLL compatible)",
+        "fr": "App/groupe (* BLL pris en charge)",
+        "it": "App/gruppo (* Supportato BLL)",
+        "no": "App/gruppe (* BLL støttet)",
+        "sv": "App/grupp (* BLL stöds)",
+        "pl": "Aplikacja/grupa (* obsługiwane BLL)",
+        "ru": "Приложение/группа (* Поддержка BLL)",
+        "ko": "앱/그룹 (* BLL 지원됨)",
+        "ar": "تطبيق/مجموعة (* يدعم BLL)"
       }
     },
     {

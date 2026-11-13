@@ -1,4 +1,5 @@
 'use strict';
+const { BL } = require('betterlogiclibrary');
 const Homey = require('homey');
 const { randomBytes } = require('crypto');
 
@@ -11,7 +12,13 @@ class SyslogClientDriver extends Homey.Driver {
 		const logCard = this.homey.flow.getActionCard('syslogclient_log');
 		logCard.registerRunListener(async (args, state)=>{
 			try {				
-				return await args.device.log(args);
+				const message = typeof args.message === 'string'
+					? await BL.decode(args.message)
+					: args.message;
+				const group = typeof args.group === 'string'
+					? await BL.decode(args.group)
+					: args.group;
+				return await args.device.log({ ...args, message, group });
 			} catch (error) {
 				this.error(error);
 				throw new Error(error);

@@ -978,3 +978,28 @@ test('legacy writers preserve Unicode lengths and metadata after closing and reo
   assert.ok(entries.every(item =>
     item.severity === 6 && item.facility === 18 && item.app === 'app' && item.hostname === 'host'));
 });
+
+test('clearing all logs releases the previous writers and has written the confirmation when it returns', async t => {
+  const log = await createLog(t);
+  await log.writeLine({ message: 'before', app: 'app', hostname: 'host', timestamp: new Date() });
+  const book = Object.values(log.LogBooks)[0];
+  const oldStreams = [log.stream, log.appsStream, log.hostnameStream, log.countStream, book.logStream, book.indexStream];
+
+  await log.clearLog();
+
+  assert.ok(oldStreams.every(stream => stream.destroyed));
+  assert.ok(!oldStreams.includes(log.stream) && !oldStreams.includes(log.countStream));
+  const { logs } = await log.getLogs({ take: 10 });
+  assert.deepEqual(logs.map(entry => entry.message), ['Cleared all logging data']);
+});
+
+test('write stream failures are reported instead of crashing the app', async t => {
+  const log = await createLog(t);
+  await log.writeLine({ message: 'x', timestamp: new Date() });
+  const book = Object.values(log.LogBooks)[0];
+  const errors = t.mock.method(BL.homey, 'error', () => {});
+  for (const stream of [log.stream, log.appsStream, log.hostnameStream, log.countStream, book.logStream, book.indexStream]) {
+    stream.emit('error', Object.assign(new Error('no space left on device'), { code: 'ENOSPC' }));
+  }
+  assert.equal(errors.mock.callCount(), 6);
+});

@@ -193,3 +193,15 @@ test('age-based cleanup rejects unsafe token values in file and limited modes, w
     assert.deepEqual(cleared, [1, 7, undefined]);
   }
 });
+
+test('the add-log and clear-log API calls finish the work before answering and report failures', async () => {
+  const api = appRequire('./api');
+  const { app } = createApp();
+  app.addLogToDB = async () => { throw new Error('App name must not be longer than 100 Characters.'); };
+  await assert.rejects(api.addLog({ homey: { app }, body: { log: 'x', group: 'y'.repeat(101) } }), /100 Characters/);
+
+  let cleared = false;
+  app.Log = { clearLog: async () => { await new Promise(resolve => setTimeout(resolve, 5)); cleared = true; } };
+  assert.equal(await api.clearLog({ homey: { app } }), 'OK');
+  assert.equal(cleared, true);
+});

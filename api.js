@@ -110,11 +110,11 @@ module.exports = {
     return result;
   },
   async clearLog({ homey }) {
-    homey.app.apiClearLog();
+    await homey.app.apiClearLog();
     return "OK";
   },
   async addLog({ homey, body }) {
-    homey.app.apiPutAddlog({ body });
+    await homey.app.apiPutAddlog({ body });
     return "OK";
   }
 };

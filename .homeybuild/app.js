@@ -191,23 +191,27 @@ class simpleLog extends Homey.App {
     if (this.settings.groupInTimeline === undefined && (changed = true)) this.settings.groupInTimeline = true;
 
     if (changed) this.homey.settings.set('settings', this.settings);
-    if (this.settings.removeLogOlderThanDays) this.updateAutomaticlyRemovalOfLogs(this.settings.removeLogOlderThanDays);
+    this.updateAutomaticlyRemovalOfLogs(this.settings.removeLogOlderThanDays);
 
   }
 
   updateAutomaticlyRemovalOfLogs(days) {
+    if (this.automaticlyRemovalOfLogsTimer) {
+      if (days === this.automaticlyRemovalOfLogsDays) return;
+      this.homey.clearInterval(this.automaticlyRemovalOfLogsTimer);
+      delete this.automaticlyRemovalOfLogsTimer;
+      delete this.automaticlyRemovalOfLogsDays;
+    }
     if (days) this.automaticlyRemovalOfLogsTimer = this.homey.setInterval(async (days) => {
       await this.clearLog(days);
     }, 60 * 60 * 1_000, days);
-    else if (this.automaticlyRemovalOfLogsTimer) {
-      this.homey.clearInterval(this.automaticlyRemovalOfLogsTimer);
-      delete this.automaticlyRemovalOfLogsTimer;
-    }
+    if (days) this.automaticlyRemovalOfLogsDays = days;
   }
 
   async onUninit() {
     //homey.settings.set('___TEST___', 'onUninit');
     //this.addLogToDB('SSL onUninit');
+    this.updateAutomaticlyRemovalOfLogs();
     if (this.Log) await this.Log.destroy();
   }
 

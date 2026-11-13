@@ -12,6 +12,34 @@ With simple log You can:
 - You can download the log in CSV format. -> https://developer.athom.com/tools/app-settings
 - Use the API to retreive, add and clean logging.
 
+# Log storage
+
+Existing log indexes are upgraded sequentially during startup using streaming I/O.
+Paged queries without a message-text filter select index entries before loading
+messages. Adjacent messages share read buffers of up to 64 KiB; larger individual
+messages are read separately. These buffers are local to each request, not cached.
+Message-text searches filter batches of up to 64 records or 64 KiB before reading
+more, retaining only matches. A single larger message is processed separately.
+Text-filtered paging keeps only the best `skip + take` index entries, discards
+message text after checking it, and reloads messages for the returned page.
+This bounded path applies when `skip + take` is at most 10,000.
+Searches still scan candidate message contents; unbounded queries and exports
+require memory for their matching results.
+App and hostname searches with no matching names skip logbook reads entirely.
+Cursor lookups explicitly release their index streams, including on early returns.
+Bounded paging reuses compact numeric candidates as newer entries replace older
+ones. Dates and app/hostname names are materialized only for the returned page,
+not for skipped records, without retaining a cache between requests.
+Index scans process 16 KiB chunks rather than creating asynchronous work for every
+row. Numeric fields share a reusable parsing buffer, and paged result IDs are
+created only for selected records. This reduces RSS pressure without forced
+garbage collection; Node.js may still retain allocated memory for reuse.
+Automatic retention keeps a single cleanup timer across settings reloads and
+releases it when retention is disabled or the app shuts down.
+Inactive daily logbooks release their write streams after pending writes finish.
+Backdated entries reopen the files for appending, preserving existing messages,
+record IDs, and write order without keeping historical writers in memory.
+
 # API
 
 The folowing API endpoints can be used:

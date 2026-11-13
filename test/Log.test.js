@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const { finished } = require('node:stream/promises');
+const { Readable } = require('node:stream');
 const test = require('node:test');
 const { BL } = require('betterlogiclibrary');
 const { Log } = require('../lib/Log');
@@ -120,6 +121,103 @@ test('hostname filtering searches hostnames without requiring an app filter', as
   assert.deepEqual(result.logs.map(item => item.id), [entry.id]);
 });
 
+test('unmatched app and hostname searches skip logbook reads and preserve empty export output', async t => {
+  const log = await createLog(t);
+  log.LogApps.push('Known app');
+  log.LogHostnames.push('known-host');
+  let reads = 0;
+  log.LogBooks['2026/01/02'] = {
+    async getLogs() {
+      reads++;
+      return [];
+    }
+  };
+
+  assert.deepEqual(await log.getLogs({ app: 'missing', take: 50 }), { logs: [] });
+  assert.deepEqual(await log.getLogs({ hostname: 'missing', message: 'text' }), { logs: [] });
+  assert.deepEqual(await log.getLogs({ app: 'known', hostname: 'missing', returnType: 'json' }), { json: '[]' });
+  assert.equal(reads, 0);
+
+  await log.getLogs({ app: 'KNOWN', hostname: 'KNOWN' });
+  assert.equal(reads, 1);
+});
+
+test('cursor lookups destroy their input streams on match, nonmatch, and invalid headers', async t => {
+  const log = await createLog(t);
+  const timestamp = new Date(2026, 0, 2, 12, 0, 0);
+  await log.writeLine({ message: 'cursor', severity: 6, timestamp });
+  const book = log.getLogBook(timestamp);
+  await Promise.all([flush(book.indexStream), flush(book.logStream)]);
+  const inputs = [];
+  const readIndexChunks = book.readIndexChunks.bind(book);
+  t.mock.method(book, 'readIndexChunks', input => {
+    inputs.push(input);
+    return readIndexChunks(input);
+  });
+
+  assert.equal(await book.cursorRowMatches({}, 0), true);
+  assert.equal(await book.cursorRowMatches({ severity: 5 }, 0), false);
+  assert.equal(await book.cursorRowMatches({}, 100), false);
+  fs.writeFileSync(book.indexFile, 'invalid header\n');
+  await assert.rejects(book.cursorRowMatches({}, 0), /Invalid log index header/);
+  await assert.rejects(book.getLogs(), /Invalid log index header/);
+  assert.equal(inputs.length, 5);
+  assert.ok(inputs.every(input => input.destroyed));
+});
+
+test('chunked indexes preserve split rows, CRLF, and an unterminated final row', async t => {
+  const log = await createLog(t);
+  const book = log.getLogBook(new Date(2026, 0, 2, 12));
+  const input = Readable.from(['#SimpleSys', 'LogIndexV2\r', '\n0;0;4', ';0;;;;\r\n\n1;4;4;1;;;;']);
+  const chunks = [];
+  for await (const chunk of book.readIndexChunks(input)) chunks.push(chunk);
+  assert.equal(chunks.join(''), '#SimpleSysLogIndexV2\r\n0;0;4;0;;;;\r\n\n1;4;4;1;;;;');
+  assert.equal(input.destroyed, true);
+
+  const failure = Readable.from((async function* () {
+    yield 'first\n';
+    throw new Error('test index read failure');
+  })());
+  await assert.rejects(async () => {
+    for await (const chunk of book.readIndexChunks(failure)) {
+      assert.equal(chunk, 'first\n');
+    }
+  }, /test index read failure/);
+  assert.equal(failure.destroyed, true);
+});
+
+test('numeric index scanning preserves legacy integer parsing and rejects invalid offsets', async t => {
+  const log = await createLog(t);
+  const timestamp = new Date(2026, 0, 2, 12);
+  await log.writeLine({ message: 'numeric fields', app: 'app', hostname: 'host', timestamp });
+  const book = log.getLogBook(timestamp);
+  await Promise.all([flush(book.indexStream), flush(book.logStream)]);
+  const length = fs.statSync(book.file + '.log').size;
+  const variations = [
+    { time: '-1234', severity: '+6', facility: '18suffix', app: '0', hostname: '0' },
+    { time: ' +1234', severity: ' 6', facility: '', app: 'undefined', hostname: '' },
+    { time: '0000000000000001', severity: '6', facility: '-0', app: '0suffix', hostname: '0' }
+  ];
+  for (const fields of variations) {
+    fs.writeFileSync(book.indexFile,
+      `#SimpleSysLogIndexV2\r\n0;0;${length};${fields.time};${fields.severity};${fields.facility};${fields.app};${fields.hostname}`);
+    const [entry] = await book.getLogs();
+    assert.equal(entry.message, 'numeric fields');
+    assert.equal(entry.timestamp.getTime(), book.datestarttime + Number.parseInt(fields.time, 10));
+    for (const key of ['severity', 'facility']) {
+      const expected = Number.parseInt(fields[key], 10);
+      if (Number.isNaN(expected)) assert.equal(Object.hasOwn(entry, key), false);
+      else assert.equal(entry[key], expected);
+    }
+    assert.equal(Object.hasOwn(entry, 'app'), !Number.isNaN(Number.parseInt(fields.app, 10)));
+    assert.equal(Object.hasOwn(entry, 'hostname'), !Number.isNaN(Number.parseInt(fields.hostname, 10)));
+  }
+  fs.writeFileSync(book.indexFile, `#SimpleSysLogIndexV2\n0;9007199254740992;${length};0;;;;\n`);
+  await assert.rejects(book.getLogs(), /Invalid log index values/);
+  await assert.rejects(book.cursorRowMatches({ message: 'numeric' }, 0), /Invalid log index values/);
+  assert.equal(book.fdRead, null);
+});
+
 test('lastLog includes the matching entry and later-written entries', async t => {
   const log = await createLog(t);
   const id = '2026/01/02';
@@ -168,6 +266,243 @@ test('bounded pagination remains active when the API size cap is set', async t =
 
   assert.equal(usedBoundedReader, true);
   assert.equal(result.logs.length, 2);
+});
+
+test('bounded paging reuses candidates without retaining optional fields from replaced rows', async t => {
+  const log = await createLog(t);
+  const timestamp = new Date(2026, 0, 2, 12, 0, 0);
+  for (let index = 0; index < 200; index++) {
+    const extra = index % 4 === 0 ? { severity: 6, facility: 18, app: 'app', hostname: 'host' } : {};
+    await log.writeLine({
+      message: `entry ${index}`,
+      timestamp: new Date(timestamp.getTime() + index * 1000),
+      ...extra
+    });
+  }
+  const book = log.getLogBook(timestamp);
+  await Promise.all([flush(book.indexStream), flush(book.logStream)]);
+  const expected = (await book.getLogs()).reverse().slice(5, 15);
+  const getLogs = book.getLogs.bind(book);
+  const candidates = new Set();
+  let additions = 0;
+  book.getLogs = (options, collector) => {
+    const add = collector.heap.add.bind(collector.heap);
+    collector.heap.add = candidate => {
+      additions++;
+      candidates.add(candidate);
+      assert.equal(typeof candidate.timestamp, 'number');
+      assert.equal(Object.hasOwn(candidate, 'id'), false);
+      assert.equal(Object.hasOwn(candidate, 'app'), false);
+      assert.equal(Object.hasOwn(candidate, 'hostname'), false);
+      add(candidate);
+    };
+    return getLogs(options, collector);
+  };
+
+  const result = await log.getLogs({ skip: 5, take: 10, maxSizeKb: 900 });
+
+  assert.deepEqual(result.logs, expected);
+  assert.equal(additions, 200);
+  assert.equal(candidates.size, 15);
+  assert.ok(result.logs.every(entry => entry.timestamp instanceof Date));
+});
+
+test('compact paging candidates can replace and coexist with legacy log objects', async t => {
+  const log = await createLog(t);
+  const timestamp = new Date(2026, 0, 2, 12);
+  await log.writeLine({ message: 'first', timestamp });
+  await log.writeLine({ message: 'second', timestamp: new Date(timestamp.getTime() + 1000) });
+  const book = log.getLogBook(timestamp);
+  await Promise.all([flush(book.indexStream), flush(book.logStream)]);
+  const legacyTimestamp = new Date(timestamp.getTime() - 1000);
+  const legacy = { id: 'legacy$0', timestamp: legacyTimestamp, message: 'legacy' };
+  addLogBook(log, '9999/01/01', [legacy]);
+
+  const latest = await log.getLogs({ take: 1 });
+  assert.deepEqual(latest.logs.map(entry => entry.message), ['second']);
+  assert.equal(legacy.timestamp, legacyTimestamp);
+  assert.equal(legacy.timestamp.getTime(), timestamp.getTime() - 1000);
+
+  const all = await log.getLogs({ take: 3 });
+  assert.deepEqual(all.logs.map(entry => entry.message), ['second', 'first', 'legacy']);
+  assert.ok(all.logs.every(entry => entry.timestamp instanceof Date));
+});
+
+test('bounded candidate pruning preserves timestamp ties and late-written newer entries', async t => {
+  const log = await createLog(t);
+  const timestamp = new Date(2026, 0, 2, 12, 0, 0);
+  const offsets = [5000, 5000, 1000, 2000, 5000, 9000, 0, 6000, ...Array(100).fill(0)];
+  for (let index = 0; index < offsets.length; index++) {
+    await log.writeLine({
+      message: `entry ${index}`,
+      timestamp: new Date(timestamp.getTime() + offsets[index])
+    });
+  }
+  const book = log.getLogBook(timestamp);
+  await Promise.all([flush(book.indexStream), flush(book.logStream)]);
+  const getLogs = book.getLogs.bind(book);
+  let candidates = 0;
+  book.getLogs = (options, collector) => {
+    const add = collector.heap.add.bind(collector.heap);
+    collector.heap.add = candidate => {
+      candidates++;
+      add(candidate);
+    };
+    return getLogs(options, collector);
+  };
+
+  const result = await log.getLogs({ skip: 2, take: 3, maxSizeKb: 900 });
+
+  assert.deepEqual(result.logs.map(item => item.message), ['entry 0', 'entry 1', 'entry 4']);
+  assert.ok(candidates < 10, `Expected pruning before candidate allocation, got ${candidates}`);
+});
+
+test('adjacent Unicode records share bounded read buffers without changing filtered results', async t => {
+  const log = await createLog(t);
+  const timestamp = new Date(2026, 0, 2, 12, 0, 0);
+  const messages = Array.from({ length: 160 }, (_, index) => `${index}: ${'café 🌙 '.repeat(100)}`);
+  for (let index = 0; index < messages.length; index++) {
+    await log.writeLine({
+      message: messages[index],
+      severity: index % 2,
+      timestamp: new Date(timestamp.getTime() + index * 1000)
+    });
+  }
+  const book = log.getLogBook(timestamp);
+  await Promise.all([flush(book.indexStream), flush(book.logStream)]);
+  const readBuffer = book.readBuffer.bind(book);
+  const buffers = new Set();
+  let reads = 0;
+  book.readBuffer = (start, length, buffer) => {
+    reads++;
+    assert.ok(length <= 65536);
+    buffers.add(buffer);
+    return readBuffer(start, length, buffer);
+  };
+
+  const result = await log.getLogs({ take: messages.length, maxSizeKb: 900 });
+
+  assert.deepEqual(result.logs.map(item => item.message), messages.slice().reverse());
+  assert.ok(reads < 10, `Expected batched reads, got ${reads}`);
+  assert.equal(buffers.size, 1);
+  assert.equal(book.fdRead, null);
+  t.diagnostic(`Read ${messages.length} adjacent messages using ${reads} disk reads and one reusable buffer`);
+
+  const filtered = await log.getLogs({ severity: 1, take: messages.length, maxSizeKb: 900 });
+  assert.deepEqual(filtered.logs.map(item => item.message), messages.filter((_, index) => index % 2 === 1).reverse());
+});
+
+test('a truncated batched record does not hide preceding readable records', async t => {
+  const log = await createLog(t);
+  const timestamp = new Date(2026, 0, 2, 12, 0, 0);
+  await log.writeLine({ message: 'readable', timestamp });
+  await log.writeLine({ message: 'truncated', timestamp: new Date(timestamp.getTime() + 1000) });
+  const book = log.getLogBook(timestamp);
+  await Promise.all([flush(book.indexStream), flush(book.logStream)]);
+  fs.truncateSync(book.file + '.log', Buffer.byteLength('"readable"\n"trunc', 'utf8'));
+
+  const result = await log.getLogs({ take: 2 });
+
+  assert.equal(result.logs.length, 2);
+  assert.equal(result.logs[1].message, 'readable');
+  assert.equal(result.logs[0].message, undefined);
+  assert.equal(book.fdRead, null);
+});
+
+test('message searches read bounded batches and preserve Unicode matches, pagination, and cursors', async t => {
+  const log = await createLog(t);
+  const timestamp = new Date(2026, 0, 2, 12, 0, 0);
+  const messages = Array.from({ length: 210 }, (_, index) => {
+    const text = index % 17 === 0 ? `Match CAFÉ ${index}` : `unrelated ${index}`;
+    return text + 'x'.repeat(index === 140 ? 100000 : index > 145 ? 10000 : 100);
+  });
+  for (let index = 0; index < messages.length; index++) {
+    await log.writeLine({ message: messages[index], timestamp: new Date(timestamp.getTime() + index * 1000) });
+  }
+  const book = log.getLogBook(timestamp);
+  await Promise.all([flush(book.indexStream), flush(book.logStream)]);
+  const readMessages = book.readMessages.bind(book);
+  let batches = 0;
+  book.readMessages = async records => {
+    batches++;
+    assert.ok(records.length <= 64, `Search retained ${records.length} records before filtering`);
+    const bytes = records.reduce((sum, record) => sum + record.length, 0);
+    assert.ok(bytes <= 65536 || records.length === 1, `Search batch exceeds byte budget: ${bytes}`);
+    return readMessages(records);
+  };
+  const matchingMessages = messages.filter((_, index) => index % 17 === 0);
+
+  const all = await book.getLogs({ message: 'café' });
+  assert.deepEqual(all.map(item => item.message), matchingMessages);
+  assert.ok(batches > 3);
+  assert.equal(book.fdRead, null);
+
+  const page = await log.getLogs({ message: 'café', skip: 2, take: 3, maxSizeKb: 900 });
+  assert.deepEqual(page.logs.map(item => item.message), matchingMessages.slice().reverse().slice(2, 5));
+
+  const cursor = await log.getLogs({ message: 'café', lastLog: `${book.id}$170`, take: 3 });
+  assert.deepEqual(cursor.logs.map(item => item.message), [messages[204], messages[187], messages[170]]);
+  const filteredCursor = await log.getLogs({ message: 'café', lastLog: `${book.id}$171`, take: 3 });
+  assert.deepEqual(filteredCursor.logs.map(item => item.message), [messages[204], messages[187], messages[170]]);
+
+  assert.deepEqual(await book.getLogs({ message: 'not present' }), []);
+  assert.equal(book.fdRead, null);
+});
+
+test('paged text searches retain only bounded metadata, not every matching message', async t => {
+  const log = await createLog(t);
+  const timestamp = new Date(2026, 0, 2, 12);
+  const entries = Array.from({ length: 400 }, (_, index) => ({
+    message: `${index % 3 ? 'MATCH café' : 'unrelated'} ${index} ${'x'.repeat(2048)}`,
+    severity: index % 2,
+    timestamp: new Date(timestamp.getTime() + ((index * 137) % 400) * 1000)
+  }));
+  for (const entry of entries) await log.writeLine(entry);
+  const book = log.getLogBook(timestamp);
+  await Promise.all([flush(book.indexStream), flush(book.logStream)]);
+  const expected = entries
+    .filter(entry => entry.severity === 1 && entry.message.startsWith('MATCH'))
+    .sort((left, right) => right.timestamp - left.timestamp)
+    .slice(20, 30)
+    .map(entry => entry.message);
+  const getLogs = book.getLogs.bind(book);
+  let matchesExamined = 0;
+  let maxCandidates = 0;
+  book.getLogs = (options, collector) => {
+    assert.ok(collector, 'Text-filtered paging should use the bounded reader');
+    const add = collector.heap.add.bind(collector.heap);
+    collector.heap.add = candidate => {
+      matchesExamined++;
+      assert.equal(Object.hasOwn(candidate, 'message'), false);
+      add(candidate);
+      maxCandidates = Math.max(maxCandidates, collector.heap.items.length);
+      assert.ok(collector.heap.items.every(item => !Object.hasOwn(item, 'message')));
+    };
+    return getLogs(options, collector);
+  };
+
+  const result = await log.getLogs({ message: 'match CAFÉ', severity: 1, skip: 20, take: 10, maxSizeKb: 900 });
+
+  assert.deepEqual(result.logs.map(entry => entry.message), expected);
+  assert.ok(result.logs.every(entry =>
+    Object.keys(entry).sort().join(',') === 'id,message,severity,timestamp'));
+  assert.ok(matchesExamined > 30);
+  assert.equal(maxCandidates, 30);
+  assert.equal(book.fdRead, null);
+});
+
+test('message search closes its read descriptor if a later index row is invalid', async t => {
+  const log = await createLog(t);
+  const timestamp = new Date(2026, 0, 2, 12, 0, 0);
+  for (let index = 0; index < 70; index++) {
+    await log.writeLine({ message: 'searchable', timestamp });
+  }
+  const book = log.getLogBook(timestamp);
+  await Promise.all([flush(book.indexStream), flush(book.logStream)]);
+  fs.appendFileSync(book.indexFile, 'invalid row\n');
+
+  await assert.rejects(book.getLogs({ message: 'searchable' }), /Invalid log index row/);
+  assert.equal(book.fdRead, null);
 });
 
 test('bounded pagination does not skip earlier matches when the cursor is filtered out', async t => {
@@ -312,4 +647,128 @@ test('writing reuses app and hostname indexes', async t => {
   const result = await log.getLogs({ app: 'Repeated' });
 
   assert.deepEqual(result.logs.map(item => item.message), [secondMessage, firstMessage]);
+});
+
+test('historical logbooks release writers and reopen safely for backdated appends', async t => {
+  const log = await createLog(t);
+  const books = [];
+  const streams = [];
+  for (let day = 1; day <= 24; day++) {
+    const timestamp = new Date(2026, 0, day, 12);
+    await log.writeLine({ message: `day ${day}`, timestamp });
+    const book = log.getLogBook(timestamp);
+    books.push(book);
+    streams.push(book.logStream, book.indexStream);
+    const activeStreams = Object.values(log.LogBooks).flatMap(item =>
+      [item.logStream, item.indexStream].filter(Boolean));
+    assert.equal(activeStreams.length, 2);
+  }
+  assert.ok(streams.slice(0, -2).every(stream => stream.closed));
+  assert.deepEqual((await books[0].getLogs()).map(entry => entry.message), ['day 1']);
+
+  await log.writeLine({ message: 'backdated café 🌙', timestamp: new Date(2026, 0, 1, 12, 0, 1) });
+  const entries = await books[0].getLogs();
+  assert.deepEqual(entries.map(entry => entry.message), ['day 1', 'backdated café 🌙']);
+  assert.deepEqual(entries.map(entry => entry.id), [`${books[0].id}$0`, `${books[0].id}$1`]);
+  assert.equal(books[23].logStream, null);
+  assert.equal(books[23].indexStream, null);
+});
+
+test('switching logbooks does not close a writer with pending log data', async t => {
+  const log = await createLog(t);
+  const timestamp = new Date(2026, 0, 2, 12);
+  await log.writeLine({ message: 'seed', timestamp });
+  const book = log.getLogBook(timestamp);
+  const logStream = book.logStream;
+  const indexStream = book.indexStream;
+  const ensureIndexFormat = book.ensureIndexFormat.bind(book);
+  let release;
+  const gate = new Promise(resolve => { release = resolve; });
+  book.ensureIndexFormat = async () => {
+    await gate;
+    return ensureIndexFormat();
+  };
+  const pendingWrite = log.writeLine({ message: 'pending', timestamp });
+  try {
+    assert.equal(book.pendingWrites, 1);
+    await log.writeLine({ message: 'next day', timestamp: new Date(2026, 0, 3, 12) });
+    assert.equal(book.logStream, logStream);
+    assert.equal(book.indexStream, indexStream);
+    assert.equal(logStream.writableEnded, false);
+  } finally {
+    release();
+    await pendingWrite;
+  }
+
+  assert.equal(book.pendingWrites, 0);
+  assert.equal(logStream.closed, true);
+  assert.equal(indexStream.closed, true);
+  assert.equal(book.logStream, null);
+  assert.deepEqual((await book.getLogs()).map(entry => entry.message), ['seed', 'pending']);
+});
+
+test('day switches preserve call order and backdated writes wait for closing files', async t => {
+  const log = await createLog(t);
+  const timestamp = new Date(2026, 0, 2, 12);
+  await log.writeLine({ message: 'seed', timestamp });
+  const book = log.getLogBook(timestamp);
+  const stream = book.logStream;
+  const end = stream.end.bind(stream);
+  let release;
+  stream.end = (...args) => {
+    release = () => end(...args);
+    return stream;
+  };
+  const writes = [];
+  const nextTimestamp = new Date(2026, 0, 3, 12);
+  try {
+    writes.push(log.writeLine({ message: 'first', timestamp: nextTimestamp }));
+    await log.writeLine({ message: 'second', timestamp: nextTimestamp });
+    writes.push(log.writeLine({ message: 'backdated', timestamp }));
+    assert.equal(book.pendingWrites, 1);
+    assert.equal(book.logStream, null);
+    assert.ok(book.closingWriteStreams);
+  } finally {
+    if (release) release();
+    await Promise.all(writes);
+  }
+
+  assert.deepEqual((await log.getLogBook(nextTimestamp).getLogs()).map(entry => entry.message),
+    ['first', 'second']);
+  assert.deepEqual((await book.getLogs()).map(entry => entry.message), ['seed', 'backdated']);
+  assert.equal(stream.closed, true);
+});
+
+test('writer close failures are reported after both files are released', async t => {
+  const log = await createLog(t);
+  const timestamp = new Date(2026, 0, 2, 12);
+  await log.writeLine({ message: 'seed', timestamp });
+  const book = log.getLogBook(timestamp);
+  const logStream = book.logStream;
+  const indexStream = book.indexStream;
+  const failure = new Error('injected writer close failure');
+  logStream.end = () => logStream.destroy(failure);
+
+  await assert.rejects(book.closeIdleWriteStreams(), error => error === failure);
+  assert.equal(logStream.closed, true);
+  assert.equal(indexStream.closed, true);
+  assert.equal(book.closingWriteStreams, null);
+});
+
+test('legacy writers preserve Unicode lengths and metadata after closing and reopening', async t => {
+  const log = await createLog(t);
+  const timestamp = new Date(2026, 0, 2, 12);
+  const book = log.getLogBook(timestamp);
+  book.indexVersion = 1;
+  book.indexFile = book.legacyIndexFile;
+  const entry = { message: 'legacy café', timestamp, severity: 6, facility: 18, app: 'app', hostname: 'host' };
+  await log.writeLine(entry);
+  await log.writeLine({ message: 'next day', timestamp: new Date(2026, 0, 3, 12) });
+  assert.equal(book.logStream, null);
+
+  await log.writeLine({ ...entry, message: 'legacy 🌙' });
+  const entries = await book.getLogs();
+  assert.deepEqual(entries.map(item => item.message), ['legacy café', 'legacy 🌙']);
+  assert.ok(entries.every(item =>
+    item.severity === 6 && item.facility === 18 && item.app === 'app' && item.hostname === 'host'));
 });

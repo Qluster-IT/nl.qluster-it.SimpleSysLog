@@ -186,6 +186,30 @@ test('chunked indexes preserve split rows, CRLF, and an unterminated final row',
   const chunks = [];
   for await (const chunk of book.readIndexChunks(Buffer.alloc(1))) chunks.push(chunk);
   assert.equal(chunks.join(''), text);
+  assert.equal(await book.cursorRowMatches({}, 0, Buffer.alloc(1)), true);
+  assert.equal(await book.cursorRowMatches({ severity: 6 }, 1, Buffer.alloc(1)), true);
+  assert.equal(await book.cursorRowMatches({ severity: 5 }, 1, Buffer.alloc(1)), false);
+  assert.equal(await book.cursorRowMatches({}, 2, Buffer.alloc(1)), false);
+});
+
+test('cursor lookup avoids allocating field arrays for skipped rows', async t => {
+  const log = await createLog(t);
+  const book = log.getLogBook(new Date(2026, 0, 2, 12));
+  const rows = Array.from({ length: 1000 }, (_, index) => `${index};0;4;0;6;18;1;2`);
+  const text = '#SimpleSysLogIndexV2\n' + rows.join('\n') + '\n';
+  t.mock.method(book, 'readIndexChunks', async function* () { yield text; });
+  const split = String.prototype.split;
+  let fieldArrays = 0;
+  t.mock.method(String.prototype, 'split', function (separator, limit) {
+    if (separator === ';') fieldArrays++;
+    return split.call(this, separator, limit);
+  });
+
+  assert.equal(await book.cursorRowMatches({ severity: 6, facility: 18, apps: [1], hostnames: [2] }, 999), true);
+  assert.equal(fieldArrays, 1);
+  fieldArrays = 0;
+  assert.equal(await book.cursorRowMatches({}, 1000), false);
+  assert.equal(fieldArrays, 0);
 });
 
 test('index readers close files after read errors and report close errors', async t => {

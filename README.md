@@ -27,6 +27,8 @@ Searches still scan candidate message contents; unbounded queries and exports
 require memory for their matching results.
 App and hostname searches with no matching names skip logbook reads entirely.
 Cursor lookups explicitly close their index files, including on early returns.
+They scan row IDs before splitting fields, so skipped rows do not allocate
+field arrays. No cursor or index cache is retained between requests.
 Bounded paging reuses compact numeric candidates as newer entries replace older
 ones. Dates and app/hostname names are materialized only for the returned page,
 not for skipped records, without retaining result objects between requests.

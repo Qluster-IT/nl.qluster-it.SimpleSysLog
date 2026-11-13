@@ -1,6 +1,5 @@
 {
   "id": "syslogserver",
-  "_deprecated": true,
   "name": {
     "en": "Syslog server",
     "nl": "Syslog server",

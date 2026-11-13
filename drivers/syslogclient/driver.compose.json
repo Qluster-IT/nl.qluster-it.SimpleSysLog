@@ -1,6 +1,5 @@
 {
   "id": "syslogclient",
-  "_deprecated": true,
   "name": {
     "en": "Syslog client",
     "nl": "Syslog client",

@@ -37,7 +37,9 @@
   "Leave empty to not automaticly remove logs rows.": "Lämna tomt för att inte automatiskt ta bort loggrader.",
   "Number of days to keep the log": "Antal dagar att behålla loggen",
   "Debug": "Debug",
-  "": ""
-    ,
-    "Auto refresh":"Automatisk uppdatering"
+  "": "",
+  "Auto refresh": "Automatisk uppdatering",
+  "errors": {
+    "retentionDays": "Ange minst 1 dag. Använd åtgärden för att rensa hela loggen om du vill ta bort allt."
+  }
 }

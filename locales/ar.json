@@ -37,7 +37,9 @@
   "Leave empty to not automaticly remove logs rows.": "اتركه فارغًا لعدم إزالة صفوف السجل تلقائيًا.",
   "Number of days to keep the log": "عدد الأيام للاحتفاظ بالسجل",
   "Debug": "تصحيح",
-  "": ""
-    ,
-    "Auto refresh":"تحديث تلقائي"
+  "": "",
+  "Auto refresh": "تحديث تلقائي",
+  "errors": {
+    "retentionDays": "أدخل يومًا واحدًا على الأقل. لحذف كل شيء، استخدم إجراء مسح السجل بالكامل."
+  }
 }

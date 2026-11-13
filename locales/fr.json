@@ -37,7 +37,9 @@
   "Leave empty to not automaticly remove logs rows.": "Laissez vide pour ne pas supprimer automatiquement les lignes de journaux.",
   "Number of days to keep the log": "Nombre de jours pour conserver le journal",
   "Debug": "Déboguer",
-  "": ""
-    ,
-    "Auto refresh":"Rafraîchissement automatique"
+  "": "",
+  "Auto refresh": "Rafraîchissement automatique",
+  "errors": {
+    "retentionDays": "Saisissez au moins 1 jour. Pour tout supprimer, utilisez l'action permettant d'effacer tout le journal."
+  }
 }

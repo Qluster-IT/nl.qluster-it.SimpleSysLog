@@ -794,6 +794,36 @@ test('clearing old v2 logbooks removes their files and preserves the count', asy
   assert.equal(fs.statSync(countFile).size, 2);
 });
 
+test('retention deletes all expired dates without closing retained writers', async t => {
+  const log = await createLog(t);
+  const today = new Date();
+  const timestamp = daysAgo => new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysAgo, 12);
+  for (const days of [30, 10, 8, 7, 0]) {
+    await log.writeLine({ message: `day-${days}`, timestamp: timestamp(days) });
+  }
+  const retained = [log.getLogBook(timestamp(7)), log.getLogBook(timestamp(0))];
+  const expired = [log.getLogBook(timestamp(30)), log.getLogBook(timestamp(10)), log.getLogBook(timestamp(8))];
+  const writer = retained[1].logStream;
+  const indexWriter = retained[1].indexStream;
+  for (const book of retained) t.mock.method(book, 'destroy', () => assert.fail('Retained book was closed'));
+  await log.clearLog(7);
+  for (const book of expired) {
+    assert.equal(log.LogBooks[book.id], undefined);
+    assert.equal(fs.existsSync(book.file + '.log'), false);
+    assert.equal(fs.existsSync(book.v2IndexFile), false);
+  }
+  assert.equal(retained[1].logStream, writer);
+  assert.equal(retained[1].indexStream, indexWriter);
+  assert.equal(log.logCount, 3);
+  await log.clearLog(7);
+  assert.equal(log.logCount, 3);
+  assert.equal(retained[1].logStream, writer);
+  await log.writeLine({ message: 'still writable', timestamp: today });
+  const { logs } = await log.getLogs({ take: 20 });
+  assert.ok(logs.some(entry => entry.message === 'still writable'));
+  assert.ok(logs.some(entry => entry.message === 'day-7'));
+});
+
 test('writing reuses app and hostname indexes', async t => {
   const log = await createLog(t);
   const firstMessage = `${'x'.repeat(70 * 1024)} café 🌙`;

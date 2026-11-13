@@ -34,6 +34,7 @@
     {
       "name": "days",
       "type": "number",
+      "min": 1,
       "placeholder": {
         "en": "Number of Days",
         "nl": "Aantal dagen",

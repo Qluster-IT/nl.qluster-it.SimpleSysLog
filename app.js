@@ -109,7 +109,7 @@ class simpleLog extends Homey.App {
         }
       });
       this.getSettings();
-
+      await this.runAutomaticlyRemovalOfLogs();
 
 
       if (debug) this.log('Simple (Sys) Log onInit - BL.init');
@@ -153,36 +153,42 @@ class simpleLog extends Homey.App {
   }
 
   async initRealApp() {    
-    this.log('Simple (Sys) Log initRealApp');
-    this.homey.settings.set("UsingNewLog", true);
-    this.usingNewLog = true;
-    this.Log = new Log({ filePath: '/userdata/' });
-    await this.Log.init();
+    this.logInitializing = true;
+    await this.automaticlyRemovalOfLogsPending;
+    try {
+      this.log('Simple (Sys) Log initRealApp');
+      this.homey.settings.set("UsingNewLog", true);
+      this.usingNewLog = true;
+      this.Log = new Log({ filePath: '/userdata/' });
+      await this.Log.init();
 
-    if (this.BackLog) {
-      for (let i = 0; i < this.BackLog.length; i++) {
-        const backLog = this.BackLog[i];
-        await this._addLogToDB(...backLog);
+      if (this.BackLog) {
+        for (let i = 0; i < this.BackLog.length; i++) {
+          const backLog = this.BackLog[i];
+          await this._addLogToDB(...backLog);
+        }
+        delete this.BackLog;
+        this.homey.settings.unset("BackLog");
       }
-      delete this.BackLog;
-      this.homey.settings.unset("BackLog");
-    }
 
 
-    if (false) {//&& process.env.DEBUG === '1') {
-      let date = new Date();
-      //await this.addLogToDB(date, 'DATE TEST');
-      //date = new Date(date.setMonth(date.getMonth()-8));
-      for (let i = 0; i < 100; i++) {
-        date = new Date(date.setDate(date.getDate() - 1));
-        for (let j = 0; j < 10; j++) {
-          await this.addLogToDB('Test message voor here is this', undefined, { severity: j === 0 ? 4 : undefined, timestamp: date });
+      if (false) {//&& process.env.DEBUG === '1') {
+        let date = new Date();
+        //await this.addLogToDB(date, 'DATE TEST');
+        //date = new Date(date.setMonth(date.getMonth()-8));
+        for (let i = 0; i < 100; i++) {
+          date = new Date(date.setDate(date.getDate() - 1));
+          for (let j = 0; j < 10; j++) {
+            await this.addLogToDB('Test message voor here is this', undefined, { severity: j === 0 ? 4 : undefined, timestamp: date });
+          }
         }
       }
+
+      this.log('Simple (Sys) Log initRealApp finished');
+    } finally {
+      this.logInitializing = false;
     }
-
-
-    this.log('Simple (Sys) Log initRealApp finished');
+    await this.runAutomaticlyRemovalOfLogs();
   }
 
   getSettings() {
@@ -203,20 +209,43 @@ class simpleLog extends Homey.App {
   updateAutomaticlyRemovalOfLogs(days) {
     if (this.automaticlyRemovalOfLogsTimer) {
       if (days === this.automaticlyRemovalOfLogsDays) return;
-      this.homey.clearInterval(this.automaticlyRemovalOfLogsTimer);
+      this.homey.clearTimeout(this.automaticlyRemovalOfLogsTimer);
       delete this.automaticlyRemovalOfLogsTimer;
-      delete this.automaticlyRemovalOfLogsDays;
     }
-    if (days) this.automaticlyRemovalOfLogsTimer = this.homey.setInterval(async (days) => {
-      await this.clearLog(days);
-    }, 60 * 60 * 1_000, days);
-    if (days) this.automaticlyRemovalOfLogsDays = days;
+    this.automaticlyRemovalOfLogsDays = days;
+    if (!days) return;
+
+    // Match getLogBook's process-local calendar days, including clock/DST changes.
+    const now = new Date();
+    const next = new Date(now);
+    next.setHours(0, 5, 0, 0);
+    if (next <= now) next.setDate(next.getDate() + 1);
+    const timer = this.homey.setTimeout(async () => {
+      if (this.automaticlyRemovalOfLogsTimer !== timer) return;
+      await this.runAutomaticlyRemovalOfLogs();
+      if (this.automaticlyRemovalOfLogsTimer !== timer) return;
+      delete this.automaticlyRemovalOfLogsTimer;
+      this.updateAutomaticlyRemovalOfLogs(this.automaticlyRemovalOfLogsDays);
+    }, next.getTime() - now.getTime());
+    this.automaticlyRemovalOfLogsTimer = timer;
+  }
+
+  runAutomaticlyRemovalOfLogs() {
+    if (this.automaticlyRemovalOfLogsPending) return this.automaticlyRemovalOfLogsPending;
+    const days = this.automaticlyRemovalOfLogsDays;
+    if (!days || this.logInitializing) return Promise.resolve();
+    this.automaticlyRemovalOfLogsPending = Promise.resolve()
+      .then(() => this.clearLog(days))
+      .catch(error => this.homey.error('Automatic log cleanup failed', error))
+      .finally(() => { delete this.automaticlyRemovalOfLogsPending; });
+    return this.automaticlyRemovalOfLogsPending;
   }
 
   async onUninit() {
     //homey.settings.set('___TEST___', 'onUninit');
     //this.addLogToDB('SSL onUninit');
     this.updateAutomaticlyRemovalOfLogs();
+    await this.automaticlyRemovalOfLogsPending;
     if (this.Log) await this.Log.destroy();
   }
 
@@ -420,6 +449,9 @@ class simpleLog extends Homey.App {
     // FLOW Action Card, Clear_log_Older
     let actionClearlogOlder = this.homey.flow.getActionCard("Clear_log_Older");
     actionClearlogOlder.registerRunListener(async (args, state) => {
+      if (!Number.isFinite(args.days) || args.days < 1) {
+        throw new Error(this.homey.__('errors.retentionDays'));
+      }
       //if (!this.Log) throw new Error(this.homey.__('bllNotRunning'));
       if (!this.Log) return await this.clearBackLog(args.days);
 

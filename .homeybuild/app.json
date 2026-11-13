@@ -2171,6 +2171,7 @@
           {
             "name": "days",
             "type": "number",
+            "min": 1,
             "placeholder": {
               "en": "Number of Days",
               "nl": "Aantal dagen",
@@ -4762,7 +4763,6 @@
   "drivers": [
     {
       "id": "syslogclient",
-      "_deprecated": true,
       "name": {
         "en": "Syslog client",
         "nl": "Syslog client",
@@ -5174,7 +5174,6 @@
     },
     {
       "id": "syslogserver",
-      "_deprecated": true,
       "name": {
         "en": "Syslog server",
         "nl": "Syslog server",

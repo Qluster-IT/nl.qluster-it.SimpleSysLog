@@ -46,6 +46,16 @@ pressure without forced garbage collection; Node.js may still retain allocated
 memory for reuse.
 Automatic retention keeps a single cleanup timer across settings reloads and
 releases it when retention is disabled or the app shuts down.
+Cleanup runs at 00:05 in the same process-local calendar used for daily storage,
+with a catch-up check at startup and after file storage finishes initializing.
+File-based retention keeps today and the configured number of preceding days,
+deleting all older daily log and index files together, not individual records.
+Retained daily files and their streams are left alone. Manual cleanup Flow
+actions still run immediately. Failed automatic cleanup is logged and retried
+at the next daily check.
+The age-based cleanup Flow action requires a finite number of at least 1 day,
+including when supplied by a token. Use the separate full-clear action to
+delete the entire log; zero and invalid values no longer clear it.
 Inactive daily logbooks release their write streams after pending writes finish.
 Backdated entries reopen the files for appending, preserving existing messages,
 record IDs, and write order without keeping historical writers in memory.

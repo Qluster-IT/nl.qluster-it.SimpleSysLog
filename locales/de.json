@@ -37,7 +37,9 @@
   "Leave empty to not automaticly remove logs rows.": "Leer lassen, um Protokollreihen nicht automatisch zu entfernen.",
   "Number of days to keep the log": "Anzahl der Tage, um das Protokoll zu behalten",
   "Debug": "Debug",
-  "": ""
-    ,
-    "Auto refresh":"Automatische Aktualisierung"
+  "": "",
+  "Auto refresh": "Automatische Aktualisierung",
+  "errors": {
+    "retentionDays": "Gib mindestens 1 Tag ein. Verwende zum Entfernen aller Einträge die Aktion zum Leeren des gesamten Protokolls."
+  }
 }

@@ -37,7 +37,9 @@
   "Leave empty to not automaticly remove logs rows.": "로그 행을 자동으로 제거하지 않으려면 비워 두세요.",
   "Number of days to keep the log": "로그를 유지할 일수",
   "Debug": "디버그",
-  "": ""
-    ,
-    "Auto refresh":"자동 새로고침"
+  "": "",
+  "Auto refresh": "자동 새로고침",
+  "errors": {
+    "retentionDays": "최소 1일을 입력하세요. 모두 삭제하려면 전체 로그 삭제 작업을 사용하세요."
+  }
 }

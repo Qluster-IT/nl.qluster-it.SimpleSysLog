@@ -37,7 +37,9 @@
   "Leave empty to not automaticly remove logs rows.": "Pozostaw puste, aby nie usuwać automatycznie wierszy dziennika.",
   "Number of days to keep the log": "Liczba dni przechowywania dziennika",
   "Debug": "Debugowanie",
-  "": ""
-    ,
-    "Auto refresh":"Automatyczne odświeżanie"
+  "": "",
+  "Auto refresh": "Automatyczne odświeżanie",
+  "errors": {
+    "retentionDays": "Podaj co najmniej 1 dzień. Aby usunąć wszystko, użyj akcji czyszczenia całego dziennika."
+  }
 }

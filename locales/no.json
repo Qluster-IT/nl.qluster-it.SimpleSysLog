@@ -37,7 +37,9 @@
   "Leave empty to not automaticly remove logs rows.": "La være tomt for å ikke fjerne logglinjer automatisk.",
   "Number of days to keep the log": "Antall dager å beholde loggen",
   "Debug": "Feilsøking",
-  "": ""
-    ,
-    "Auto refresh":"Automatisk oppdatering"
+  "": "",
+  "Auto refresh": "Automatisk oppdatering",
+  "errors": {
+    "retentionDays": "Angi minst 1 dag. Bruk handlingen for å tømme hele loggen for å slette alt."
+  }
 }

@@ -37,7 +37,9 @@
   "Leave empty to not automaticly remove logs rows.": "Lascia vuoto per non rimuovere automaticamente le righe dei log.",
   "Number of days to keep the log": "Numero di giorni per conservare il log",
   "Debug": "Debug",
-  "": ""
-    ,
-    "Auto refresh":"Aggiornamento automatico"
+  "": "",
+  "Auto refresh": "Aggiornamento automatico",
+  "errors": {
+    "retentionDays": "Inserisci almeno 1 giorno. Per eliminare tutto, usa l'azione per cancellare l'intero registro."
+  }
 }

@@ -33,6 +33,7 @@ if (window.hasOwnProperty('angular'))
       let ctrl = this;
       let homey = this.homey = $window.Homey;
       let Homey = homey;
+      let realtimeRefreshTimer;
       let __ = homey.__;
 
       $bl.init(homey, $scope);
@@ -207,7 +208,7 @@ if (window.hasOwnProperty('angular'))
           }
         });
         await gridDefer.promise;
-        Homey.on('downloadFileReady', (link) => {
+        const downloadFileReadyListener = (link) => {
           console.log('downloadFileReady');
           if (!view.downloadFileLink || view.downloadFileLink.token !== link.token) return;
           $http.get(link.localTestUrl, { timeout: 1000 }).catch((err) => {
@@ -218,14 +219,35 @@ if (window.hasOwnProperty('angular'))
             if (x) $bl.openURL(link.localUrl);
             view.isBusy = false;
           });
-        });
+        };
+        Homey.on('downloadFileReady', downloadFileReadyListener);
         $bl.api("POST", "/internal", { action: 'getLogBookIDs' }, (x) => {
           view.logBooks = x;
         });
 
-        Homey.on('log_updated', (log) => {
+        const logUpdatedListener = (log) => {
           if (!view.settings || view.settings.autoRefresh === false) return;
-          $scope.refresh($scope.logQuery, log, 1);
+          if ($scope.logQuery.filters && $scope.logQuery.filters.length) {
+            if (realtimeRefreshTimer) $timeout.cancel(realtimeRefreshTimer);
+            realtimeRefreshTimer = $timeout(() => {
+              realtimeRefreshTimer = null;
+              $scope.refresh($scope.logQuery, null, 1);
+            }, 250);
+          } else {
+            $scope.refresh($scope.logQuery, log, 1);
+          }
+        };
+        Homey.on('log_updated', logUpdatedListener);
+
+        $scope.$on('$destroy', () => {
+          if (realtimeRefreshTimer) $timeout.cancel(realtimeRefreshTimer);
+          if (typeof Homey.off === 'function') {
+            Homey.off('downloadFileReady', downloadFileReadyListener);
+            Homey.off('log_updated', logUpdatedListener);
+          } else if (typeof Homey.removeListener === 'function') {
+            Homey.removeListener('downloadFileReady', downloadFileReadyListener);
+            Homey.removeListener('log_updated', logUpdatedListener);
+          }
         });
 
         homey.ready();
@@ -558,8 +580,6 @@ if (window.hasOwnProperty('angular'))
 
       $scope.refresh = function (query, log, source) {
         if (!view.gridLoaded) return;
-        console.log('refresh source:', source, query);
-        console.log('refresh log:', log);
         let opts = {};
         //console.log(query.filters);
         if (query && query.filters && query.filters.length > 0) {
@@ -583,6 +603,10 @@ if (window.hasOwnProperty('angular'))
         }
         else if (log) {
           vars.logs.unshift(log);
+          const pageSize = Number(query && query.pagesize)
+            || Number($scope.logGridOptions.paginationPageSize)
+            || vars.logPerPage;
+          if (vars.logs.length > pageSize) vars.logs.length = pageSize;
           vars.logTotal++;
           $scope.logGridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
           $scope.logGridOptions.totalItems = vars.logTotal;

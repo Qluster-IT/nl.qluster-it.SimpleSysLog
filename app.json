@@ -197,6 +197,7 @@
   },
   "athomForumDiscussionId": 3052,
   "homeyCommunityTopicId": 77533,
+  "homepage": "https://github.com/Qluster-IT/nl.qluster-it.SimpleSysLog/wiki",
   "api": {
     "internal": {
       "method": "POST",

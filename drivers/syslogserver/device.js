@@ -53,7 +53,8 @@ class SyslogServerDevice extends Homey.Device {
 
 		this.server.on('msg', data => {
 			//console.log('message received (%i) from %s:%i\n%o\n', ++this.count, data.address, data.port, data);
-			if (data && this.settings.log_syslogs === true) this.homey.app.addLogToDB(data.msg, data.tag, { facility: data.facilityCode, severity: data.severityCode, timestamp: data.timestamp, hostname: data.hostname, source: 'syslogserver' });
+			if (data && this.settings.log_syslogs === true) this.homey.app.addLogToDB(data.msg, data.tag, { facility: data.facilityCode, severity: data.severityCode, timestamp: data.timestamp, hostname: data.hostname, source: 'syslogserver' })
+				.catch(error => this.error('Received syslog message could not be logged', error));
 
 			/*
 			message received (1) from ::ffff:192.168.1.13:59666

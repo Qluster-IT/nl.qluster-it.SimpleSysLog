@@ -221,6 +221,12 @@ if (window.hasOwnProperty('angular'))
           });
         };
         Homey.on('downloadFileReady', downloadFileReadyListener);
+        const downloadFileFailedListener = (failed) => {
+          // Without a link yet, the failure belongs to the download that is still waiting for its link.
+          if (view.downloadFileLink && failed && view.downloadFileLink.token !== failed.token) return;
+          $timeout(() => { view.isBusy = false; });
+        };
+        Homey.on('downloadFileFailed', downloadFileFailedListener);
         $bl.api("POST", "/internal", { action: 'getLogBookIDs' }, (x) => {
           view.logBooks = x;
         });
@@ -243,9 +249,11 @@ if (window.hasOwnProperty('angular'))
           if (realtimeRefreshTimer) $timeout.cancel(realtimeRefreshTimer);
           if (typeof Homey.off === 'function') {
             Homey.off('downloadFileReady', downloadFileReadyListener);
+            Homey.off('downloadFileFailed', downloadFileFailedListener);
             Homey.off('log_updated', logUpdatedListener);
           } else if (typeof Homey.removeListener === 'function') {
             Homey.removeListener('downloadFileReady', downloadFileReadyListener);
+            Homey.removeListener('downloadFileFailed', downloadFileFailedListener);
             Homey.removeListener('log_updated', logUpdatedListener);
           }
         });
@@ -636,6 +644,7 @@ if (window.hasOwnProperty('angular'))
       // };
       $scope.downloadFile = async (type) => {
         view.isBusy = true;
+        view.downloadFileLink = null;
         //let opt = { returnType: type };
         let downloadLink = await $bl.api("GET", "/getlogdownloadurl/" + type);
         if (!downloadLink) {

@@ -7,6 +7,6 @@
     "test": "node --test"
   },
   "dependencies": {
-    "betterlogiclibrary": "^1.0.5"
+    "betterlogiclibrary": "^1.0.6"
   }
 }

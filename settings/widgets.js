@@ -44,6 +44,11 @@
   };
   var previewMode = 'light';
   var mode = 'design';
+  var forumTopicUrl = 'https://community.homey.app/t/162351';
+  var templates = {
+    section: 'export', busy: false, review: null, exportText: '', exportDesignName: '', exportThemeName: '',
+    catalog: null, favorites: {}, selectedId: null, showPreviews: false, previewsAvailable: false
+  };
 
   function t(key, fallback) {
     try {
@@ -135,9 +140,12 @@
 
   function byId(id) { return document.getElementById(id); }
 
-  function fillGroupedSelect(select, builtIns, customs, selectedId) {
+  function fillGroupedSelect(select, builtIns, customs, selectedId, isDesign) {
     select.replaceChildren();
-    [[t('widgets.settings.builtIn', 'Built-in'), builtIns], [t('widgets.settings.custom', 'Custom'), customs]]
+    var labels = isDesign
+      ? [t('widgets.settings.builtInStyles', 'Default styles'), t('widgets.settings.customStyles', 'Custom styles')]
+      : [t('widgets.settings.builtIn', 'Built-in'), t('widgets.settings.custom', 'Custom')];
+    [[labels[0], builtIns], [labels[1], customs]]
       .forEach(function (group) {
         if (!group[1].length) return;
         var optgroup = document.createElement('optgroup');
@@ -163,9 +171,11 @@
       button.setAttribute('aria-pressed', String(button.dataset.mode === mode));
     });
     byId('style-select-label').textContent = isDesign
-      ? t('widgets.settings.selectDesign', 'Design') : t('widgets.settings.selectTheme', 'Theme');
+      ? t('widgets.settings.selectDesign', 'Design style') : t('widgets.settings.theme', 'Theme');
+    byId('style-new-label').textContent = isDesign
+      ? t('widgets.settings.newDesign', 'New style') : t('widgets.settings.newTheme', 'New theme');
     fillGroupedSelect(byId('style-select'), isDesign ? builtInDesigns : builtInThemes,
-      isDesign ? collection.designs : collection.themes, item.id);
+      isDesign ? collection.designs : collection.themes, item.id, isDesign);
     byId('style-name-group').hidden = builtin;
     byId('style-name').value = item.name;
     var hint = byId('style-builtin-hint');
@@ -180,9 +190,9 @@
     byId('day-separators').closest('.style-design-selectors').hidden = !isDesign || builtin;
     byId('day-separators').checked = selectedDesign().showDaySeparators;
     byId('preview-other-label').textContent = isDesign
-      ? t('widgets.settings.theme', 'Theme') : t('widgets.settings.design', 'Design');
+      ? t('widgets.settings.theme', 'Theme') : t('widgets.settings.selectDesign', 'Design style');
     fillGroupedSelect(byId('preview-other'), isDesign ? builtInThemes : builtInDesigns,
-      isDesign ? collection.themes : collection.designs, isDesign ? currentThemeId : currentDesignId);
+      isDesign ? collection.themes : collection.designs, isDesign ? currentThemeId : currentDesignId, !isDesign);
     if (isDesign) renderFields();
     else renderColors();
     renderPreview();
@@ -286,23 +296,72 @@
   }
 
   function showScreen(screen) {
+    if (templates.busy) return;
     root.querySelectorAll('.designer-screen').forEach(function (panel) {
       panel.hidden = panel.dataset.screen !== screen;
     });
     byId('designer-savebar').hidden = screen !== 'editor';
     byId('designer-template-footer').hidden = screen !== 'templates';
     setStatus('');
-    if (screen === 'templates') renderExportSelectors();
+    if (screen === 'templates') {
+      renderExportSelectors();
+      showTemplateSection('export');
+    } else {
+      closeReview();
+      clearExport();
+    }
   }
 
   function showTemplateSection(section) {
+    if (templates.busy || ['export', 'import', 'catalog'].indexOf(section) === -1) return;
+    templates.section = section;
     root.querySelectorAll('.template-section-button').forEach(function (button) {
       button.setAttribute('aria-pressed', String(button.dataset.section === section));
     });
     root.querySelectorAll('[data-template-section]').forEach(function (panel) {
       panel.hidden = panel.dataset.templateSection !== section;
     });
+    closeReview();
     setStatus('');
+    if (section === 'catalog') {
+      if (templates.catalog) renderCatalog();
+      else loadCatalog();
+    }
+  }
+
+  function setBusy(busy) {
+    templates.busy = busy;
+    root.querySelectorAll('.template-section-button, #open-exchange, #load-catalog, #save-template, .template-catalog-row button, .template-catalog-details button')
+      .forEach(function (button) { button.disabled = busy; });
+    byId('close-templates').disabled = busy;
+    byId('catalog-previews').disabled = busy || !templates.previewsAvailable;
+    byId('import-template').disabled = busy || !byId('import-code').value.trim();
+    updateExport();
+  }
+
+  function openExchange(number) {
+    var url = forumTopicUrl + (number === undefined ? '' : '/' + number);
+    if (number !== undefined && (!Number.isSafeInteger(number) || number < 1)) return;
+    if (Homey && typeof Homey.openURL === 'function') Homey.openURL(url);
+    else window.open(url, '_blank', 'noopener');
+  }
+
+  function alertMessage(message) {
+    call('alert', [message, null]).catch(function () {});
+  }
+
+  function copyField(id) {
+    var field = byId(id);
+    if (!field || !field.value) return;
+    field.focus();
+    field.select();
+    var copied = false;
+    try {
+      copied = document.execCommand('copy');
+    } catch (error) {
+      copied = false;
+    }
+    if (!copied) alertMessage(t('widgets.settings.copyError', 'Could not copy. Select the text and copy it manually.'));
   }
 
   function swatchColor(name) {
@@ -323,15 +382,12 @@
   }
 
   // Uses the widget stylesheet and markup so the preview matches the dashboard widget.
-  function renderPreview() {
-    var design = selectedDesign();
-    var theme = selectedTheme();
-    if (!design || !theme) return;
-    var preview = document.getElementById('widget-preview');
-    preview.className = 'ssl-widget preview-widget ssl-mode-' + previewMode;
+  function renderWidgetPreview(preview, design, theme, extraClass) {
+    if (!preview || !design || !theme) return;
+    preview.className = 'ssl-widget preview-widget ssl-mode-' + previewMode + (extraClass ? ' ' + extraClass : '');
     preview.removeAttribute('style');
     colorRoles.forEach(function (key) {
-      if (theme.colors[key] !== 'automatic') {
+      if (theme.colors[key] && theme.colors[key] !== 'automatic') {
         preview.style.setProperty('--ssl-' + key, 'var(--ssl-color-' + theme.colors[key] + ')');
       }
     });
@@ -344,8 +400,9 @@
       { date: now, severity: 5, severityName: t('widgets.settings.colors.notice', 'Notice'), facility: 'User', app: 'Backup', hostname: 'Homey', message: 'Network backup completed.' },
       { date: yesterday, severity: 3, severityName: t('widgets.settings.colors.error', 'Error'), facility: 'System', app: 'Simple (Sys) Log', hostname: 'Homey', message: 'Widget preview entry.' }
     ];
-    var sideFields = design.fields.filter(function (field) { return field === 'timestamp' || field === 'severity'; });
-    var metaFields = design.fields.filter(function (field) {
+    var fields = Array.isArray(design.fields) ? design.fields : [];
+    var sideFields = fields.filter(function (field) { return field === 'timestamp' || field === 'severity'; });
+    var metaFields = fields.filter(function (field) {
       return field !== 'timestamp' && field !== 'severity' && field !== 'message';
     });
     var severityNames = ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'];
@@ -372,7 +429,7 @@
         card.appendChild(side);
       }
       var main = element('div', 'ssl-log-main');
-      if (design.fields.indexOf('message') >= 0) main.appendChild(element('div', 'ssl-field-message', values.message));
+      if (fields.indexOf('message') >= 0) main.appendChild(element('div', 'ssl-field-message', values.message));
       if (metaFields.length) {
         var meta = element('div', 'ssl-log-meta');
         metaFields.forEach(function (field) { meta.appendChild(element('span', 'ssl-field-' + field, values[field])); });
@@ -385,11 +442,73 @@
     preview.appendChild(list);
   }
 
+  function renderPreview() {
+    renderWidgetPreview(byId('widget-preview'), selectedDesign(), selectedTheme());
+    if (templates.section === 'export') updateExport();
+    if (templates.review) renderImportPreview();
+  }
+
+  function defaultDesign() { return findDesign('builtin:default') || builtInDesigns[0]; }
+  function defaultTheme() { return findTheme('builtin:default') || builtInThemes[0]; }
+
   function renderExportSelectors() {
-    fillSelect(document.getElementById('export-design'), [{ id: '', name: t('widgets.settings.none', 'None') }]
-      .concat(collection.designs), '');
-    fillSelect(document.getElementById('export-theme'), [{ id: '', name: t('widgets.settings.none', 'None') }]
-      .concat(collection.themes), '');
+    var none = [{ id: '', name: t('widgets.settings.none', 'None') }];
+    fillSelect(byId('export-design'), none.concat(collection.designs), '');
+    fillSelect(byId('export-theme'), none.concat(collection.themes), '');
+    clearExport();
+  }
+
+  function exportSelection() {
+    return {
+      design: collection.designs.find(function (item) { return item.id === byId('export-design').value; }),
+      theme: collection.themes.find(function (item) { return item.id === byId('export-theme').value; })
+    };
+  }
+
+  function updateExport() {
+    if (!root) return;
+    var selection = exportSelection();
+    byId('export-save-first').hidden = !dirty;
+    byId('export-template').disabled = templates.busy || dirty || (!selection.design && !selection.theme);
+    byId('export-preview-group').hidden = !selection.design && !selection.theme;
+    if (selection.design || selection.theme) {
+      renderWidgetPreview(byId('export-preview'), selection.design || defaultDesign(), selection.theme || defaultTheme());
+    }
+  }
+
+  function clearExport() {
+    templates.exportText = '';
+    byId('template-code').value = '';
+    byId('template-forum-post').value = '';
+    byId('export-result').hidden = true;
+    updateExport();
+  }
+
+  function forumPost() {
+    var heading = [];
+    if (templates.exportDesignName) heading.push('Design: ' + templates.exportDesignName.replace(/\s+/g, ' ').trim());
+    if (templates.exportThemeName) heading.push('Theme: ' + templates.exportThemeName.replace(/\s+/g, ' ').trim());
+    return '# ' + heading.join(' | ') + '\n\n\n\nTWF:\n```javascript\n' + templates.exportText + '\n```';
+  }
+
+  function createTemplate() {
+    var selection = exportSelection();
+    if (templates.busy || dirty) return;
+    if (!selection.design && !selection.theme) {
+      alertMessage(t('widgets.settings.chooseTemplate', 'Select a design or theme.'));
+      return;
+    }
+    setBusy(true);
+    api('POST', '/widget-template/encode', { design: selection.design, theme: selection.theme }).then(function (text) {
+      templates.exportText = text;
+      templates.exportDesignName = selection.design ? selection.design.name : '';
+      templates.exportThemeName = selection.theme ? selection.theme.name : '';
+      byId('template-code').value = text;
+      byId('template-forum-post').value = forumPost();
+      byId('export-result').hidden = false;
+    }).catch(function (error) {
+      setStatus(error.message, true);
+    }).finally(function () { setBusy(false); });
   }
 
   function renderAll() {
@@ -419,7 +538,7 @@
     collection.version = 1;
     return setSetting('widgetStyles', collection).then(function () {
       setSaveState(false);
-      setStatus(t('widgets.settings.saved', 'Widget styles saved.'));
+      setStatus(t('widgets.settings.saved', 'Saved.'));
       renderAll();
     }).catch(function (error) {
       setStatus(error.message || t('widgets.settings.saveError', 'Unable to save widget styles.'), true);
@@ -427,11 +546,25 @@
     });
   }
 
-  function createDesign(source) {
-    var original = source || selectedDesign();
+  function sameName(first, second) {
+    return String(first || '').trim().toLocaleLowerCase() === String(second || '').trim().toLocaleLowerCase();
+  }
+
+  function itemName(copy, source, kind) {
+    var prefix = copy ? source.name + ' - ' + t('widgets.settings.duplicate', 'Copy')
+      : kind === 'design' ? t('widgets.settings.newDesign', 'New style') : t('widgets.settings.newTheme', 'New theme');
+    var items = kind === 'design' ? collection.designs : collection.themes;
+    var name = prefix;
+    var number = 2;
+    while (items.some(function (item) { return sameName(item.name, name); })) name = prefix + ' ' + number++;
+    return name.slice(0, 60);
+  }
+
+  function createDesign(copy) {
+    var original = copy ? selectedDesign() : defaultDesign();
     var design = {
       id: newId(),
-      name: t('widgets.settings.newDesign', 'My design'),
+      name: itemName(copy, original, 'design'),
       fields: original.fields.slice(),
       showDaySeparators: original.showDaySeparators
     };
@@ -442,9 +575,9 @@
     renderAll();
   }
 
-  function createTheme(source) {
-    var original = source || selectedTheme();
-    var theme = { id: newId(), name: t('widgets.settings.newTheme', 'My theme'), colors: Object.assign({}, original.colors) };
+  function createTheme(copy) {
+    var original = copy ? selectedTheme() : defaultTheme();
+    var theme = { id: newId(), name: itemName(copy, original, 'theme'), colors: Object.assign({}, original.colors) };
     collection.themes.push(theme);
     currentThemeId = theme.id;
     mode = 'theme';
@@ -456,7 +589,11 @@
     var isDesign = type === 'design';
     var id = isDesign ? currentDesignId : currentThemeId;
     if (isBuiltIn(id)) return Promise.resolve();
-    return call('confirm', [t('widgets.settings.confirmDelete', 'Delete this custom item?'), 'warning'])
+    var message = isDesign
+      ? t('widgets.settings.confirmDelete', 'Permanently delete the custom style "__name__"?')
+      : t('widgets.settings.confirmDeleteTheme', 'Permanently delete the custom theme "__name__"?');
+    var item = isDesign ? selectedDesign() : selectedTheme();
+    return call('confirm', [message.replace('__name__', item.name), 'warning'])
       .then(function (confirmed) {
         if (!confirmed) return;
         var items = isDesign ? collection.designs : collection.themes;
@@ -471,93 +608,275 @@
 
   function uniqueName(name, kind) {
     var items = kind === 'design' ? collection.designs : collection.themes;
+    name = String(name || '').trim().slice(0, 60);
     var candidate = name;
-    var suffix = 2;
-    while (items.some(function (item) { return item.name.toLocaleLowerCase() === candidate.toLocaleLowerCase(); })) {
-      candidate = name + ' (' + suffix++ + ')';
+    var number = 2;
+    while (items.some(function (item) { return sameName(item.name, candidate); })) {
+      var suffix = ' (' + number++ + ')';
+      candidate = name.slice(0, 60 - suffix.length) + suffix;
     }
     return candidate;
   }
 
-  function installTemplate(template) {
-    if (!template || (!template.design && !template.theme)) throw new Error('Template contains no design or theme.');
-    if (template.design) {
-      var design = JSON.parse(JSON.stringify(template.design));
-      design.id = newId();
-      design.name = uniqueName(design.name || t('widgets.settings.importedDesign', 'Imported design'), 'design');
-      collection.designs.push(design);
-      currentDesignId = design.id;
-    }
-    if (template.theme) {
-      var theme = JSON.parse(JSON.stringify(template.theme));
-      theme.id = newId();
-      theme.name = uniqueName(theme.name || t('widgets.settings.importedTheme', 'Imported theme'), 'theme');
-      collection.themes.push(theme);
-      currentThemeId = theme.id;
-    }
-    setDirty();
-    renderAll();
-    return save();
+  function invalidTemplateMessage() {
+    return t('widgets.settings.importError', 'This template does not contain a valid or supported Simple (Sys) Log design or theme.');
   }
 
-  function addCatalogCard(item) {
-    var entry = document.createElement('div');
+  function closeReview() {
+    templates.review = null;
+    byId('import-review').hidden = true;
+  }
+
+  function fillPreviewSelect(select, builtIns, customs) {
+    fillGroupedSelect(select, builtIns, customs, 'builtin:default', select.id === 'import-preview-design');
+  }
+
+  function readTemplate() {
+    var text = byId('import-code').value.trim();
+    if (templates.busy || !text) return Promise.resolve();
+    closeReview();
+    setStatus('');
+    setBusy(true);
+    return api('POST', '/widget-template/decode', { text: text }).then(function (value) {
+      if (text !== byId('import-code').value.trim() || templates.section !== 'import') return;
+      if (!value || (!value.design && !value.theme)) throw new Error(invalidTemplateMessage());
+      templates.review = value;
+      byId('import-design-group').hidden = !value.design;
+      byId('import-theme-group').hidden = !value.theme;
+      byId('import-include-design').checked = !!value.design;
+      byId('import-include-theme').checked = !!value.theme;
+      byId('import-design-name').value = value.design ? uniqueName(value.design.name, 'design') : '';
+      byId('import-theme-name').value = value.theme ? uniqueName(value.theme.name, 'theme') : '';
+      fillPreviewSelect(byId('import-preview-design'), builtInDesigns, collection.designs);
+      fillPreviewSelect(byId('import-preview-theme'), builtInThemes, collection.themes);
+      byId('import-review').hidden = false;
+      renderImportPreview();
+    }).catch(function () {
+      setStatus(invalidTemplateMessage(), true);
+    }).finally(function () { setBusy(false); });
+  }
+
+  function renderImportPreview() {
+    var review = templates.review;
+    if (!review) return;
+    var includeDesign = !!review.design && byId('import-include-design').checked;
+    var includeTheme = !!review.theme && byId('import-include-theme').checked;
+    byId('import-design-name').disabled = !includeDesign;
+    byId('import-theme-name').disabled = !includeTheme;
+    [['import-preview-design', includeDesign], ['import-preview-theme', includeTheme]].forEach(function (entry) {
+      var select = byId(entry[0]);
+      select.hidden = entry[1];
+      select.previousElementSibling.hidden = entry[1];
+    });
+    byId('save-template').disabled = templates.busy || (!includeDesign && !includeTheme);
+    renderWidgetPreview(byId('import-preview'),
+      includeDesign ? review.design : findDesign(byId('import-preview-design').value) || defaultDesign(),
+      includeTheme ? review.theme : findTheme(byId('import-preview-theme').value) || defaultTheme());
+  }
+
+  function saveTemplate() {
+    var review = templates.review;
+    if (templates.busy || !review) return;
+    var selections = [
+      { include: !!review.design && byId('import-include-design').checked, item: review.design,
+        name: byId('import-design-name').value, items: collection.designs, kind: 'design' },
+      { include: !!review.theme && byId('import-include-theme').checked, item: review.theme,
+        name: byId('import-theme-name').value, items: collection.themes, kind: 'theme' }
+    ].filter(function (selection) { return selection.include; });
+    if (!selections.length) return;
+    if (dirty) {
+      alertMessage(t('widgets.settings.saveFirst', 'Save or discard changes before using templates.'));
+      return;
+    }
+    if (selections.some(function (selection) {
+      var name = selection.name.trim();
+      return !name || name.length > 60;
+    })) {
+      setStatus(t('widgets.settings.invalidName', 'Enter a name of 1 to 60 characters.'), true);
+      return;
+    }
+    var added = selections.map(function (selection) {
+      var imported = JSON.parse(JSON.stringify(selection.item));
+      imported.id = newId();
+      imported.name = uniqueName(selection.name, selection.kind);
+      selection.items.push(imported);
+      return { items: selection.items, item: imported };
+    });
+    setBusy(true);
+    setSetting('widgetStyles', collection).then(function () {
+      closeReview();
+      byId('import-code').value = '';
+      renderAll();
+      setSaveState(false);
+      alertMessage(t('widgets.settings.saved', 'Saved.'));
+    }).catch(function (error) {
+      added.forEach(function (entry) {
+        var index = entry.items.indexOf(entry.item);
+        if (index >= 0) entry.items.splice(index, 1);
+      });
+      setStatus(error.message || t('widgets.settings.saveError', 'Unable to save widget styles.'), true);
+    }).finally(function () { setBusy(false); });
+  }
+
+  function catalogMatches(item, query) {
+    return !query || [item.title, item.description, item.author].some(function (value) {
+      return String(value || '').toLowerCase().indexOf(query) !== -1;
+    });
+  }
+
+  function compareCatalog(order) {
+    return function (first, second) {
+      var result = 0;
+      if (order === 'newest') result = second.number - first.number;
+      else if (order === 'likes') result = (second.likes || 0) - (first.likes || 0);
+      else if (order === 'favorites') result = Number(!!second.favorite) - Number(!!first.favorite);
+      return result || String(first.title).localeCompare(String(second.title));
+    };
+  }
+
+  function iconButton(className, icon, label, onClick) {
+    var button = element('button', 'hy-nostyle ' + className);
+    button.type = 'button';
+    button.disabled = templates.busy;
+    setIconLabel(button, icon, label);
+    button.addEventListener('click', onClick);
+    return button;
+  }
+
+  function addCatalogCard(item, container) {
+    var entry = element('div');
     entry.setAttribute('role', 'listitem');
-    var title = document.createElement('button');
+    var row = element('div', 'template-catalog-row');
+    var favoriteLabel = item.favorite
+      ? t('widgets.settings.unfavorite', 'Remove favorite') : t('widgets.settings.favorite', 'Add favorite');
+    var star = element('button', 'hy-nostyle template-catalog-icon');
+    star.type = 'button';
+    star.disabled = templates.busy;
+    star.title = favoriteLabel;
+    star.setAttribute('aria-label', favoriteLabel + ': ' + item.title);
+    star.setAttribute('aria-pressed', String(!!item.favorite));
+    var starIcon = element('i', (item.favorite ? 'fa-solid' : 'fa-regular') + ' fa-star');
+    starIcon.setAttribute('aria-hidden', 'true');
+    star.appendChild(starIcon);
+    star.addEventListener('click', function () { toggleFavorite(item); });
+    var body = element('div', 'template-catalog-entry');
+    var expanded = templates.selectedId === item.id;
+    var title = element('button', 'hy-nostyle template-catalog-title');
     title.type = 'button';
-    title.className = 'hy-nostyle template-catalog-title';
-    title.textContent = item.title;
-    title.setAttribute('aria-expanded', 'false');
-    var details = document.createElement('div');
-    details.className = 'template-catalog-details';
-    details.hidden = true;
+    title.setAttribute('aria-expanded', String(expanded));
+    title.appendChild(element('span', '', item.title));
     title.addEventListener('click', function () {
-      details.hidden = !details.hidden;
-      title.setAttribute('aria-expanded', String(!details.hidden));
+      templates.selectedId = expanded ? null : item.id;
+      renderCatalog();
     });
-    var author = document.createElement('p');
-    author.textContent = item.author || '';
-    var description = document.createElement('p');
-    description.className = 'template-catalog-description';
-    description.textContent = item.description || '';
-    var install = document.createElement('button');
-    install.type = 'button';
-    install.className = 'hy-nostyle btn btn-outline-primary btn-sm';
-    setIconLabel(install, 'fa-file-import', t('widgets.settings.install', 'Add template'));
-    install.addEventListener('click', function () {
-      install.disabled = true;
-      installTemplate(item.template).catch(function (error) {
-        setStatus(error.message || 'Unable to add template.', true);
-      }).finally(function () { install.disabled = false; });
-    });
-    var link = document.createElement('a');
-    link.className = 'hy-nostyle btn btn-outline-primary btn-sm';
-    link.href = item.url;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    setIconLabel(link, 'fa-arrow-up-right-from-square', t('widgets.settings.openTopic', 'Open forum post'));
-    details.append(author, description, install, link);
-    entry.append(title, details);
-    document.getElementById('template-catalog').appendChild(entry);
+    body.appendChild(title);
+    if (templates.showPreviews) {
+      var thumbnail = element('div');
+      thumbnail.setAttribute('inert', '');
+      thumbnail.setAttribute('aria-hidden', 'true');
+      var template = item.template || {};
+      renderWidgetPreview(thumbnail, template.design || defaultDesign(), template.theme || defaultTheme(), 'template-catalog-thumbnail');
+      body.appendChild(thumbnail);
+    }
+    row.append(star, body);
+    entry.appendChild(row);
+    if (expanded) {
+      var details = element('div', 'template-catalog-details');
+      details.appendChild(element('p', '', (item.author || '') + ' \u00b7 ' + (item.likes || 0) + ' ' + t('widgets.settings.likes', 'Likes')));
+      details.appendChild(element('p', 'template-catalog-description', item.description || ''));
+      details.appendChild(iconButton('btn btn-outline-primary btn-sm', 'fa-file-import', t('widgets.settings.install', 'Import'), function () {
+        importCatalogTemplate(item);
+      }));
+      details.appendChild(iconButton('btn btn-outline-primary btn-sm', 'fa-arrow-up-right-from-square', t('widgets.settings.openTopic', 'View post'), function () {
+        openExchange(item.number);
+      }));
+      entry.appendChild(details);
+    }
+    container.appendChild(entry);
+  }
+
+  function renderCatalog() {
+    var container = byId('template-catalog');
+    container.replaceChildren();
+    var available = Array.isArray(templates.catalog);
+    byId('catalog-search').disabled = !available;
+    byId('catalog-sort').disabled = !available;
+    var previews = byId('catalog-previews');
+    previews.setAttribute('aria-pressed', String(templates.showPreviews));
+    previews.querySelector('i').className = 'fa fa-solid ' + (templates.showPreviews ? 'fa-eye' : 'fa-eye-slash');
+    previews.disabled = templates.busy || !templates.previewsAvailable;
+    if (!available) {
+      byId('catalog-empty').hidden = true;
+      return;
+    }
+    var query = byId('catalog-search').value.trim().toLowerCase();
+    var items = templates.catalog.filter(function (item) { return catalogMatches(item, query); })
+      .sort(compareCatalog(byId('catalog-sort').value));
+    byId('catalog-empty').hidden = items.length > 0;
+    items.forEach(function (item) { addCatalogCard(item, container); });
   }
 
   function loadCatalog() {
-    var container = document.getElementById('template-catalog');
-    container.replaceChildren();
-    setStatus(t('widgets.settings.loadingCatalog', 'Loading community templates…'));
-    document.getElementById('load-catalog').disabled = true;
-    return api('GET', '/widget-template-catalog').then(function (items) {
-      if (!Array.isArray(items)) throw new Error('Invalid community catalog response.');
-      if (!items.length) setStatus(t('widgets.settings.emptyCatalog', 'No community templates were found.'));
-      else {
-        items.forEach(addCatalogCard);
-        setStatus('');
-      }
+    if (templates.busy) return Promise.resolve();
+    setStatus('');
+    setBusy(true);
+    byId('catalog-loading').hidden = false;
+    return Promise.all([
+      getSetting('widgetTemplateFavorites'),
+      api('GET', '/widget-template-catalog')
+    ]).then(function (values) {
+      var favorites = values[0];
+      var items = values[1];
+      if (!Array.isArray(items)) throw new Error(t('widgets.settings.catalogError', 'Unable to load community templates.'));
+      templates.favorites = favorites && typeof favorites === 'object' && !Array.isArray(favorites) ? favorites : {};
+      templates.catalog = items.map(function (item) {
+        return Object.assign({}, item, { favorite: !!templates.favorites[item.postId] });
+      });
     }).catch(function (error) {
       setStatus(error.message || t('widgets.settings.catalogError', 'Unable to load community templates.'), true);
     }).finally(function () {
-      document.getElementById('load-catalog').disabled = false;
+      byId('catalog-loading').hidden = true;
+      setBusy(false);
+      renderCatalog();
     });
+  }
+
+  function toggleFavorite(item) {
+    if (templates.busy) return;
+    var favorites = Object.assign({}, templates.favorites);
+    if (favorites[item.postId]) delete favorites[item.postId];
+    else favorites[item.postId] = true;
+    setBusy(true);
+    setSetting('widgetTemplateFavorites', favorites).then(function () {
+      templates.favorites = favorites;
+      templates.catalog.forEach(function (entry) { entry.favorite = !!favorites[entry.postId]; });
+    }).catch(function (error) {
+      setStatus(error.message, true);
+    }).finally(function () {
+      setBusy(false);
+      renderCatalog();
+    });
+  }
+
+  function togglePreviews() {
+    if (templates.busy || !templates.previewsAvailable) return;
+    var enabled = !templates.showPreviews;
+    setBusy(true);
+    setSetting('widgetTemplateShowPreviews', enabled).then(function () {
+      templates.showPreviews = enabled;
+    }).catch(function (error) {
+      setStatus(error.message, true);
+    }).finally(function () {
+      setBusy(false);
+      renderCatalog();
+    });
+  }
+
+  function importCatalogTemplate(item) {
+    if (templates.busy) return;
+    showTemplateSection('import');
+    byId('import-code').value = item.text;
+    readTemplate();
   }
 
   function initialize(homey) {
@@ -572,7 +891,18 @@
         var key = element.getAttribute('data-i18n-placeholder');
         element.placeholder = t(key, element.placeholder);
       });
+      scope.querySelectorAll('[data-i18n-title]').forEach(function (element) {
+        element.title = t(element.getAttribute('data-i18n-title'), element.title);
+      });
+      scope.querySelectorAll('[data-i18n-aria-label]').forEach(function (element) {
+        element.setAttribute('aria-label', t(element.getAttribute('data-i18n-aria-label'), element.getAttribute('aria-label')));
+      });
     });
+    getSetting('widgetTemplateShowPreviews').then(function (value) {
+      templates.showPreviews = value === true;
+      templates.previewsAvailable = true;
+      renderCatalog();
+    }).catch(function () {});
     Promise.all([
       getSetting('widgetStyles'),
       api('GET', '/widget-styles')
@@ -624,12 +954,12 @@
       setDirty();
     });
     byId('style-new').addEventListener('click', function () {
-      if (mode === 'design') createDesign(builtInDesigns[0]);
-      else createTheme(builtInThemes[0]);
+      if (mode === 'design') createDesign(false);
+      else createTheme(false);
     });
     byId('style-copy').addEventListener('click', function () {
-      if (mode === 'design') createDesign();
-      else createTheme();
+      if (mode === 'design') createDesign(true);
+      else createTheme(true);
     });
     byId('style-delete').addEventListener('click', function () {
       deleteSelected(mode).catch(function (error) { setStatus(error.message, true); });
@@ -644,33 +974,26 @@
     root.querySelectorAll('.template-section-button').forEach(function (button) {
       button.addEventListener('click', function () { showTemplateSection(button.dataset.section); });
     });
-    byId('export-template').addEventListener('click', function () {
-      var design = collection.designs.find(function (item) { return item.id === byId('export-design').value; });
-      var theme = collection.themes.find(function (item) { return item.id === byId('export-theme').value; });
-      if (!design && !theme) {
-        setStatus(t('widgets.settings.chooseTemplate', 'Select a design, a theme, or both.'), true);
-        return;
-      }
-      api('POST', '/widget-template/encode', { design: design, theme: theme }).then(function (code) {
-        byId('template-code').value = code;
-        setStatus(t('widgets.settings.templateCreated', 'Template code created.'));
-      }).catch(function (error) { setStatus(error.message, true); });
+    byId('open-exchange').addEventListener('click', function () { openExchange(); });
+    ['export-design', 'export-theme'].forEach(function (id) {
+      byId(id).addEventListener('change', clearExport);
     });
-    byId('copy-template').addEventListener('click', function () {
-      var textarea = byId('template-code');
-      if (!textarea.value) return;
-      textarea.select();
-      document.execCommand('copy');
-      setStatus(t('widgets.settings.copied', 'Template code copied.'));
+    byId('export-template').addEventListener('click', createTemplate);
+    byId('copy-template').addEventListener('click', function () { copyField('template-code'); });
+    byId('copy-forum-post').addEventListener('click', function () { copyField('template-forum-post'); });
+    byId('post-forum').addEventListener('click', function () { openExchange(); });
+    byId('import-code').addEventListener('input', function () {
+      closeReview();
+      byId('import-template').disabled = templates.busy || !byId('import-code').value.trim();
     });
-    byId('import-template').addEventListener('click', function () {
-      var text = byId('import-code').value;
-      api('POST', '/widget-template/decode', { text: text }).then(installTemplate).then(function () {
-        byId('import-code').value = '';
-      }).catch(function (error) {
-        setStatus(error.message || t('widgets.settings.importError', 'Unable to import template.'), true);
-      });
+    byId('import-template').addEventListener('click', readTemplate);
+    ['import-include-design', 'import-include-theme', 'import-preview-design', 'import-preview-theme'].forEach(function (id) {
+      byId(id).addEventListener('change', renderImportPreview);
     });
+    byId('save-template').addEventListener('click', saveTemplate);
+    byId('catalog-previews').addEventListener('click', togglePreviews);
+    byId('catalog-search').addEventListener('input', renderCatalog);
+    byId('catalog-sort').addEventListener('change', renderCatalog);
     byId('load-catalog').addEventListener('click', loadCatalog);
   }
 

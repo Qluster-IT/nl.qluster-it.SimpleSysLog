@@ -6,15 +6,41 @@
   <link rel="stylesheet" href="../../assets/css/ssl-widget.css">
   <script src="../../../net.i-dev.betterlogic/assets/js/angular.min.js"></script>
   <script src="../../assets/js/ssl-widget-search.js"></script>
+  <script src="../../assets/js/ssl-widget-layout.js"></script>
   <script src="../../assets/js/ssl-widget.js"></script>
   <script src="../../assets/js/ssl-widget-android.js"></script>
 </head>
 <body class="homey-widget-full" ng-controller="SSLLogWidgetController">
   <main class="ssl-widget" ng-class="modeClass" ng-style="themeStyle">
     <header class="ssl-widget-toolbar" ng-if="showSearch && !bllUnavailable">
-      <label class="ssl-visually-hidden" for="ssl-log-search">{{ labels.search }}</label>
-      <input id="ssl-log-search" class="ssl-log-search" type="search" ng-model="searchText"
-        ng-change="validateSearch()" ng-attr-placeholder="{{ labels.search }}">
+      <div class="ssl-toolbar-row">
+        <label class="ssl-visually-hidden" for="ssl-log-search">{{ labels.search }}</label>
+        <input id="ssl-log-search" class="ssl-log-search" type="search" ng-model="search.text"
+          ng-change="validateSearch()" ng-attr-placeholder="{{ labels.search }}">
+        <div class="ssl-filter" ng-keydown="filterKeydown($event)">
+          <button type="button" class="ssl-filter-button" ng-class="{ 'is-active': hasLevelFilter() }"
+            aria-haspopup="menu" ng-attr-aria-expanded="{{ filterMenu.open }}" ng-attr-aria-label="{{ labels.filters }}"
+            ng-attr-title="{{ labels.filters }}" ng-click="toggleFilterMenu()">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 5h18l-7 8.5V19l-4 2v-7.5z"/></svg>
+          </button>
+          <div class="ssl-filter-menu" role="menu" ng-if="filterMenu.open">
+            <div class="ssl-filter-group" ng-mouseenter="filterMenu.level = true" ng-mouseleave="filterMenu.level = false">
+              <button type="button" class="ssl-filter-item" role="menuitem" aria-haspopup="true"
+                ng-attr-aria-expanded="{{ filterMenu.level }}" ng-click="filterMenu.level = true">
+                <span>{{ labels.level }}</span><span class="ssl-filter-count" ng-if="hasLevelFilter()">{{ selectedLevelCount() }}</span><span aria-hidden="true">›</span>
+              </button>
+              <div class="ssl-filter-options" role="group" ng-attr-aria-label="{{ labels.level }}" ng-if="filterMenu.level">
+                <label class="ssl-filter-option" ng-repeat="level in levels" ng-class="level.className">
+                  <input type="checkbox" role="menuitemcheckbox" ng-checked="levelFilter[level.id]"
+                    ng-click="toggleLevel(level.id)"><span class="ssl-filter-dot" aria-hidden="true"></span>{{ level.label }}
+                </label>
+                <button type="button" class="ssl-filter-clear" role="menuitem" ng-click="clearLevels()"
+                  ng-disabled="!hasLevelFilter()">{{ labels.allLevels }}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <span class="ssl-search-error" role="alert" ng-if="searchError">{{ searchError }}</span>
     </header>
 
@@ -27,20 +53,8 @@
       aria-live="polite">
       <div class="ssl-log-entry" ng-repeat="log in filteredLogs track by log._key"
         ng-attr-data-log-key="{{ log._key }}">
-        <div class="ssl-day-separator" ng-if="showDaySeparator($index)"><span>{{ formatDay(log.timestamp) }}</span></div>
-        <article class="ssl-log-card" ng-class="severityClass(log)">
-          <div class="ssl-log-side" ng-if="sideFields.length">
-            <span ng-repeat="field in sideFields track by field" ng-if="fieldValue(field, log)"
-              ng-class="['ssl-field-' + field, fieldValueClass(field, log)]">{{ fieldValue(field, log) }}</span>
-          </div>
-          <div class="ssl-log-main">
-            <div class="ssl-field-message" ng-if="showMessage">{{ fieldValue('message', log) }}</div>
-            <div class="ssl-log-meta" ng-if="metaFields.length">
-              <span ng-repeat="field in metaFields track by field" ng-if="fieldValue(field, log)"
-                ng-class="'ssl-field-' + field" ng-attr-title="{{ labels[field] }}">{{ fieldValue(field, log) }}</span>
-            </div>
-          </div>
-        </article>
+        <div ssl-day-separator="log" ng-if="showDaySeparator($index)"></div>
+        <div ssl-log-card="log"></div>
       </div>
     </section>
   </main>

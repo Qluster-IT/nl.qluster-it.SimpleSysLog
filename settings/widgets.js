@@ -4,13 +4,33 @@
   var Homey;
   var root;
   var collection = { version: 1, designs: [], themes: [] };
-  var builtInDesigns = [{ id: 'builtin:default', name: 'Default', fields: [
-    'timestamp', 'severity', 'message', 'app', 'facility'
-  ], showDaySeparators: true }];
+  var layoutApi = window.SSLWidgetLayout;
+  var builtInDesigns = [];
   var builtInThemes = [];
+  var selection = null;
+  var selectionKey = '';
+  // The help starts open until the stored preference loads; a fresh install has no preference yet.
+  var help = { expanded: true, available: false, saving: false };
+  var dragState = null;
+  var dragInsertion = {};
+  var suppressClick = false;
   var currentDesignId = 'builtin:default';
   var currentThemeId = 'builtin:default';
   var dirty = false;
+  // Copy of the stored styles; an item differs from its saved copy while it has unsaved changes.
+  var savedCollection = null;
+  // Undo/redo history per edited item, keyed by mode and id, like Chronograph's designer.
+  var editHistories = {};
+  var MAX_HISTORY = 100;
+  var confirmingSwitch = false;
+  // Fixed dates keep the BLL-formatted preview timestamps cacheable per format.
+  var previewDates = (function () {
+    var now = new Date();
+    return [now, new Date(now.getTime() - 86400000)];
+  })();
+  var previewFormats = {};
+  var previewFormatQueue = {};
+  var previewFormatTimer = null;
   var translations = {
     timestamp: ['widgets.fields.timestamp', 'Timestamp'],
     severity: ['widgets.fields.severity', 'Severity'],
@@ -31,23 +51,45 @@
     warning: ['widgets.settings.colors.warning', 'Warning'],
     notice: ['widgets.settings.colors.notice', 'Notice'],
     info: ['widgets.settings.colors.info', 'Info'],
-    debug: ['widgets.settings.colors.debug', 'Debug']
+    debug: ['widgets.settings.colors.debug', 'Debug'],
+    outline: ['widgets.settings.colors.outline', 'Widget border']
   };
   var colorRoles = ['background', 'surface', 'text', 'muted', 'border', 'accent',
-    'emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'];
+    'emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug', 'outline'];
   var colorNames = ['automatic', 'red', 'orange', 'yellow', 'green', 'teal', 'cyan', 'blue',
     'indigo', 'purple', 'pink', 'brown', 'grey', 'black', 'white'];
+  var elementColors = ['default', 'severity'].concat(colorNames.slice(1));
+  var elementBackgrounds = ['default', 'none', 'severity'].concat(colorNames.slice(1));
+  var separatorColors = ['default'].concat(colorNames.slice(1));
+  var separatorBackgrounds = ['default', 'none'].concat(colorNames.slice(1));
+  var SEPARATOR_ID = layoutApi.DAY_SEPARATOR_ID;
+  var LINE_ID = layoutApi.DAY_SEPARATOR_LINE_ID;
+  function isBorder(id) { return layoutApi.BORDER_IDS.indexOf(id) !== -1; }
+  var borderSideFallbacks = { left: 'Left', top: 'Top', right: 'Right', bottom: 'Bottom' };
   var colorNameFallbacks = {
     automatic: 'Automatic', red: 'Red', orange: 'Orange', yellow: 'Yellow', green: 'Green', teal: 'Teal',
     cyan: 'Cyan', blue: 'Blue', indigo: 'Indigo', purple: 'Purple', pink: 'Pink', brown: 'Brown',
     grey: 'Grey', black: 'Black', white: 'White'
   };
-  var previewMode = 'light';
+  var fontFallbacks = {
+    system: 'System', 'sans-serif': 'Sans-serif (Arial)', serif: 'Serif (Georgia)', monospace: 'Monospace (Courier New)',
+    verdana: 'Verdana', trebuchet: 'Trebuchet MS', times: 'Times New Roman'
+  };
+  var lineStyleFallbacks = { solid: 'Solid', dashed: 'Dashed', dotted: 'Dotted', double: 'Double' };
+  var linePositionFallbacks = { behind: 'Behind the date', above: 'Above the date', below: 'Below the date' };
+  // Homey shows app settings in dark mode by inverting the settings iframe with a CSS filter.
+  // That filter is invisible from inside the frame, so it is detected through the system color scheme.
+  var darkSchemeQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  function homeyInvertsPage() {
+    return window.parent !== window && !!(darkSchemeQuery && darkSchemeQuery.matches);
+  }
+  var previewMode = homeyInvertsPage() ? 'dark' : 'light';
   var mode = 'design';
   var forumTopicUrl = 'https://community.homey.app/t/162351';
   var templates = {
     section: 'export', busy: false, review: null, exportText: '', exportDesignName: '', exportThemeName: '',
-    catalog: null, favorites: {}, selectedId: null, showPreviews: false, previewsAvailable: false
+    catalog: null, favorites: {}, selectedId: null, showPreviews: false, previewsAvailable: false,
+    imageData: null
   };
 
   function t(key, fallback) {
@@ -116,7 +158,8 @@
   function isBuiltIn(id) { return id.indexOf('builtin:') === 0; }
 
   function setDirty() {
-    setSaveState(true);
+    captureHistory();
+    refreshSaveState();
     renderPreview();
   }
 
@@ -125,6 +168,125 @@
     var button = document.getElementById('save-styles');
     button.disabled = !isDirty;
     button.classList.toggle('is-dirty', isDirty);
+    updateHistoryButtons();
+  }
+
+  // Key order is ignored, because removing and adding overrides changes the order.
+  function sameValue(first, second) {
+    if (first === second) return true;
+    if (!first || !second || typeof first !== 'object' || typeof second !== 'object') return false;
+    if (Array.isArray(first) !== Array.isArray(second)) return false;
+    var keys = Object.keys(first);
+    if (keys.length !== Object.keys(second).length) return false;
+    return keys.every(function (key) {
+      return Object.prototype.hasOwnProperty.call(second, key) && sameValue(first[key], second[key]);
+    });
+  }
+
+  function markSaved() {
+    savedCollection = clone(collection);
+    refreshSaveState();
+  }
+
+  function refreshSaveState() {
+    setSaveState(!!savedCollection && !sameValue(collection, savedCollection));
+  }
+
+  function editingItem() { return mode === 'design' ? selectedDesign() : selectedTheme(); }
+  function editingKey() { return mode + ':' + editingItem().id; }
+
+  function savedItem(kind, id) {
+    if (!savedCollection) return null;
+    return (kind === 'design' ? savedCollection.designs : savedCollection.themes)
+      .find(function (item) { return item.id === id; }) || null;
+  }
+
+  function editHistory() {
+    var item = editingItem();
+    if (isBuiltIn(item.id)) return null;
+    var key = editingKey();
+    if (!editHistories[key]) editHistories[key] = { entries: [clone(savedItem(mode, item.id) || item)], index: 0 };
+    return editHistories[key];
+  }
+
+  function captureHistory() {
+    var history = editHistory();
+    if (!history) return;
+    var item = editingItem();
+    if (sameValue(item, history.entries[history.index])) return;
+    history.entries.splice(history.index + 1);
+    history.entries.push(clone(item));
+    history.index++;
+    if (history.entries.length > MAX_HISTORY) {
+      history.entries.shift();
+      history.index--;
+    }
+  }
+
+  function updateHistoryButtons() {
+    var history = editingItem() && editHistories[editingKey()];
+    byId('undo-styles').disabled = confirmingSwitch || !history || history.index <= 0;
+    byId('redo-styles').disabled = confirmingSwitch || !history || history.index >= history.entries.length - 1;
+  }
+
+  function replaceItem(item, value) {
+    Object.keys(item).forEach(function (key) { delete item[key]; });
+    Object.assign(item, clone(value));
+  }
+
+  function stepHistory(step) {
+    var history = editHistories[editingKey()];
+    if (confirmingSwitch || !history) return;
+    var index = history.index + step;
+    if (index < 0 || index >= history.entries.length) return;
+    history.index = index;
+    replaceItem(editingItem(), history.entries[index]);
+    // The selected row, column or element may no longer exist in the restored item.
+    selectionKey = '';
+    renderEditor();
+    refreshSaveState();
+  }
+
+  // Runs next once the edited item has no unsaved changes; asks to discard them first, like Chronograph.
+  function leaveEditingItem(next, cancel) {
+    if (confirmingSwitch) return;
+    var kind = mode;
+    var item = editingItem();
+    var key = editingKey();
+    var saved = savedItem(kind, item.id);
+    if (isBuiltIn(item.id) || (saved && sameValue(item, saved))) {
+      next();
+      return;
+    }
+    confirmingSwitch = true;
+    updateHistoryButtons();
+    var message = t('widgets.settings.discardSwitchConfirm', 'Discard unsaved changes to "__name__" and switch?');
+    call('confirm', [message.replace('__name__', item.name), 'warning']).then(function (confirmed) {
+      confirmingSwitch = false;
+      if (!confirmed || editingItem() !== item) {
+        updateHistoryButtons();
+        if (cancel) cancel();
+        return;
+      }
+      if (saved) replaceItem(item, saved);
+      else {
+        var items = kind === 'design' ? collection.designs : collection.themes;
+        var index = items.indexOf(item);
+        if (index >= 0) items.splice(index, 1);
+        if (kind === 'design') currentDesignId = 'builtin:default';
+        else currentThemeId = 'builtin:default';
+      }
+      delete editHistories[key];
+      selectionKey = '';
+      next();
+      renderAll();
+      refreshSaveState();
+    }).catch(function (error) {
+      confirmingSwitch = false;
+      updateHistoryButtons();
+      if (cancel) cancel();
+      setStatus(error.message, true);
+    });
   }
 
   function fillSelect(select, items, selectedId) {
@@ -187,82 +349,877 @@
     root.querySelectorAll('[data-mode-panel]').forEach(function (panel) {
       panel.hidden = panel.dataset.modePanel !== mode;
     });
-    byId('day-separators').closest('.style-design-selectors').hidden = !isDesign || builtin;
-    byId('day-separators').checked = selectedDesign().showDaySeparators;
     byId('preview-other-label').textContent = isDesign
       ? t('widgets.settings.theme', 'Theme') : t('widgets.settings.selectDesign', 'Design style');
     fillGroupedSelect(byId('preview-other'), isDesign ? builtInThemes : builtInDesigns,
       isDesign ? collection.themes : collection.designs, isDesign ? currentThemeId : currentDesignId, !isDesign);
-    if (isDesign) renderFields();
-    else renderColors();
+    // A new item or mode starts without a selection; theme mode starts on the Widget colors.
+    var key = mode + ':' + item.id;
+    if (key !== selectionKey) {
+      selectionKey = key;
+      selection = isDesign ? null : { type: 'widget' };
+    }
+    renderLayoutEditor();
     renderPreview();
+    updateHistoryButtons();
   }
 
-  function renderFields() {
-    var design = selectedDesign();
-    var builtin = isBuiltIn(design.id);
-    var fields = byId('design-fields');
-    fields.replaceChildren();
-    var selected = design.fields.slice();
-    var allFields = selected.concat(['timestamp', 'severity', 'facility', 'app', 'hostname', 'message']
-      .filter(function (field) { return selected.indexOf(field) === -1; }));
-    allFields.forEach(function (field) {
-      var row = document.createElement('li');
-      var checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.className = 'hy-nostyle';
-      checkbox.checked = selected.indexOf(field) !== -1;
-      checkbox.disabled = builtin;
-      checkbox.setAttribute('aria-label', t(translations[field][0], translations[field][1]));
-      checkbox.addEventListener('change', function () {
-        var current = selectedDesign();
-        if (checkbox.checked) current.fields.splice(allFields.indexOf(field), 0, field);
-        else current.fields = current.fields.filter(function (item) { return item !== field; });
-        current.fields = allFields.filter(function (item) { return current.fields.indexOf(item) !== -1; });
-        setDirty();
-        renderFields();
-      });
-      var label = document.createElement('span');
-      label.textContent = t(translations[field][0], translations[field][1]);
-      row.append(checkbox, label,
-        moveButton(field, -1, 'fa-arrow-up', t('widgets.settings.moveUp', 'Move up'),
-          builtin || !checkbox.checked || selected.indexOf(field) === 0),
-        moveButton(field, 1, 'fa-arrow-down', t('widgets.settings.moveDown', 'Move down'),
-          builtin || !checkbox.checked || selected.indexOf(field) === selected.length - 1));
-      fields.appendChild(row);
+  function L(key, fallback) { return t('widgets.settings.layout.' + key, fallback); }
+  function elementLabel(id) {
+    if (id === SEPARATOR_ID) return L('separator_date', 'Date');
+    if (id === LINE_ID) return L('separator_line', 'Line');
+    if (isBorder(id)) return L('border', 'Border') + ' ' + (layoutApi.BORDER_IDS.indexOf(id) + 1);
+    return t(translations[id][0], translations[id][1]);
+  }
+  function clone(value) { return JSON.parse(JSON.stringify(value)); }
+
+  // The design's card grid, or with area "separator" the design's day separator grid.
+  function gridFor(area, design) {
+    design = design || selectedDesign();
+    if (area !== 'separator') return design;
+    if (!design.daySeparatorLayout) design.daySeparatorLayout = layoutApi.defaultSeparatorLayout();
+    return design.daySeparatorLayout;
+  }
+  function maxRowsFor(area) { return area === 'separator' ? layoutApi.MAX_SEPARATOR_ROWS : layoutApi.MAX_ROWS; }
+
+  function newColumn(span) {
+    return { span: span, rowSpan: 1, align: 'left', valign: 'top', direction: 'horizontal', width: 'span', elements: [] };
+  }
+
+  function coveringCells(design, rowIndex) {
+    return layoutApi.computeLayout(design).cells.filter(function (cell) {
+      return cell.row < rowIndex && cell.row + cell.rowSpan > rowIndex;
     });
   }
 
-  function moveButton(field, direction, icon, title, disabled) {
-    var button = document.createElement('button');
+  // Units in a row that are not taken by columns spanning down from earlier rows.
+  function availableUnits(design, rowIndex) {
+    return layoutApi.UNITS - coveringCells(design, rowIndex).reduce(function (sum, cell) { return sum + cell.span; }, 0);
+  }
+
+  function totalSpan(row) {
+    return row.columns.reduce(function (sum, column) { return sum + column.span; }, 0);
+  }
+
+  function reduceWidest(columns, keep) {
+    var widest = null;
+    columns.forEach(function (column) {
+      if (column !== keep && column.span > 1 && (!widest || column.span >= widest.span)) widest = column;
+    });
+    if (!widest && keep && keep.span > 1) widest = keep;
+    if (widest) widest.span--;
+    return !!widest;
+  }
+
+  // Keeps every row valid after a change: rows spanned by earlier columns get fewer units,
+  // wider columns are reduced first and extra columns merge into the last column.
+  function fitRows(design, keep) {
+    var rows = design.rows;
+    rows.forEach(function (row, index) {
+      row.columns.forEach(function (column) {
+        column.rowSpan = Math.max(1, Math.min(column.rowSpan || 1, rows.length - index));
+      });
+    });
+    for (var index = 0; index < rows.length; index++) {
+      var covering = coveringCells(design, index);
+      var available = layoutApi.UNITS - covering.reduce(function (sum, cell) { return sum + cell.span; }, 0);
+      if (available < 1) {
+        var rowIndex = index;
+        covering.forEach(function (cell) { rows[cell.row].columns[cell.column].rowSpan = rowIndex - cell.row; });
+        available = layoutApi.UNITS;
+      }
+      var row = rows[index];
+      while (row.columns.length > available) {
+        var removed = row.columns.pop();
+        var last = row.columns[row.columns.length - 1];
+        last.elements = last.elements.concat(removed.elements);
+      }
+      while (totalSpan(row) > available && reduceWidest(row.columns, keep)) { /* reduce until it fits */ }
+    }
+  }
+
+  function changeDesign(change, area) {
+    var grid = gridFor(area);
+    var keep = change(grid);
+    fitRows(grid, keep);
+    setDirty();
+    renderLayoutEditor();
+  }
+
+  function range(from, to) {
+    var values = [];
+    for (var value = from; value <= to; value++) values.push(value);
+    return values;
+  }
+
+  function availableRowSpans(design, rowIndex, columnIndex) {
+    return range(1, design.rows.length - rowIndex).filter(function (value) {
+      var trial = clone(design);
+      trial.rows[rowIndex].columns[columnIndex].rowSpan = value;
+      for (var below = rowIndex + 1; below < rowIndex + value; below++) {
+        if (availableUnits(trial, below) < 1) return false;
+      }
+      return true;
+    });
+  }
+
+  function setRowCount(count, area) {
+    var design = gridFor(area);
+    if (count === design.rows.length) return Promise.resolve();
+    var removing = count < design.rows.length;
+    var affected = removing && (design.rows.slice(count).some(function (row) {
+      return row.columns.some(function (column) { return column.elements.length; });
+    }) || design.rows.slice(0, count).some(function (row, index) {
+      return row.columns.some(function (column) { return index + column.rowSpan > count; });
+    }));
+    var confirmed = affected
+      ? call('confirm', [L('row_count_confirm', 'Reduce to __count__ rows? Removed rows lose their settings, their elements move to Unused, and spanning columns are shortened.')
+        .replace('__count__', count), 'warning'])
+      : Promise.resolve(true);
+    return confirmed.then(function (accepted) {
+      if (!accepted) {
+        renderSelectionControls();
+        return;
+      }
+      changeDesign(function (current) {
+        if (removing) current.rows.length = count;
+        while (current.rows.length < count) current.rows.push({ padding: 0, columns: [newColumn(layoutApi.UNITS)] });
+      }, area);
+    });
+  }
+
+  function setRowColumns(rowIndex, count, area) {
+    changeDesign(function (design) {
+      var row = design.rows[rowIndex];
+      while (row.columns.length > count) {
+        var removed = row.columns.pop();
+        row.columns[row.columns.length - 1].elements = row.columns[row.columns.length - 1].elements.concat(removed.elements);
+      }
+      while (row.columns.length < count) row.columns.push(newColumn(1));
+    }, area);
+  }
+
+  function setColumnValue(rowIndex, columnIndex, key, value, area) {
+    changeDesign(function (design) {
+      var column = design.rows[rowIndex].columns[columnIndex];
+      column[key] = value;
+      return column;
+    }, area);
+  }
+
+  function moveElement(id, rowIndex, columnIndex, index, area) {
+    changeDesign(function (design) {
+      design.rows.forEach(function (row) {
+        row.columns.forEach(function (column) {
+          column.elements = column.elements.filter(function (item) { return item !== id; });
+        });
+      });
+      if (rowIndex < 0) return;
+      var elements = design.rows[rowIndex].columns[columnIndex].elements;
+      elements.splice(Math.max(0, Math.min(index, elements.length)), 0, id);
+    }, area);
+  }
+
+  function moveRow(from, to, area) {
+    if (from === to) return;
+    changeDesign(function (design) {
+      design.rows.splice(to, 0, design.rows.splice(from, 1)[0]);
+    }, area);
+    selection = { type: 'row', row: to, area: area };
+    renderLayoutEditor();
+  }
+
+  function moveColumn(rowIndex, from, to, area) {
+    if (from === to) return;
+    changeDesign(function (design) {
+      var columns = design.rows[rowIndex].columns;
+      columns.splice(to, 0, columns.splice(from, 1)[0]);
+    }, area);
+    selection = { type: 'column', row: rowIndex, column: to, area: area };
+    renderLayoutEditor();
+  }
+
+  function sameArea(first, second) { return (first || '') === (second || ''); }
+
+  function isSelected(type, row, column, id, area) {
+    return !!selection && selection.type === type && sameArea(selection.area, area)
+      && (row === undefined || selection.row === row)
+      && (column === undefined || selection.column === column)
+      && (id === undefined || selection.element === id);
+  }
+
+  function toggleSelection(next) {
+    var same = selection && selection.type === next.type && selection.row === next.row
+      && selection.column === next.column && selection.element === next.element && sameArea(selection.area, next.area);
+    selection = same ? null : next;
+    renderLayoutEditor();
+    renderPreview();
+  }
+
+  function editorButton(className, text) {
+    var button = element('button', 'hy-nostyle ' + className, text);
     button.type = 'button';
-    button.className = 'hy-nostyle btn btn-outline-primary btn-sm';
-    button.title = title;
-    button.setAttribute('aria-label', title);
-    button.disabled = disabled;
-    var glyph = document.createElement('i');
-    glyph.className = 'fa fa-solid ' + icon;
-    glyph.setAttribute('aria-hidden', 'true');
-    button.appendChild(glyph);
-    button.addEventListener('click', function () { moveField(field, direction); });
     return button;
   }
 
-  function moveField(field, direction) {
-    var design = selectedDesign();
-    var index = design.fields.indexOf(field);
-    var target = index + direction;
-    if (target < 0 || target >= design.fields.length) return;
-    design.fields.splice(index, 1);
-    design.fields.splice(target, 0, field);
-    setDirty();
-    renderFields();
+  function setPressed(button, pressed, className) {
+    button.setAttribute('aria-pressed', String(pressed));
+    if (className) button.classList.toggle(className, pressed);
   }
 
-  function renderColors() {
+  function elementButton(id, isDesign, area) {
+    var button = editorButton('style-group-element', elementLabel(id));
+    var selected = isSelected('element', undefined, undefined, id, area);
+    button.setAttribute('data-style-element', id);
+    setPressed(button, selected, 'style-cell-selected');
+    if (isDesign && selected) button.setAttribute('data-draggable', 'true');
+    makeDraggable(button, 'element', id, area);
+    button.addEventListener('click', function (event) {
+      event.stopPropagation();
+      toggleSelection({ type: 'element', element: id, area: area });
+    });
+    return button;
+  }
+
+  // Row labels, column slots and the Unused slot of the card grid or, with area "separator", the separator grid.
+  function renderGridEditor(container, grid, area, ids, isDesign) {
+    var layout = layoutApi.computeLayout(grid);
+    var gridNode = element('div', 'style-group-editor-grid');
+    grid.rows.forEach(function (row, rowIndex) {
+      var label = editorButton('style-row-select', L('row', 'Row') + ' ' + (rowIndex + 1));
+      var selected = isSelected('row', rowIndex, undefined, undefined, area);
+      label.style.gridColumn = '1';
+      label.style.gridRow = String(rowIndex + 1);
+      label.disabled = !isDesign;
+      label.setAttribute('data-reorder-row', String(rowIndex));
+      setPressed(label, selected, 'style-row-selected');
+      if (isDesign) label.title = L('row_drag', 'Drag to reorder this row');
+      if (isDesign && selected) label.setAttribute('data-draggable', 'true');
+      makeDraggable(label, 'row', rowIndex, area);
+      label.addEventListener('click', function () { toggleSelection({ type: 'row', row: rowIndex, area: area }); });
+      gridNode.appendChild(label);
+    });
+    layout.cells.forEach(function (cell) {
+      var slot = element('div', 'style-group-slot');
+      var name = (cell.row + 1) + '.' + (cell.column + 1);
+      var selected = isSelected('column', cell.row, cell.column, undefined, area);
+      slot.style.gridColumn = (cell.start + 2) + ' / span ' + cell.span;
+      slot.style.gridRow = (cell.row + 1) + ' / span ' + cell.rowSpan;
+      slot.setAttribute('data-style-group', cell.row + ':' + cell.column);
+      slot.classList.toggle('style-column-selected', selected);
+      slot.addEventListener('click', function () {
+        if (isDesign) toggleSelection({ type: 'column', row: cell.row, column: cell.column, area: area });
+      });
+      var number = editorButton('style-group-number', name);
+      number.disabled = !isDesign;
+      number.setAttribute('aria-label', L('column', 'Column') + ' ' + name);
+      number.setAttribute('data-reorder-column', cell.row + ':' + cell.column);
+      setPressed(number, selected);
+      if (isDesign) number.title = L('column_drag', 'Drag to reorder this column');
+      if (isDesign && selected) number.setAttribute('data-draggable', 'true');
+      makeDraggable(number, 'column', cell.row + ':' + cell.column, area);
+      number.addEventListener('click', function (event) {
+        event.stopPropagation();
+        toggleSelection({ type: 'column', row: cell.row, column: cell.column, area: area });
+      });
+      slot.appendChild(number);
+      cell.elements.forEach(function (id) { slot.appendChild(elementButton(id, isDesign, area)); });
+      gridNode.appendChild(slot);
+    });
+    container.appendChild(gridNode);
+
+    var used = layoutApi.usedElements(grid);
+    var unusedRow = element('div', 'style-unused-row');
+    unusedRow.appendChild(element('span', 'style-unused-label', L('unused', 'Unused')));
+    var unused = element('div', 'style-group-slot style-unused-slot');
+    unused.setAttribute('data-style-group', 'unused');
+    ids.forEach(function (id) {
+      if (used.indexOf(id) === -1) unused.appendChild(elementButton(id, isDesign, area));
+    });
+    unusedRow.appendChild(unused);
+    container.appendChild(unusedRow);
+  }
+
+  function renderLayoutEditor() {
+    var panel = byId('layout-editor-panel');
+    var isDesign = mode === 'design';
+    var item = isDesign ? selectedDesign() : selectedTheme();
+    panel.hidden = isBuiltIn(item.id);
+    var helpText = byId('style-designer-help');
+    helpText.hidden = !help.expanded;
+    helpText.textContent = L('group_hint', '') + ' ' + L('select_before_drag', '');
+    var helpToggle = byId('designer-help-toggle');
+    helpToggle.disabled = !help.available || help.saving;
+    helpToggle.setAttribute('aria-expanded', String(help.expanded));
+    helpToggle.querySelector('i').className = 'fa fa-solid ' + (help.expanded ? 'fa-chevron-up' : 'fa-chevron-down');
+    var design = selectedDesign();
+    var editor = byId('group-editor');
+    editor.replaceChildren();
+    var widget = editorButton('style-row-select style-widget-select', L('widget', 'Widget'));
+    setPressed(widget, isSelected('widget'), 'style-row-selected');
+    widget.addEventListener('click', function () { toggleSelection({ type: 'widget' }); });
+    editor.appendChild(widget);
+    renderGridEditor(editor, design, undefined, layoutApi.CARD_ELEMENT_IDS, isDesign);
+
+    // The day separator has its own grid; the drag code keeps elements, rows and columns within their area.
+    var separatorArea = element('div', 'style-separator-area');
+    separatorArea.setAttribute('data-style-area', 'separator');
+    var separator = editorButton('style-row-select style-widget-select', L('day_separator', 'Day separator'));
+    separator.setAttribute('data-style-separator', '');
+    separator.disabled = !isDesign;
+    setPressed(separator, isSelected('separator', undefined, undefined, undefined, 'separator'), 'style-row-selected');
+    separator.addEventListener('click', function () { toggleSelection({ type: 'separator', area: 'separator' }); });
+    separatorArea.appendChild(separator);
+    renderGridEditor(separatorArea, gridFor('separator', design), 'separator', layoutApi.SEPARATOR_ELEMENT_IDS, isDesign);
+    editor.appendChild(separatorArea);
+    renderSelectionControls();
+  }
+
+  function controlId(name) { return 'style-control-' + name; }
+
+  function addSelect(container, name, labelText, options, value, onChange) {
+    var label = element('label', 'hy-nostyle', labelText);
+    label.htmlFor = controlId(name);
+    var select = element('select', 'form-select');
+    select.id = controlId(name);
+    options.forEach(function (option) {
+      var node = element('option', '', option[1]);
+      node.value = String(option[0]);
+      select.appendChild(node);
+    });
+    select.value = String(value);
+    select.addEventListener('change', function () { onChange(select.value); });
+    container.append(label, select);
+    return select;
+  }
+
+  function addHint(container, text, isAlert) {
+    var hint = element('p', 'help-text style-progress-full-row', text);
+    if (isAlert) hint.setAttribute('role', 'alert');
+    container.appendChild(hint);
+    return hint;
+  }
+
+  // Number inputs only store valid values; an invalid value shows an alert instead.
+  function addNumber(container, name, labelText, value, min, max, placeholder) {
+    var label = element('label', 'hy-nostyle', labelText);
+    label.htmlFor = controlId(name);
+    var input = element('input', 'hy-nostyle form-control');
+    input.id = controlId(name);
+    input.type = 'number';
+    input.min = String(min);
+    input.max = String(max);
+    input.step = '1';
+    if (placeholder !== undefined) input.placeholder = String(placeholder);
+    input.value = value === undefined ? '' : String(value);
+    container.append(label, input);
+    return input;
+  }
+
+  function fieldset(className, legend) {
+    var node = element('fieldset', 'hy-nostyle ' + className);
+    node.appendChild(element('legend', '', legend));
+    return node;
+  }
+
+  // Works like the widget's BLL format autocomplete: type to filter or to add a custom format, then select it.
+  // options: name (control ID), label and hint.
+  function addFormatAutocomplete(container, value, options, onSelect) {
+    var listId = controlId(options.name + '-list');
+    var label = element('label', 'hy-nostyle', options.label);
+    label.htmlFor = controlId(options.name);
+    var wrapper = element('div', 'style-autocomplete');
+    var input = element('input', 'hy-nostyle form-control');
+    input.id = controlId(options.name);
+    input.type = 'text';
+    input.maxLength = 128;
+    input.autocomplete = 'off';
+    input.value = value || '';
+    input.setAttribute('role', 'combobox');
+    input.setAttribute('aria-autocomplete', 'list');
+    input.setAttribute('aria-expanded', 'false');
+    input.setAttribute('aria-controls', listId);
+    var list = element('ul', 'style-autocomplete-list');
+    list.id = listId;
+    list.setAttribute('role', 'listbox');
+    list.hidden = true;
+    wrapper.append(input, list);
+    container.append(label, wrapper);
+    addHint(container, options.hint);
+    var items = [];
+    var active = -1;
+    var request = 0;
+    var timer = null;
+
+    function close() {
+      list.hidden = true;
+      input.setAttribute('aria-expanded', 'false');
+      input.removeAttribute('aria-activedescendant');
+    }
+    function render() {
+      list.replaceChildren();
+      items.forEach(function (item, index) {
+        var option = element('li', 'style-autocomplete-option' + (index === active ? ' is-active' : ''));
+        option.id = listId + '-' + index;
+        option.setAttribute('role', 'option');
+        option.setAttribute('aria-selected', String(index === active));
+        option.appendChild(element('span', 'style-autocomplete-name', item.name));
+        if (item.description) option.appendChild(element('span', 'style-autocomplete-description', item.description));
+        // Keeps the input focused, so blur does not close the list before the click selects.
+        option.addEventListener('mousedown', function (event) { event.preventDefault(); });
+        option.addEventListener('click', function () { choose(item); });
+        list.appendChild(option);
+      });
+      var open = items.length > 0 && document.activeElement === input;
+      list.hidden = !open;
+      input.setAttribute('aria-expanded', String(open));
+      if (open && active >= 0) {
+        input.setAttribute('aria-activedescendant', listId + '-' + active);
+        list.children[active].scrollIntoView({ block: 'nearest' });
+      } else input.removeAttribute('aria-activedescendant');
+    }
+    function load() {
+      var id = ++request;
+      api('GET', '/widget-datetime-formats?query=' + encodeURIComponent(input.value.trim())).then(function (result) {
+        if (id !== request) return;
+        items = Array.isArray(result) ? result : [];
+        active = -1;
+        render();
+      }).catch(function () {
+        if (id !== request) return;
+        items = [];
+        render();
+      });
+    }
+    function choose(item) {
+      input.value = item.name;
+      value = item.name;
+      close();
+      onSelect(item.name);
+    }
+    input.addEventListener('focus', load);
+    input.addEventListener('input', function () {
+      clearTimeout(timer);
+      timer = setTimeout(load, 200);
+    });
+    input.addEventListener('keydown', function (event) {
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        if (list.hidden) { load(); return; }
+        var step = event.key === 'ArrowDown' ? 1 : -1;
+        active = items.length ? (active + step + items.length) % items.length : -1;
+        render();
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
+        var item = items[active >= 0 ? active : 0];
+        if (!list.hidden && item) choose(item);
+      } else if (event.key === 'Escape' && !list.hidden) {
+        event.preventDefault();
+        close();
+      }
+    });
+    // Like the widget setting, typed text only counts once it is selected.
+    input.addEventListener('blur', function () {
+      clearTimeout(timer);
+      request++;
+      close();
+      input.value = value || '';
+    });
+  }
+
+  function colorOptions(values) {
+    return values.map(function (value) {
+      if (value === 'default') return [value, L('color_default', 'Theme color')];
+      if (value === 'none') return [value, L('color_none', 'None')];
+      if (value === 'severity') return [value, t('widgets.fields.severity', 'Severity')];
+      return [value, t('widgets.settings.colorNames.' + value, colorNameFallbacks[value])];
+    });
+  }
+
+  function renderSelectionControls() {
+    var container = byId('selection-controls');
+    container.replaceChildren();
+    var item = mode === 'design' ? selectedDesign() : selectedTheme();
+    if (!selection || isBuiltIn(item.id)) return;
+    if (mode === 'theme') {
+      renderThemeControls(container);
+      return;
+    }
+    var design = selectedDesign();
+    var area = selection.area;
+    var grid = gridFor(area, design);
+    var group;
+    var controls = element('div', 'style-position-controls');
+    if (selection.type === 'widget' || selection.type === 'separator') {
+      var isSeparator = selection.type === 'separator';
+      group = fieldset('style-progress-controls', isSeparator ? L('day_separator', 'Day separator') : L('widget', 'Widget'));
+      if (isSeparator) {
+        var show = element('label', 'hy-nostyle style-full-row');
+        var checkbox = element('input', 'hy-nostyle');
+        checkbox.type = 'checkbox';
+        checkbox.id = controlId('day-separators');
+        checkbox.checked = design.showDaySeparators;
+        checkbox.addEventListener('change', function () {
+          selectedDesign().showDaySeparators = checkbox.checked;
+          setDirty();
+          renderPreview();
+        });
+        show.append(checkbox, element('span', '', t('widgets.settings.daySeparators', 'Show day separators')));
+        controls.appendChild(show);
+      }
+      addSelect(controls, 'row-count', L('row_count', 'Number of rows'),
+        range(1, maxRowsFor(area)).map(function (value) { return [value, value]; }), grid.rows.length, function (value) {
+          setRowCount(Number(value), area).catch(function (error) { setStatus(error.message, true); });
+        });
+      if (isSeparator) addHint(controls, L('separator_hint', 'Arrange the date and the line like the entries, in up to two rows.'));
+      else {
+        addSelect(controls, 'widget-border-width', L('widget_border_width', 'Border width (px; 0 = standard Homey frame)'),
+          range(0, 20).map(function (value) { return [value, value]; }), design.widgetBorderWidth || 0, function (value) {
+            selectedDesign().widgetBorderWidth = Number(value);
+            setDirty();
+          });
+      }
+    } else if (selection.type === 'row') {
+      var rowIndex = selection.row;
+      var row = grid.rows[rowIndex];
+      if (!row) {
+        selection = null;
+        return;
+      }
+      group = fieldset('style-row-rules', (isSeparatorArea(area) ? L('day_separator', 'Day separator') + ' - ' : '')
+        + L('row', 'Row') + ' ' + (rowIndex + 1));
+      addSelect(controls, 'row-columns', L('row_columns', 'Number of columns'),
+        range(1, Math.max(1, availableUnits(grid, rowIndex))).map(function (value) { return [value, value]; }),
+        row.columns.length, function (value) { setRowColumns(rowIndex, Number(value), area); });
+      var padding = addNumber(controls, 'row-padding', L('row_top_padding', 'Top padding (px)'), row.padding, 0, 100);
+      addHint(controls, L('row_top_padding_hint', 'Adds space above the row\'s contents.'));
+      var paddingError = addHint(controls, L('row_padding_invalid', 'Enter a whole number from 0 to 100.'), true);
+      paddingError.hidden = true;
+      padding.addEventListener('input', function () {
+        var value = Number(padding.value);
+        var valid = padding.value !== '' && Number.isInteger(value) && value >= 0 && value <= 100;
+        paddingError.hidden = valid;
+        if (!valid) return;
+        gridFor(area).rows[rowIndex].padding = value;
+        setDirty();
+      });
+    } else if (selection.type === 'column') {
+      var columnRow = selection.row;
+      var columnIndex = selection.column;
+      var column = grid.rows[columnRow] && grid.rows[columnRow].columns[columnIndex];
+      if (!column) {
+        selection = null;
+        return;
+      }
+      group = fieldset('style-column-controls', (isSeparatorArea(area) ? L('day_separator', 'Day separator') + ' - ' : '')
+        + L('column', 'Column') + ' ' + (columnRow + 1) + '.' + (columnIndex + 1));
+      var maxSpan = Math.max(1, availableUnits(grid, columnRow) - (grid.rows[columnRow].columns.length - 1));
+      addSelect(group, 'column-span', L('column_span', 'Column span'), range(1, maxSpan).map(function (value) { return [value, value]; }),
+        Math.min(column.span, maxSpan), function (value) { setColumnValue(columnRow, columnIndex, 'span', Number(value), area); });
+      addHint(group, L('column_span_hint', ''));
+      addSelect(group, 'column-row-span', L('column_row_span', 'Rows spanned'),
+        availableRowSpans(grid, columnRow, columnIndex).map(function (value) { return [value, value]; }),
+        column.rowSpan, function (value) { setColumnValue(columnRow, columnIndex, 'rowSpan', Number(value), area); });
+      addHint(group, L('column_row_span_hint', ''));
+      addSelect(group, 'column-alignment', L('column_alignment', 'Element alignment'), [
+        ['left', L('align_left', 'Left')], ['center', L('align_center', 'Center')],
+        ['right', L('align_right', 'Right')], ['stretch', L('align_stretch', 'Stretch')]
+      ], column.align, function (value) { setColumnValue(columnRow, columnIndex, 'align', value, area); });
+      addSelect(group, 'column-vertical-alignment', L('column_vertical_alignment', 'Vertical alignment'), [
+        ['top', L('align_top', 'Top')], ['middle', L('align_middle', 'Middle')], ['bottom', L('align_bottom', 'Bottom')]
+      ], column.valign, function (value) { setColumnValue(columnRow, columnIndex, 'valign', value, area); });
+      if (isSeparatorArea(area) && column.elements.indexOf(LINE_ID) !== -1 && gridFor('separator', design).linePosition !== 'above'
+        && gridFor('separator', design).linePosition !== 'below') {
+        addHint(group, L('line_position_hint', 'The vertical alignment places the line at the top, middle or bottom of this column.'));
+      }
+      addSelect(group, 'column-direction', L('column_direction', 'Element direction'), [
+        ['horizontal', L('direction_horizontal', 'Horizontal')], ['vertical', L('direction_vertical', 'Vertical')]
+      ], column.direction, function (value) { setColumnValue(columnRow, columnIndex, 'direction', value, area); });
+      addSelect(group, 'column-width', L('column_width', 'Column width'), [
+        ['span', L('width_span', 'Fill available space by span')], ['content', L('width_content', 'Fit to content')]
+      ], column.width, function (value) { setColumnValue(columnRow, columnIndex, 'width', value, area); });
+      if (column.rowSpan > 1) addHint(group, L('row_span_fit_hint', ''));
+      container.appendChild(group);
+      return;
+    } else if (selection.type === 'element' && selection.element === LINE_ID) {
+      var line = gridFor('separator', design);
+      group = fieldset('style-progress-controls', L('day_separator', 'Day separator') + ' - ' + elementLabel(LINE_ID));
+      addSelect(controls, 'line-position', L('line_position', 'Line position'), layoutApi.LINE_POSITIONS.map(function (position) {
+        return [position, L('line_positions.' + position, linePositionFallbacks[position])];
+      }), line.linePosition || 'behind', function (value) {
+        gridFor('separator').linePosition = value;
+        setDirty();
+      });
+      addSelect(controls, 'line-thickness', L('line_thickness', 'Line thickness (px)'),
+        range(1, layoutApi.MAX_LINE_THICKNESS).map(function (value) { return [value, value]; }), line.lineThickness || 1, function (value) {
+          gridFor('separator').lineThickness = Number(value);
+          setDirty();
+        });
+      addSelect(controls, 'line-style', L('line_style', 'Line style'), layoutApi.LINE_STYLES.map(function (style) {
+        return [style, L('line_styles.' + style, lineStyleFallbacks[style])];
+      }), line.lineStyle || 'solid', function (value) {
+        gridFor('separator').lineStyle = value;
+        setDirty();
+      });
+      addHint(controls, L('line_hint', 'Behind draws the line through the date. Above and Below put it on its own line above or below the date. You can also drag the line into its own row or column.'));
+    } else if (selection.type === 'element' && isBorder(selection.element)) {
+      var borderId = selection.element;
+      var border = layoutApi.elementBorder(design, borderId);
+      group = fieldset('style-progress-controls', elementLabel(borderId));
+      var setBorder = function (key, value) {
+        var current = selectedDesign();
+        current.elementBorders = current.elementBorders || {};
+        current.elementBorders[borderId] = Object.assign(layoutApi.elementBorder(current, borderId), current.elementBorders[borderId]);
+        current.elementBorders[borderId][key] = value;
+        setDirty();
+      };
+      addSelect(controls, 'border-side', L('border_side', 'Position'), layoutApi.BORDER_SIDES.map(function (side) {
+        return [side, L('border_sides.' + side, borderSideFallbacks[side])];
+      }), border.side, function (value) { setBorder('side', value); });
+      addSelect(controls, 'border-thickness', L('border_thickness', 'Thickness (px)'),
+        range(1, layoutApi.MAX_LINE_THICKNESS).map(function (value) { return [value, value]; }), border.thickness, function (value) {
+          setBorder('thickness', Number(value));
+        });
+      addHint(controls, L('border_hint', 'Draws a border on this side of the column, in the severity colour unless the theme sets another. When the column covers that whole side of the card, the border becomes the card\'s own border.'));
+    } else if (selection.type === 'element') {
+      var id = selection.element;
+      group = fieldset('style-progress-controls', id === SEPARATOR_ID
+        ? L('day_separator', 'Day separator') + ' - ' + elementLabel(id) : elementLabel(id));
+      var sizes = design.elementSizes || {};
+      var size = addNumber(controls, 'element-size', L('size_current', 'Size override (px)'), sizes[id], 4, 100,
+        layoutApi.DEFAULT_SIZES[id]);
+      addHint(controls, L('size_default', 'App default: __size__ px. Leave empty to use the default.')
+        .replace('__size__', layoutApi.DEFAULT_SIZES[id]));
+      var sizeError = addHint(controls, L('size_invalid', 'Enter a whole number from 4 to 100.'), true);
+      sizeError.hidden = true;
+      size.addEventListener('input', function () {
+        var value = Number(size.value);
+        var current = selectedDesign();
+        var valid = size.value === '' || (Number.isInteger(value) && value >= 4 && value <= 100);
+        sizeError.hidden = valid;
+        if (!valid) return;
+        current.elementSizes = current.elementSizes || {};
+        if (size.value === '') delete current.elementSizes[id];
+        else current.elementSizes[id] = value;
+        setDirty();
+      });
+      var fonts = design.elementFonts || {};
+      addSelect(controls, 'element-font', L('font', 'Font'), [['', L('font_default', 'App default')]].concat(
+        layoutApi.FONT_IDS.map(function (font) { return [font, L('fonts.' + font, fontFallbacks[font])]; })
+      ), fonts[id] || '', function (value) {
+        var current = selectedDesign();
+        current.elementFonts = current.elementFonts || {};
+        if (value) current.elementFonts[id] = value;
+        else delete current.elementFonts[id];
+        setDirty();
+      });
+      addHint(controls, L('font_hint', 'Leave on App default to keep the widget\'s own font.'));
+      if (id === 'timestamp') {
+        addFormatAutocomplete(controls, design.timestampFormat, {
+          name: 'timestamp-format',
+          label: t('widgets.settings.timestampFormat', 'Date and time format'),
+          hint: t('widgets.settings.timestampFormatHint', '')
+        }, function (format) {
+          selectedDesign().timestampFormat = format;
+          setDirty();
+          renderPreview();
+        });
+      } else if (id === SEPARATOR_ID) {
+        addFormatAutocomplete(controls, design.daySeparatorFormat, {
+          name: 'day-separator-format',
+          label: t('widgets.settings.daySeparatorFormat', 'Day separator format'),
+          hint: t('widgets.settings.daySeparatorFormatHint', '')
+        }, function (format) {
+          selectedDesign().daySeparatorFormat = format;
+          setDirty();
+          renderPreview();
+        });
+      }
+    } else {
+      return;
+    }
+    group.appendChild(controls);
+    container.appendChild(group);
+  }
+
+  function isSeparatorArea(area) { return area === 'separator'; }
+
+  function renderThemeControls(container) {
+    container.appendChild(element('h3', '', t('widgets.settings.colorsTitle', 'Colors')));
+    if (selection.type === 'widget') {
+      var colors = element('div', 'style-colors ssl-palette');
+      container.appendChild(colors);
+      renderColors(colors);
+      return;
+    }
+    if (selection.type !== 'element') return;
+    var id = selection.element;
+    var inSeparator = id === SEPARATOR_ID || id === LINE_ID;
+    var fieldsetNode = fieldset('style-colors ssl-palette', inSeparator
+      ? L('day_separator', 'Day separator') + ' - ' + elementLabel(id) : elementLabel(id));
+    var theme = selectedTheme();
+    var current = (theme.elements && theme.elements[id]) || { color: 'default', background: 'default' };
+    function update(key, value) {
+      var item = selectedTheme();
+      item.elements = item.elements || {};
+      var next = Object.assign({ color: 'default', background: 'default' }, item.elements[id]);
+      next[key] = value;
+      if (next.color === 'default' && next.background === 'default') delete item.elements[id];
+      else item.elements[id] = next;
+      setDirty();
+    }
+    // The line and borders only have a colour; their thickness and position belong to the design.
+    var entries = [['color', L('color', 'Color'), inSeparator ? separatorColors : elementColors]];
+    if (id !== LINE_ID && !isBorder(id)) entries.push(['background', L('background', 'Background'), inSeparator ? separatorBackgrounds : elementBackgrounds]);
+    entries.forEach(function (entry) {
+      var row = element('div', 'style-color-row');
+      addSelect(row, 'element-' + entry[0], entry[1], colorOptions(entry[2]), current[entry[0]], function (value) {
+        update(entry[0], value);
+      });
+      fieldsetNode.appendChild(row);
+    });
+    container.appendChild(fieldsetNode);
+  }
+
+  // Pointer-based dragging works with a mouse and on touch screens in the Homey app.
+  function clearInsertion() {
+    if (dragInsertion.indicator) dragInsertion.indicator.remove();
+    dragInsertion.indicator = null;
+    if (dragInsertion.highlighted) dragInsertion.highlighted.classList.remove('style-group-drop-target');
+    dragInsertion.highlighted = null;
+  }
+
+  function highlightTarget(node) {
+    clearInsertion();
+    dragInsertion.highlighted = node;
+    node.classList.add('style-group-drop-target');
+  }
+
+  function showInsertion(slot, y, source) {
+    highlightTarget(slot);
+    var unused = slot.getAttribute('data-style-group') === 'unused';
+    var items = Array.prototype.slice.call(slot.querySelectorAll('[data-style-element]')).filter(function (item) {
+      return item.getAttribute('data-style-element') !== source;
+    });
+    var index = unused ? -1 : items.findIndex(function (item) {
+      var bounds = item.getBoundingClientRect();
+      return y < bounds.top + bounds.height / 2;
+    });
+    if (index === -1) index = items.length;
+    var slotBounds = slot.getBoundingClientRect();
+    var bounds = items[index] ? items[index].getBoundingClientRect()
+      : items.length ? items[items.length - 1].getBoundingClientRect() : slotBounds;
+    var top = unused ? slotBounds.top + 4 : items[index] ? bounds.top : items.length ? bounds.bottom : slotBounds.bottom - 5;
+    var reference = items[index] || items[items.length - 1];
+    var text = unused ? L('drop_unused', 'Move to Unused')
+      : items[index] ? L('drop_before', 'Before __element__')
+        : reference ? L('drop_after', 'After __element__') : L('drop_empty', 'In empty column');
+    var indicator = element('div', 'style-group-insertion-indicator');
+    indicator.appendChild(element('span', 'style-group-insertion-label',
+      text.replace('__element__', reference ? reference.textContent.trim() : '')));
+    indicator.style.left = (slotBounds.left + 4) + 'px';
+    indicator.style.width = Math.max(0, slotBounds.width - 8) + 'px';
+    indicator.style.top = top + 'px';
+    document.body.appendChild(indicator);
+    dragInsertion.indicator = indicator;
+    return unused ? 0 : index;
+  }
+
+  function areaOf(node) { return node.closest('[data-style-area="separator"]') ? 'separator' : undefined; }
+
+  function findDropTarget(drag, x, y) {
+    clearInsertion();
+    var target = document.elementFromPoint(x, y);
+    var editor = byId('group-editor');
+    if (!target || !editor.contains(target) || !sameArea(areaOf(target), drag.area)) return null;
+    if (drag.kind === 'element') {
+      var slot = target.closest('[data-style-group]');
+      if (!slot) return null;
+      return { group: slot.getAttribute('data-style-group'), index: showInsertion(slot, y, drag.source) };
+    }
+    if (drag.kind === 'row') {
+      var row = target.closest('[data-reorder-row]');
+      if (!row) return null;
+      highlightTarget(row);
+      return { row: Number(row.getAttribute('data-reorder-row')) };
+    }
+    var column = target.closest('[data-style-group]');
+    var sourceRow = String(drag.source).split(':')[0];
+    if (!column || column.getAttribute('data-style-group').split(':')[0] !== sourceRow) return null;
+    highlightTarget(column);
+    return { column: Number(column.getAttribute('data-style-group').split(':')[1]) };
+  }
+
+  function dropOn(drag, target) {
+    if (drag.kind === 'element') {
+      if (target.group === 'unused') {
+        moveElement(drag.source, -1, 0, 0, drag.area);
+        return;
+      }
+      var position = target.group.split(':').map(Number);
+      moveElement(drag.source, position[0], position[1], target.index, drag.area);
+    } else if (drag.kind === 'row') {
+      moveRow(drag.source, target.row, drag.area);
+    } else {
+      var source = String(drag.source).split(':').map(Number);
+      moveColumn(source[0], source[1], target.column, drag.area);
+    }
+  }
+
+  function endDrag(event, drop) {
+    var drag = dragState;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    dragState = null;
+    if (drag.ghost) drag.ghost.remove();
+    drag.node.classList.remove('style-touch-dragging');
+    var target = drag.active && drop ? findDropTarget(drag, event.clientX, event.clientY) : null;
+    clearInsertion();
+    if (drag.active) {
+      suppressClick = true;
+      setTimeout(function () { suppressClick = false; }, 0);
+    }
+    if (target) dropOn(drag, target);
+  }
+
+  function makeDraggable(node, kind, source, area) {
+    node.addEventListener('click', function (event) {
+      if (!suppressClick) return;
+      suppressClick = false;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }, true);
+    node.addEventListener('pointerdown', function (event) {
+      if (node.getAttribute('data-draggable') !== 'true' || event.button > 0 || dragState) return;
+      dragState = { kind: kind, source: source, area: area, node: node, pointerId: event.pointerId,
+        x: event.clientX, y: event.clientY, active: false, ghost: null };
+      try {
+        node.setPointerCapture(event.pointerId);
+      } catch (error) {
+        // Without pointer capture, dragging still works while the pointer stays on the item.
+      }
+    });
+    node.addEventListener('pointermove', function (event) {
+      var drag = dragState;
+      if (!drag || drag.node !== node || drag.pointerId !== event.pointerId) return;
+      if (!drag.active) {
+        if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) < 6) return;
+        drag.active = true;
+        drag.ghost = element('div', 'style-touch-drag-ghost', node.textContent.trim());
+        document.body.appendChild(drag.ghost);
+        node.classList.add('style-touch-dragging');
+      }
+      event.preventDefault();
+      drag.ghost.style.left = event.clientX + 'px';
+      drag.ghost.style.top = event.clientY + 'px';
+      findDropTarget(drag, event.clientX, event.clientY);
+    });
+    node.addEventListener('pointerup', function (event) { endDrag(event, true); });
+    node.addEventListener('pointercancel', function (event) { endDrag(event, false); });
+  }
+
+  function renderColors(colors) {
     var theme = selectedTheme();
     var builtin = isBuiltIn(theme.id);
-    var colors = byId('theme-colors');
     colors.replaceChildren();
     colorRoles.forEach(function (key) {
       var row = document.createElement('div');
@@ -280,7 +1237,8 @@
       colorNames.forEach(function (name) {
         var option = document.createElement('option');
         option.value = name;
-        option.textContent = t('widgets.settings.colorNames.' + name, colorNameFallbacks[name]);
+        option.textContent = name === 'automatic' ? L('color_default', 'Theme color')
+          : t('widgets.settings.colorNames.' + name, colorNameFallbacks[name]);
         input.appendChild(option);
       });
       input.value = theme.colors[key];
@@ -336,6 +1294,7 @@
     byId('close-templates').disabled = busy;
     byId('catalog-previews').disabled = busy || !templates.previewsAvailable;
     byId('import-template').disabled = busy || !byId('import-code').value.trim();
+    byId('copy-forum-post').disabled = busy || !templates.imageData;
     updateExport();
   }
 
@@ -382,73 +1341,102 @@
   }
 
   // Uses the widget stylesheet and markup so the preview matches the dashboard widget.
-  function renderWidgetPreview(preview, design, theme, extraClass) {
+  // forcedMode renders a fixed light or dark widget without the settings page's counter-invert (template images).
+  function renderWidgetPreview(preview, design, theme, extraClass, selected, forcedMode) {
+    selected = selected || {};
+    var selectedElement = selected.type === 'element' ? selected.element : undefined;
+    var inSeparator = selected.area === 'separator';
     if (!preview || !design || !theme) return;
-    preview.className = 'ssl-widget preview-widget ssl-mode-' + previewMode + (extraClass ? ' ' + extraClass : '');
+    preview.className = 'ssl-widget preview-widget ssl-mode-' + (forcedMode || previewMode)
+      + (!forcedMode && homeyInvertsPage() ? ' preview-counter-invert' : '') + (extraClass ? ' ' + extraClass : '');
     preview.removeAttribute('style');
     colorRoles.forEach(function (key) {
       if (theme.colors[key] && theme.colors[key] !== 'automatic') {
         preview.style.setProperty('--ssl-' + key, 'var(--ssl-color-' + theme.colors[key] + ')');
       }
     });
+    if (design.widgetBorderWidth) preview.style.setProperty('--ssl-outline-width', design.widgetBorderWidth + 'px');
     preview.replaceChildren();
     var list = element('div', 'ssl-log-list');
-    var now = new Date();
-    var yesterday = new Date(now.getTime() - 86400000);
     var examples = [
-      { date: now, severity: 4, severityName: t('widgets.settings.colors.warning', 'Warning'), facility: 'Flow', app: 'Heating', hostname: 'Homey', message: 'A temperature has changed. This message wraps to fit the widget.' },
-      { date: now, severity: 5, severityName: t('widgets.settings.colors.notice', 'Notice'), facility: 'User', app: 'Backup', hostname: 'Homey', message: 'Network backup completed.' },
-      { date: yesterday, severity: 3, severityName: t('widgets.settings.colors.error', 'Error'), facility: 'System', app: 'Simple (Sys) Log', hostname: 'Homey', message: 'Widget preview entry.' }
+      { date: previewDates[0], severity: 4, severityName: t('widgets.settings.colors.warning', 'Warning'), facility: 'Flow', app: 'Heating', hostname: 'Homey', message: 'A temperature has changed. This message wraps to fit the widget.' },
+      { date: previewDates[0], severity: 5, severityName: t('widgets.settings.colors.notice', 'Notice'), facility: 'User', app: 'Backup', hostname: 'Homey', message: 'Network backup completed.' },
+      { date: previewDates[1], severity: 3, severityName: t('widgets.settings.colors.error', 'Error'), facility: 'System', app: 'Simple (Sys) Log', hostname: 'Homey', message: 'Widget preview entry.' }
     ];
-    var fields = Array.isArray(design.fields) ? design.fields : [];
-    var sideFields = fields.filter(function (field) { return field === 'timestamp' || field === 'severity'; });
-    var metaFields = fields.filter(function (field) {
-      return field !== 'timestamp' && field !== 'severity' && field !== 'message';
-    });
+    var formatted = previewTimestamps(design.timestampFormat);
+    var days = previewTimestamps(design.daySeparatorFormat);
+    function dayText(date) {
+      return days ? days[previewDates.indexOf(date)]
+        : date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+    }
+    var labels = {};
+    layoutApi.ELEMENT_IDS.forEach(function (id) { labels[id] = elementLabel(id); });
     var severityNames = ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'];
     examples.forEach(function (entry, index) {
       var row = element('div', 'ssl-log-entry');
-      var day = entry.date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
-      if (design.showDaySeparators && (index === 0 || examples[index - 1].date !== entry.date)) {
-        var separator = element('div', 'ssl-day-separator');
-        separator.appendChild(element('span', '', day));
-        row.appendChild(separator);
+      var day = dayText(entry.date);
+      if (design.showDaySeparators && (index === 0 || dayText(examples[index - 1].date) !== day)) {
+        row.appendChild(layoutApi.renderDaySeparator(document, design, theme, day, {
+          selectedElement: selectedElement,
+          selectedSeparator: selected.type === 'separator',
+          selectedRow: inSeparator && selected.type === 'row' ? selected.row : undefined,
+          selectedColumn: inSeparator && selected.type === 'column' ? { row: selected.row, column: selected.column } : undefined
+        }));
       }
       var values = {
-        timestamp: entry.date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }),
+        timestamp: formatted ? formatted[previewDates.indexOf(entry.date)]
+          : entry.date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }),
         severity: entry.severityName,
         facility: entry.facility,
         app: entry.app,
         hostname: entry.hostname,
         message: entry.message
       };
-      var card = element('article', 'ssl-log-card ssl-sev-' + severityNames[entry.severity]);
-      if (sideFields.length) {
-        var side = element('div', 'ssl-log-side');
-        sideFields.forEach(function (field) { side.appendChild(element('span', 'ssl-field-' + field, values[field])); });
-        card.appendChild(side);
-      }
-      var main = element('div', 'ssl-log-main');
-      if (fields.indexOf('message') >= 0) main.appendChild(element('div', 'ssl-field-message', values.message));
-      if (metaFields.length) {
-        var meta = element('div', 'ssl-log-meta');
-        metaFields.forEach(function (field) { meta.appendChild(element('span', 'ssl-field-' + field, values[field])); });
-        main.appendChild(meta);
-      }
-      card.appendChild(main);
-      row.appendChild(card);
+      row.appendChild(layoutApi.renderCard(document, design, theme, values, {
+        severityClass: 'ssl-sev-' + severityNames[entry.severity],
+        labels: labels,
+        selectedElement: selectedElement,
+        selectedCard: selected.type === 'widget',
+        selectedRow: !inSeparator && selected.type === 'row' ? selected.row : undefined,
+        selectedColumn: !inSeparator && selected.type === 'column' ? { row: selected.row, column: selected.column } : undefined
+      }));
       list.appendChild(row);
     });
     preview.appendChild(list);
+    layoutApi.alignContentTracks(list);
   }
 
   function renderPreview() {
-    renderWidgetPreview(byId('widget-preview'), selectedDesign(), selectedTheme());
+    renderWidgetPreview(byId('widget-preview'), selectedDesign(), selectedTheme(), '', selection);
     if (templates.section === 'export') updateExport();
     if (templates.review) renderImportPreview();
   }
 
   function defaultDesign() { return findDesign('builtin:default') || builtInDesigns[0]; }
+
+  // Returns the preview timestamps in a BLL format, or null until BLL has formatted them.
+  function previewTimestamps(format) {
+    if (typeof format !== 'string' || !format.trim()) return null;
+    if (Object.prototype.hasOwnProperty.call(previewFormats, format)) return previewFormats[format] || null;
+    if (!Homey) return null;
+    previewFormatQueue[format] = true;
+    clearTimeout(previewFormatTimer);
+    previewFormatTimer = setTimeout(function () {
+      var formats = Object.keys(previewFormatQueue);
+      previewFormatQueue = {};
+      Promise.all(formats.map(function (item) {
+        return api('POST', '/widget-timestamps', {
+          format: item,
+          timestamps: previewDates.map(function (date) { return date.toISOString(); })
+        }).then(function (result) {
+          previewFormats[item] = result && Array.isArray(result.values) ? result.values : false;
+        }).catch(function () {
+          previewFormats[item] = false;
+        });
+      })).then(renderPreview);
+    }, 250);
+    return null;
+  }
   function defaultTheme() { return findTheme('builtin:default') || builtInThemes[0]; }
 
   function renderExportSelectors() {
@@ -478,10 +1466,169 @@
 
   function clearExport() {
     templates.exportText = '';
+    clearTemplateImages();
     byId('template-code').value = '';
     byId('template-forum-post').value = '';
     byId('export-result').hidden = true;
     updateExport();
+  }
+
+  function clearTemplateImages() {
+    templates.imageData = null;
+    byId('copy-forum-post').disabled = true;
+    setCopyStatus(null);
+    setImageProgress(null);
+  }
+
+  function setCopyStatus(status) {
+    var node = byId('template-copy-status');
+    node.hidden = !status;
+    node.replaceChildren();
+    if (status === 'copied') {
+      node.append(element('strong', '', t('widgets.settings.copyCopied', 'The post and both images were copied.')),
+        document.createTextNode(' ' + t('widgets.settings.copyNext', 'Open the forum and paste them into the rich-text editor.')));
+    } else if (status === 'retry') {
+      node.textContent = t('widgets.settings.copyRetry', 'Copying failed. Use the Copy post and images button to try again.');
+    }
+  }
+
+  function setImageProgress(done) {
+    var node = byId('template-image-progress');
+    node.hidden = done === null;
+    node.textContent = done === null ? '' : t('widgets.settings.rendering', 'Creating previews') + ' ' + done + '/' + IMAGE_MODES.length;
+  }
+
+  // Template images never follow the settings or dashboard mode: all light images first, then the same in dark.
+  var IMAGE_MODES = ['light', 'dark'];
+  var IMAGE_WIDTH = 400;
+  var IMAGE_PANELS = {
+    light: { background: '#f4f4f6', text: '#202127', label: ['widgets.settings.previewLight', 'Light'] },
+    dark: { background: '#0d0e12', text: '#f2f3f5', label: ['widgets.settings.previewDark', 'Dark'] }
+  };
+
+  function captureNode(node) {
+    return new Promise(function (resolve, reject) {
+      var timer = setTimeout(function () { reject(new Error('Preview image timed out')); }, 15000);
+      window.htmlToImage.toCanvas(node, { skipFonts: true, pixelRatio: 1 }).then(function (canvas) {
+        clearTimeout(timer);
+        resolve(canvas);
+      }, function (error) {
+        clearTimeout(timer);
+        reject(error);
+      });
+    });
+  }
+
+  async function templatePreviewImages(design, theme) {
+    if (!window.htmlToImage) throw new Error('Template preview is unavailable');
+    var host = element('div');
+    host.setAttribute('aria-hidden', 'true');
+    host.style.cssText = 'position:fixed;left:-10000px;top:0;width:' + IMAGE_WIDTH + 'px;pointer-events:none;';
+    var preview = element('div');
+    host.appendChild(preview);
+    document.body.appendChild(host);
+    var images = [];
+    try {
+      for (var index = 0; index < IMAGE_MODES.length; index++) {
+        var imageMode = IMAGE_MODES[index];
+        renderWidgetPreview(preview, design, theme, '', null, imageMode);
+        preview.style.width = IMAGE_WIDTH + 'px';
+        // A timer instead of requestAnimationFrame: rAF never fires while the settings page is in a background tab.
+        await new Promise(function (resolve) { setTimeout(resolve, 50); });
+        images.push({ mode: imageMode, canvas: await captureNode(preview) });
+        setImageProgress(index + 1);
+      }
+    } finally {
+      host.remove();
+    }
+    var padding = 16, headingHeight = 32;
+    return images.map(function (image) {
+      var panel = IMAGE_PANELS[image.mode];
+      var canvas = document.createElement('canvas');
+      canvas.width = padding * 2 + image.canvas.width;
+      canvas.height = padding * 2 + headingHeight + image.canvas.height;
+      var context = canvas.getContext('2d');
+      context.fillStyle = panel.background;
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = panel.text;
+      context.textBaseline = 'middle';
+      context.font = '600 20px sans-serif';
+      context.fillText(t(panel.label[0], panel.label[1]), padding, padding + headingHeight / 2);
+      context.drawImage(image.canvas, padding, padding + headingHeight);
+      return canvas.toDataURL('image/png');
+    });
+  }
+
+  function prepareTemplateImages(design, theme) {
+    clearTemplateImages();
+    setBusy(true);
+    setImageProgress(0);
+    return templatePreviewImages(design, theme).then(function (images) {
+      templates.imageData = images;
+      setImageProgress(null);
+      setBusy(false);
+      copyForumPost(true);
+    }, function (error) {
+      setImageProgress(null);
+      setBusy(false);
+      alertMessage(t('widgets.settings.prepareImageError', 'Could not create the preview images. Create the TWF again to retry.')
+        + '\n' + (error && error.message ? error.message : String(error)));
+    });
+  }
+
+  function escapeHtml(value) {
+    return value.replace(/[&<>"']/g, function (character) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character];
+    });
+  }
+
+  // Copies the post as rich text with the images embedded, so the forum's rich-text editor uploads them.
+  function copyForumPost(automatic) {
+    if (templates.busy || !templates.exportText || !templates.imageData || !templates.imageData.length) return;
+    setCopyStatus(null);
+    var text = forumPost();
+    var heading = text.slice(2, text.indexOf('\n\n'));
+    var html = '<h1>' + escapeHtml(heading) + '</h1><p><br></p>'
+      + templates.imageData.map(function (image) { return '<p><img alt="Widget preview" src="' + image + '"></p>'; }).join('')
+      + '<p>TWF:</p><pre data-params="javascript"><code class="language-javascript">' + escapeHtml(templates.exportText) + '</code></pre>';
+    var copied = false;
+    function onCopy(event) {
+      event.preventDefault();
+      event.clipboardData.setData('text/plain', text);
+      event.clipboardData.setData('text/html', html);
+      copied = true;
+    }
+    var copyError;
+    try {
+      var field = byId('template-forum-post');
+      field.focus();
+      field.select();
+      document.addEventListener('copy', onCopy);
+      if (!document.execCommand('copy') || !copied) throw new Error('Clipboard copy was blocked');
+    } catch (error) {
+      copyError = error;
+    } finally {
+      document.removeEventListener('copy', onCopy);
+    }
+    function finish(error) {
+      setBusy(false);
+      setCopyStatus(error ? 'retry' : 'copied');
+      if (error && !automatic) {
+        alertMessage(t('widgets.settings.clipboardImageError', 'Could not copy the post and images. You can still copy the TWF separately.')
+          + '\n' + (error.message || String(error)));
+      }
+    }
+    if (!copyError) { finish(); return; }
+    if (!navigator.clipboard || !navigator.clipboard.write || !window.ClipboardItem) { finish(copyError); return; }
+    try {
+      setBusy(true);
+      navigator.clipboard.write([new window.ClipboardItem({
+        'text/plain': new Blob([text], { type: 'text/plain' }),
+        'text/html': new Blob([html], { type: 'text/html' })
+      })]).then(function () { finish(); }, finish);
+    } catch (error) {
+      finish(error);
+    }
   }
 
   function forumPost() {
@@ -499,6 +1646,7 @@
       return;
     }
     setBusy(true);
+    var prepared = false;
     api('POST', '/widget-template/encode', { design: selection.design, theme: selection.theme }).then(function (text) {
       templates.exportText = text;
       templates.exportDesignName = selection.design ? selection.design.name : '';
@@ -506,9 +1654,13 @@
       byId('template-code').value = text;
       byId('template-forum-post').value = forumPost();
       byId('export-result').hidden = false;
+      prepared = true;
     }).catch(function (error) {
       setStatus(error.message, true);
-    }).finally(function () { setBusy(false); });
+    }).finally(function () {
+      setBusy(false);
+      if (prepared) prepareTemplateImages(selection.design || defaultDesign(), selection.theme || defaultTheme());
+    });
   }
 
   function renderAll() {
@@ -528,7 +1680,7 @@
       return Promise.reject(new Error('Invalid design or theme name'));
     }
     if (!isBuiltIn(design.id)) {
-      if (!design.fields.length) {
+      if (!layoutApi.usedElements(design).length) {
         setStatus(t('widgets.settings.selectField', 'Select at least one visible field.'), true);
         return Promise.reject(new Error('A design must have at least one field'));
       }
@@ -537,7 +1689,7 @@
     if (!isBuiltIn(theme.id)) theme.name = theme.name.trim();
     collection.version = 1;
     return setSetting('widgetStyles', collection).then(function () {
-      setSaveState(false);
+      markSaved();
       setStatus(t('widgets.settings.saved', 'Saved.'));
       renderAll();
     }).catch(function (error) {
@@ -560,13 +1712,29 @@
     return name.slice(0, 60);
   }
 
-  function createDesign(copy) {
-    var original = copy ? selectedDesign() : defaultDesign();
+  // The source is copied before leaving it, so a copy keeps the unsaved changes that are discarded on the source.
+  function createItem(copy) {
+    var source = copy ? clone(editingItem()) : null;
+    leaveEditingItem(function () {
+      if (mode === 'design') createDesign(copy, source);
+      else createTheme(copy, source);
+    });
+  }
+
+  function createDesign(copy, source) {
+    var original = copy ? source : defaultDesign();
     var design = {
       id: newId(),
       name: itemName(copy, original, 'design'),
-      fields: original.fields.slice(),
-      showDaySeparators: original.showDaySeparators
+      showDaySeparators: original.showDaySeparators,
+      timestampFormat: original.timestampFormat,
+      daySeparatorFormat: original.daySeparatorFormat,
+      widgetBorderWidth: original.widgetBorderWidth || 0,
+      rows: clone(original.rows),
+      daySeparatorLayout: clone(original.daySeparatorLayout || layoutApi.defaultSeparatorLayout()),
+      elementBorders: clone(original.elementBorders || {}),
+      elementSizes: clone(original.elementSizes || {}),
+      elementFonts: clone(original.elementFonts || {})
     };
     collection.designs.push(design);
     currentDesignId = design.id;
@@ -575,9 +1743,14 @@
     renderAll();
   }
 
-  function createTheme(copy) {
-    var original = copy ? selectedTheme() : defaultTheme();
-    var theme = { id: newId(), name: itemName(copy, original, 'theme'), colors: Object.assign({}, original.colors) };
+  function createTheme(copy, source) {
+    var original = copy ? source : defaultTheme();
+    var theme = {
+      id: newId(),
+      name: itemName(copy, original, 'theme'),
+      colors: Object.assign({}, original.colors),
+      elements: clone(original.elements || {})
+    };
     collection.themes.push(theme);
     currentThemeId = theme.id;
     mode = 'theme';
@@ -596,13 +1769,28 @@
     return call('confirm', [message.replace('__name__', item.name), 'warning'])
       .then(function (confirmed) {
         if (!confirmed) return;
-        var items = isDesign ? collection.designs : collection.themes;
-        var index = items.findIndex(function (item) { return item.id === id; });
-        if (index >= 0) items.splice(index, 1);
-        if (isDesign) currentDesignId = 'builtin:default';
-        else currentThemeId = 'builtin:default';
-        setDirty();
-        renderAll();
+        var listKey = isDesign ? 'designs' : 'themes';
+        function removeFromEditor() {
+          var items = collection[listKey];
+          var index = items.findIndex(function (entry) { return entry.id === id; });
+          if (index >= 0) items.splice(index, 1);
+          delete editHistories[type + ':' + id];
+          if (isDesign) currentDesignId = 'builtin:default';
+          else currentThemeId = 'builtin:default';
+          renderAll();
+          refreshSaveState();
+        }
+        if (!savedItem(type, id)) {
+          removeFromEditor();
+          return;
+        }
+        // Deleting is stored at once, like Chronograph; other items only hold saved values at this point.
+        var remaining = clone(savedCollection);
+        remaining[listKey] = remaining[listKey].filter(function (entry) { return entry.id !== id; });
+        return setSetting('widgetStyles', remaining).then(function () {
+          savedCollection = remaining;
+          removeFromEditor();
+        });
       });
   }
 
@@ -635,6 +1823,12 @@
     var text = byId('import-code').value.trim();
     if (templates.busy || !text) return Promise.resolve();
     closeReview();
+    var header = /^(?:```[a-z]*\s*)?\[twf:([^:\]\s]{1,64}):/i.exec(text);
+    if (header && header[1] !== 'SimpleSysLog') {
+      setStatus(t('widgets.settings.importOtherApp', 'This TWF was made for {app}, not for Simple (Sys) Log. Import it in that app instead.')
+        .replace('{app}', header[1]), true);
+      return Promise.resolve();
+    }
     setStatus('');
     setBusy(true);
     return api('POST', '/widget-template/decode', { text: text }).then(function (value) {
@@ -707,7 +1901,7 @@
       closeReview();
       byId('import-code').value = '';
       renderAll();
-      setSaveState(false);
+      markSaved();
       alertMessage(t('widgets.settings.saved', 'Saved.'));
     }).catch(function (error) {
       added.forEach(function (entry) {
@@ -872,6 +2066,21 @@
     });
   }
 
+  function toggleHelp() {
+    if (!help.available || help.saving) return;
+    var expanded = !help.expanded;
+    help.saving = true;
+    renderLayoutEditor();
+    setSetting('widgetDesignerHelpExpanded', expanded).then(function () {
+      help.expanded = expanded;
+    }).catch(function (error) {
+      setStatus(error.message, true);
+    }).finally(function () {
+      help.saving = false;
+      renderLayoutEditor();
+    });
+  }
+
   function importCatalogTemplate(item) {
     if (templates.busy) return;
     showTemplateSection('import');
@@ -897,21 +2106,27 @@
       scope.querySelectorAll('[data-i18n-aria-label]').forEach(function (element) {
         element.setAttribute('aria-label', t(element.getAttribute('data-i18n-aria-label'), element.getAttribute('aria-label')));
       });
+      scope.querySelectorAll('[data-i18n-alt]').forEach(function (element) {
+        element.alt = t(element.getAttribute('data-i18n-alt'), element.alt);
+      });
     });
     getSetting('widgetTemplateShowPreviews').then(function (value) {
       templates.showPreviews = value === true;
       templates.previewsAvailable = true;
       renderCatalog();
     }).catch(function () {});
-    Promise.all([
-      getSetting('widgetStyles'),
-      api('GET', '/widget-styles')
-    ]).then(function (values) {
-      var saved = values[0];
-      var available = values[1];
-      if (saved && saved.version === 1 && Array.isArray(saved.designs) && Array.isArray(saved.themes)) {
-        collection = saved;
-      }
+    getSetting('widgetDesignerHelpExpanded').then(function (value) {
+      help.expanded = value !== false;
+      help.available = true;
+      if (builtInDesigns.length) renderLayoutEditor();
+    }).catch(function () {});
+    // The API returns validated styles, with designs from before the grid designer already converted.
+    api('GET', '/widget-styles').then(function (available) {
+      collection = {
+        version: 1,
+        designs: available.designs.filter(function (item) { return !isBuiltIn(item.id); }),
+        themes: available.themes.filter(function (item) { return !isBuiltIn(item.id); })
+      };
       builtInDesigns = available.designs.filter(function (item) { return isBuiltIn(item.id); }).map(function (item) {
         return Object.assign({}, item, { name: t('widgets.design.' + item.id.slice(8), item.name) });
       });
@@ -919,7 +2134,7 @@
         return Object.assign({}, item, { name: t('widgets.theme.' + item.id.slice(8), item.name) });
       });
       renderAll();
-      setSaveState(false);
+      markSaved();
     }).catch(function (error) {
       setStatus(error.message || 'Unable to initialize the widget designer.', true);
     });
@@ -928,14 +2143,22 @@
   function bindEvents() {
     root.querySelectorAll('.mode-button').forEach(function (button) {
       button.addEventListener('click', function () {
-        mode = button.dataset.mode === 'theme' ? 'theme' : 'design';
-        renderEditor();
+        var next = button.dataset.mode === 'theme' ? 'theme' : 'design';
+        if (next === mode) return;
+        leaveEditingItem(function () {
+          mode = next;
+          renderEditor();
+        });
       });
     });
     byId('style-select').addEventListener('change', function (event) {
-      if (mode === 'design') currentDesignId = event.target.value;
-      else currentThemeId = event.target.value;
-      renderEditor();
+      var id = event.target.value;
+      var current = editingItem().id;
+      leaveEditingItem(function () {
+        if (mode === 'design') currentDesignId = id;
+        else currentThemeId = id;
+        renderEditor();
+      }, function () { byId('style-select').value = current; });
     });
     byId('preview-other').addEventListener('change', function (event) {
       if (mode === 'design') currentThemeId = event.target.value;
@@ -949,27 +2172,57 @@
       if (option) option.textContent = item.name;
       setDirty();
     });
-    byId('day-separators').addEventListener('change', function (event) {
-      selectedDesign().showDaySeparators = event.target.checked;
-      setDirty();
-    });
-    byId('style-new').addEventListener('click', function () {
-      if (mode === 'design') createDesign(false);
-      else createTheme(false);
-    });
-    byId('style-copy').addEventListener('click', function () {
-      if (mode === 'design') createDesign(true);
-      else createTheme(true);
-    });
+    byId('designer-help-toggle').addEventListener('click', toggleHelp);
+    var sticky = root.querySelector('.style-preview-sticky');
+    if (sticky) {
+      // The sentinel stays in the flow above the preview, so it only moves above the preview once it sticks.
+      // Comparing positions works for any scroll container; the stuck preview is shorter.
+      var sentinel = element('div', 'style-preview-sentinel');
+      sentinel.setAttribute('aria-hidden', 'true');
+      sticky.parentNode.insertBefore(sentinel, sticky);
+      var stuckFrame = 0;
+      var updateStuck = function () {
+        stuckFrame = 0;
+        var stuck = sentinel.getBoundingClientRect().top < sticky.getBoundingClientRect().top - 0.5;
+        sticky.classList.toggle('is-stuck', stuck);
+        // Keeps the scroll height while the preview is shorter, so a page scrolled to the end stays stuck.
+        sticky.parentNode.classList.toggle('style-preview-stuck-space', stuck);
+      };
+      var scheduleStuck = function () {
+        if (!stuckFrame) stuckFrame = window.requestAnimationFrame(updateStuck);
+      };
+      document.addEventListener('scroll', scheduleStuck, { capture: true, passive: true });
+      window.addEventListener('resize', scheduleStuck);
+      scheduleStuck();
+    }
+    byId('style-new').addEventListener('click', function () { createItem(false); });
+    byId('style-copy').addEventListener('click', function () { createItem(true); });
     byId('style-delete').addEventListener('click', function () {
       deleteSelected(mode).catch(function (error) { setStatus(error.message, true); });
     });
+    byId('preview-mode').value = previewMode;
     byId('preview-mode').addEventListener('change', function (event) {
       previewMode = event.target.value === 'dark' ? 'dark' : 'light';
       renderPreview();
     });
+    if (darkSchemeQuery && darkSchemeQuery.addEventListener) {
+      darkSchemeQuery.addEventListener('change', function () {
+        previewMode = homeyInvertsPage() ? 'dark' : 'light';
+        byId('preview-mode').value = previewMode;
+        renderPreview();
+      });
+    }
     byId('save-styles').addEventListener('click', function () { save().catch(function () {}); });
-    byId('open-templates').addEventListener('click', function () { showScreen('templates'); });
+    byId('undo-styles').addEventListener('click', function () { stepHistory(-1); });
+    byId('redo-styles').addEventListener('click', function () { stepHistory(1); });
+    window.addEventListener('beforeunload', function (event) {
+      if (!dirty) return;
+      event.preventDefault();
+      event.returnValue = '';
+    });
+    byId('open-templates').addEventListener('click', function () {
+      leaveEditingItem(function () { showScreen('templates'); });
+    });
     byId('close-templates').addEventListener('click', function () { showScreen('editor'); });
     root.querySelectorAll('.template-section-button').forEach(function (button) {
       button.addEventListener('click', function () { showTemplateSection(button.dataset.section); });
@@ -980,7 +2233,7 @@
     });
     byId('export-template').addEventListener('click', createTemplate);
     byId('copy-template').addEventListener('click', function () { copyField('template-code'); });
-    byId('copy-forum-post').addEventListener('click', function () { copyField('template-forum-post'); });
+    byId('copy-forum-post').addEventListener('click', function () { copyForumPost(false); });
     byId('post-forum').addEventListener('click', function () { openExchange(); });
     byId('import-code').addEventListener('input', function () {
       closeReview();
@@ -1005,6 +2258,11 @@
       if (!root) return;
       bindEvents();
       initialize(homey);
+    },
+    // Called before the settings page leaves the Widgets tab, so unsaved changes are kept or discarded first.
+    leave: function (next) {
+      if (!root || !savedCollection || byId('designer-savebar').hidden) next();
+      else leaveEditingItem(next);
     }
   };
 }());

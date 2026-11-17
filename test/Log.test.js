@@ -1081,6 +1081,11 @@ test('maxSeverity keeps entries at or above a severity level in indexed, cursor,
   await log.writeLine({ message: 'legacy error', severity: 3, timestamp: new Date(2026, 0, 5, 12) });
   await log.writeLine({ message: 'legacy info', severity: 6, timestamp: new Date(2026, 0, 5, 12, 1) });
   assert.deepEqual((await legacy.getLogs({ maxSeverity: 4 })).map(entry => entry.message), ['legacy error']);
+  assert.deepEqual((await legacy.getLogs({ severities: [6] })).map(entry => entry.message), ['legacy info']);
+  const chosen = await log.getLogs({ severities: [2, 6], take: 10 });
+  assert.deepEqual(chosen.logs.map(entry => entry.message), ['legacy info', 'severity 6', 'severity 2']);
+  assert.equal(await book.cursorRowMatches({ severities: [6] }, 2), true);
+  assert.equal(await book.cursorRowMatches({ severities: [6] }, 1), false);
 });
 
 test('clearing all logs releases the previous writers and has written the confirmation when it returns', async t => {

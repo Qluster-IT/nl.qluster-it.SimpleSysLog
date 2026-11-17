@@ -130,25 +130,217 @@
   background: var(--homey-background-color, var(--homey-color-background, Canvas));
 }
 
+.widget-designer .style-preview-sentinel { height: 1px; margin-bottom: -1px; }
+
 .widget-designer .preview-widget {
   width: 100%;
   max-width: 450px;
   height: auto;
   max-height: 40vh;
+  transition: max-height 0.15s ease;
 }
 
-.widget-designer .field-list { margin: 0; padding: 0; list-style: none; }
+.widget-designer .style-preview-sticky.is-stuck .preview-widget { max-height: 22vh; }
+/* Cancels Homey's dark-mode inversion so previews show their real colors. */
+.widget-designer .preview-widget.preview-counter-invert { filter: invert(1) hue-rotate(180deg); }
+.widget-designer .style-preview-stuck-space { padding-bottom: 18vh; }
 
-.widget-designer .field-list li {
+.widget-designer .style-autocomplete { position: relative; }
+
+.widget-designer .style-autocomplete-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  max-height: 240px;
+  margin: 2px 0 0;
+  padding: 4px 0;
+  overflow-y: auto;
+  list-style: none;
+  border: 1px solid var(--homey-color-mono-400, rgba(128, 128, 128, 0.35));
+  border-radius: 6px;
+  background: var(--homey-background-color, var(--homey-color-background, Canvas));
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.widget-designer .style-autocomplete-option {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.widget-designer .style-autocomplete-option:hover,
+.widget-designer .style-autocomplete-option.is-active {
+  background: var(--homey-color-mono-100, rgba(128, 128, 128, 0.15));
+}
+
+.widget-designer .style-autocomplete-description {
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
+.widget-designer .style-group-editor { display: grid; gap: 4px; }
+
+.widget-designer .style-group-editor-grid {
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 0;
-  border-bottom: 1px solid rgba(128, 128, 128, 0.25);
+  grid-template-columns: auto repeat(5, minmax(0, 1fr));
+  gap: 4px;
 }
 
-.widget-designer .field-list input { width: 18px; height: 18px; }
+.widget-designer .style-separator-area {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--homey-line-color, rgba(128, 128, 128, 0.35));
+}
+
+.widget-designer .style-unused-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 4px;
+}
+
+.widget-designer .style-unused-label { padding: 5px; }
+.widget-designer .style-unused-slot { display: flex; flex-wrap: wrap; align-content: start; gap: 4px; }
+.widget-designer .style-unused-slot .style-group-element { width: auto; }
+
+.widget-designer .style-row-select {
+  padding: 4px;
+  border: 1px solid rgba(128, 128, 128, 0.55);
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.widget-designer .style-row-select:disabled { cursor: default; opacity: 0.6; }
+.widget-designer .style-row-selected { border-color: var(--ssl-primary); }
+.widget-designer .style-widget-select { display: block; width: 100%; }
+.widget-designer .style-row-rules,
+.widget-designer .style-column-controls { display: grid; gap: 8px; margin: 12px 0; border: 0; padding: 0; }
+.widget-designer .style-row-rules legend,
+.widget-designer .style-column-controls legend,
+.widget-designer .style-progress-controls legend { font-size: 1rem; color: inherit; text-transform: none; padding: 0; }
+
+.widget-designer .style-group-slot {
+  min-width: 0;
+  min-height: 56px;
+  padding: 3px;
+  border: 1px dashed rgba(128, 128, 128, 0.55);
+  border-radius: 4px;
+}
+
+.widget-designer .style-group-slot > * + * { margin-top: 3px; }
+.widget-designer .style-unused-slot > * + * { margin-top: 0; }
+.widget-designer .style-group-drop-target,
+.widget-designer .style-column-selected { border-color: var(--ssl-primary); }
+
+/* Drag helpers are added to the body, outside .settings-view, so they need the brand color here. */
+.style-group-insertion-indicator,
+.style-touch-drag-ghost { --ssl-primary: #BC274A; }
+
+.style-group-insertion-indicator {
+  position: fixed;
+  z-index: 10001;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--ssl-primary);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.style-group-insertion-label {
+  position: absolute;
+  right: 0;
+  top: 0;
+  max-width: min(250px, 85vw);
+  padding: 4px 7px;
+  border: 1px solid var(--ssl-primary);
+  border-radius: 4px;
+  background: var(--homey-background-color, #333);
+  color: var(--homey-text-color, #fff);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: normal;
+  transform: translateY(-100%);
+}
+
+.widget-designer .style-group-number {
+  display: block;
+  width: 100%;
+  min-height: 24px;
+  padding: 3px 4px;
+  border: 0;
+  border-radius: 3px;
+  background: rgba(128, 128, 128, 0.1);
+  color: var(--homey-text-color-light, #777982);
+  font-size: 10px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.widget-designer .style-group-number:disabled { cursor: default; }
+
+.widget-designer .style-group-element {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  padding: 3px;
+  border: 0;
+  border-radius: 3px;
+  background: rgba(128, 128, 128, 0.2);
+  color: inherit;
+  font-size: 11px;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.widget-designer .style-cell-selected { outline: 2px solid var(--ssl-primary) !important; outline-offset: -2px; }
+.widget-designer [data-draggable="true"] { cursor: grab; touch-action: none; }
+.widget-designer .style-touch-dragging { opacity: 0.4; }
+
+.style-touch-drag-ghost {
+  position: fixed;
+  z-index: 10000;
+  max-width: 180px;
+  padding: 6px 10px;
+  border: 1px solid var(--ssl-primary);
+  border-radius: 4px;
+  background: var(--homey-background-color, #333);
+  color: var(--homey-text-color, #fff);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+  font-size: 12px;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.widget-designer .style-position-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  align-items: center;
+  gap: 8px 12px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.widget-designer .style-position-controls label,
+.widget-designer .style-column-controls label { margin: 0; }
+.widget-designer .style-progress-controls { min-width: 0; margin: 12px 0; padding: 0; border: 0; }
+.widget-designer .style-progress-full-row { grid-column: 1 / -1; margin: 0; }
+.widget-designer .style-grid-hint { margin: 12px 0 8px; }
+.widget-designer .style-grid-hint p { margin: 8px 0 0; }
+.widget-designer .ssl-element-selected,
+.widget-designer .ssl-preview-selected { outline: 2px solid var(--ssl-primary); outline-offset: 1px; }
+.widget-designer .ssl-preview-row-overlay { pointer-events: none; outline-offset: -2px; }
 
 .widget-designer .style-colors { display: grid; gap: 8px; }
 
@@ -236,6 +428,8 @@
 }
 
 .widget-designer .template-catalog-details { margin: 4px 0 12px 28px; }
+.widget-designer .template-export-instruction { margin: 8px 0; }
+.widget-designer .template-editor-switch { display: block; max-width: 100%; height: auto; margin: 4px 0 12px; }
 .widget-designer .template-catalog-details p { margin: 4px 0 8px; }
 .widget-designer .template-catalog-details .btn { margin: 0 8px 8px 0; font-size: 1rem; }
 .widget-designer .template-catalog-description { white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -248,9 +442,16 @@
 .designer-footers [hidden] { display: none !important; }
 
 .designer-footers .settings-savebar,
+.designer-footers .settings-general-savebar,
 .designer-footers .settings-template-footer {
   display: flex;
   min-height: 60px;
+}
+
+/* Like Chronograph: Save is twice as wide as Undo and Redo. */
+.designer-footers .settings-savebar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
 }
 
 .designer-footers .btn {
@@ -283,7 +484,12 @@
   background: rgba(128, 128, 128, 0.12);
 }
 
-.designer-footers .settings-history-button:hover { background: rgba(128, 128, 128, 0.25); }
+.designer-footers .settings-history-button:enabled:hover { background: rgba(128, 128, 128, 0.25); }
+
+.designer-footers .settings-history-button:disabled {
+  color: var(--homey-text-color-light, #8b8d95);
+  opacity: 1;
+}
 
 .designer-footers .btn:focus-visible {
   outline: 2px solid var(--ssl-primary);

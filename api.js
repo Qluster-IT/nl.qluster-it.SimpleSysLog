@@ -2,11 +2,12 @@
 const { BL } = require("betterlogiclibrary");
 const { encodeTemplate, decodeTemplate } = require("./lib/widget-template");
 const { getCatalog } = require("./lib/widget-template-catalog");
-const { getWidgetStyles } = require("./lib/widget-styles");
+const { getWidgetStyles, resolveTimestampFormat, resolveDaySeparatorFormat } = require("./lib/widget-styles");
 const {
   TRANSLATION_KEYS, matchesLinkFilters, resetSecret, verifyLink
 } = require("./lib/android-links");
 const widgetApi = require("./widgets/log_viewer/api");
+const { parseSeverities } = require("./lib/severity-filter");
 
 const ANDROID_POLL_TIMEOUT_MS = 20000;
 
@@ -14,9 +15,20 @@ function verifiedLinkConfig(homey, query) {
   return verifyLink(homey, query && query.ssl, query && query.sig);
 }
 
-function linkLogQuery(config) {
-  const query = { take: config.entryCount, timestampFormat: config.datetimeFormat };
-  if (config.minSeverity !== undefined) query.minSeverity = config.minSeverity;
+// The levels chosen in a wrapper's filter menu; they are not part of the signed link.
+function linkSeverities(query) {
+  return parseSeverities(query && query.severities);
+}
+
+function linkFormats(homey, config) {
+  const design = getWidgetStyles(homey).designs.find(item => item.id === config.designStyle);
+  return { timestamp: resolveTimestampFormat(config.datetimeFormat, design), day: resolveDaySeparatorFormat(design) };
+}
+
+function linkLogQuery(config, formats, severities) {
+  const query = { take: config.entryCount, timestampFormat: formats.timestamp, dayFormat: formats.day };
+  if (severities !== undefined) query.severities = severities.join(',');
+  else if (config.minSeverity !== undefined) query.minSeverity = config.minSeverity;
   if (config.facility !== undefined) query.facility = config.facility;
   if (config.appFilter !== undefined) query.app = config.appFilter;
   if (config.hostnameFilter !== undefined) query.hostname = config.hostnameFilter;
@@ -24,16 +36,19 @@ function linkLogQuery(config) {
 }
 
 // Realtime entries only carry the formats registered by dashboard widgets; links add their own.
-function withTimestampFormat(log, format) {
-  const formatted = log.timestamp_formatted || {};
-  if (Object.prototype.hasOwnProperty.call(formatted, format)) return log;
-  let value;
-  try {
-    value = BL.datetime.toString(format, log.timestamp);
-  } catch (error) {
-    value = formatted.datetime;
+function withTimestampFormats(log, formats) {
+  const formatted = { ...(log.timestamp_formatted || {}) };
+  let changed = false;
+  for (const format of [formats.timestamp, formats.day]) {
+    if (Object.prototype.hasOwnProperty.call(formatted, format)) continue;
+    try {
+      formatted[format] = BL.datetime.toString(format, log.timestamp);
+    } catch (error) {
+      formatted[format] = formatted.datetime;
+    }
+    changed = true;
   }
-  return { ...log, timestamp_formatted: { ...formatted, [format]: value } };
+  return changed ? { ...log, timestamp_formatted: formatted } : log;
 }
 
 function fillLogDownload(homey, link, returnType, contentKey) {
@@ -51,31 +66,6 @@ function fillLogDownload(homey, link, returnType, contentKey) {
 module.exports = {
   async getApiReady({ homey }) {
     return { ready: homey.app.apiReady === true };
-  },
-  async internal({ homey, body: { action, logBookID, type } }) {
-    if(!homey.app.Log) throw new Error(homey.__('bllNotStartedYet'));
-    switch (action) {
-      case 'getLogBookIDs':
-        return homey.app.Log.LogBooks;
-      case 'submitLogBookForDiagnostic':
-        return homey.app.Log.submitLogBookForDiagnostic(logBookID);
-      case 'retrieveLogBookDiagnostic':
-        let s = homey.app.Log.retrieveLogBookDiagnostic(logBookID,);
-        if (type == 'base64') return Buffer.from(s).toString('base64');
-        else return s;
-      case 'writelogs':
-        let date = new Date();
-        for (let i = 0; i < 100; i++) {
-          date = new Date(date.setDate(date.getDate() - 1));
-          for (let j = 0; j < 10; j++) {
-            await homey.app.addLogToDB('Test message voor here is this', undefined, { severity: j === 0 ? 4 : undefined, timestamp: date });
-          }
-        }
-        break;
-      case 'getCount':
-        return homey.app.Log.logCount;
-        break;
-    }
   },
 
   async getLogDownloadUrl({ homey, params: { returnType } }) {
@@ -166,6 +156,24 @@ module.exports = {
   async getWidgetStyles({ homey }) {
     return getWidgetStyles(homey);
   },
+  async getWidgetDatetimeFormats({ homey, query }) {
+    const text = query && typeof query.query === 'string' ? query.query.trim().slice(0, 128) : '';
+    return homey.app.getDatetimeFormatSuggestions(text);
+  },
+  async formatWidgetTimestamps({ homey, body }) {
+    const format = body && body.format;
+    const timestamps = body && body.timestamps;
+    if (typeof format !== 'string' || !format.trim() || format.length > 128
+      || !Array.isArray(timestamps) || timestamps.length > 10) throw new Error('Invalid timestamp format request.');
+    if (!BL.isReady) throw new Error(homey.__('bllNotStartedYet'));
+    return {
+      values: timestamps.map(value => {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) throw new Error('Invalid timestamp format request.');
+        return BL.datetime.toString(format, date);
+      })
+    };
+  },
   async getAndroidPing() {
     return { ok: true };
   },
@@ -180,25 +188,31 @@ module.exports = {
   },
   async getAndroidLogs({ homey, query }) {
     const config = verifiedLinkConfig(homey, query);
+    const severities = linkSeverities(query);
     // Read the sequence first; entries written during the query are delivered again and deduplicated.
     const seq = homey.app.androidLinkFeed.touch();
-    const data = await widgetApi.getWidgetLogs({ homey, query: linkLogQuery(config) });
-    return { ...data, seq };
+    const data = await widgetApi.getWidgetLogs({ homey, query: linkLogQuery(config, linkFormats(homey, config), severities) });
+    return { ...data, seq, instance: homey.app.androidLinkFeed.instance };
   },
   async getAndroidUpdates({ homey, query }) {
     const config = verifiedLinkConfig(homey, query);
+    const severities = linkSeverities(query);
+    // Wrappers cannot receive the api-ready realtime event, so they poll until it was announced.
+    if (!homey.app.apiReady || !homey.app.androidLinkFeed.instance) return { ready: false };
     const result = await homey.app.androidLinkFeed.wait({
       after: Number(query.after),
-      matches: log => matchesLinkFilters(config, log),
+      instance: query.instance,
+      matches: log => matchesLinkFilters(config, log, severities),
       timeoutMs: ANDROID_POLL_TIMEOUT_MS,
       setTimeout: (callback, ms) => homey.setTimeout(callback, ms),
       clearTimeout: timer => homey.clearTimeout(timer)
     });
     if (result.reload) return { reload: true };
+    const formats = linkFormats(homey, config);
     return {
       ...result,
       available: !!homey.app.Log,
-      logs: result.logs.map(log => withTimestampFormat(log, config.datetimeFormat))
+      logs: result.logs.map(log => withTimestampFormats(log, formats))
     };
   },
   async resetAndroidLinks({ homey }) {

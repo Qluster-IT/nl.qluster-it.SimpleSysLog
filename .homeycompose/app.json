@@ -205,10 +205,6 @@
       "method": "GET",
       "path": "/api-ready"
     },
-    "internal": {
-      "method": "POST",
-      "path": "/internal/"
-    },
     "getLogDownloadUrl": {
       "method": "GET",
       "path": "/getlogdownloadurl/:returnType",
@@ -246,6 +242,14 @@
     "getWidgetStyles": {
       "method": "GET",
       "path": "/widget-styles"
+    },
+    "getWidgetDatetimeFormats": {
+      "method": "GET",
+      "path": "/widget-datetime-formats"
+    },
+    "formatWidgetTimestamps": {
+      "method": "POST",
+      "path": "/widget-timestamps"
     },
     "getAndroidPing": {
       "method": "GET",

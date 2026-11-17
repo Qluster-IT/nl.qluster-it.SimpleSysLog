@@ -121,16 +121,20 @@ test('startup catches up in limited mode before BLL becomes available', async t 
 
 function prepareStartup(t, app, settings) {
   const realtime = [];
+  app.notices = [];
   app.log = () => {};
   app.error = () => {};
   app.buildCards = () => {};
   app.addLogToDB = () => {};
   app.clearBackLog = async () => {};
+  const stored = {};
   app.homey.settings = {
-    get: key => key === 'settings' ? settings : undefined,
-    set() {},
+    get: key => key === 'settings' ? settings : stored[key],
+    set(key, value) { stored[key] = value; },
     on() {}
   };
+  app.homey.__ = key => key;
+  app.homey.notifications = { createNotification: async ({ excerpt }) => { app.notices.push(excerpt); } };
   app.homey.api = { realtime: async (event, data) => { realtime.push([event, data]); } };
   t.mock.method(BL, 'init', async () => ({ ready: new Promise(() => {}) }));
   return realtime;
@@ -146,6 +150,20 @@ test('startup announces API readiness without waiting for BLL', async t => {
   assert.equal(JSON.stringify(realtime), JSON.stringify([['api-ready', { ready: true }]]));
   assert.equal(app.Log, undefined);
   assert.deepEqual(errors, []);
+  assert.deepEqual(app.notices, ['widget_features_notice']);
+});
+
+test('the widget release notification is attempted once, even when delivery fails', async t => {
+  for (const fail of [false, true]) {
+    const { app, settings, errors } = createApp();
+    prepareStartup(t, app, settings);
+    if (fail) app.homey.notifications.createNotification = async ({ excerpt }) => { app.notices.push(excerpt); throw new Error('offline'); };
+    await app.notifyReleaseFeatures();
+    await app.notifyReleaseFeatures();
+    assert.deepEqual(app.notices, ['widget_features_notice']);
+    assert.equal(app.homey.settings.get('widgetFeaturesNotificationAttempted'), true);
+    assert.equal(errors.length, fail ? 1 : 0);
+  }
 });
 
 test('startup stays not ready when mandatory initialization fails', async t => {

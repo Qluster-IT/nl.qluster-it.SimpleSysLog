@@ -16,27 +16,31 @@ html.ssl-widget-page,
   box-sizing: border-box;
 }
 
-/* Named colours match the Chronograph widget palette and Homey colours. */
+/* Like Chronograph: blue, green, orange, red and white use Homey's semantic palette, grey its
+   theme-aware monochrome palette; black stays fixed and the other colours are extensions. */
 .ssl-widget,
 .ssl-palette {
-  --ssl-color-red: var(--homey-color-red-500, #f25f5c);
-  --ssl-color-orange: var(--homey-color-orange-500, #f07a1f);
+  --ssl-color-red: var(--homey-color-red, #f25f5c);
+  --ssl-color-orange: var(--homey-color-orange, #f07a1f);
   --ssl-color-yellow: #f5c518;
-  --ssl-color-green: var(--homey-color-green-500, #71d51b);
+  --ssl-color-green: var(--homey-color-green, #71d51b);
   --ssl-color-teal: #1fc7b0;
   --ssl-color-cyan: #2cc3e8;
-  --ssl-color-blue: var(--homey-color-blue-500, #2f8df6);
+  --ssl-color-blue: var(--homey-color-blue, #2f8df6);
   --ssl-color-indigo: #7c83f7;
   --ssl-color-purple: #9033fc;
   --ssl-color-pink: #f2549e;
   --ssl-color-brown: #b9875a;
-  --ssl-color-grey: #9a9ca6;
-  --ssl-color-black: #101114;
-  --ssl-color-white: #ffffff;
+  --ssl-color-grey: var(--homey-color-mono-500, #9a9ca6);
+  --ssl-color-black: #000000;
+  --ssl-color-white: var(--homey-color-white, #ffffff);
 }
 
 .ssl-widget {
-  --ssl-background: #ffffff;
+  --ssl-background: var(--homey-background-color, #ffffff);
+  --ssl-frame-shadow: none;
+  --ssl-outline: var(--homey-line-color, rgba(128, 128, 128, 0.35));
+  --ssl-outline-width: 0px;
   --ssl-surface: #f3f4f6;
   --ssl-text: #202127;
   --ssl-muted: #777982;
@@ -47,8 +51,8 @@ html.ssl-widget-page,
   --ssl-critical: var(--ssl-color-red);
   --ssl-error: var(--ssl-color-red);
   --ssl-warning: var(--ssl-color-orange);
-  --ssl-notice: var(--ssl-color-green);
-  --ssl-info: var(--ssl-color-blue);
+  --ssl-notice: var(--ssl-color-blue);
+  --ssl-info: var(--ssl-color-green);
   --ssl-debug: var(--ssl-color-grey);
   --ssl-badge-text: #101114;
   --ssl-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
@@ -60,17 +64,26 @@ html.ssl-widget-page,
   height: 100%;
   min-height: 0;
   overflow: hidden;
-  border: 1px solid var(--ssl-border);
-  border-radius: 16px;
+  /* Like Chronograph: fills Homey's tile edge to edge with the same rounding; the optional outline is inside it. */
+  border: var(--ssl-outline-width) solid var(--ssl-outline);
+  border-radius: var(--homey-border-radius-default, 16px);
   color: var(--ssl-text);
   background: var(--ssl-background);
+  box-shadow: var(--ssl-frame-shadow);
   font-size: 13px;
 }
 
+/* A widget forced to light mode stays light on a dark dashboard. */
+.ssl-mode-light {
+  --ssl-background: #ffffff;
+}
+
+/* Dark mode uses Chronograph's near-black surface with a subtle light rim. */
 .homey-dark-mode .ssl-mode-automatic,
+html.ssl-system-dark:not(.ssl-homey-theme) .ssl-mode-automatic,
 .ssl-mode-dark {
-  --ssl-color-black: #000000;
-  --ssl-background: #16171c;
+  --ssl-background: #181920;
+  --ssl-frame-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
   --ssl-surface: #212329;
   --ssl-text: #f2f3f5;
   --ssl-muted: #9a9ca6;
@@ -105,6 +118,141 @@ html.ssl-widget-page,
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--ssl-accent) 35%, transparent);
 }
 
+.ssl-toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ssl-toolbar-row .ssl-log-search {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ssl-filter {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.ssl-filter-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--ssl-border);
+  border-radius: 50%;
+  color: var(--ssl-muted);
+  background: var(--ssl-surface);
+  cursor: pointer;
+}
+
+.ssl-filter-button svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.ssl-filter-button.is-active {
+  border-color: var(--ssl-accent);
+  color: var(--ssl-accent);
+}
+
+.ssl-filter-button:focus-visible,
+.ssl-filter-item:focus-visible,
+.ssl-filter-clear:focus-visible,
+.ssl-filter-option input:focus-visible {
+  outline: 2px solid var(--ssl-accent);
+  outline-offset: 1px;
+}
+
+.ssl-filter-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 10;
+  min-width: 170px;
+  max-height: calc(100vh - 60px);
+  padding: 4px;
+  overflow-y: auto;
+  border: 1px solid var(--ssl-border);
+  border-radius: 12px;
+  color: var(--ssl-text);
+  background: var(--ssl-background);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+.ssl-filter-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 32px;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 8px;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ssl-filter-item > span:first-child { flex: 1 1 auto; }
+.ssl-filter-item:hover,
+.ssl-filter-item[aria-expanded="true"] { background: var(--ssl-surface); }
+
+.ssl-filter-count {
+  min-width: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  color: var(--ssl-badge-text);
+  background: var(--ssl-accent);
+  font-size: 11px;
+  text-align: center;
+}
+
+.ssl-filter-options {
+  padding: 2px 0 2px 8px;
+}
+
+.ssl-filter-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.ssl-filter-option:hover { background: var(--ssl-surface); }
+.ssl-filter-option input { margin: 0; accent-color: var(--ssl-accent); }
+
+.ssl-filter-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--ssl-sev);
+}
+
+.ssl-filter-clear {
+  width: 100%;
+  margin-top: 2px;
+  padding: 6px 8px;
+  border: 0;
+  border-top: 1px solid var(--ssl-border);
+  color: var(--ssl-accent);
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ssl-filter-clear:disabled { color: var(--ssl-muted); cursor: default; }
+
 .ssl-log-list {
   min-height: 0;
   flex: 1 1 auto;
@@ -123,46 +271,74 @@ html.ssl-widget-page,
 }
 
 .ssl-day-separator {
-  display: flex;
-  align-items: center;
-  gap: 10px;
   margin: 10px 0 8px;
   color: var(--ssl-text);
-  font-family: var(--ssl-mono);
-  font-size: 0.82em;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
 }
 
 .ssl-log-entry:first-child .ssl-day-separator {
   margin-top: 2px;
 }
 
-.ssl-day-separator::before,
-.ssl-day-separator::after {
-  content: "";
-  flex: 1 1 auto;
-  border-top: 1px solid var(--ssl-border);
+.ssl-day-separator .ssl-grid-cell {
+  position: relative;
 }
 
-.ssl-day-separator span {
+.ssl-day-separator .ssl-field-daySeparator {
+  position: relative;
+  z-index: 1;
   padding: 3px 10px;
   border: 1px solid var(--ssl-border);
   border-radius: 999px;
   background: var(--ssl-surface);
+  font-family: var(--ssl-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
+
+/* "Behind" draws the line behind the other elements of its cell, at the cell's vertical alignment. */
+.ssl-day-separator .ssl-field-daySeparatorLine[data-position="behind"] {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  max-width: none;
+  transform: translateY(-50%);
+}
+
+.ssl-day-separator .ssl-grid-cell[data-valign="top"] > .ssl-field-daySeparatorLine[data-position="behind"] { top: 0; transform: none; }
+.ssl-day-separator .ssl-grid-cell[data-valign="bottom"] > .ssl-field-daySeparatorLine[data-position="behind"] { top: auto; bottom: 0; transform: none; }
+
+/* "Above" and "Below" give the line its own full-width line in the cell. */
+.ssl-day-separator .ssl-field-daySeparatorLine[data-position="above"],
+.ssl-day-separator .ssl-field-daySeparatorLine[data-position="below"] {
+  flex: 0 0 100%;
+  align-self: stretch;
+  width: 100%;
+}
+
+.ssl-day-separator .ssl-field-daySeparatorLine[data-position="above"] { order: -1; }
+.ssl-day-separator .ssl-field-daySeparatorLine[data-position="below"] { order: 1; }
 
 .ssl-log-card {
   --ssl-sev: var(--ssl-muted);
-  display: flex;
-  gap: 10px;
   padding: 8px 10px;
   border: 1px solid var(--ssl-border);
-  border-left: 4px solid var(--ssl-sev);
   border-radius: 10px;
   background: var(--ssl-surface);
 }
+
+/* An empty column holding only an edge border would add a column or row gap; the card padding absorbs it. */
+.ssl-log-card.ssl-edge-left { padding-left: 0; }
+.ssl-log-card.ssl-edge-right { padding-right: 0; }
+.ssl-log-card.ssl-edge-top { padding-top: 2px; }
+.ssl-log-card.ssl-edge-bottom { padding-bottom: 2px; }
+
+/* A border inside the card keeps a little space from the column's other elements. */
+.ssl-grid-cell.ssl-border-left { padding-left: 6px; }
+.ssl-grid-cell.ssl-border-right { padding-right: 6px; }
+.ssl-grid-cell.ssl-border-top { padding-top: 4px; }
+.ssl-grid-cell.ssl-border-bottom { padding-bottom: 4px; }
 
 .ssl-sev-emergency { --ssl-sev: var(--ssl-emergency); }
 .ssl-sev-alert { --ssl-sev: var(--ssl-alert); }
@@ -173,29 +349,66 @@ html.ssl-widget-page,
 .ssl-sev-info { --ssl-sev: var(--ssl-info); }
 .ssl-sev-debug { --ssl-sev: var(--ssl-debug); }
 
-.ssl-log-side {
+/* Rows of columns from the widget design; columns share four units. */
+.ssl-grid-card {
   display: flex;
-  flex: 0 0 auto;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  min-width: 64px;
-  max-width: 40%;
-}
-
-.ssl-log-main {
-  display: flex;
-  flex: 1 1 auto;
   flex-direction: column;
   gap: 6px;
+}
+
+.ssl-grid-card.ssl-grid-spanning {
+  display: grid;
+  gap: 6px 10px;
+  align-items: stretch;
+}
+
+.ssl-grid-row {
+  display: grid;
+  gap: 6px 10px;
+}
+
+.ssl-grid-cell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
   min-width: 0;
+}
+
+.ssl-grid-cell[data-direction="vertical"] {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.ssl-grid-cell[data-direction="horizontal"][data-align="center"] { justify-content: center; }
+.ssl-grid-cell[data-direction="horizontal"][data-align="right"] { justify-content: flex-end; }
+.ssl-grid-cell[data-direction="horizontal"][data-align="stretch"] > * { flex: 1 1 0; }
+.ssl-grid-cell[data-direction="horizontal"][data-valign="top"] { align-items: flex-start; }
+.ssl-grid-cell[data-direction="horizontal"][data-valign="bottom"] { align-items: flex-end; }
+.ssl-grid-cell[data-direction="vertical"][data-align="center"] { align-items: center; }
+.ssl-grid-cell[data-direction="vertical"][data-align="right"] { align-items: flex-end; }
+.ssl-grid-cell[data-direction="vertical"][data-align="stretch"] { align-items: stretch; }
+.ssl-grid-cell[data-direction="vertical"][data-valign="middle"] { justify-content: center; }
+.ssl-grid-cell[data-direction="vertical"][data-valign="bottom"] { justify-content: flex-end; }
+
+.ssl-grid-cell[data-align="center"] { text-align: center; }
+.ssl-grid-cell[data-align="right"] { text-align: right; }
+
+.ssl-grid-cell > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.ssl-has-background {
+  padding: 1px 6px;
+  border-radius: 4px;
 }
 
 .ssl-field-timestamp {
   color: var(--ssl-muted);
   font-family: var(--ssl-mono);
-  font-size: 0.92em;
-  text-align: center;
   overflow-wrap: anywhere;
 }
 
@@ -205,7 +418,6 @@ html.ssl-widget-page,
   color: var(--ssl-badge-text);
   background: var(--ssl-sev);
   font-family: var(--ssl-mono);
-  font-size: 0.78em;
   font-weight: 800;
   line-height: 1.4;
   text-transform: uppercase;
@@ -220,31 +432,26 @@ html.ssl-widget-page,
   overflow-wrap: anywhere;
 }
 
-.ssl-log-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 8px;
+.ssl-field-app,
+.ssl-field-hostname {
   font-family: var(--ssl-mono);
-  font-size: 0.88em;
+  overflow-wrap: anywhere;
 }
 
-.ssl-log-meta .ssl-field-app {
+.ssl-field-app {
   font-weight: 700;
-  overflow-wrap: anywhere;
 }
 
-.ssl-log-meta .ssl-field-hostname {
+.ssl-field-hostname {
   color: var(--ssl-muted);
-  overflow-wrap: anywhere;
 }
 
-.ssl-log-meta .ssl-field-facility {
+.ssl-field-facility {
   padding: 1px 6px;
   border-radius: 4px;
   color: var(--ssl-muted);
   background: color-mix(in srgb, var(--ssl-muted) 18%, transparent);
-  font-size: 0.86em;
+  font-family: var(--ssl-mono);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -376,10 +583,17 @@ html.ssl-widget-page.ssl-android-page,
   overflow-y: auto;
 }
 
+.ssl-android-page body {
+  padding: 0;
+}
+
+/* The Homey Web widget already frames the Android page. */
 .ssl-android-page .ssl-widget {
   height: auto;
   min-height: 100vh;
   overflow: visible;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .ssl-android-page .ssl-log-list {
@@ -391,6 +605,5 @@ html.ssl-widget-page.ssl-android-page,
   position: sticky;
   top: 0;
   z-index: 1;
-  border-radius: 16px 16px 0 0;
   background: var(--ssl-background);
 }

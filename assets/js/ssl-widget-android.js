@@ -118,7 +118,10 @@
         if (route === '/register-timestamp-format') return Promise.resolve({ registered: true });
         if (route === '/unregister-timestamp-format') return Promise.resolve({ unregistered: true });
         if (method === 'GET' && route === '/styles') return Promise.resolve(state.styles);
-        if (method === 'GET' && route === '/logs') return state.loadLogs();
+        if (method === 'GET' && route === '/logs') {
+          var levels = new URLSearchParams(String(path).split('?')[1] || '').get('severities');
+          return state.loadLogs(levels || null);
+        }
         return Promise.reject(new Error('This action is not available in a Web widget.'));
       }
     };
@@ -129,11 +132,26 @@
   function createPoller(options) {
     var schedule = options.setTimeout || setTimeout;
     var after = null;
+    var instance = null;
     var available = null;
     var running = false;
+    var severities = null;
+    var generation = 0;
 
     function loop() {
-      options.request('/android/updates', { after: after }, POLL_CLIENT_TIMEOUT_MS).then(function (data) {
+      var started = generation;
+      var extra = { after: after, instance: instance };
+      if (severities) extra.severities = severities;
+      options.request('/android/updates', extra, POLL_CLIENT_TIMEOUT_MS).then(function (data) {
+        // The levels changed while this poll was waiting: its entries used the old levels.
+        if (started !== generation) {
+          loop();
+          return;
+        }
+        if (data && data.ready === false) {
+          schedule(loop, RETRY_MS);
+          return;
+        }
         if (!data || data.reload) {
           options.reload();
           return;
@@ -145,6 +163,10 @@
         (data.logs || []).forEach(function (log) { options.emit('log_updated', log); });
         loop();
       }, function () {
+        if (started !== generation) {
+          loop();
+          return;
+        }
         schedule(loop, RETRY_MS);
       });
     }
@@ -157,9 +179,15 @@
 
     return {
       start: start,
+      setSeverities: function (value) {
+        if ((value || null) === severities) return;
+        severities = value || null;
+        generation++;
+      },
       update: function (data) {
         if (!data) return;
         if (Number.isSafeInteger(data.seq)) after = data.seq;
+        if (typeof data.instance === 'string') instance = data.instance;
         if (typeof data.available === 'boolean') available = data.available;
         start();
       },
@@ -167,10 +195,12 @@
     };
   }
 
+  // The Homey widget SDK sets homey-dark-mode from the Homey app's theme when the host answers it.
+  // Only without that answer does the page fall back to the device setting, under a class of its own.
   function followSystemColorMode(colorMode) {
     if (colorMode === 'light' || colorMode === 'dark' || typeof window.matchMedia !== 'function') return;
     var query = window.matchMedia('(prefers-color-scheme: dark)');
-    var apply = function () { document.documentElement.classList.toggle('homey-dark-mode', query.matches); };
+    var apply = function () { document.documentElement.classList.toggle('ssl-system-dark', query.matches); };
     apply();
     if (typeof query.addEventListener === 'function') query.addEventListener('change', apply);
     else if (typeof query.addListener === 'function') query.addListener(apply);
@@ -196,8 +226,9 @@
     var params = readParams(window.location.search);
     if (!params.ssl || !params.sig) return;
     var startWidget = window.onHomeyReady;
-    // The injected Homey SDK must not start a second widget instance.
-    window.onHomeyReady = function () {};
+    // The injected Homey SDK must not start a second widget instance; its call only means the
+    // Homey app supplied its theme.
+    window.onHomeyReady = function () { document.documentElement.classList.add('ssl-homey-theme'); };
     document.documentElement.classList.add('ssl-android-page');
 
     var connection = createConnection({
@@ -219,8 +250,9 @@
         config: init.config,
         styles: init.styles,
         translations: init.translations,
-        loadLogs: function () {
-          return connection.request('/android/logs').then(function (data) {
+        loadLogs: function (severities) {
+          poller.setSeverities(severities);
+          return connection.request('/android/logs', severities ? { severities: severities } : undefined).then(function (data) {
             poller.update(data);
             return data;
           });

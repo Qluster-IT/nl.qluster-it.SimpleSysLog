@@ -54,6 +54,7 @@ class simpleLog extends Homey.App {
 
   async announceApiReady() {
     this.apiReady = true;
+    this.androidLinkFeed.markReady();
     try {
       await this.homey.api.realtime('api-ready', { ready: true });
     } catch (error) {
@@ -61,15 +62,31 @@ class simpleLog extends Homey.App {
     }
   }
 
-  registerWidgetTimestampFormat(instanceId, format) {
+  // Sent at most once: the setting is stored before sending, so a failed delivery is not retried.
+  async notifyReleaseFeatures() {
+    const key = 'widgetFeaturesNotificationAttempted';
+    if (this.homey.settings.get(key)) return;
+    try {
+      this.homey.settings.set(key, true);
+      await this.homey.notifications.createNotification({ excerpt: this.homey.__('widget_features_notice') });
+    } catch (error) {
+      this.homey.error('Unable to deliver release notification', error);
+    }
+  }
+
+  // A widget registers its entry timestamp format and its day separator format.
+  registerWidgetTimestampFormat(instanceId, formats) {
     if (typeof instanceId !== 'string' || !instanceId.trim() || instanceId.length > 128) {
       throw new Error('A valid widget instance ID is required.');
     }
-    if (typeof format !== 'string' || !format.trim() || format.length > 128) {
+    if (typeof formats === 'string') formats = [formats];
+    if (!Array.isArray(formats) || !formats.length || formats.length > 4
+      || formats.some(format => typeof format !== 'string' || !format.trim() || format.length > 128)) {
       throw new Error('A valid date and time format is required.');
     }
-    if (this.widgetTimestampFormats.get(instanceId) !== format) {
-      this.widgetTimestampFormats.set(instanceId, format);
+    const previous = this.widgetTimestampFormats.get(instanceId);
+    if (!previous || previous.join('\u0000') !== formats.join('\u0000')) {
+      this.widgetTimestampFormats.set(instanceId, formats.slice());
       this.widgetTimestampFormatCache = null;
     }
   }
@@ -83,7 +100,7 @@ class simpleLog extends Homey.App {
 
   getWidgetTimestampFormats() {
     if (!this.widgetTimestampFormatCache) {
-      this.widgetTimestampFormatCache = Array.from(new Set(['datetime', ...this.widgetTimestampFormats.values()]));
+      this.widgetTimestampFormatCache = Array.from(new Set(['datetime', ...Array.from(this.widgetTimestampFormats.values()).flat()]));
     }
     return this.widgetTimestampFormatCache;
   }
@@ -162,6 +179,7 @@ class simpleLog extends Homey.App {
       } catch (error) {
         this.error('Widget setting autocomplete registration failed', error);
       }
+      await this.notifyReleaseFeatures();
 
 
       if (debug) this.log('Simple (Sys) Log onInit - BL.init');
@@ -290,31 +308,37 @@ class simpleLog extends Homey.App {
       }));
     });
     register('datetimeFormat', query => {
-      const formats = [
-        'shortdate',
-        'date',
-        'DATE',
-        'LONGDATE',
-        'DATETIME',
-        'datetime',
-        'dd-MM-yyyy',
-        'dd-MM-yyyy HH:mm',
-        'dd-MM-yyyy HH:mm:ss',
-        'HH:mm',
-        'HH:mm:ss'
-      ].map(name => ({
-        id: name,
-        name,
-        description: BL.isReady ? BL.datetime.toString(name, new Date()) : name
-      }));
-      if (query) formats.unshift({
-        id: query,
-        name: query,
-        description: BL.isReady
-          ? BL.datetime.toString(query, new Date())
-          : this.homey.__('widgets.datetime.customFormat')
-      });
+      const formats = this.getDatetimeFormatSuggestions(query);
+      if (!query) formats.unshift({ id: '', name: this.homey.__('widgets.datetime.designFormat') });
       return formats;
+    });
+  }
+
+  // Same list as BLL's "format date/time" Flow card: the user's custom and the customisable BLL codes,
+  // a few patterns, then the typed text when it is not listed. Shared by the widget and the designer.
+  getDatetimeFormatSuggestions(query) {
+    const patterns = ['dd-MM-yyyy', 'dd-MM-yyyy HH:mm', 'dd-MM-yyyy HH:mm:ss', 'HH:mm', 'HH:mm:ss'];
+    let codes = [];
+    try {
+      if (BL.isReady) codes = BL.datetime.codes.array.filter(code => code.customisable || code.custom).map(code => code.code);
+    } catch (error) {
+      codes = [];
+    }
+    if (!codes.length) codes = ['shortdate', 'date', 'DATE', 'LONGDATE', 'DATETIME', 'datetime', 'timeshort'];
+    const names = [...new Set([...codes, ...patterns])];
+    const search = query ? query.toLowerCase() : '';
+    const matches = names.filter(name => name.toLowerCase().includes(search));
+    if (query && !names.includes(query)) matches.unshift(query);
+    return matches.map(name => {
+      let description = this.homey.__('widgets.datetime.customFormat');
+      if (BL.isReady) {
+        try {
+          description = BL.datetime.toString(name, new Date());
+        } catch (error) {
+          description = this.homey.__('widgets.datetime.customFormat');
+        }
+      } else if (name !== query) description = name;
+      return { id: name, name, description };
     });
   }
 

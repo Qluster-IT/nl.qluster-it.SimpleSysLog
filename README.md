@@ -23,11 +23,16 @@ entries arrive. Each widget can set:
 - a BLL date/time format or a custom format;
 - filters for a minimum severity, a facility, and app/group or hostname text.
 
+The filter button next to the search bar opens extra filters. Under **Level**
+you can select one or more levels to show only those entries, even levels
+below the widget's minimum severity. **All levels** clears the selection, and
+it resets when the widget reloads.
+
 The widget needs the Better Logic Library app. When BLL starts after the
 widget has loaded, the widget loads its entries automatically.
 
 In the app settings, open **Settings** from the log menu and select the
-**Widget designer** tab (next to **General**) to create designs and color themes,
+**Widgets** tab (next to **General**) to create designs and color themes,
 then select them in the widget settings. Switch between **Designs** and
 **Themes**, pick an item, and use **New**, **Copy** or **Delete**; built-in items
 are read-only, so copy them to customize. The built-in **Default** design and
@@ -36,8 +41,54 @@ uses fixed severity colors and an automatic background that follows the
 dashboard. Theme colors are named colors (red,
 orange, yellow, green, teal, cyan, blue, indigo, purple, pink, brown, grey,
 black, white) or **Automatic**, so every theme works in light and dark mode.
+
+Designs use a grid like Chronograph: select the **Widget**, a row, an `r.c`
+column or an element to see its options. Each row has up to five columns that
+share five units; a column can span several rows, and each element appears at
+most once. Drag the selected row, column or element to move it, or drag an
+element to **Unused** to hide it. Select an element to override its size or
+font; both are empty by default and then use the widget's own size and font.
+Select the Timestamp element to pick its
+BLL date/time format (default `timeshort`) or type your own; a format set in
+the widget settings overrules it. The **Day separator** has its own small grid
+of up to two rows with two elements: **Date** and **Line**. Select the Day
+separator bar to show or hide the separators and set its number of rows. Select
+the Date to set its size, font and format (default `ddd d MMM`), and the Line
+to set its position (behind, above or below the date), thickness and style.
+With the line behind the date, the column's vertical alignment places it at the
+top, middle or bottom; you can also drag the line into its own row or column.
+**Border 1–4** are border elements: drag one into a column and select it to set
+its position (left, top, right or bottom) and thickness. A border uses the
+severity color unless the theme sets one. When its column covers that whole
+side of the card, it becomes the card's own (rounded) border; otherwise it
+borders just that column. The Default design has Border 1 as a first column
+spanning all rows, which gives the severity bar on the left. In
+**Themes**, select the Widget to set the theme colors, or an element to set its
+own color and background; the separator line and borders only have a color. Selecting the
+Widget in a design also sets an optional outline width (0–20 px; 0 keeps the standard
+Homey frame), and in a theme its **Widget border** color (default: Homey's line color).
+Like Chronograph, the widget fills Homey's tile edge to edge with Homey's rounded corners
+(`--homey-border-radius-default`), and in dark mode uses a near-black `#181920` surface with a
+subtle light rim. Blue, green, orange, red, grey and white follow Homey's own palette.
+Whatever you select is
+outlined in the preview. **Designer help** is open the first time and then
+stays open or closed as you leave it.
+
+Use the undo and redo buttons next to **Save** to step through the changes of
+the design or theme you are editing. Switching to another design or theme,
+between Designs and Themes, to the templates or to another settings tab asks
+whether to discard unsaved changes first. Deleting a design or theme takes
+effect immediately.
+
 The **Templates** button opens template export, import and the community
-templates.
+templates. Designs and themes are shared as a TWF (The Widget File): compressed
+text starting with `[twf:SimpleSysLog:`. Only Simple (Sys) Log TWFs can be
+imported; TWFs from other apps, such as Chronograph, are rejected.
+
+**Create TWF** also creates two preview images of the template, first in light
+mode and then in dark mode, and copies a ready-made forum post with the images.
+Switch the forum to its rich-text editor before pasting, so the images are
+uploaded with the post. If copying fails, use **Copy post and images**.
 
 ## Scrolling on Android
 
@@ -50,8 +101,11 @@ links to paste as the address of a default Homey **Web** widget:
   connection when it is reachable.
 
 The Web widget shows this same log widget as a normal, scrollable page. New
-entries arrive by long-polling. In automatic mode it follows the device's
-light/dark setting. Each link contains that widget's settings, signed by the app, so copy
+entries arrive by long-polling. A Web widget cannot read the Homey app's
+theme, so a widget in automatic mode stores the Homey app's current light/dark
+theme in the link when you copy it; copy the link again after changing the
+theme. When the app starts again (after a restart, update or
+reinstall), the Web widget reloads itself once the app reports it is ready. Each link contains that widget's settings, signed by the app, so copy
 the link again after changing them. Anyone with a link can read the entries it
 shows; **Settings → General → Reset Android links** in the app settings makes all
 existing links stop working.

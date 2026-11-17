@@ -261,8 +261,13 @@ if (window.hasOwnProperty('angular'))
       let columnWidhtSet = false;
 
       $scope.selectSettingsTab = function (tab) {
-        view.settingsTab = tab;
-        if (tab === 'widgets' && $window.SSLWidgetDesigner) $window.SSLWidgetDesigner.mount($window.Homey);
+        if (tab === view.settingsTab) return;
+        const show = () => $scope.$applyAsync(() => {
+          view.settingsTab = tab;
+          if (tab === 'widgets' && $window.SSLWidgetDesigner) $window.SSLWidgetDesigner.mount($window.Homey);
+        });
+        if (view.settingsTab === 'widgets' && $window.SSLWidgetDesigner) $window.SSLWidgetDesigner.leave(show);
+        else show();
       };
       $scope.resetAndroidLinks = function () {
         const homey = $window.Homey;

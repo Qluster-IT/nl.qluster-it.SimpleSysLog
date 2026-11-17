@@ -35,6 +35,8 @@
 	<link rel="stylesheet" href="../../net.i-dev.betterlogic/assets/css/bll.css" type="text/css" />
 	
 	<script type="text/javascript" src="simplelog.module.js"></script>
+	<script type="text/javascript" src="../assets/js/ssl-widget-layout.js"></script>
+	<script type="text/javascript" src="../assets/js/html-to-image.min.js"></script>
 	<script type="text/javascript" src="widgets.js"></script>
 
 	<link rel="stylesheet" href="../assets/css/default.css" type="text/css" />
@@ -388,16 +390,16 @@
 				aria-selected="{{ view.settingsTab === 'widgets' }}"
 				ng-click="selectSettingsTab('widgets')">
 				<svg class="settings-widgets-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="2" y="2" width="9" height="12" rx="1"/><rect x="13" y="2" width="9" height="7" rx="1"/><rect x="2" y="16" width="9" height="6" rx="1"/><rect x="13" y="11" width="9" height="11" rx="1"/></svg>
-				<span bl-translate="widgets.settings.title">Widget designer</span>
+				<span bl-translate="widgets.settings.title">Widgets</span>
 			</button>
 			<div class="settings-tab-actions">
 				<span class="fa fa-solid fa-icon fa-book p-2 fs-3" ng-click="view.id='log'"></span>
 				<span class="fa fa-solid toggle-icon fa-rotate-right" ng-click="toggleSetting('rotated90');"></span>
 			</div>
 		</nav>
-		<section class="settings-content pb-5" role="tabpanel" ng-show="view.settingsTab !== 'widgets'">
+		<section class="settings-content" role="tabpanel" ng-show="view.settingsTab !== 'widgets'">
 			<form name="settingsForm" class="container">
-				<div class="card">
+				<div class="card mt-1">
 					<div class="card-header" bl-translate>General</div>
 					<div class="card-body">
 						<div class="col-12 form-label" bl-translate>Automaticly remove logs older than x number of days.</div>
@@ -412,7 +414,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="card">
+				<div class="card mt-1">
 					<div class="card-header" bl-translate>Exports</div>
 					<div class="card-body">
 						<div class="col-12 form-label" bl-translate>Set the filenames to use when exporting files</div>
@@ -436,7 +438,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="card">
+				<div class="card mt-1">
 					<div class="card-header" bl-translate="widgets.settings.android">Android links</div>
 					<div class="card-body">
 						<div class="col-12 form-label" bl-translate="widgets.settings.androidIntro">Android links let a Homey Web widget show a log widget that can scroll. Resetting stops every existing link from working; copy new links from your widgets afterwards.</div>
@@ -445,9 +447,6 @@
 					</div>
 				</div>
 			</form>
-			<div class="main-buttons position-fixed bottom-0 w-100">
-				<button type="button" class="btn homey-button-primary-shadow-full btn-primary" ng-click="settingsForm.$valid && settingsForm.$dirty ? saveSettings() : null;" ng-disabled="!settingsForm.$valid || !settingsForm.$dirty" bl-translate>Save</button>
-			</div>
 		</section>
 		<section class="settings-content" role="tabpanel" ng-show="view.settingsTab === 'widgets'">
 			<div id="widget-designer" class="widget-designer">
@@ -486,37 +485,28 @@
 							</div>
 							<p id="style-builtin-hint" class="help-text" hidden></p>
 
-							<div class="style-design-selectors" data-mode-panel="design">
-								<h3 data-i18n="widgets.settings.design">Design</h3>
-								<label class="hy-nostyle style-full-row">
-									<input id="day-separators" class="hy-nostyle" type="checkbox">
-									<span data-i18n="widgets.settings.daySeparators">Show day separators</span>
-								</label>
-							</div>
 
+							<div class="style-design-selectors">
+								<h3 data-i18n="widgets.settings.preview">Design preview</h3>
+								<label class="hy-nostyle" for="preview-other" id="preview-other-label">Theme</label>
+								<select id="preview-other" class="form-select"></select>
+								<label class="hy-nostyle" for="preview-mode" data-i18n="widgets.settings.previewMode">Preview mode</label>
+								<select id="preview-mode" class="form-select">
+									<option value="light" data-i18n="widgets.settings.previewLight">Light</option>
+									<option value="dark" data-i18n="widgets.settings.previewDark">Dark</option>
+								</select>
+							</div>
 							<div class="style-preview-sticky">
-								<div class="style-design-selectors">
-									<h3 data-i18n="widgets.settings.preview">Design preview</h3>
-									<label class="hy-nostyle" for="preview-other" id="preview-other-label">Theme</label>
-									<select id="preview-other" class="form-select"></select>
-									<label class="hy-nostyle" for="preview-mode" data-i18n="widgets.settings.previewMode">Preview mode</label>
-									<select id="preview-mode" class="form-select">
-										<option value="light" data-i18n="widgets.settings.previewLight">Light</option>
-										<option value="dark" data-i18n="widgets.settings.previewDark">Dark</option>
-									</select>
-								</div>
 								<div id="widget-preview" class="ssl-widget preview-widget"></div>
 							</div>
 
-							<div data-mode-panel="design">
-								<h3 data-i18n="widgets.settings.fields">Visible fields and order</h3>
-								<p class="help-text" data-i18n="widgets.settings.fieldsHint">Use the arrows to change the order. The message wraps to fit.</p>
-								<ol id="design-fields" class="field-list"></ol>
-							</div>
-
-							<div data-mode-panel="theme" hidden>
-								<h3 data-i18n="widgets.settings.colorsTitle">Colors</h3>
-								<div id="theme-colors" class="style-colors ssl-palette"></div>
+							<div id="layout-editor-panel">
+								<div class="style-grid-hint" data-mode-panel="design">
+									<button id="designer-help-toggle" class="hy-nostyle btn btn-outline-primary btn-sm" type="button" aria-expanded="true" aria-controls="style-designer-help" disabled><i class="fa fa-solid fa-chevron-up" aria-hidden="true"></i> <span data-i18n="widgets.settings.layout.designer_help">Designer help</span></button>
+									<p id="style-designer-help" class="help-text" hidden></p>
+								</div>
+								<div id="group-editor" class="style-group-editor"></div>
+								<div id="selection-controls" aria-live="polite"></div>
 							</div>
 						</div>
 					</fieldset>
@@ -548,6 +538,7 @@
 						<select id="export-theme" class="form-select"></select>
 						<div id="export-preview-group" hidden>
 							<h3 data-i18n="widgets.settings.preview">Design preview</h3>
+							<p class="help-text" data-i18n="widgets.settings.imageHint">Two images show the widget with this template: first in light mode, then in dark mode, always with the template's own colors.</p>
 							<div id="export-preview" class="ssl-widget preview-widget"></div>
 						</div>
 						<button id="export-template" class="hy-nostyle btn btn-outline-primary btn-sm" type="button"><i class="fa fa-solid fa-file-code" aria-hidden="true"></i> <span data-i18n="widgets.settings.export">Create TWF</span></button>
@@ -557,8 +548,13 @@
 							<button id="copy-template" class="hy-nostyle btn btn-outline-primary btn-sm" type="button"><i class="fa fa-solid fa-copy" aria-hidden="true"></i> <span data-i18n="widgets.settings.copy">Copy TWF</span></button>
 							<label class="hy-nostyle" for="template-forum-post" data-i18n="widgets.settings.forumPost">Forum post</label>
 							<textarea id="template-forum-post" class="form-control" rows="5" readonly spellcheck="false"></textarea>
-							<button id="copy-forum-post" class="hy-nostyle btn btn-outline-primary btn-sm" type="button"><i class="fa fa-solid fa-clipboard" aria-hidden="true"></i> <span data-i18n="widgets.settings.duplicate">Copy</span></button>
+							<button id="copy-forum-post" class="hy-nostyle btn btn-outline-primary btn-sm" type="button" disabled><i class="fa fa-solid fa-clipboard" aria-hidden="true"></i> <span data-i18n="widgets.settings.copyPost">Copy post and images</span></button>
 							<button id="post-forum" class="hy-nostyle btn btn-outline-primary btn-sm" type="button"><i class="fa fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> <span data-i18n="widgets.settings.postForum">Post on Forum</span></button>
+							<p id="template-copy-status" class="help-text template-export-instruction" role="status" hidden></p>
+							<p class="help-text template-export-instruction"><strong data-i18n="widgets.settings.pasteImageHint">Switch to the rich-text editor in the forum.</strong> <span data-i18n="widgets.settings.pasteImageReason">This includes both generated preview images when you paste the post. Paste once,</span> <strong data-i18n="widgets.settings.pasteEditDescription">optionally add a description in the blank line below the title</strong><span data-i18n="widgets.settings.pasteWaitImage">, and wait for both images to finish uploading before posting.</span></p>
+							<p class="help-text" data-i18n="widgets.settings.editorSwitch">Select the A on the right of the outlined switch to use the rich-text editor.</p>
+							<img class="template-editor-switch" src="forum-editor-switch.png" alt="" data-i18n-alt="widgets.settings.editorSwitch">
+							<p id="template-image-progress" class="help-text" role="status" hidden></p>
 						</div>
 					</section>
 					<section data-template-section="import" hidden>
@@ -615,10 +611,18 @@
 		</section>
 		<div class="designer-footers" ng-show="view.settingsTab === 'widgets'">
 			<footer id="designer-savebar" class="settings-savebar">
+				<button id="undo-styles" class="hy-nostyle btn settings-history-button" type="button" disabled data-i18n-title="widgets.settings.undo" data-i18n-aria-label="widgets.settings.undo" title="Undo" aria-label="Undo"><i class="fa fa-solid fa-rotate-left" aria-hidden="true"></i></button>
 				<button id="save-styles" class="hy-nostyle btn settings-save-button" type="button" disabled data-i18n="widgets.settings.save">Save</button>
+				<button id="redo-styles" class="hy-nostyle btn settings-history-button" type="button" disabled data-i18n-title="widgets.settings.redo" data-i18n-aria-label="widgets.settings.redo" title="Redo" aria-label="Redo"><i class="fa fa-solid fa-rotate-right" aria-hidden="true"></i></button>
 			</footer>
 			<footer id="designer-template-footer" class="settings-template-footer" hidden>
 				<button id="close-templates" class="hy-nostyle btn settings-history-button" type="button"><i class="fa fa-solid fa-arrow-left" aria-hidden="true"></i> <span data-i18n="widgets.settings.back">Back to designer</span></button>
+			</footer>
+		</div>
+		<div class="designer-footers" ng-show="view.settingsTab !== 'widgets'">
+			<footer class="settings-general-savebar">
+				<button type="button" class="hy-nostyle btn settings-save-button" ng-class="{ 'is-dirty': settingsForm.$dirty }"
+					ng-click="settingsForm.$valid && settingsForm.$dirty ? saveSettings() : null;" ng-disabled="!settingsForm.$valid || !settingsForm.$dirty" bl-translate>Save</button>
 			</footer>
 		</div>
 	</div>

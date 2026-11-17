@@ -79,9 +79,9 @@ function sslShowAndroidLinks(Homey, settings, widgetHeight) {
   var linkList = element('div', 'ssl-android-list');
   content.appendChild(linkList);
   content.appendChild(element('p', 'ssl-android-text', t('settingsChanged',
-    'After changing this widget\'s settings, copy the link again.')));
+    'After changing this widget\'s settings or the Homey app\'s light/dark theme, copy the link again.')));
   content.appendChild(element('p', 'ssl-android-text ssl-android-warning', t('private',
-    'Anyone with a link can read these log entries. You can reset all links in the Widget designer.')));
+    'Anyone with a link can read these log entries. You can reset all links on the Widgets tab.')));
   content.appendChild(status);
   main.appendChild(content);
   document.body.replaceChildren(main);
@@ -116,7 +116,12 @@ function sslShowAndroidLinks(Homey, settings, widgetHeight) {
   }
 
   return Promise.resolve().then(function () {
-    return Homey.api('POST', '/android-links', settings);
+    // A Web widget cannot read the Homey app's theme, so an automatic link keeps the theme of this moment.
+    var linkSettings = Object.assign({}, settings);
+    if (linkSettings.colorMode !== 'light' && linkSettings.colorMode !== 'dark') {
+      linkSettings.colorMode = document.documentElement.classList.contains('homey-dark-mode') ? 'dark' : 'light';
+    }
+    return Homey.api('POST', '/android-links', linkSettings);
   }).then(function (links) {
     if (!links || !links.automatic) throw new Error(t('unavailable', 'The links could not be created.'));
     if (links.local) {
@@ -159,7 +164,52 @@ function onHomeyReady(Homey) {
     return;
   }
 
-  angular.module('sslLogWidget', []).controller('SSLLogWidgetController', [
+  var widgetModule = angular.module('sslLogWidget', []);
+  // Builds each entry card with the shared grid renderer, also used by the settings designer.
+  widgetModule.directive('sslLogCard', function () {
+    return {
+      restrict: 'A',
+      link: function (scope, element, attrs) {
+        function render() {
+          var log = scope.$eval(attrs.sslLogCard);
+          if (!log) return;
+          var values = {};
+          var classes = {};
+          window.SSLWidgetLayout.ELEMENT_IDS.forEach(function (id) {
+            values[id] = scope.fieldValue(id, log);
+            classes[id] = scope.fieldValueClass(id, log);
+          });
+          element[0].replaceChildren(window.SSLWidgetLayout.renderCard(document, scope.design, scope.theme, values, {
+            severityClass: scope.severityClass(log),
+            labels: scope.labels,
+            classes: classes
+          }));
+          scope.scheduleTrackAlignment();
+        }
+        scope.$watch('styleVersion', render);
+        scope.$on('$destroy', function () { scope.scheduleTrackAlignment(); });
+      }
+    };
+  });
+  // Builds a day separator with the shared renderer from the design's separator grid.
+  widgetModule.directive('sslDaySeparator', function () {
+    return {
+      restrict: 'A',
+      link: function (scope, element, attrs) {
+        function render() {
+          var log = scope.$eval(attrs.sslDaySeparator);
+          if (!log) return;
+          element[0].replaceChildren(window.SSLWidgetLayout.renderDaySeparator(document, scope.design, scope.theme, scope.formatDay(log)));
+          scope.scheduleTrackAlignment();
+        }
+        scope.$watch(function () {
+          var log = scope.$eval(attrs.sslDaySeparator);
+          return scope.styleVersion + '|' + (log ? scope.formatDay(log) : '');
+        }, render);
+      }
+    };
+  });
+  widgetModule.controller('SSLLogWidgetController', [
     '$scope',
     '$timeout',
     function ($scope, $timeout) {
@@ -167,9 +217,12 @@ function onHomeyReady(Homey) {
       var count = settings.entryCount === undefined || settings.entryCount === null
         ? 25 : Number(settings.entryCount);
       var searchMode = settings.searchMode === 'advanced' ? 'advanced' : 'simple';
-      var datetimeFormat = settings.datetimeFormat && typeof settings.datetimeFormat === 'object'
-        ? settings.datetimeFormat.name || settings.datetimeFormat.id : settings.datetimeFormat;
-      if (typeof datetimeFormat !== 'string' || !datetimeFormat) datetimeFormat = 'datetime';
+      // The design's format applies unless this widget chose its own; it is resolved once the styles load.
+      var ownFormat = settings.datetimeFormat && typeof settings.datetimeFormat === 'object'
+        ? settings.datetimeFormat.id : settings.datetimeFormat;
+      if (typeof ownFormat !== 'string' || !ownFormat.trim()) ownFormat = '';
+      var datetimeFormat = ownFormat || 'timeshort';
+      var dayFormat = 'ddd d MMM';
       var filters = readFilters(settings);
       var instanceId = Homey.getWidgetInstanceId();
       var sequence = 0;
@@ -187,6 +240,9 @@ function onHomeyReady(Homey) {
         hostname: translate('widgets.fields.hostname', 'Hostname'),
         message: translate('widgets.fields.message', 'Message'),
         search: translate('widgets.search', 'Search'),
+        filters: translate('widgets.filters.button', 'Filters'),
+        level: translate('widgets.filters.level', 'Level'),
+        allLevels: translate('widgets.filters.allLevels', 'All levels'),
         loading: translate('widgets.loading', 'Loading logs…'),
         bllRequired: translate('widgets.bllRequired', 'Better Logic Library must be running when this widget is loaded.'),
         noLogs: translate('widgets.noLogs', 'No matching log entries.')
@@ -195,16 +251,73 @@ function onHomeyReady(Homey) {
       $scope.loading = true;
       $scope.bllUnavailable = false;
       $scope.error = '';
-      $scope.searchText = '';
+      // An object, because the search box sits in an ng-if child scope.
+      $scope.search = { text: '' };
       $scope.searchError = '';
       $scope.labels = labels;
       $scope.logs = [];
       $scope.filteredLogs = [];
-      $scope.design = { fields: ['timestamp', 'severity', 'message', 'app', 'facility'], showDaySeparators: true };
+      $scope.design = { rows: [], showDaySeparators: true };
+      $scope.theme = { elements: {} };
+      $scope.styleVersion = 0;
+      var alignTimer = null;
+      // Every card is its own grid, so content-sized columns (time and level in the default design)
+      // are aligned across the list after cards render; a timeout also runs in background tabs.
+      $scope.scheduleTrackAlignment = function () {
+        if (alignTimer !== null || destroyed) return;
+        alignTimer = window.setTimeout(function () {
+          alignTimer = null;
+          var list = document.getElementById('ssl-log-list');
+          if (!destroyed && list) window.SSLWidgetLayout.alignContentTracks(list);
+        }, 0);
+      };
+      if (typeof window.addEventListener === 'function') window.addEventListener('resize', $scope.scheduleTrackAlignment);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then($scope.scheduleTrackAlignment);
       $scope.themeStyle = {};
       $scope.showSearch = settings.showSearch !== false;
       $scope.modeClass = sslColorModeClass(settings);
-      setLayout($scope.design.fields);
+      $scope.filterMenu = { open: false, level: false };
+      // Chosen levels by id; when any are chosen they replace the widget's minimum level.
+      $scope.levelFilter = {};
+      $scope.levels = SSL_SEVERITY_NAMES.map(function (name, id) {
+        return {
+          id: id,
+          className: 'ssl-sev-' + name,
+          label: translate('widgets.settings.colors.' + name, name.charAt(0).toUpperCase() + name.slice(1))
+        };
+      });
+
+      function selectedLevels() {
+        return $scope.levels.filter(function (level) { return $scope.levelFilter[level.id]; })
+          .map(function (level) { return level.id; });
+      }
+
+      $scope.hasLevelFilter = function () { return selectedLevels().length > 0; };
+      $scope.selectedLevelCount = function () { return selectedLevels().length; };
+      $scope.toggleFilterMenu = function () {
+        $scope.filterMenu.open = !$scope.filterMenu.open;
+        $scope.filterMenu.level = false;
+      };
+      $scope.filterKeydown = function (event) {
+        if (event.key !== 'Escape' || !$scope.filterMenu.open) return;
+        $scope.filterMenu.open = false;
+        var button = document.querySelector('.ssl-filter-button');
+        if (button) button.focus();
+      };
+      $scope.toggleLevel = function (id) {
+        $scope.levelFilter[id] = !$scope.levelFilter[id];
+        reloadLogs();
+      };
+      $scope.clearLevels = function () {
+        $scope.levelFilter = {};
+        reloadLogs();
+      };
+
+      function closeFilterMenuOutside(event) {
+        if (!$scope.filterMenu.open || (event.target.closest && event.target.closest('.ssl-filter'))) return;
+        $scope.$applyAsync(function () { $scope.filterMenu.open = false; });
+      }
+      document.addEventListener('click', closeFilterMenuOutside);
 
       function readFilters(values) {
         var result = {};
@@ -227,19 +340,14 @@ function onHomeyReady(Homey) {
 
       // Mirrors the server-side widget filters for realtime entries.
       function matchesFilters(entry) {
-        if (filters.minSeverity !== undefined && !(Number(entry.severity) <= filters.minSeverity)) return false;
+        var levels = selectedLevels();
+        if (levels.length) {
+          if (levels.indexOf(Number(entry.severity)) < 0) return false;
+        } else if (filters.minSeverity !== undefined && !(Number(entry.severity) <= filters.minSeverity)) return false;
         if (filters.facility !== undefined && Number(entry.facility) !== filters.facility) return false;
         if (filters.app !== undefined && !containsText(entry.app, filters.app)) return false;
         if (filters.hostname !== undefined && !containsText(entry.hostname, filters.hostname)) return false;
         return true;
-      }
-
-      function setLayout(fields) {
-        $scope.sideFields = fields.filter(function (field) { return field === 'timestamp' || field === 'severity'; });
-        $scope.metaFields = fields.filter(function (field) {
-          return field !== 'timestamp' && field !== 'severity' && field !== 'message';
-        });
-        $scope.showMessage = fields.indexOf('message') >= 0;
       }
 
       function unregisterTimestampFormat() {
@@ -274,12 +382,20 @@ function onHomeyReady(Homey) {
         if (!design) throw new Error(translate('widgets.designUnavailable', 'The selected widget design is unavailable.'));
         if (!theme) throw new Error(translate('widgets.themeUnavailable', 'The selected widget theme is unavailable.'));
         $scope.design = design;
-        setLayout(design.fields);
+        $scope.theme = theme;
+        if (!ownFormat && typeof design.timestampFormat === 'string' && design.timestampFormat.trim()) {
+          datetimeFormat = design.timestampFormat;
+        }
+        if (typeof design.daySeparatorFormat === 'string' && design.daySeparatorFormat.trim()) {
+          dayFormat = design.daySeparatorFormat;
+        }
+        $scope.styleVersion++;
         var style = {};
         Object.keys(theme.colors).forEach(function (key) {
           var color = theme.colors[key];
           if (color && color !== 'automatic') style['--ssl-' + key] = 'var(--ssl-color-' + color + ')';
         });
+        if (design.widgetBorderWidth) style['--ssl-outline-width'] = design.widgetBorderWidth + 'px';
         $scope.themeStyle = style;
       }
 
@@ -303,7 +419,7 @@ function onHomeyReady(Homey) {
       function refreshSearch() {
         try {
           $scope.filteredLogs = $scope.logs.filter(function (log) {
-            return window.SSLWidgetSearch.matches(log, $scope.searchText, searchMode);
+            return window.SSLWidgetSearch.matches(log, $scope.search.text, searchMode);
           });
           $scope.searchError = '';
         } catch (error) {
@@ -334,16 +450,20 @@ function onHomeyReady(Homey) {
         var severity = Number(log.severityId);
         return SSL_SEVERITY_NAMES[severity] ? 'ssl-sev-' + SSL_SEVERITY_NAMES[severity] : 'ssl-sev-unknown';
       };
-      $scope.formatDay = function (timestamp) {
-        var date = new Date(timestamp);
+      // Entries are grouped by their formatted separator text, so the design's format sets the grouping.
+      $scope.formatDay = function (log) {
+        var formatted = log.timestamp_formatted;
+        if (formatted && typeof formatted === 'object' && Object.prototype.hasOwnProperty.call(formatted, dayFormat)) {
+          return formatted[dayFormat];
+        }
+        var date = new Date(log.timestamp);
         return Number.isNaN(date.getTime()) ? ''
           : date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
       };
       $scope.showDaySeparator = function (index) {
         if (!$scope.design.showDaySeparators) return false;
         if (index === 0) return true;
-        return $scope.formatDay($scope.filteredLogs[index - 1].timestamp)
-          !== $scope.formatDay($scope.filteredLogs[index].timestamp);
+        return $scope.formatDay($scope.filteredLogs[index - 1]) !== $scope.formatDay($scope.filteredLogs[index]);
       };
 
       function formatTimestamp(value) {
@@ -410,10 +530,13 @@ function onHomeyReady(Homey) {
 
       function logsPath() {
         var path = '/logs?take=' + encodeURIComponent(count)
-          + '&timestampFormat=' + encodeURIComponent(datetimeFormat);
+          + '&timestampFormat=' + encodeURIComponent(datetimeFormat)
+          + '&dayFormat=' + encodeURIComponent(dayFormat);
         Object.keys(filters).forEach(function (key) {
           path += '&' + key + '=' + encodeURIComponent(filters[key]);
         });
+        var levels = selectedLevels();
+        if (levels.length) path += '&severities=' + encodeURIComponent(levels.join(','));
         return path;
       }
 
@@ -433,6 +556,33 @@ function onHomeyReady(Homey) {
         var pending = pendingRealtimeEntries;
         pendingRealtimeEntries = [];
         pending.forEach(insertRealtimeEntry);
+      }
+
+      // Refetches with the levels chosen in the filter menu; only the latest request applies.
+      var levelRequest = 0;
+      var levelsChangedDuringLoad = false;
+      function reloadLogs() {
+        if (initialLoadPending) {
+          levelsChangedDuringLoad = true;
+          return;
+        }
+        if (destroyed || $scope.bllUnavailable) return;
+        var request = ++levelRequest;
+        realtimeReady = false;
+        pendingRealtimeEntries.length = 0;
+        $scope.error = '';
+        Homey.api('GET', logsPath(), {}).then(function (data) {
+          if (destroyed || request !== levelRequest) return;
+          $scope.$applyAsync(function () { applyLogData(data); });
+        }).catch(function (error) {
+          if (destroyed || request !== levelRequest) return;
+          $scope.$applyAsync(function () {
+            $scope.error = error && error.message
+              ? error.message : translate('widgets.loadError', 'Unable to load log entries.');
+            pendingRealtimeEntries.length = 0;
+            realtimeReady = true;
+          });
+        });
       }
 
       // BLL started after this widget loaded: buffer realtime entries while the logs are fetched.
@@ -473,26 +623,25 @@ function onHomeyReady(Homey) {
       var storageReadyDuringInitialLoad = false;
       Homey.on('log_updated', onRealtimeLog);
       Homey.on('log_storage_ready', onLogStorageReady);
-      Homey.api('POST', '/register-timestamp-format', {
-        instanceId: instanceId,
-        format: datetimeFormat
+      Homey.api('GET', '/styles', {}).then(function (styles) {
+        if (destroyed) return null;
+        applyStyles(styles);
+        return Homey.api('POST', '/register-timestamp-format', {
+          instanceId: instanceId,
+          formats: [datetimeFormat, dayFormat]
+        });
       }).then(function (result) {
+        if (destroyed && !result) return null;
         if (!result || !result.registered) throw new Error('Widget timestamp format registration failed.');
         timestampFormatRegistered = true;
         if (destroyed) {
           unregisterTimestampFormat();
           return null;
         }
-        return Promise.all([
-          Homey.api('GET', '/styles', {}),
-          Homey.api('GET', logsPath(), {})
-        ]);
-      }).then(function (results) {
-        if (!results) return;
+        return Homey.api('GET', logsPath(), {});
+      }).then(function (data) {
+        if (!data) return;
         if (destroyed) return;
-        var styles = results[0];
-        var data = results[1];
-        applyStyles(styles);
         applyLogData(data);
       }).catch(function (error) {
         if (!destroyed) $scope.error = error && error.message
@@ -508,6 +657,7 @@ function onHomeyReady(Homey) {
         });
         Homey.ready({ height: widgetHeight });
         if (storageReadyDuringInitialLoad && !$scope.error) reloadAfterStorageReady();
+        else if (levelsChangedDuringLoad && !$scope.error) reloadLogs();
       });
 
       document.addEventListener('visibilitychange', function () {
@@ -527,6 +677,9 @@ function onHomeyReady(Homey) {
 
       $scope.$on('$destroy', function () {
         destroyed = true;
+        if (typeof window.removeEventListener === 'function') window.removeEventListener('resize', $scope.scheduleTrackAlignment);
+        if (alignTimer !== null) window.clearTimeout(alignTimer);
+        document.removeEventListener('click', closeFilterMenuOutside);
         pendingRealtimeEntries.length = 0;
         unregisterTimestampFormat();
         if (typeof Homey.off === 'function') {

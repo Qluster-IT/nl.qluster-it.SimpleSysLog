@@ -206,10 +206,6 @@
       "method": "GET",
       "path": "/api-ready"
     },
-    "internal": {
-      "method": "POST",
-      "path": "/internal/"
-    },
     "getLogDownloadUrl": {
       "method": "GET",
       "path": "/getlogdownloadurl/:returnType",
@@ -247,6 +243,14 @@
     "getWidgetStyles": {
       "method": "GET",
       "path": "/widget-styles"
+    },
+    "getWidgetDatetimeFormats": {
+      "method": "GET",
+      "path": "/widget-datetime-formats"
+    },
+    "formatWidgetTimestamps": {
+      "method": "POST",
+      "path": "/widget-timestamps"
     },
     "getAndroidPing": {
       "method": "GET",
@@ -5419,7 +5423,6 @@
         "ar": "Simple Sys Log"
       },
       "height": 500,
-      "transparent": true,
       "settings": [
         {
           "id": "entryCount",
@@ -5589,19 +5592,19 @@
             "ar": "التصميم"
           },
           "hint": {
-            "en": "Choose a design or create one in the app settings under Widget designer.",
-            "nl": "Kies een ontwerp of maak er een in de appinstellingen bij Widgetontwerper.",
-            "da": "Vælg et design, eller opret et under Widgetdesigner i appindstillingerne.",
-            "de": "Wähle ein Design oder erstelle eines in den App-Einstellungen unter Widget-Designer.",
-            "es": "Elige un diseño o crea uno en los ajustes de la aplicación, en Diseñador de widgets.",
-            "fr": "Choisissez un design ou créez-en un dans les paramètres de l’application, sous Concepteur de widgets.",
-            "it": "Scegli un design o creane uno nelle impostazioni dell'app, in Progettazione widget.",
-            "no": "Velg et design eller opprett et under Widgetdesigner i appinnstillingene.",
-            "sv": "Välj en design eller skapa en under Widgetdesigner i appinställningarna.",
-            "pl": "Wybierz projekt lub utwórz go w ustawieniach aplikacji w sekcji Projektant widżetów.",
-            "ru": "Выберите дизайн или создайте его в настройках приложения в разделе «Дизайнер виджетов».",
-            "ko": "디자인을 선택하거나 앱 설정의 위젯 디자이너에서 만드세요.",
-            "ar": "اختر تصميمًا أو أنشئه في إعدادات التطبيق ضمن مصمم الأدوات."
+            "en": "Choose a design or create one in the app settings under Widgets.",
+            "nl": "Kies een ontwerp of maak er een in de appinstellingen bij Widgets.",
+            "da": "Vælg et design, eller opret et under Widgets i appindstillingerne.",
+            "de": "Wähle ein Design oder erstelle eines in den App-Einstellungen unter Widgets.",
+            "es": "Elige un diseño o crea uno en los ajustes de la aplicación, en Widgets.",
+            "fr": "Choisissez un design ou créez-en un dans les paramètres de l’application, sous Widgets.",
+            "it": "Scegli un design o creane uno nelle impostazioni dell'app, in Widget.",
+            "no": "Velg et design eller opprett et under Widgeter i appinnstillingene.",
+            "sv": "Välj en design eller skapa en under Widgetar i appinställningarna.",
+            "pl": "Wybierz projekt lub utwórz go w ustawieniach aplikacji w sekcji Widżety.",
+            "ru": "Выберите дизайн или создайте его в настройках приложения в разделе «Виджеты».",
+            "ko": "디자인을 선택하거나 앱 설정의 위젯에서 만드세요.",
+            "ar": "اختر تصميمًا أو أنشئه في إعدادات التطبيق ضمن الأدوات."
           }
         },
         {
@@ -5623,19 +5626,19 @@
             "ar": "السمة"
           },
           "hint": {
-            "en": "Choose a theme or create one in the app settings under Widget designer.",
-            "nl": "Kies een thema of maak er een in de appinstellingen bij Widgetontwerper.",
-            "da": "Vælg et tema, eller opret et under Widgetdesigner i appindstillingerne.",
-            "de": "Wähle ein Design oder erstelle eines in den App-Einstellungen unter Widget-Designer.",
-            "es": "Elige un tema o crea uno en los ajustes de la aplicación, en Diseñador de widgets.",
-            "fr": "Choisissez un thème ou créez-en un dans les paramètres de l’application, sous Concepteur de widgets.",
-            "it": "Scegli un tema o creane uno nelle impostazioni dell'app, in Progettazione widget.",
-            "no": "Velg et tema eller opprett et under Widgetdesigner i appinnstillingene.",
-            "sv": "Välj ett tema eller skapa ett under Widgetdesigner i appinställningarna.",
-            "pl": "Wybierz motyw lub utwórz go w ustawieniach aplikacji w sekcji Projektant widżetów.",
-            "ru": "Выберите тему или создайте её в настройках приложения в разделе «Дизайнер виджетов».",
-            "ko": "테마를 선택하거나 앱 설정의 위젯 디자이너에서 만드세요.",
-            "ar": "اختر سمة أو أنشئها في إعدادات التطبيق ضمن مصمم الأدوات."
+            "en": "Choose a theme or create one in the app settings under Widgets.",
+            "nl": "Kies een thema of maak er een in de appinstellingen bij Widgets.",
+            "da": "Vælg et tema, eller opret et under Widgets i appindstillingerne.",
+            "de": "Wähle ein Design oder erstelle eines in den App-Einstellungen unter Widgets.",
+            "es": "Elige un tema o crea uno en los ajustes de la aplicación, en Widgets.",
+            "fr": "Choisissez un thème ou créez-en un dans les paramètres de l’application, sous Widgets.",
+            "it": "Scegli un tema o creane uno nelle impostazioni dell'app, in Widget.",
+            "no": "Velg et tema eller opprett et under Widgeter i appinnstillingene.",
+            "sv": "Välj ett tema eller skapa ett under Widgetar i appinställningarna.",
+            "pl": "Wybierz motyw lub utwórz go w ustawieniach aplikacji w sekcji Widżety.",
+            "ru": "Выберите тему или создайте её в настройках приложения в разделе «Виджеты».",
+            "ko": "테마를 선택하거나 앱 설정의 위젯에서 만드세요.",
+            "ar": "اختر سمة أو أنشئها في إعدادات التطبيق ضمن الأدوات."
           }
         },
         {
@@ -5657,19 +5660,19 @@
             "ar": "تنسيق التاريخ والوقت"
           },
           "hint": {
-            "en": "Choose a BLL date/time format or type a custom BLL format and select it.",
-            "nl": "Kies een BLL-datum-/tijdnotatie of typ en selecteer een eigen BLL-notatie.",
-            "da": "Vælg et BLL-dato-/tidsformat, eller indtast og vælg et brugerdefineret BLL-format.",
-            "de": "Wähle ein BLL-Datums-/Zeitformat oder gib ein eigenes BLL-Format ein und wähle es aus.",
-            "es": "Elige un formato de fecha y hora de BLL o escribe y selecciona un formato BLL personalizado.",
-            "fr": "Choisissez un format de date et d’heure BLL, ou saisissez et sélectionnez un format BLL personnalisé.",
-            "it": "Scegli un formato data/ora BLL oppure digita e seleziona un formato BLL personalizzato.",
-            "no": "Velg et BLL-dato-/tidsformat, eller skriv inn og velg et egendefinert BLL-format.",
-            "sv": "Välj ett BLL-datum-/tidsformat eller skriv och välj ett eget BLL-format.",
-            "pl": "Wybierz format daty i godziny BLL lub wpisz i wybierz własny format BLL.",
-            "ru": "Выберите формат даты и времени BLL или введите и выберите собственный формат BLL.",
-            "ko": "BLL 날짜/시간 형식을 선택하거나 사용자 지정 BLL 형식을 입력하고 선택하세요.",
-            "ar": "اختر تنسيق تاريخ ووقت BLL أو اكتب تنسيقًا مخصصًا وحدده."
+            "en": "Uses the design's format unless you choose a BLL date/time format here, or type a custom BLL format and select it.",
+            "nl": "Gebruikt de notatie van het ontwerp, tenzij je hier een BLL-datum-/tijdnotatie kiest of een eigen BLL-notatie typt en selecteert.",
+            "da": "Bruger designets format, medmindre du vælger et BLL-dato-/tidsformat her eller indtaster og vælger et brugerdefineret BLL-format.",
+            "de": "Verwendet das Format des Designs, es sei denn, du wählst hier ein BLL-Datums-/Zeitformat oder gibst ein eigenes BLL-Format ein und wählst es aus.",
+            "es": "Usa el formato del diseño, salvo que elijas aquí un formato de fecha y hora de BLL o escribas y selecciones un formato BLL personalizado.",
+            "fr": "Utilise le format du design, sauf si vous choisissez ici un format de date et d’heure BLL, ou saisissez et sélectionnez un format BLL personnalisé.",
+            "it": "Usa il formato del design, a meno che tu non scelga qui un formato data/ora BLL o digiti e selezioni un formato BLL personalizzato.",
+            "no": "Bruker designets format, med mindre du velger et BLL-dato-/tidsformat her, eller skriver inn og velger et egendefinert BLL-format.",
+            "sv": "Använder designens format, om du inte väljer ett BLL-datum-/tidsformat här eller skriver och väljer ett eget BLL-format.",
+            "pl": "Używa formatu projektu, chyba że wybierzesz tutaj format daty i godziny BLL lub wpiszesz i wybierzesz własny format BLL.",
+            "ru": "Используется формат дизайна, если здесь не выбран формат даты и времени BLL или не введён и выбран собственный формат BLL.",
+            "ko": "여기에서 BLL 날짜/시간 형식을 선택하거나 사용자 지정 BLL 형식을 입력하고 선택하지 않으면 디자인 형식을 사용합니다.",
+            "ar": "يستخدم تنسيق التصميم ما لم تختر هنا تنسيق تاريخ ووقت BLL أو تكتب تنسيق BLL مخصصًا وتحدده."
           }
         },
         {

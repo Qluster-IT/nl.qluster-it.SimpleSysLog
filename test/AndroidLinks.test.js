@@ -54,6 +54,13 @@ test('android link config rejects invalid settings and keeps only active filters
   assert.equal(config.colorMode, 'dark');
 });
 
+test('levels chosen in a wrapper replace the link minimum level for live entries', () => {
+  const { matchesLinkFilters } = require('../lib/android-links');
+  assert.equal(matchesLinkFilters({ minSeverity: 4 }, { severity: 7 }), false);
+  assert.equal(matchesLinkFilters({ minSeverity: 4 }, { severity: 7 }, [6, 7]), true);
+  assert.equal(matchesLinkFilters({ minSeverity: 4 }, { severity: 3 }, [6, 7]), false);
+});
+
 test('android links point to the widget locally and through the cloud with a local hint', async () => {
   assert.equal(localHostname('192.168.1.242:80'), '192-168-1-242.homey.homeylocal.com');
   assert.equal(localHostname('homey.local'), null);
@@ -65,9 +72,10 @@ test('android links point to the widget locally and through the cloud with a loc
 
 test('android link feed answers waiting requests with matching entries, timeouts, and reloads', async () => {
   let time = 0;
-  const feed = new AndroidLinkFeed({ now: () => time, idleMs: 1000, maxEntries: 2 });
+  const feed = new AndroidLinkFeed({ now: () => time, idleMs: 1000, maxEntries: 2, instance: 'first' });
   const timers = [];
   const options = matches => ({
+    instance: 'first',
     matches,
     timeoutMs: 20000,
     setTimeout: callback => { timers.push(callback); return callback; },
@@ -91,6 +99,7 @@ test('android link feed answers waiting requests with matching entries, timeouts
   assert.deepEqual(await timeout, { seq: 3, logs: [] });
 
   assert.equal((await feed.wait({ after: 99, ...options(() => true) })).reload, true);
+  assert.equal((await feed.wait({ after: 3, ...options(() => true), instance: 'previous' })).reload, true);
   feed.publish({ message: 'drops the oldest buffered entry' });
   assert.equal((await feed.wait({ after: 1, ...options(() => true) })).reload, true);
   time = 5000;
@@ -100,13 +109,17 @@ test('android link feed answers waiting requests with matching entries, timeouts
 
 test('android updates endpoint verifies the link, filters entries, and adds the link timestamp format', async () => {
   const homey = fakeHomey();
-  homey.app = { androidLinkFeed: new AndroidLinkFeed(), Log: {} };
+  homey.app = { androidLinkFeed: new AndroidLinkFeed(), Log: {}, apiReady: false };
   const { payload, signature } = signLinkConfig(homey, { minSeverity: 3, datetimeFormat: 'datetime' });
+  assert.deepEqual(await api.getAndroidUpdates({ homey, query: { ssl: payload, sig: signature, after: '0' } }), { ready: false });
+  homey.app.apiReady = true;
+  homey.app.androidLinkFeed.markReady();
   await assert.rejects(api.getAndroidUpdates({ homey, query: { ssl: payload, sig: 'x'.repeat(43), after: '0' } }),
     /invalid or has been reset/);
 
   const after = homey.app.androidLinkFeed.touch();
-  const pending = api.getAndroidUpdates({ homey, query: { ssl: payload, sig: signature, after: String(after) } });
+  const instance = homey.app.androidLinkFeed.instance;
+  const pending = api.getAndroidUpdates({ homey, query: { ssl: payload, sig: signature, after: String(after), instance } });
   homey.app.androidLinkFeed.publish({ severity: 6, message: 'debug', timestamp_formatted: {} });
   homey.app.androidLinkFeed.publish({ severity: 3, message: 'error', timestamp_formatted: { datetime: 'formatted' } });
   const result = await pending;
@@ -114,8 +127,10 @@ test('android updates endpoint verifies the link, filters entries, and adds the 
   assert.deepEqual(result.logs.map(log => log.message), ['error']);
   assert.equal(result.logs[0].timestamp_formatted.datetime, 'formatted');
 
-  const reload = await api.getAndroidUpdates({ homey, query: { ssl: payload, sig: signature, after: '999' } });
+  const reload = await api.getAndroidUpdates({ homey, query: { ssl: payload, sig: signature, after: '999', instance } });
   assert.deepEqual(reload, { reload: true });
+  const reinstalled = await api.getAndroidUpdates({ homey, query: { ssl: payload, sig: signature, after: '3', instance: 'before-reinstall' } });
+  assert.deepEqual(reinstalled, { reload: true });
 });
 
 function fakeElement(tag) {
@@ -144,6 +159,7 @@ test('widget shows copyable Web widget links instead of logs when Android scroll
   const requests = [];
   const document = {
     createElement: fakeElement,
+    documentElement: { classList: { contains: name => name === 'homey-dark-mode' } },
     body: { replaceChildren: main => { shown = main; } }
   };
   const context = vm.createContext({ document, Promise });
@@ -159,7 +175,11 @@ test('widget shows copyable Web widget links instead of logs when Android scroll
     ready: options => { ready = options; }
   });
   await new Promise(resolve => setImmediate(resolve));
-  assert.deepEqual(requests, [['POST', '/android-links', settings]]);
+  assert.equal(requests.length, 1);
+  assert.equal(requests[0][0] + ' ' + requests[0][1], 'POST /android-links');
+  // An automatic widget stores the Homey app's current theme in the link.
+  assert.equal(JSON.stringify(requests[0][2]), JSON.stringify({ androidScroll: true, height: 300, colorMode: 'dark' }));
+  assert.equal(settings.colorMode, undefined);
   assert.deepEqual(findAll(shown, node => node.tag === 'input').map(input => input.value),
     ['https://local/link', 'https://cloud/link']);
   assert.equal(ready.height, 300);
@@ -233,6 +253,7 @@ test('web widget wrapper uses the local address when reachable and falls back to
 test('web widget wrapper long-polls entries, reports storage readiness, and reloads when asked', async () => {
   const wrapper = loadWrapper();
   const responses = [
+    { ready: false },
     { available: true, seq: 5, logs: [{ message: 'one' }] },
     { reload: true }
   ];
@@ -241,16 +262,17 @@ test('web widget wrapper long-polls entries, reports storage readiness, and relo
   let reloaded = false;
   const poller = wrapper.createPoller({
     request: async (path, extra) => {
-      requests.push([path, extra.after]);
+      requests.push([path, extra.after, extra.instance]);
       return responses.shift();
     },
     emit: (event, data) => events.push([event, data && data.message]),
-    reload: () => { reloaded = true; }
+    reload: () => { reloaded = true; },
+    setTimeout: callback => setImmediate(callback)
   });
-  poller.update({ available: false, seq: 2 });
-  poller.update({ available: false, seq: 2 });
-  await new Promise(resolve => setImmediate(resolve));
-  assert.deepEqual(requests, [['/android/updates', 2], ['/android/updates', 5]]);
+  poller.update({ available: false, seq: 2, instance: 'app-start' });
+  poller.update({ available: false, seq: 2, instance: 'app-start' });
+  await new Promise(resolve => setTimeout(resolve, 20));
+  assert.deepEqual(requests, [['/android/updates', 2, 'app-start'], ['/android/updates', 2, 'app-start'], ['/android/updates', 5, 'app-start']]);
   assert.deepEqual(events, [['log_storage_ready', undefined], ['log_updated', 'one']]);
   assert.equal(reloaded, true);
 });

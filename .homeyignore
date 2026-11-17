@@ -1,17 +1,35 @@
-/settings.old/
-/test/
-/nl.qluster-it.Chronograph/
-/.homeycompose/
+# Files that are not needed by the Homey app at runtime.
+
+# Repository, editor and agent files
+/.github/
 /.vscode/
-/package-lock.json
-/.homeyplugins.json
+/.gitignore
 /.homeyignore
-/helpers
-/not-in-use/
-/todo.txt
-/filetypes.txt
-/json flows
+/AGENTS.md
+
+# Homey Compose sources and build output (compiled into app.json and locales/)
+/.homeycompose/
+/.homeyplugins.json
+/.homeybuild/
+
+# Development dependencies and tests
+/package-lock.json
+/test/
+
+# Documentation (App Store descriptions use README.txt)
 /README.md
 
-/widgets/log-table/
+# Unused code and development notes
+/filetypes.txt
+/helpers
+/json flows
+/todo.txt
 /translate.json
+
+# Unused assets (source images for the PNGs used by the settings page)
+/settings/date.svg
+/settings/font.svg
+/settings/refresh.svg
+/settings/sort.svg
+/settings/time.svg
+/settings/download.png

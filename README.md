@@ -12,6 +12,53 @@ With simple log You can:
 - You can download the log in CSV format. -> https://developer.athom.com/tools/app-settings
 - Use the API to retreive, add and clean logging.
 
+# Dashboard widget
+
+The Simple Sys Log dashboard widget shows recent entries and updates as new
+entries arrive. Each widget can set:
+
+- its entry count and height (100 to 5000 pixels; the search bar stays at the top);
+- light, dark, or automatic mode (automatic follows the dashboard);
+- whether the search bar is shown, and simple or advanced search;
+- a BLL date/time format or a custom format;
+- filters for a minimum severity, a facility, and app/group or hostname text.
+
+The widget needs the Better Logic Library app. When BLL starts after the
+widget has loaded, the widget loads its entries automatically.
+
+In the app settings, open **Settings** from the log menu and select the
+**Widget designer** tab (next to **General**) to create designs and color themes,
+then select them in the widget settings. Switch between **Designs** and
+**Themes**, pick an item, and use **New**, **Copy** or **Delete**; built-in items
+are read-only, so copy them to customize. The built-in **Default** design and
+**Default** theme are used until you pick something else; the Default theme
+uses fixed severity colors and an automatic background that follows the
+dashboard. Theme colors are named colors (red,
+orange, yellow, green, teal, cyan, blue, indigo, purple, pink, brown, grey,
+black, white) or **Automatic**, so every theme works in light and dark mode.
+The **Templates** button opens template export, import and the community
+templates.
+
+## Scrolling on Android
+
+Dashboard widgets cannot scroll in the Homey app on Android yet. Enable
+**Using scroll on Android?** in the widget settings: the widget then shows two
+links to paste as the address of a default Homey **Web** widget:
+
+- **Local link**: works only on your home network.
+- **Automatic link**: loads through the Homey cloud and uses the local
+  connection when it is reachable.
+
+The Web widget shows this same log widget as a normal, scrollable page. New
+entries arrive by long-polling. In automatic mode it follows the device's
+light/dark setting. Each link contains that widget's settings, signed by the app, so copy
+the link again after changing them. Anyone with a link can read the entries it
+shows; **Settings → General → Reset Android links** in the app settings makes all
+existing links stop working.
+
+Formatted timestamps are generated for log queries and realtime updates only.
+They are not written to the log files; stored entries retain their raw timestamp.
+
 # Log storage
 
 Existing log indexes are upgraded sequentially during startup using streaming I/O.
@@ -74,3 +121,23 @@ The folowing API endpoints can be used:
   {"log": "Test 1,2,3", "group": "TEST"}
 - Clear log
   GET /api/app/nl.nielsdeklerk.log/clearlog
+- Check readiness
+  GET /api/app/nl.nielsdeklerk.log/api-ready
+
+`GET /api-ready` returns `{ "ready": true }` once startup (settings, log backlog,
+retention and Flow cards) has succeeded; the app then emits the `api-ready`
+realtime event with the same payload. Readiness does not wait for Better Logic
+Library: without it the app runs in limited mode and log-file endpoints report
+that BLL is not running. Clients should subscribe before probing and confirm
+through the endpoint rather than relying on an event they may have missed.
+Failed startup remains not ready; a failed realtime notification is logged
+without invalidating the endpoint.
+
+When Better Logic Library starts and the file-backed log storage has
+initialized, the app emits the `log_storage_ready` realtime event with
+`{ "ready": true }`. The dashboard widget uses it to load the logs without a
+manual reload.
+
+The public `/android/*` endpoints serve the Web widget links described above.
+Apart from `/android/ping`, they only answer requests that carry a valid signed
+link.

@@ -25,7 +25,7 @@ if (window.hasOwnProperty('angular'))
     }])
     .controller("simplelogCtrl", ['$scope', '$rootScope', '$timeout', '$compile', '$q', '$bl', 'gridUtil', 'uiGridConstants', '$window', '$http', 'tmhDynamicLocale', function ($scope, $rootScope, $timeout, $compile, $q, $bl, gridUtil, uiGridConstants, $window, $http, tmhDynamicLocale) {
       const vars = $rootScope.vars = $scope.vars = { logCurrentPage: 1, logPerPage: 100, logs: [] };
-      const view = $rootScope.view = $scope.view = { lang: 'en', severities: {}, facilities: {}, id: 'log', settings: {}, showHints: false, downloadFileLink: undefined, gridLoaded: false, logBookDiagnostic: null, logBooks: null };
+      const view = $rootScope.view = $scope.view = { lang: 'en', severities: {}, facilities: {}, id: 'log', settings: {}, showHints: false, downloadFileLink: undefined, gridLoaded: false, settingsTab: 'general' };
       $scope.homey = $window.Homey;
 
 
@@ -227,9 +227,6 @@ if (window.hasOwnProperty('angular'))
           $timeout(() => { view.isBusy = false; });
         };
         Homey.on('downloadFileFailed', downloadFileFailedListener);
-        $bl.api("POST", "/internal", { action: 'getLogBookIDs' }, (x) => {
-          view.logBooks = x;
-        });
 
         const logUpdatedListener = (log) => {
           if (!view.settings || view.settings.autoRefresh === false) return;
@@ -263,11 +260,25 @@ if (window.hasOwnProperty('angular'))
       };
       let columnWidhtSet = false;
 
-      $scope.submitLogBookForDiagnostic = function (logBookID) {
-        $bl.api("POST", "/internal", { action: 'submitLogBookForDiagnostic', logBookID }, (x) => {
-          view.logBookDiagnostic = null;
+      $scope.selectSettingsTab = function (tab) {
+        view.settingsTab = tab;
+        if (tab === 'widgets' && $window.SSLWidgetDesigner) $window.SSLWidgetDesigner.mount($window.Homey);
+      };
+      $scope.resetAndroidLinks = function () {
+        const homey = $window.Homey;
+        const done = (status) => $scope.$applyAsync(() => {
+          view.androidResetBusy = false;
+          view.androidResetStatus = status;
         });
-      }
+        view.androidResetStatus = null;
+        homey.confirm(homey.__('widgets.settings.androidResetConfirm'), 'warning', (error, confirmed) => {
+          if (error || !confirmed) return;
+          $scope.$applyAsync(() => { view.androidResetBusy = true; });
+          homey.api('POST', '/android/reset', {}, (resetError) => {
+            done(resetError ? (resetError.message || String(resetError)) : homey.__('widgets.settings.androidResetDone'));
+          });
+        });
+      };
       $scope.logGridOptions = {
         paginationPageSizes: [10, 15, 20, 25, 50, 75, 100, 250],//, 500, 1000],
         paginationPageSize: 50,
@@ -431,7 +442,7 @@ if (window.hasOwnProperty('angular'))
             //cellFilter: 'date:"M/d/yyyy h:mm:ss a"',
             filterHeaderTemplate: '<div class="ui-grid-filter-container row"><div ng-repeat="colFilter in col.filters" class="col-md-6 col-md-offset-0 col-sm-6 col-sm-offset-0 col-xs-6 col-xs-offset-0"><div custom-grid-date-filter-header></div></div></div>',
             cellTemplate:
-              '<div class="ui-grid-cell-contents">{{row.entity.timestamp_formatted || row.entity.timestamp}}</div>'
+              '<div class="ui-grid-cell-contents">{{row.entity.timestamp_formatted && row.entity.timestamp_formatted.datetime || row.entity.timestamp}}</div>'
           },
           {
             field: 'message',

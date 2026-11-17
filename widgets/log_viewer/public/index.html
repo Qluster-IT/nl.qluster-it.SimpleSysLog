@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en" class="ssl-widget-page">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/css/ssl-widget.css">
+  <script src="../../../net.i-dev.betterlogic/assets/js/angular.min.js"></script>
+  <script src="../../assets/js/ssl-widget-search.js"></script>
+  <script src="../../assets/js/ssl-widget.js"></script>
+  <script src="../../assets/js/ssl-widget-android.js"></script>
+</head>
+<body class="homey-widget-full" ng-controller="SSLLogWidgetController">
+  <main class="ssl-widget" ng-class="modeClass" ng-style="themeStyle">
+    <header class="ssl-widget-toolbar" ng-if="showSearch && !bllUnavailable">
+      <label class="ssl-visually-hidden" for="ssl-log-search">{{ labels.search }}</label>
+      <input id="ssl-log-search" class="ssl-log-search" type="search" ng-model="searchText"
+        ng-change="validateSearch()" ng-attr-placeholder="{{ labels.search }}">
+      <span class="ssl-search-error" role="alert" ng-if="searchError">{{ searchError }}</span>
+    </header>
+
+    <p class="ssl-widget-message" ng-if="loading">{{ labels.loading }}</p>
+    <p class="ssl-widget-message" role="status" ng-if="bllUnavailable">{{ labels.bllRequired }}</p>
+    <p class="ssl-widget-message ssl-widget-error" role="alert" ng-if="error">{{ error }}</p>
+    <p class="ssl-widget-message" ng-if="!loading && !error && !bllUnavailable && !filteredLogs.length">{{ labels.noLogs }}</p>
+
+    <section class="ssl-log-list" id="ssl-log-list" ng-if="!loading && !error && !bllUnavailable && filteredLogs.length"
+      aria-live="polite">
+      <div class="ssl-log-entry" ng-repeat="log in filteredLogs track by log._key"
+        ng-attr-data-log-key="{{ log._key }}">
+        <div class="ssl-day-separator" ng-if="showDaySeparator($index)"><span>{{ formatDay(log.timestamp) }}</span></div>
+        <article class="ssl-log-card" ng-class="severityClass(log)">
+          <div class="ssl-log-side" ng-if="sideFields.length">
+            <span ng-repeat="field in sideFields track by field" ng-if="fieldValue(field, log)"
+              ng-class="['ssl-field-' + field, fieldValueClass(field, log)]">{{ fieldValue(field, log) }}</span>
+          </div>
+          <div class="ssl-log-main">
+            <div class="ssl-field-message" ng-if="showMessage">{{ fieldValue('message', log) }}</div>
+            <div class="ssl-log-meta" ng-if="metaFields.length">
+              <span ng-repeat="field in metaFields track by field" ng-if="fieldValue(field, log)"
+                ng-class="'ssl-field-' + field" ng-attr-title="{{ labels[field] }}">{{ fieldValue(field, log) }}</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

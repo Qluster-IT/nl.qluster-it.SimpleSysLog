@@ -202,6 +202,10 @@
   "homeyCommunityTopicId": 77533,
   "homepage": "https://github.com/Qluster-IT/nl.qluster-it.SimpleSysLog/wiki",
   "api": {
+    "getApiReady": {
+      "method": "GET",
+      "path": "/api-ready"
+    },
     "internal": {
       "method": "POST",
       "path": "/internal/"
@@ -227,6 +231,46 @@
     "addLog": {
       "method": "PUT",
       "path": "/addlog/"
+    },
+    "encodeWidgetTemplate": {
+      "method": "POST",
+      "path": "/widget-template/encode"
+    },
+    "decodeWidgetTemplate": {
+      "method": "POST",
+      "path": "/widget-template/decode"
+    },
+    "getWidgetTemplateCatalog": {
+      "method": "GET",
+      "path": "/widget-template-catalog"
+    },
+    "getWidgetStyles": {
+      "method": "GET",
+      "path": "/widget-styles"
+    },
+    "getAndroidPing": {
+      "method": "GET",
+      "path": "/android/ping",
+      "public": true
+    },
+    "getAndroidInit": {
+      "method": "GET",
+      "path": "/android/init",
+      "public": true
+    },
+    "getAndroidLogs": {
+      "method": "GET",
+      "path": "/android/logs",
+      "public": true
+    },
+    "getAndroidUpdates": {
+      "method": "GET",
+      "path": "/android/updates",
+      "public": true
+    },
+    "resetAndroidLinks": {
+      "method": "POST",
+      "path": "/android/reset"
     }
   },
   "flow": {
@@ -5356,5 +5400,1138 @@
         }
       ]
     }
-  ]
+  ],
+  "widgets": {
+    "log_viewer": {
+      "name": {
+        "en": "Simple Sys Log",
+        "nl": "Simple Sys Log",
+        "da": "Simple Sys Log",
+        "de": "Simple Sys Log",
+        "es": "Simple Sys Log",
+        "fr": "Simple Sys Log",
+        "it": "Simple Sys Log",
+        "no": "Simple Sys Log",
+        "sv": "Simple Sys Log",
+        "pl": "Simple Sys Log",
+        "ru": "Simple Sys Log",
+        "ko": "Simple Sys Log",
+        "ar": "Simple Sys Log"
+      },
+      "height": 500,
+      "transparent": true,
+      "settings": [
+        {
+          "id": "entryCount",
+          "type": "number",
+          "title": {
+            "en": "Entries to display",
+            "nl": "Aantal logregels",
+            "da": "Antal logposter",
+            "de": "Anzahl der Einträge",
+            "es": "Entradas para mostrar",
+            "fr": "Entrées à afficher",
+            "it": "Voci da visualizzare",
+            "no": "Antall oppføringer",
+            "sv": "Antal poster",
+            "pl": "Liczba wpisów",
+            "ru": "Количество записей",
+            "ko": "표시할 항목 수",
+            "ar": "عدد السجلات المعروضة"
+          },
+          "hint": {
+            "en": "Show the newest entries. Enter a whole number of 1 or more.",
+            "nl": "Toon de nieuwste logregels. Voer een heel getal van 1 of hoger in.",
+            "da": "Vis de nyeste poster. Angiv et helt tal på mindst 1.",
+            "de": "Zeigt die neuesten Einträge. Gib eine ganze Zahl ab 1 ein.",
+            "es": "Muestra las entradas más recientes. Introduce un número entero de 1 o más.",
+            "fr": "Affiche les entrées les plus récentes. Saisissez un nombre entier supérieur ou égal à 1.",
+            "it": "Mostra le voci più recenti. Inserisci un numero intero pari o superiore a 1.",
+            "no": "Vis de nyeste oppføringene. Skriv inn et heltall på minst 1.",
+            "sv": "Visa de senaste posterna. Ange ett heltal på minst 1.",
+            "pl": "Wyświetl najnowsze wpisy. Wpisz liczbę całkowitą nie mniejszą niż 1.",
+            "ru": "Показывать последние записи. Введите целое число не меньше 1.",
+            "ko": "최신 항목을 표시합니다. 1 이상의 정수를 입력하세요.",
+            "ar": "اعرض أحدث السجلات. أدخل عددًا صحيحًا لا يقل عن 1."
+          },
+          "value": 25,
+          "min": 1
+        },
+        {
+          "id": "height",
+          "type": "number",
+          "title": {
+            "en": "Height (pixels)",
+            "nl": "Hoogte (pixels)",
+            "da": "Højde (pixels)",
+            "de": "Höhe (Pixel)",
+            "es": "Altura (píxeles)",
+            "fr": "Hauteur (pixels)",
+            "it": "Altezza (pixel)",
+            "no": "Høyde (piksler)",
+            "sv": "Höjd (pixlar)",
+            "pl": "Wysokość (piksele)",
+            "ru": "Высота (пиксели)",
+            "ko": "높이(픽셀)",
+            "ar": "الارتفاع (بكسل)"
+          },
+          "hint": {
+            "en": "Widget height in pixels, from 100 to 5000. The search bar stays at the top while the list scrolls.",
+            "nl": "Hoogte van de widget in pixels, van 100 tot 5000. De zoekbalk blijft bovenaan staan terwijl de lijst scrolt.",
+            "da": "Widgettens højde i pixels, fra 100 til 5000. Søgefeltet bliver øverst, mens listen ruller.",
+            "de": "Höhe des Widgets in Pixeln, von 100 bis 5000. Die Suchleiste bleibt oben, während die Liste scrollt.",
+            "es": "Altura del widget en píxeles, de 100 a 5000. La barra de búsqueda permanece arriba mientras se desplaza la lista.",
+            "fr": "Hauteur du widget en pixels, de 100 à 5000. La barre de recherche reste en haut pendant le défilement de la liste.",
+            "it": "Altezza del widget in pixel, da 100 a 5000. La barra di ricerca resta in alto mentre l’elenco scorre.",
+            "no": "Widgetens høyde i piksler, fra 100 til 5000. Søkefeltet blir stående øverst mens listen ruller.",
+            "sv": "Widgetens höjd i pixlar, från 100 till 5000. Sökfältet stannar överst medan listan rullar.",
+            "pl": "Wysokość widżetu w pikselach, od 100 do 5000. Pasek wyszukiwania pozostaje u góry podczas przewijania listy.",
+            "ru": "Высота виджета в пикселях, от 100 до 5000. Строка поиска остаётся вверху, пока список прокручивается.",
+            "ko": "위젯 높이(픽셀), 100~5000. 목록을 스크롤해도 검색 표시줄은 위에 유지됩니다.",
+            "ar": "ارتفاع الأداة بالبكسل، من 100 إلى 5000. يبقى شريط البحث في الأعلى أثناء تمرير القائمة."
+          },
+          "value": 500,
+          "min": 100,
+          "max": 5000
+        },
+        {
+          "id": "colorMode",
+          "type": "dropdown",
+          "title": {
+            "en": "Light or dark mode",
+            "nl": "Lichte of donkere modus",
+            "da": "Lys eller mørk tilstand",
+            "de": "Heller oder dunkler Modus",
+            "es": "Modo claro u oscuro",
+            "fr": "Mode clair ou sombre",
+            "it": "Modalità chiara o scura",
+            "no": "Lys eller mørk modus",
+            "sv": "Ljust eller mörkt läge",
+            "pl": "Tryb jasny lub ciemny",
+            "ru": "Светлый или тёмный режим",
+            "ko": "라이트 또는 다크 모드",
+            "ar": "الوضع الفاتح أو الداكن"
+          },
+          "value": "automatic",
+          "values": [
+            {
+              "id": "automatic",
+              "title": {
+                "en": "Automatic (follow the dashboard)",
+                "nl": "Automatisch (volg het dashboard)",
+                "da": "Automatisk (følg dashboardet)",
+                "de": "Automatisch (wie das Dashboard)",
+                "es": "Automático (según el panel)",
+                "fr": "Automatique (selon le tableau de bord)",
+                "it": "Automatica (come la dashboard)",
+                "no": "Automatisk (følg dashbordet)",
+                "sv": "Automatiskt (följ instrumentpanelen)",
+                "pl": "Automatycznie (jak pulpit)",
+                "ru": "Автоматически (как на панели)",
+                "ko": "자동(대시보드 따름)",
+                "ar": "تلقائي (حسب لوحة المعلومات)"
+              }
+            },
+            {
+              "id": "light",
+              "title": {
+                "en": "Light",
+                "nl": "Licht",
+                "da": "Lys",
+                "de": "Hell",
+                "es": "Claro",
+                "fr": "Clair",
+                "it": "Chiara",
+                "no": "Lys",
+                "sv": "Ljust",
+                "pl": "Jasny",
+                "ru": "Светлый",
+                "ko": "라이트",
+                "ar": "فاتح"
+              }
+            },
+            {
+              "id": "dark",
+              "title": {
+                "en": "Dark",
+                "nl": "Donker",
+                "da": "Mørk",
+                "de": "Dunkel",
+                "es": "Oscuro",
+                "fr": "Sombre",
+                "it": "Scura",
+                "no": "Mørk",
+                "sv": "Mörkt",
+                "pl": "Ciemny",
+                "ru": "Тёмный",
+                "ko": "다크",
+                "ar": "داكن"
+              }
+            }
+          ]
+        },
+        {
+          "id": "designStyle",
+          "type": "autocomplete",
+          "title": {
+            "en": "Design",
+            "nl": "Ontwerp",
+            "da": "Design",
+            "de": "Design",
+            "es": "Diseño",
+            "fr": "Design",
+            "it": "Design",
+            "no": "Design",
+            "sv": "Design",
+            "pl": "Projekt",
+            "ru": "Дизайн",
+            "ko": "디자인",
+            "ar": "التصميم"
+          },
+          "hint": {
+            "en": "Choose a design or create one in the app settings under Widget designer.",
+            "nl": "Kies een ontwerp of maak er een in de appinstellingen bij Widgetontwerper.",
+            "da": "Vælg et design, eller opret et under Widgetdesigner i appindstillingerne.",
+            "de": "Wähle ein Design oder erstelle eines in den App-Einstellungen unter Widget-Designer.",
+            "es": "Elige un diseño o crea uno en los ajustes de la aplicación, en Diseñador de widgets.",
+            "fr": "Choisissez un design ou créez-en un dans les paramètres de l’application, sous Concepteur de widgets.",
+            "it": "Scegli un design o creane uno nelle impostazioni dell'app, in Progettazione widget.",
+            "no": "Velg et design eller opprett et under Widgetdesigner i appinnstillingene.",
+            "sv": "Välj en design eller skapa en under Widgetdesigner i appinställningarna.",
+            "pl": "Wybierz projekt lub utwórz go w ustawieniach aplikacji w sekcji Projektant widżetów.",
+            "ru": "Выберите дизайн или создайте его в настройках приложения в разделе «Дизайнер виджетов».",
+            "ko": "디자인을 선택하거나 앱 설정의 위젯 디자이너에서 만드세요.",
+            "ar": "اختر تصميمًا أو أنشئه في إعدادات التطبيق ضمن مصمم الأدوات."
+          }
+        },
+        {
+          "id": "colorTheme",
+          "type": "autocomplete",
+          "title": {
+            "en": "Theme",
+            "nl": "Thema",
+            "da": "Tema",
+            "de": "Design",
+            "es": "Tema",
+            "fr": "Thème",
+            "it": "Tema",
+            "no": "Tema",
+            "sv": "Tema",
+            "pl": "Motyw",
+            "ru": "Тема",
+            "ko": "테마",
+            "ar": "السمة"
+          },
+          "hint": {
+            "en": "Choose a theme or create one in the app settings under Widget designer.",
+            "nl": "Kies een thema of maak er een in de appinstellingen bij Widgetontwerper.",
+            "da": "Vælg et tema, eller opret et under Widgetdesigner i appindstillingerne.",
+            "de": "Wähle ein Design oder erstelle eines in den App-Einstellungen unter Widget-Designer.",
+            "es": "Elige un tema o crea uno en los ajustes de la aplicación, en Diseñador de widgets.",
+            "fr": "Choisissez un thème ou créez-en un dans les paramètres de l’application, sous Concepteur de widgets.",
+            "it": "Scegli un tema o creane uno nelle impostazioni dell'app, in Progettazione widget.",
+            "no": "Velg et tema eller opprett et under Widgetdesigner i appinnstillingene.",
+            "sv": "Välj ett tema eller skapa ett under Widgetdesigner i appinställningarna.",
+            "pl": "Wybierz motyw lub utwórz go w ustawieniach aplikacji w sekcji Projektant widżetów.",
+            "ru": "Выберите тему или создайте её в настройках приложения в разделе «Дизайнер виджетов».",
+            "ko": "테마를 선택하거나 앱 설정의 위젯 디자이너에서 만드세요.",
+            "ar": "اختر سمة أو أنشئها في إعدادات التطبيق ضمن مصمم الأدوات."
+          }
+        },
+        {
+          "id": "datetimeFormat",
+          "type": "autocomplete",
+          "title": {
+            "en": "Date and time format",
+            "nl": "Datum- en tijdnotatie",
+            "da": "Dato- og tidsformat",
+            "de": "Datums- und Zeitformat",
+            "es": "Formato de fecha y hora",
+            "fr": "Format de date et d’heure",
+            "it": "Formato di data e ora",
+            "no": "Dato- og tidsformat",
+            "sv": "Datum- och tidsformat",
+            "pl": "Format daty i godziny",
+            "ru": "Формат даты и времени",
+            "ko": "날짜 및 시간 형식",
+            "ar": "تنسيق التاريخ والوقت"
+          },
+          "hint": {
+            "en": "Choose a BLL date/time format or type a custom BLL format and select it.",
+            "nl": "Kies een BLL-datum-/tijdnotatie of typ en selecteer een eigen BLL-notatie.",
+            "da": "Vælg et BLL-dato-/tidsformat, eller indtast og vælg et brugerdefineret BLL-format.",
+            "de": "Wähle ein BLL-Datums-/Zeitformat oder gib ein eigenes BLL-Format ein und wähle es aus.",
+            "es": "Elige un formato de fecha y hora de BLL o escribe y selecciona un formato BLL personalizado.",
+            "fr": "Choisissez un format de date et d’heure BLL, ou saisissez et sélectionnez un format BLL personnalisé.",
+            "it": "Scegli un formato data/ora BLL oppure digita e seleziona un formato BLL personalizzato.",
+            "no": "Velg et BLL-dato-/tidsformat, eller skriv inn og velg et egendefinert BLL-format.",
+            "sv": "Välj ett BLL-datum-/tidsformat eller skriv och välj ett eget BLL-format.",
+            "pl": "Wybierz format daty i godziny BLL lub wpisz i wybierz własny format BLL.",
+            "ru": "Выберите формат даты и времени BLL или введите и выберите собственный формат BLL.",
+            "ko": "BLL 날짜/시간 형식을 선택하거나 사용자 지정 BLL 형식을 입력하고 선택하세요.",
+            "ar": "اختر تنسيق تاريخ ووقت BLL أو اكتب تنسيقًا مخصصًا وحدده."
+          }
+        },
+        {
+          "id": "showSearch",
+          "type": "checkbox",
+          "title": {
+            "en": "Show search bar",
+            "nl": "Zoekbalk tonen",
+            "da": "Vis søgefelt",
+            "de": "Suchleiste anzeigen",
+            "es": "Mostrar barra de búsqueda",
+            "fr": "Afficher la barre de recherche",
+            "it": "Mostra barra di ricerca",
+            "no": "Vis søkefelt",
+            "sv": "Visa sökfält",
+            "pl": "Pokaż pasek wyszukiwania",
+            "ru": "Показывать строку поиска",
+            "ko": "검색 표시줄 표시",
+            "ar": "إظهار شريط البحث"
+          },
+          "value": true
+        },
+        {
+          "id": "searchMode",
+          "type": "dropdown",
+          "title": {
+            "en": "Search mode",
+            "nl": "Zoekmodus",
+            "da": "Søgetilstand",
+            "de": "Suchmodus",
+            "es": "Modo de búsqueda",
+            "fr": "Mode de recherche",
+            "it": "Modalità di ricerca",
+            "no": "Søkemodus",
+            "sv": "Sökläge",
+            "pl": "Tryb wyszukiwania",
+            "ru": "Режим поиска",
+            "ko": "검색 모드",
+            "ar": "وضع البحث"
+          },
+          "value": "simple",
+          "values": [
+            {
+              "id": "simple",
+              "title": {
+                "en": "Simple text",
+                "nl": "Eenvoudige tekst",
+                "da": "Enkel tekst",
+                "de": "Einfacher Text",
+                "es": "Texto simple",
+                "fr": "Texte simple",
+                "it": "Testo semplice",
+                "no": "Enkel tekst",
+                "sv": "Enkel text",
+                "pl": "Prosty tekst",
+                "ru": "Простой текст",
+                "ko": "간단한 텍스트",
+                "ar": "نص بسيط"
+              }
+            },
+            {
+              "id": "advanced",
+              "title": {
+                "en": "Advanced (AND / OR / NOT)",
+                "nl": "Geavanceerd (AND / OR / NOT)",
+                "da": "Avanceret (AND / OR / NOT)",
+                "de": "Erweitert (AND / OR / NOT)",
+                "es": "Avanzado (AND / OR / NOT)",
+                "fr": "Avancé (AND / OR / NOT)",
+                "it": "Avanzata (AND / OR / NOT)",
+                "no": "Avansert (AND / OR / NOT)",
+                "sv": "Avancerad (AND / OR / NOT)",
+                "pl": "Zaawansowany (AND / OR / NOT)",
+                "ru": "Расширенный (AND / OR / NOT)",
+                "ko": "고급 (AND / OR / NOT)",
+                "ar": "متقدم (AND / OR / NOT)"
+              }
+            }
+          ]
+        },
+        {
+          "id": "minSeverity",
+          "type": "dropdown",
+          "title": {
+            "en": "Minimum severity",
+            "nl": "Minimale ernst",
+            "da": "Minimum alvorlighed",
+            "de": "Mindestschweregrad",
+            "es": "Gravedad mínima",
+            "fr": "Gravité minimale",
+            "it": "Gravità minima",
+            "no": "Minimum alvorlighetsgrad",
+            "sv": "Lägsta allvarlighetsgrad",
+            "pl": "Minimalny poziom",
+            "ru": "Минимальная важность",
+            "ko": "최소 심각도",
+            "ar": "الحد الأدنى للخطورة"
+          },
+          "hint": {
+            "en": "Show only entries with this severity or a more severe one. Debug shows all entries.",
+            "nl": "Toon alleen logregels met deze ernst of ernstiger. Debuggen toont alle logregels.",
+            "da": "Vis kun poster med denne eller en mere alvorlig grad. Debug viser alle poster.",
+            "de": "Zeigt nur Einträge mit diesem oder einem höheren Schweregrad. Debuggen zeigt alle Einträge.",
+            "es": "Muestra solo entradas con esta gravedad o una mayor. Depurar muestra todas las entradas.",
+            "fr": "Affiche uniquement les entrées de cette gravité ou plus graves. Déboguer affiche toutes les entrées.",
+            "it": "Mostra solo le voci con questa gravità o superiore. Debugging mostra tutte le voci.",
+            "no": "Vis bare oppføringer med denne eller en mer alvorlig grad. Feilsøking viser alle oppføringer.",
+            "sv": "Visa bara poster med denna eller en allvarligare grad. Felsökning visar alla poster.",
+            "pl": "Pokaż tylko wpisy o tym lub wyższym poziomie. Debugowanie pokazuje wszystkie wpisy.",
+            "ru": "Показывать только записи с этой или более высокой важностью. Отладка показывает все записи.",
+            "ko": "이 심각도 이상인 항목만 표시합니다. 디버그는 모든 항목을 표시합니다.",
+            "ar": "إظهار الإدخالات بهذه الخطورة أو أشد فقط. يُظهر التصحيح جميع الإدخالات."
+          },
+          "value": "7",
+          "values": [
+            {
+              "id": "0",
+              "title": {
+                "en": "Emergency",
+                "nl": "Noodgeval",
+                "da": "Nødsituation",
+                "de": "Notfall",
+                "es": "Emergencia",
+                "fr": "Urgence",
+                "it": "Emergenza",
+                "no": "Nødsituasjon",
+                "sv": "Nödsituation",
+                "pl": "Awaryjny",
+                "ru": "Аварийная ситуация",
+                "ko": "긴급",
+                "ar": "طوارئ"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Alert",
+                "nl": "Waarschuwing",
+                "da": "Alarm",
+                "de": "Alarm",
+                "es": "Alerta",
+                "fr": "Alerte",
+                "it": "Avviso",
+                "no": "Varsel",
+                "sv": "Varning",
+                "pl": "Alert",
+                "ru": "Оповещение",
+                "ko": "알림",
+                "ar": "تنبيه"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Critical",
+                "nl": "Kritiek",
+                "da": "Kritisk",
+                "de": "Kritisch",
+                "es": "Crítico",
+                "fr": "Critique",
+                "it": "Critico",
+                "no": "Kritisk",
+                "sv": "Kritisk",
+                "pl": "Krytyczny",
+                "ru": "Критический",
+                "ko": "중요",
+                "ar": "حرج"
+              }
+            },
+            {
+              "id": "3",
+              "title": {
+                "en": "Error",
+                "nl": "Fout",
+                "da": "Fejl",
+                "de": "Fehler",
+                "es": "Error",
+                "fr": "Erreur",
+                "it": "Errore",
+                "no": "Feil",
+                "sv": "Fel",
+                "pl": "Błąd",
+                "ru": "Ошибка",
+                "ko": "오류",
+                "ar": "خطأ"
+              }
+            },
+            {
+              "id": "4",
+              "title": {
+                "en": "Warning",
+                "nl": "Waarschuwing",
+                "da": "Advarsel",
+                "de": "Warnung",
+                "es": "Advertencia",
+                "fr": "Avertissement",
+                "it": "Avviso",
+                "no": "Advarsel",
+                "sv": "Varning",
+                "pl": "Ostrzeżenie",
+                "ru": "Предупреждение",
+                "ko": "경고",
+                "ar": "تحذير"
+              }
+            },
+            {
+              "id": "5",
+              "title": {
+                "en": "Notice",
+                "nl": "Opmerking",
+                "da": "Bemærk",
+                "de": "Hinweis",
+                "es": "Aviso",
+                "fr": "Avis",
+                "it": "Avviso",
+                "no": "Varsel",
+                "sv": "Meddelande",
+                "pl": "Powiadomienie",
+                "ru": "Уведомление",
+                "ko": "공지",
+                "ar": "تنبيه"
+              }
+            },
+            {
+              "id": "6",
+              "title": {
+                "en": "Info",
+                "nl": "Info",
+                "da": "Info",
+                "de": "Info",
+                "es": "Información",
+                "fr": "Infos",
+                "it": "Informazioni",
+                "no": "Info",
+                "sv": "Info",
+                "pl": "Informacje",
+                "ru": "Информация",
+                "ko": "정보",
+                "ar": "معلومات"
+              }
+            },
+            {
+              "id": "7",
+              "title": {
+                "en": "Debug",
+                "nl": "Debuggen",
+                "da": "Debug",
+                "de": "Debuggen",
+                "es": "Depurar",
+                "fr": "Déboguer",
+                "it": "Debugging",
+                "no": "Feilsøking",
+                "sv": "Felsökning",
+                "pl": "Debugowanie",
+                "ru": "Отладка",
+                "ko": "디버그",
+                "ar": "تصحيح الأخطاء"
+              }
+            }
+          ]
+        },
+        {
+          "id": "facility",
+          "type": "dropdown",
+          "title": {
+            "en": "Facility",
+            "nl": "Faciliteit",
+            "da": "Facilitet",
+            "de": "Facility",
+            "es": "Categoría",
+            "fr": "Catégorie",
+            "it": "Categoria",
+            "no": "Fasilitet",
+            "sv": "Facilitet",
+            "pl": "Kategoria",
+            "ru": "Категория",
+            "ko": "분류",
+            "ar": "الفئة"
+          },
+          "value": "all",
+          "values": [
+            {
+              "id": "all",
+              "title": {
+                "en": "All facilities",
+                "nl": "Alle faciliteiten",
+                "da": "Alle faciliteter",
+                "de": "Alle Facilities",
+                "es": "Todas las instalaciones",
+                "fr": "Toutes les catégories",
+                "it": "Tutte le categorie",
+                "no": "Alle fasiliteter",
+                "sv": "Alla faciliteter",
+                "pl": "Wszystkie kategorie",
+                "ru": "Все категории",
+                "ko": "모든 분류",
+                "ar": "كل الفئات"
+              }
+            },
+            {
+              "id": "0",
+              "title": {
+                "en": "Kernel",
+                "nl": "Kernel",
+                "da": "Kernel",
+                "de": "Kernel",
+                "es": "Kernel",
+                "fr": "Noyau",
+                "it": "Kernel",
+                "no": "Kjerne",
+                "sv": "Kernel",
+                "pl": "Jądro",
+                "ru": "Ядро",
+                "ko": "커널",
+                "ar": "النواة"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "User",
+                "nl": "Gebruiker",
+                "da": "Bruger",
+                "de": "Benutzer",
+                "es": "Usuario",
+                "fr": "Utilisateur",
+                "it": "Utente",
+                "no": "Bruker",
+                "sv": "Användare",
+                "pl": "Użytkownik",
+                "ru": "Пользователь",
+                "ko": "사용자",
+                "ar": "مستخدم"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Mail",
+                "nl": "E-mail",
+                "da": "E-mail",
+                "de": "E-Mail",
+                "es": "Correo",
+                "fr": "Courriel",
+                "it": "Posta",
+                "no": "E-post",
+                "sv": "E-post",
+                "pl": "Poczta",
+                "ru": "Почта",
+                "ko": "메일",
+                "ar": "بريد"
+              }
+            },
+            {
+              "id": "3",
+              "title": {
+                "en": "System",
+                "nl": "Systeem",
+                "da": "System",
+                "de": "System",
+                "es": "Sistema",
+                "fr": "Système",
+                "it": "Sistema",
+                "no": "Systemet",
+                "sv": "Systemet",
+                "pl": "System",
+                "ru": "Система",
+                "ko": "시스템",
+                "ar": "النظام"
+              }
+            },
+            {
+              "id": "4",
+              "title": {
+                "en": "Authorization",
+                "nl": "Autorisatie",
+                "da": "Autorisation",
+                "de": "Autorisierung",
+                "es": "Autorización",
+                "fr": "Autorisation",
+                "it": "Autorizzazione",
+                "no": "Autorisasjon",
+                "sv": "Auktorisering",
+                "pl": "Autoryzacja",
+                "ru": "Авторизация",
+                "ko": "승인",
+                "ar": "تفويض"
+              }
+            },
+            {
+              "id": "5",
+              "title": {
+                "en": "Syslog",
+                "nl": "Syslog",
+                "da": "Syslog",
+                "de": "Syslog",
+                "es": "Syslog",
+                "fr": "Syslog",
+                "it": "Syslog",
+                "no": "Syslog",
+                "sv": "Syslog",
+                "pl": "Syslog",
+                "ru": "Сислог",
+                "ko": "시스로그",
+                "ar": "Syslog"
+              }
+            },
+            {
+              "id": "6",
+              "title": {
+                "en": "LPR",
+                "nl": "LPR",
+                "da": "LPR",
+                "de": "LPR",
+                "es": "LPR",
+                "fr": "LPR",
+                "it": "LPR",
+                "no": "LPR",
+                "sv": "LPR",
+                "pl": "LPR",
+                "ru": "Распознавание автомобильных номеров (LPR)",
+                "ko": "LPR",
+                "ar": "LPR"
+              }
+            },
+            {
+              "id": "7",
+              "title": {
+                "en": "News",
+                "nl": "Nieuws",
+                "da": "Nyheder",
+                "de": "Nachrichten",
+                "es": "Noticias",
+                "fr": "Actualités",
+                "it": "Notizie",
+                "no": "Nyheter",
+                "sv": "Nyheter",
+                "pl": "Aktualności",
+                "ru": "Новости",
+                "ko": "뉴스",
+                "ar": "أخبار"
+              }
+            },
+            {
+              "id": "8",
+              "title": {
+                "en": "UUCP",
+                "nl": "UUCP",
+                "da": "UUCP",
+                "de": "UUCP",
+                "es": "UUCP",
+                "fr": "UUCP",
+                "it": "UUCP",
+                "no": "UUCP",
+                "sv": "UUCP",
+                "pl": "UUCP",
+                "ru": "UUCP",
+                "ko": "UUCP",
+                "ar": "UUCP"
+              }
+            },
+            {
+              "id": "9",
+              "title": {
+                "en": "Cron",
+                "nl": "Cron",
+                "da": "Cron",
+                "de": "Cron",
+                "es": "Cron",
+                "fr": "Cron",
+                "it": "Cron",
+                "no": "Cron",
+                "sv": "Cron",
+                "pl": "Cron",
+                "ru": "Крон",
+                "ko": "크론",
+                "ar": "كرون"
+              }
+            },
+            {
+              "id": "10",
+              "title": {
+                "en": "Deamon",
+                "nl": "Daemon",
+                "da": "Daemon",
+                "de": "Daemon",
+                "es": "Daemon",
+                "fr": "Daemon",
+                "it": "Demone",
+                "no": "Daemon",
+                "sv": "Daemon",
+                "pl": "Demon",
+                "ru": "Демон",
+                "ko": "데몬",
+                "ar": "خادم الخلفية"
+              }
+            },
+            {
+              "id": "11",
+              "title": {
+                "en": "FTP",
+                "nl": "FTP",
+                "da": "FTP",
+                "de": "FTP",
+                "es": "FTP",
+                "fr": "FTP",
+                "it": "FTP",
+                "no": "FTP",
+                "sv": "FTP",
+                "pl": "FTP",
+                "ru": "FTP",
+                "ko": "FTP",
+                "ar": "FTP"
+              }
+            },
+            {
+              "id": "12",
+              "title": {
+                "en": "NTP",
+                "nl": "NTP",
+                "da": "NTP",
+                "de": "NTP",
+                "es": "NTP",
+                "fr": "NTP",
+                "it": "NTP",
+                "no": "NTP",
+                "sv": "NTP",
+                "pl": "NTP",
+                "ru": "NTP",
+                "ko": "NTP (네트워크 시간 프로토콜)",
+                "ar": "NTP (بروتوكول وقت الشبكة)"
+              }
+            },
+            {
+              "id": "13",
+              "title": {
+                "en": "Security",
+                "nl": "Beveiliging",
+                "da": "Sikkerhed",
+                "de": "Sicherheit",
+                "es": "Seguridad",
+                "fr": "Sécurité",
+                "it": "Sicurezza",
+                "no": "Sikkerhet",
+                "sv": "Säkerhet",
+                "pl": "Bezpieczeństwo",
+                "ru": "Безопасность",
+                "ko": "보안",
+                "ar": "الأمان"
+              }
+            },
+            {
+              "id": "14",
+              "title": {
+                "en": "Console",
+                "nl": "Console",
+                "da": "Konsol",
+                "de": "Konsole",
+                "es": "Consola",
+                "fr": "Console",
+                "it": "Console",
+                "no": "Konsoll",
+                "sv": "Konsol",
+                "pl": "Konsola",
+                "ru": "Консоль",
+                "ko": "콘솔",
+                "ar": "وحدة التحكم"
+              }
+            },
+            {
+              "id": "15",
+              "title": {
+                "en": "Clock",
+                "nl": "Klok",
+                "da": "Ur",
+                "de": "Uhr",
+                "es": "Reloj",
+                "fr": "Horloge",
+                "it": "Orologio",
+                "no": "Klokke",
+                "sv": "Klocka",
+                "pl": "Zegar",
+                "ru": "Часы",
+                "ko": "시계",
+                "ar": "ساعة"
+              }
+            },
+            {
+              "id": "16",
+              "title": {
+                "en": "Flow",
+                "nl": "Flow",
+                "da": "Flow",
+                "de": "Flow",
+                "es": "Flujo",
+                "fr": "Flux",
+                "it": "Flusso",
+                "no": "Flyt",
+                "sv": "Flöde",
+                "pl": "Przepływ",
+                "ru": "Поток",
+                "ko": "플로우",
+                "ar": "التدفق"
+              }
+            },
+            {
+              "id": "17",
+              "title": {
+                "en": "Device",
+                "nl": "Apparaat",
+                "da": "Enhed",
+                "de": "Gerät",
+                "es": "Dispositivo",
+                "fr": "Appareil",
+                "it": "Dispositivo",
+                "no": "Enhet",
+                "sv": "Enhet",
+                "pl": "Urządzenie",
+                "ru": "Устройство",
+                "ko": "장치",
+                "ar": "الجهاز"
+              }
+            },
+            {
+              "id": "18",
+              "title": {
+                "en": "App",
+                "nl": "App",
+                "da": "App",
+                "de": "App",
+                "es": "App",
+                "fr": "Application",
+                "it": "App",
+                "no": "App",
+                "sv": "App",
+                "pl": "Aplikacja",
+                "ru": "Приложение",
+                "ko": "앱",
+                "ar": "تطبيق"
+              }
+            },
+            {
+              "id": "19",
+              "title": {
+                "en": "Scene",
+                "nl": "Scène",
+                "da": "Scene",
+                "de": "Szene",
+                "es": "Escena",
+                "fr": "Scène",
+                "it": "Scena",
+                "no": "Scene",
+                "sv": "Scen",
+                "pl": "Scena",
+                "ru": "Сцена",
+                "ko": "장면",
+                "ar": "مشهد"
+              }
+            },
+            {
+              "id": "20",
+              "title": {
+                "en": "Trigger",
+                "nl": "Trigger",
+                "da": "Udløser",
+                "de": "Auslöser",
+                "es": "Disparador",
+                "fr": "Déclencheur",
+                "it": "Trigger",
+                "no": "Utløser",
+                "sv": "Trigger",
+                "pl": "Wyzwalacz",
+                "ru": "Триггер",
+                "ko": "트리거",
+                "ar": "مشغل"
+              }
+            },
+            {
+              "id": "21",
+              "title": {
+                "en": "Condition",
+                "nl": "Voorwaarde",
+                "da": "Betingelse",
+                "de": "Bedingung",
+                "es": "Condición",
+                "fr": "Condition",
+                "it": "Condizione",
+                "no": "Betingelse",
+                "sv": "Villkor",
+                "pl": "Warunek",
+                "ru": "Условие",
+                "ko": "조건",
+                "ar": "شرط"
+              }
+            },
+            {
+              "id": "22",
+              "title": {
+                "en": "Action",
+                "nl": "Actie",
+                "da": "Handling",
+                "de": "Aktion",
+                "es": "Acción",
+                "fr": "Action",
+                "it": "Azione",
+                "no": "Handling",
+                "sv": "Åtgärd",
+                "pl": "Akcja",
+                "ru": "Действие",
+                "ko": "작업",
+                "ar": "إجراء"
+              }
+            },
+            {
+              "id": "23",
+              "title": {
+                "en": "Variable",
+                "nl": "Variabele",
+                "da": "Variabel",
+                "de": "Variable",
+                "es": "Variable",
+                "fr": "Variable",
+                "it": "Variabile",
+                "no": "Variabel",
+                "sv": "Variabel",
+                "pl": "Zmienna",
+                "ru": "Переменная",
+                "ko": "변수",
+                "ar": "متغير"
+              }
+            }
+          ]
+        },
+        {
+          "id": "appFilter",
+          "type": "text",
+          "title": {
+            "en": "App / Group filter",
+            "nl": "App-/groepfilter",
+            "da": "App-/gruppefilter",
+            "de": "App-/Gruppenfilter",
+            "es": "Filtro de app / grupo",
+            "fr": "Filtre application / groupe",
+            "it": "Filtro app / gruppo",
+            "no": "App-/gruppefilter",
+            "sv": "App-/gruppfilter",
+            "pl": "Filtr aplikacji / grupy",
+            "ru": "Фильтр приложения / группы",
+            "ko": "앱 / 그룹 필터",
+            "ar": "عامل تصفية التطبيق / المجموعة"
+          },
+          "hint": {
+            "en": "Show only entries whose app or group contains this text. Leave empty to show all.",
+            "nl": "Toon alleen logregels waarvan de app of groep deze tekst bevat. Laat leeg om alles te tonen.",
+            "da": "Vis kun poster, hvis app eller gruppe indeholder denne tekst. Lad feltet være tomt for at vise alle.",
+            "de": "Zeigt nur Einträge, deren App oder Gruppe diesen Text enthält. Leer lassen, um alle anzuzeigen.",
+            "es": "Muestra solo entradas cuya app o grupo contiene este texto. Déjalo vacío para mostrar todas.",
+            "fr": "Affiche uniquement les entrées dont l’application ou le groupe contient ce texte. Laissez vide pour tout afficher.",
+            "it": "Mostra solo le voci la cui app o gruppo contiene questo testo. Lascia vuoto per mostrarle tutte.",
+            "no": "Vis bare oppføringer der appen eller gruppen inneholder denne teksten. La stå tomt for å vise alle.",
+            "sv": "Visa bara poster vars app eller grupp innehåller denna text. Lämna tomt för att visa alla.",
+            "pl": "Pokaż tylko wpisy, których aplikacja lub grupa zawiera ten tekst. Pozostaw puste, aby pokazać wszystkie.",
+            "ru": "Показывать только записи, у которых приложение или группа содержит этот текст. Оставьте пустым, чтобы показать все.",
+            "ko": "앱 또는 그룹에 이 텍스트가 포함된 항목만 표시합니다. 비워 두면 모두 표시됩니다.",
+            "ar": "إظهار الإدخالات التي يحتوي تطبيقها أو مجموعتها على هذا النص فقط. اتركه فارغًا لإظهار الكل."
+          },
+          "value": ""
+        },
+        {
+          "id": "hostnameFilter",
+          "type": "text",
+          "title": {
+            "en": "Hostname filter",
+            "nl": "Hostnaamfilter",
+            "da": "Værtsnavnfilter",
+            "de": "Hostnamenfilter",
+            "es": "Filtro de nombre de host",
+            "fr": "Filtre de nom d’hôte",
+            "it": "Filtro nome host",
+            "no": "Vertsnavnfilter",
+            "sv": "Värdnamnsfilter",
+            "pl": "Filtr nazwy hosta",
+            "ru": "Фильтр имени узла",
+            "ko": "호스트 이름 필터",
+            "ar": "عامل تصفية اسم المضيف"
+          },
+          "hint": {
+            "en": "Show only entries whose hostname contains this text. Leave empty to show all.",
+            "nl": "Toon alleen logregels waarvan de hostnaam deze tekst bevat. Laat leeg om alles te tonen.",
+            "da": "Vis kun poster, hvis værtsnavn indeholder denne tekst. Lad feltet være tomt for at vise alle.",
+            "de": "Zeigt nur Einträge, deren Hostname diesen Text enthält. Leer lassen, um alle anzuzeigen.",
+            "es": "Muestra solo entradas cuyo nombre de host contiene este texto. Déjalo vacío para mostrar todas.",
+            "fr": "Affiche uniquement les entrées dont le nom d’hôte contient ce texte. Laissez vide pour tout afficher.",
+            "it": "Mostra solo le voci il cui nome host contiene questo testo. Lascia vuoto per mostrarle tutte.",
+            "no": "Vis bare oppføringer der vertsnavnet inneholder denne teksten. La stå tomt for å vise alle.",
+            "sv": "Visa bara poster vars värdnamn innehåller denna text. Lämna tomt för att visa alla.",
+            "pl": "Pokaż tylko wpisy, których nazwa hosta zawiera ten tekst. Pozostaw puste, aby pokazać wszystkie.",
+            "ru": "Показывать только записи, у которых имя узла содержит этот текст. Оставьте пустым, чтобы показать все.",
+            "ko": "호스트 이름에 이 텍스트가 포함된 항목만 표시합니다. 비워 두면 모두 표시됩니다.",
+            "ar": "إظهار الإدخالات التي يحتوي اسم مضيفها على هذا النص فقط. اتركه فارغًا لإظهار الكل."
+          },
+          "value": ""
+        },
+        {
+          "id": "androidScroll",
+          "type": "checkbox",
+          "title": {
+            "en": "Using scroll on Android?",
+            "nl": "Scrollen op Android gebruiken?",
+            "da": "Bruge rulning på Android?",
+            "de": "Scrollen unter Android verwenden?",
+            "es": "¿Usar desplazamiento en Android?",
+            "fr": "Utiliser le défilement sur Android ?",
+            "it": "Usare lo scorrimento su Android?",
+            "no": "Bruke rulling på Android?",
+            "sv": "Använda rullning på Android?",
+            "pl": "Używać przewijania na Androidzie?",
+            "ru": "Использовать прокрутку на Android?",
+            "ko": "Android에서 스크롤을 사용하시겠습니까?",
+            "ar": "استخدام التمرير على Android؟"
+          },
+          "hint": {
+            "en": "Shows links for a Homey Web widget instead of the log entries, so the log can scroll in the Homey app on Android.",
+            "nl": "Toont links voor een Homey Web-widget in plaats van de logregels, zodat het log kan scrollen in de Homey-app op Android.",
+            "da": "Viser links til en Homey Web-widget i stedet for logposterne, så loggen kan rulle i Homey-appen på Android.",
+            "de": "Zeigt statt der Logeinträge Links für ein Homey-Web-Widget an, damit das Log in der Homey-App unter Android scrollen kann.",
+            "es": "Muestra enlaces para un widget Web de Homey en lugar de las entradas del registro, para que el registro se pueda desplazar en la app Homey en Android.",
+            "fr": "Affiche des liens pour un widget Web Homey au lieu des entrées du journal, afin que le journal puisse défiler dans l'app Homey sur Android.",
+            "it": "Mostra i link per un widget Web di Homey invece delle voci del registro, così il registro può scorrere nell'app Homey su Android.",
+            "no": "Viser lenker for en Homey Web-widget i stedet for loggoppføringene, slik at loggen kan rulle i Homey-appen på Android.",
+            "sv": "Visar länkar för en Homey Webb-widget i stället för loggposterna, så att loggen kan rulla i Homey-appen på Android.",
+            "pl": "Pokazuje linki do widżetu Web w Homey zamiast wpisów dziennika, aby dziennik można było przewijać w aplikacji Homey na Androidzie.",
+            "ru": "Показывает ссылки для веб-виджета Homey вместо записей журнала, чтобы журнал можно было прокручивать в приложении Homey на Android.",
+            "ko": "로그 항목 대신 Homey 웹 위젯용 링크를 표시하여 Android용 Homey 앱에서 로그를 스크롤할 수 있게 합니다.",
+            "ar": "يعرض روابط لأداة ويب في Homey بدلًا من إدخالات السجل، حتى يمكن تمرير السجل في تطبيق Homey على Android."
+          },
+          "value": false
+        }
+      ],
+      "api": {
+        "getWidgetStyles": {
+          "method": "GET",
+          "path": "/styles"
+        },
+        "getWidgetLogs": {
+          "method": "GET",
+          "path": "/logs"
+        },
+        "registerTimestampFormat": {
+          "method": "POST",
+          "path": "/register-timestamp-format"
+        },
+        "unregisterTimestampFormat": {
+          "method": "POST",
+          "path": "/unregister-timestamp-format"
+        },
+        "createAndroidLinks": {
+          "method": "POST",
+          "path": "/android-links"
+        }
+      },
+      "id": "log_viewer"
+    }
+  }
 }

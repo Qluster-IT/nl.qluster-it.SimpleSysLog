@@ -201,6 +201,10 @@
   "homeyCommunityTopicId": 77533,
 	"homepage": "https://github.com/Qluster-IT/nl.qluster-it.SimpleSysLog/wiki",
   "api": {
+    "getApiReady": {
+      "method": "GET",
+      "path": "/api-ready"
+    },
     "internal": {
       "method": "POST",
       "path": "/internal/"
@@ -226,6 +230,46 @@
     "addLog": {
       "method": "PUT",
       "path": "/addlog/"
+    },
+    "encodeWidgetTemplate": {
+      "method": "POST",
+      "path": "/widget-template/encode"
+    },
+    "decodeWidgetTemplate": {
+      "method": "POST",
+      "path": "/widget-template/decode"
+    },
+    "getWidgetTemplateCatalog": {
+      "method": "GET",
+      "path": "/widget-template-catalog"
+    },
+    "getWidgetStyles": {
+      "method": "GET",
+      "path": "/widget-styles"
+    },
+    "getAndroidPing": {
+      "method": "GET",
+      "path": "/android/ping",
+      "public": true
+    },
+    "getAndroidInit": {
+      "method": "GET",
+      "path": "/android/init",
+      "public": true
+    },
+    "getAndroidLogs": {
+      "method": "GET",
+      "path": "/android/logs",
+      "public": true
+    },
+    "getAndroidUpdates": {
+      "method": "GET",
+      "path": "/android/updates",
+      "public": true
+    },
+    "resetAndroidLinks": {
+      "method": "POST",
+      "path": "/android/reset"
     }
   }
 }

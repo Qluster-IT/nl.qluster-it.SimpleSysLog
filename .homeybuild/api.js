@@ -1,5 +1,40 @@
 "use strict";
 const { BL } = require("betterlogiclibrary");
+const { encodeTemplate, decodeTemplate } = require("./lib/widget-template");
+const { getCatalog } = require("./lib/widget-template-catalog");
+const { getWidgetStyles } = require("./lib/widget-styles");
+const {
+  TRANSLATION_KEYS, matchesLinkFilters, resetSecret, verifyLink
+} = require("./lib/android-links");
+const widgetApi = require("./widgets/log_viewer/api");
+
+const ANDROID_POLL_TIMEOUT_MS = 20000;
+
+function verifiedLinkConfig(homey, query) {
+  return verifyLink(homey, query && query.ssl, query && query.sig);
+}
+
+function linkLogQuery(config) {
+  const query = { take: config.entryCount, timestampFormat: config.datetimeFormat };
+  if (config.minSeverity !== undefined) query.minSeverity = config.minSeverity;
+  if (config.facility !== undefined) query.facility = config.facility;
+  if (config.appFilter !== undefined) query.app = config.appFilter;
+  if (config.hostnameFilter !== undefined) query.hostname = config.hostnameFilter;
+  return query;
+}
+
+// Realtime entries only carry the formats registered by dashboard widgets; links add their own.
+function withTimestampFormat(log, format) {
+  const formatted = log.timestamp_formatted || {};
+  if (Object.prototype.hasOwnProperty.call(formatted, format)) return log;
+  let value;
+  try {
+    value = BL.datetime.toString(format, log.timestamp);
+  } catch (error) {
+    value = formatted.datetime;
+  }
+  return { ...log, timestamp_formatted: { ...formatted, [format]: value } };
+}
 
 function fillLogDownload(homey, link, returnType, contentKey) {
   homey.setTimeout(async () => {
@@ -14,6 +49,9 @@ function fillLogDownload(homey, link, returnType, contentKey) {
 }
 
 module.exports = {
+  async getApiReady({ homey }) {
+    return { ready: homey.app.apiReady === true };
+  },
   async internal({ homey, body: { action, logBookID, type } }) {
     if(!homey.app.Log) throw new Error(homey.__('bllNotStartedYet'));
     switch (action) {
@@ -114,6 +152,59 @@ module.exports = {
   async addLog({ homey, body }) {
     await homey.app.apiPutAddlog({ body });
     return "OK";
+  },
+  async encodeWidgetTemplate({ body }) {
+    return encodeTemplate(body);
+  },
+  async decodeWidgetTemplate({ body }) {
+    if (!body || typeof body.text !== 'string') throw new Error('Template text is required.');
+    return decodeTemplate(body.text);
+  },
+  async getWidgetTemplateCatalog() {
+    return getCatalog();
+  },
+  async getWidgetStyles({ homey }) {
+    return getWidgetStyles(homey);
+  },
+  async getAndroidPing() {
+    return { ok: true };
+  },
+  async getAndroidInit({ homey, query }) {
+    const config = verifiedLinkConfig(homey, query);
+    const translations = {};
+    TRANSLATION_KEYS.forEach(key => {
+      const value = homey.__(key);
+      if (typeof value === 'string' && value && value !== key) translations[key] = value;
+    });
+    return { config, styles: getWidgetStyles(homey), translations };
+  },
+  async getAndroidLogs({ homey, query }) {
+    const config = verifiedLinkConfig(homey, query);
+    // Read the sequence first; entries written during the query are delivered again and deduplicated.
+    const seq = homey.app.androidLinkFeed.touch();
+    const data = await widgetApi.getWidgetLogs({ homey, query: linkLogQuery(config) });
+    return { ...data, seq };
+  },
+  async getAndroidUpdates({ homey, query }) {
+    const config = verifiedLinkConfig(homey, query);
+    const result = await homey.app.androidLinkFeed.wait({
+      after: Number(query.after),
+      matches: log => matchesLinkFilters(config, log),
+      timeoutMs: ANDROID_POLL_TIMEOUT_MS,
+      setTimeout: (callback, ms) => homey.setTimeout(callback, ms),
+      clearTimeout: timer => homey.clearTimeout(timer)
+    });
+    if (result.reload) return { reload: true };
+    return {
+      ...result,
+      available: !!homey.app.Log,
+      logs: result.logs.map(log => withTimestampFormat(log, config.datetimeFormat))
+    };
+  },
+  async resetAndroidLinks({ homey }) {
+    resetSecret(homey);
+    homey.app.androidLinkFeed.wake();
+    return { reset: true };
   }
 };
 

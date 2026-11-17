@@ -1,0 +1,291 @@
+/* Widget designer in the app settings. Mirrors Chronograph's widget designer. */
+.widget-designer {
+  max-width: 1000px;
+  margin: 0 auto;
+  color: inherit;
+}
+
+.widget-designer * { box-sizing: border-box; }
+.widget-designer [hidden] { display: none !important; }
+
+.widget-designer button,
+.widget-designer input,
+.widget-designer select,
+.widget-designer textarea {
+  margin: 0;
+  font: inherit;
+}
+
+.widget-designer h2 {
+  margin: 0 0 16px;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.widget-designer .help-text {
+  color: var(--homey-text-color-light, #777982);
+  font-size: 0.875rem;
+}
+
+.settings-view .btn-outline-primary {
+  --bs-btn-color: var(--ssl-primary);
+  --bs-btn-border-color: var(--ssl-primary);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--ssl-primary);
+  --bs-btn-hover-border-color: var(--ssl-primary);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--ssl-primary);
+  --bs-btn-active-border-color: var(--ssl-primary);
+  --bs-btn-disabled-color: var(--ssl-primary);
+  --bs-btn-disabled-border-color: var(--ssl-primary);
+  --bs-btn-focus-shadow-rgb: 188, 39, 74;
+}
+
+.widget-designer .template-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.widget-designer .template-header h2 { margin: 0; }
+.widget-designer .style-editor-header { margin-bottom: 16px; }
+
+.widget-designer .style-editor {
+  min-width: 0;
+  margin: 16px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.widget-designer label {
+  display: block;
+  margin: 0 0 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.widget-designer .form-select,
+.widget-designer .form-control {
+  color: inherit;
+  background-color: var(--homey-background-color, transparent);
+  border-color: rgba(128, 128, 128, 0.5);
+}
+
+.widget-designer .style-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.widget-designer .style-actions .btn[aria-pressed="true"] {
+  color: #fff;
+  background: var(--ssl-primary);
+}
+
+.widget-designer .style-toolbar { margin-top: 16px; }
+.widget-designer .style-design { margin-top: 18px; }
+.widget-designer .style-template-screen { margin-top: 0; }
+
+.widget-designer .style-design h3 {
+  margin: 20px 0 10px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.widget-designer .style-design-selectors {
+  display: grid;
+  grid-template-columns: minmax(0, 40%) minmax(0, 1fr);
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 8px;
+}
+
+.widget-designer .style-design-selectors h3 {
+  grid-column: 1 / -1;
+  margin: 12px 0 2px;
+}
+
+.widget-designer .style-design-selectors label,
+.widget-designer .style-color-row label { margin: 0; }
+
+.widget-designer .style-full-row {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+}
+
+.widget-designer .style-full-row input { width: 18px; height: 18px; }
+
+.widget-designer .style-preview-sticky {
+  position: sticky;
+  top: -14px;
+  z-index: 10;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--homey-color-mono-400, rgba(128, 128, 128, 0.35));
+  background: var(--homey-background-color, var(--homey-color-background, Canvas));
+}
+
+.widget-designer .preview-widget {
+  width: 100%;
+  max-width: 450px;
+  height: auto;
+  max-height: 40vh;
+}
+
+.widget-designer .field-list { margin: 0; padding: 0; list-style: none; }
+
+.widget-designer .field-list li {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.25);
+}
+
+.widget-designer .field-list input { width: 18px; height: 18px; }
+
+.widget-designer .style-colors { display: grid; gap: 8px; }
+
+.widget-designer .style-color-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(110px, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+
+.widget-designer .style-color-row label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.widget-designer .color-swatch {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  border: 1px solid rgba(128, 128, 128, 0.6);
+  border-radius: 50%;
+}
+
+.widget-designer .template-navigation {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 12px 0;
+}
+
+.widget-designer .template-navigation button,
+.widget-designer .template-catalog-icon,
+.widget-designer .template-catalog-title {
+  padding: 4px;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.widget-designer .template-navigation button[aria-pressed="true"] i,
+.widget-designer .template-catalog-icon[aria-pressed="true"] { color: var(--ssl-primary); }
+
+.widget-designer .style-template-screen section > label,
+.widget-designer .style-template-screen section > div > label,
+.widget-designer .style-template-screen section > div > div > label { margin-top: 12px; }
+.widget-designer .style-template-screen section > div > button { margin: 10px 8px 0 0; }
+.widget-designer .style-template-screen input[type="checkbox"] { width: 18px; height: 18px; margin-right: 6px; vertical-align: -3px; }
+.widget-designer .style-template-screen .preview-widget { margin-top: 8px; }
+.widget-designer .style-template-screen section > button { margin-top: 10px; }
+.widget-designer .style-template-screen textarea {
+  width: 100%;
+  margin-top: 10px;
+  font-family: monospace;
+  overflow-wrap: anywhere;
+}
+
+.widget-designer .template-catalog-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 0;
+}
+
+.widget-designer .template-catalog-toolbar input[type="search"] { min-width: 0; flex: 1 1 0; }
+.widget-designer .template-catalog-toolbar select { width: auto; max-width: 40%; }
+.widget-designer .template-catalog-icon { flex: 0 0 auto; font-size: 1rem; }
+.widget-designer .template-catalog-row { display: flex; align-items: flex-start; gap: 4px; }
+.widget-designer .template-catalog-entry { flex: 1; min-width: 0; }
+.widget-designer .template-catalog-thumbnail {
+  display: block;
+  width: min(100%, 350px);
+  max-height: none;
+  margin-top: 6px;
+  pointer-events: none;
+}
+
+.widget-designer .template-catalog-title {
+  display: block;
+  text-align: left;
+  text-decoration: underline;
+  overflow-wrap: anywhere;
+}
+
+.widget-designer .template-catalog-details { margin: 4px 0 12px 28px; }
+.widget-designer .template-catalog-details p { margin: 4px 0 8px; }
+.widget-designer .template-catalog-details .btn { margin: 0 8px 8px 0; font-size: 1rem; }
+.widget-designer .template-catalog-description { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.widget-designer .status { min-height: 1.4em; margin: 12px 0 0; }
+.widget-designer .status.error { color: #b42318; }
+
+/* Footers pinned below the scrolling Widget designer tab, like Chronograph's save bar. */
+.designer-footers { flex: 0 0 auto; }
+.designer-footers [hidden] { display: none !important; }
+
+.designer-footers .settings-savebar,
+.designer-footers .settings-template-footer {
+  display: flex;
+  min-height: 60px;
+}
+
+.designer-footers .btn {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  border: 0 !important;
+  border-radius: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  box-shadow: none;
+  overflow-wrap: anywhere;
+}
+
+.designer-footers .settings-save-button {
+  color: var(--homey-text-color-light, #8b8d95);
+  background: rgba(128, 128, 128, 0.22);
+  opacity: 1;
+}
+
+.designer-footers .settings-save-button.is-dirty:enabled {
+  color: #fff;
+  background: var(--ssl-primary);
+}
+
+.designer-footers .settings-save-button.is-dirty:enabled:hover { background: #9e1f3d; }
+
+.designer-footers .settings-history-button {
+  color: var(--ssl-primary);
+  background: rgba(128, 128, 128, 0.12);
+}
+
+.designer-footers .settings-history-button:hover { background: rgba(128, 128, 128, 0.25); }
+
+.designer-footers .btn:focus-visible {
+  outline: 2px solid var(--ssl-primary);
+  outline-offset: -2px;
+}

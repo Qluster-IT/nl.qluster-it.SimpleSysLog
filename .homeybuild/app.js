@@ -2,6 +2,8 @@
 const { BL } = require("betterlogiclibrary");
 const Homey = require("homey");
 const { Log, SEVERITIES, FACILITIES } = require("./lib/Log");
+const { BUILT_IN_DESIGNS, BUILT_IN_THEMES, getWidgetStyles } = require("./lib/widget-styles");
+const { AndroidLinkFeed } = require("./lib/android-links");
 
 const DBLIMIT = 2000;
 
@@ -42,8 +44,53 @@ async function decodeText(value) {
 //App Class...
 class simpleLog extends Homey.App {
 
+  constructor(...args) {
+    super(...args);
+    this.widgetTimestampFormats = new Map();
+    this.widgetTimestampFormatCache = ['datetime'];
+    this.apiReady = false;
+    this.androidLinkFeed = new AndroidLinkFeed();
+  }
+
+  async announceApiReady() {
+    this.apiReady = true;
+    try {
+      await this.homey.api.realtime('api-ready', { ready: true });
+    } catch (error) {
+      this.homey.error('Unable to notify clients that Simple (Sys) Log is ready', error);
+    }
+  }
+
+  registerWidgetTimestampFormat(instanceId, format) {
+    if (typeof instanceId !== 'string' || !instanceId.trim() || instanceId.length > 128) {
+      throw new Error('A valid widget instance ID is required.');
+    }
+    if (typeof format !== 'string' || !format.trim() || format.length > 128) {
+      throw new Error('A valid date and time format is required.');
+    }
+    if (this.widgetTimestampFormats.get(instanceId) !== format) {
+      this.widgetTimestampFormats.set(instanceId, format);
+      this.widgetTimestampFormatCache = null;
+    }
+  }
+
+  unregisterWidgetTimestampFormat(instanceId) {
+    if (typeof instanceId !== 'string' || !instanceId.trim() || instanceId.length > 128) {
+      throw new Error('A valid widget instance ID is required.');
+    }
+    if (this.widgetTimestampFormats.delete(instanceId)) this.widgetTimestampFormatCache = null;
+  }
+
+  getWidgetTimestampFormats() {
+    if (!this.widgetTimestampFormatCache) {
+      this.widgetTimestampFormatCache = Array.from(new Set(['datetime', ...this.widgetTimestampFormats.values()]));
+    }
+    return this.widgetTimestampFormatCache;
+  }
+
   async onInit() {
     let cardsBuild = false;
+    this.apiReady = false;
 
     try {
 
@@ -110,6 +157,11 @@ class simpleLog extends Homey.App {
       });
       this.getSettings();
       await this.runAutomaticlyRemovalOfLogs();
+      try {
+        this.registerWidgetSettingAutocompletes();
+      } catch (error) {
+        this.error('Widget setting autocomplete registration failed', error);
+      }
 
 
       if (debug) this.log('Simple (Sys) Log onInit - BL.init');
@@ -138,6 +190,8 @@ class simpleLog extends Homey.App {
       } catch (error) {
         this.error(error);
       }
+      // BLL-backed log storage is optional (limited mode), so readiness does not wait for it.
+      if (cardsBuild) await this.announceApiReady();
 
     } catch (error) {
       this.homey.error('onInit error:', error);
@@ -188,6 +242,12 @@ class simpleLog extends Homey.App {
     } finally {
       this.logInitializing = false;
     }
+    this.androidLinkFeed.wake();
+    try {
+      await this.homey.api.realtime('log_storage_ready', { ready: true });
+    } catch (error) {
+      this.homey.error('Unable to notify clients that the log storage is ready', error);
+    }
     await this.runAutomaticlyRemovalOfLogs();
   }
 
@@ -204,6 +264,58 @@ class simpleLog extends Homey.App {
     if (changed) this.homey.settings.set('settings', this.settings);
     this.updateAutomaticlyRemovalOfLogs(this.settings.removeLogOlderThanDays);
 
+  }
+
+  registerWidgetSettingAutocompletes() {
+    const widget = this.homey.dashboards.getWidget('log_viewer');
+    const register = (settingId, getItems) => {
+      widget.registerSettingAutocompleteListener(settingId, async query => {
+        const text = typeof query === 'string' ? query.trim() : '';
+        const search = text.toLocaleLowerCase();
+        return getItems(text).filter(item => !search || item.name.toLocaleLowerCase().includes(search));
+      });
+    };
+    register('designStyle', () => {
+      const designs = getWidgetStyles(this.homey).designs;
+      return designs.map(item => ({
+        id: item.id,
+        name: item.id === 'builtin:default' ? this.homey.__('widgets.design.default') : item.name
+      }));
+    });
+    register('colorTheme', () => {
+      const themes = getWidgetStyles(this.homey).themes;
+      return themes.map(item => ({
+        id: item.id,
+        name: item.id === 'builtin:default' ? this.homey.__('widgets.theme.default') : item.name
+      }));
+    });
+    register('datetimeFormat', query => {
+      const formats = [
+        'shortdate',
+        'date',
+        'DATE',
+        'LONGDATE',
+        'DATETIME',
+        'datetime',
+        'dd-MM-yyyy',
+        'dd-MM-yyyy HH:mm',
+        'dd-MM-yyyy HH:mm:ss',
+        'HH:mm',
+        'HH:mm:ss'
+      ].map(name => ({
+        id: name,
+        name,
+        description: BL.isReady ? BL.datetime.toString(name, new Date()) : name
+      }));
+      if (query) formats.unshift({
+        id: query,
+        name: query,
+        description: BL.isReady
+          ? BL.datetime.toString(query, new Date())
+          : this.homey.__('widgets.datetime.customFormat')
+      });
+      return formats;
+    });
   }
 
   updateAutomaticlyRemovalOfLogs(days) {
@@ -245,6 +357,7 @@ class simpleLog extends Homey.App {
     //homey.settings.set('___TEST___', 'onUninit');
     //this.addLogToDB('SSL onUninit');
     this.updateAutomaticlyRemovalOfLogs();
+    this.androidLinkFeed.wake();
     await this.automaticlyRemovalOfLogsPending;
     if (this.Log) await this.Log.destroy();
   }

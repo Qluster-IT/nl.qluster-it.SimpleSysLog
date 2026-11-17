@@ -47,7 +47,8 @@ BL.datetime = {
 BL.homey = {
   app: {
     addLogToDB() {},
-    settings: {}
+    settings: {},
+    getWidgetTimestampFormats: () => []
   },
   api: {
     realtime() {}
@@ -139,6 +140,33 @@ test('unmatched app and hostname searches skip logbook reads and preserve empty 
 
   await log.getLogs({ app: 'KNOWN', hostname: 'KNOWN' });
   assert.equal(reads, 1);
+});
+
+test('formatted timestamps are transient query and realtime data, never persisted to log files', async t => {
+  const log = await createLog(t);
+  const timestamp = new Date('2026-01-02T12:00:00.000Z');
+  t.mock.method(BL.homey.app, 'getWidgetTimestampFormats', () => ['datetime', 'dd-MM-yyyy']);
+  let realtimeEntry;
+  t.mock.method(BL.homey.api, 'realtime', (event, entry) => {
+    if (event === 'log_updated') realtimeEntry = entry;
+  });
+
+  await log.writeLine({ message: 'transient timestamp', timestamp });
+  const book = log.getLogBook(timestamp);
+  await Promise.all([flush(book.indexStream), flush(book.logStream)]);
+
+  assert.deepEqual(Object.keys(realtimeEntry.timestamp_formatted), ['datetime', 'dd-MM-yyyy']);
+  assert.equal(realtimeEntry.timestamp_formatted.datetime, timestamp.toISOString());
+  assert.equal(realtimeEntry.timestamp_formatted['dd-MM-yyyy'], timestamp.toISOString());
+  assert.equal(book.getLogFile().includes('timestamp_formatted'), false);
+
+  const withoutFormat = await log.getLogs();
+  assert.equal(Object.prototype.hasOwnProperty.call(withoutFormat.logs[0], 'timestamp_formatted'), false);
+  const withFormat = await log.getLogs({ timestampFormat: 'custom-format' });
+  assert.deepEqual(Object.keys(withFormat.logs[0].timestamp_formatted), ['datetime', 'custom-format']);
+  assert.equal(withFormat.logs[0].timestamp_formatted.datetime, timestamp.toISOString());
+  assert.equal(withFormat.logs[0].timestamp_formatted['custom-format'], timestamp.toISOString());
+  assert.equal(book.getLogFile().includes('timestamp_formatted'), false);
 });
 
 test('cursor lookups close their index files on match, nonmatch, and invalid headers', async t => {
@@ -848,6 +876,38 @@ test('retention deletes all expired dates without closing retained writers', asy
   assert.ok(logs.some(entry => entry.message === 'day-7'));
 });
 
+test('app and hostname indexes stay stable across restarts', async t => {
+  let dir;
+  const log = await createLog(t, filePath => {
+    dir = filePath;
+    fs.writeFileSync(filePath + 'log.apps', 'First app\n');
+    fs.writeFileSync(filePath + 'log.hostnames', 'first-host');
+  });
+  assert.deepEqual(log.LogApps, ['First app']);
+  assert.deepEqual(log.LogHostnames, ['first-host']);
+
+  await log.writeLine({ message: 'new names', app: 'Second app', hostname: 'second-host', timestamp: new Date('2026-01-02T12:00:00.000Z') });
+  await Promise.all([flush(log.appsStream), flush(log.hostnameStream)]);
+  assert.deepEqual(log.LogApps, ['First app', 'Second app']);
+
+  assert.equal(fs.readFileSync(dir + 'log.apps', 'utf8'), 'First app\nSecond app\n');
+  assert.equal(fs.readFileSync(dir + 'log.hostnames', 'utf8'), 'first-host\nsecond-host\n');
+
+  const book = Object.values(log.LogBooks)[0];
+  const oldStreams = [log.stream, log.appsStream, log.hostnameStream, log.countStream, book.logStream, book.indexStream];
+  for (const stream of oldStreams) stream.end();
+  await Promise.all(oldStreams.map(stream => finished(stream)));
+  if (Number.isInteger(book.fdRead)) fs.closeSync(book.fdRead);
+
+  await log.init();
+
+  assert.deepEqual(log.LogApps, ['First app', 'Second app']);
+  assert.deepEqual(log.LogHostnames, ['first-host', 'second-host']);
+  const [entry] = (await log.getLogs({ take: 1 })).logs;
+  assert.equal(entry.app, 'Second app');
+  assert.equal(entry.hostname, 'second-host');
+});
+
 test('writing reuses app and hostname indexes', async t => {
   const log = await createLog(t);
   const firstMessage = `${'x'.repeat(70 * 1024)} café 🌙`;
@@ -1001,6 +1061,26 @@ test('legacy writers preserve Unicode lengths and metadata after closing and reo
   assert.deepEqual(entries.map(item => item.message), ['legacy café', 'legacy 🌙']);
   assert.ok(entries.every(item =>
     item.severity === 6 && item.facility === 18 && item.app === 'app' && item.hostname === 'host'));
+});
+
+test('maxSeverity keeps entries at or above a severity level in indexed, cursor, and legacy reads', async t => {
+  const log = await createLog(t);
+  const timestamp = new Date(2026, 0, 2, 12);
+  for (const [index, severity] of [2, 4, 6, undefined].entries()) {
+    await log.writeLine({ message: `severity ${severity}`, severity, timestamp: new Date(timestamp.getTime() + index * 1000) });
+  }
+  const { logs } = await log.getLogs({ maxSeverity: 4, take: 10 });
+  assert.deepEqual(logs.map(entry => entry.message), ['severity 4', 'severity 2']);
+  const book = log.getLogBook(timestamp);
+  assert.equal(await book.cursorRowMatches({ maxSeverity: 4 }, 1), true);
+  assert.equal(await book.cursorRowMatches({ maxSeverity: 4 }, 2), false);
+
+  const legacy = log.getLogBook(new Date(2026, 0, 5, 12));
+  legacy.indexVersion = 1;
+  legacy.indexFile = legacy.legacyIndexFile;
+  await log.writeLine({ message: 'legacy error', severity: 3, timestamp: new Date(2026, 0, 5, 12) });
+  await log.writeLine({ message: 'legacy info', severity: 6, timestamp: new Date(2026, 0, 5, 12, 1) });
+  assert.deepEqual((await legacy.getLogs({ maxSeverity: 4 })).map(entry => entry.message), ['legacy error']);
 });
 
 test('clearing all logs releases the previous writers and has written the confirmation when it returns', async t => {

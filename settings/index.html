@@ -35,8 +35,11 @@
 	<link rel="stylesheet" href="../../net.i-dev.betterlogic/assets/css/bll.css" type="text/css" />
 	
 	<script type="text/javascript" src="simplelog.module.js"></script>
+	<script type="text/javascript" src="widgets.js"></script>
 
 	<link rel="stylesheet" href="../assets/css/default.css" type="text/css" />
+	<link rel="stylesheet" href="../assets/css/ssl-widget.css" type="text/css" />
+	<link rel="stylesheet" href="widgets.css" type="text/css" />
 
 	<script type="text/javascript">
 		
@@ -287,9 +290,6 @@
 
 	</script>
 </head>
-<style>
-
-</style>
 
 <body ng-controller="simplelogCtrl as simplelog" class="index h-100 overflow-hidden" ng-class="{rotated90:view.settings.rotated90}" ui-i18n="{{view.lang}}">
 	<div id="logView" class="oldLogView">
@@ -374,77 +374,254 @@
 			<!-- <div uib-pagination total-items="vars.logTotal" ng-model="vars.logCurrentPage" items-per-page="vars.logPerPage"></div> -->
 		</div>
 	</div>
-	<div class="main-view overflow-hidden pb-5" ng-show="view.id=='settings'">
-		<form name="settingsForm" class="container h-100 overflow-y-auto">
-			<div class="text-end">
+	<div class="main-view settings-view" ng-show="view.id=='settings'">
+		<nav class="settings-tabs" role="tablist">
+			<button type="button" class="hy-nostyle settings-tab" role="tab"
+				ng-class="{ active: view.settingsTab !== 'widgets' }"
+				aria-selected="{{ view.settingsTab !== 'widgets' }}"
+				ng-click="selectSettingsTab('general')">
+				<i class="fa fa-solid fa-gear" aria-hidden="true"></i>
+				<span bl-translate>General</span>
+			</button>
+			<button type="button" class="hy-nostyle settings-tab" role="tab"
+				ng-class="{ active: view.settingsTab === 'widgets' }"
+				aria-selected="{{ view.settingsTab === 'widgets' }}"
+				ng-click="selectSettingsTab('widgets')">
+				<svg class="settings-widgets-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="2" y="2" width="9" height="12" rx="1"/><rect x="13" y="2" width="9" height="7" rx="1"/><rect x="2" y="16" width="9" height="6" rx="1"/><rect x="13" y="11" width="9" height="11" rx="1"/></svg>
+				<span bl-translate="widgets.settings.title">Widget designer</span>
+			</button>
+			<div class="settings-tab-actions">
 				<span class="fa fa-solid fa-icon fa-book p-2 fs-3" ng-click="view.id='log'"></span>
 				<span class="fa fa-solid toggle-icon fa-rotate-right" ng-click="toggleSetting('rotated90');"></span>
 			</div>
-			<div class="card">
-				<div class="card-header" bl-translate>General</div>
-				<div class="card-body">
-					<div class="col-12 form-label" bl-translate>Automaticly remove logs older than x number of days.</div>
-					<div class="col-12 form-label" bl-translate>Leave empty to not automaticly remove logs rows.</div>
-					<div class="col-12 form-group form-floating">
-						<input type="number" class="form-control hy-nostyle" name="removeLogOlderThanDays" placeholder="Number of days to keep the log" ng-model="view.settings.removeLogOlderThanDays" ng-model-options="{ debounce: 300 }" minlength="1" min="1" step="1" />
-						<label class="hy-nostyle" for="xlsxFilename" bl-translate>Number of days to keep the log</label>
-					</div>
-					<div class="col-12 form-group form-check form-switch mt-3">
-						<input class="form-check-input hy-nostyle" type="checkbox" role="switch" id="groupInTimeline" checked ng-model="view.settings.groupInTimeline" />
-						<label class="form-check-label" for="groupInTimeline">Show group in Timeline</label>
+		</nav>
+		<section class="settings-content pb-5" role="tabpanel" ng-show="view.settingsTab !== 'widgets'">
+			<form name="settingsForm" class="container">
+				<div class="card">
+					<div class="card-header" bl-translate>General</div>
+					<div class="card-body">
+						<div class="col-12 form-label" bl-translate>Automaticly remove logs older than x number of days.</div>
+						<div class="col-12 form-label" bl-translate>Leave empty to not automaticly remove logs rows.</div>
+						<div class="col-12 form-group form-floating">
+							<input type="number" class="form-control hy-nostyle" name="removeLogOlderThanDays" placeholder="Number of days to keep the log" ng-model="view.settings.removeLogOlderThanDays" ng-model-options="{ debounce: 300 }" minlength="1" min="1" step="1" />
+							<label class="hy-nostyle" for="xlsxFilename" bl-translate>Number of days to keep the log</label>
+						</div>
+						<div class="col-12 form-group form-check form-switch mt-3">
+							<input class="form-check-input hy-nostyle" type="checkbox" role="switch" id="groupInTimeline" checked ng-model="view.settings.groupInTimeline" />
+							<label class="form-check-label" for="groupInTimeline">Show group in Timeline</label>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="card">
-				<div class="card-header" bl-translate>Exports</div>
-				<div class="card-body">
-					<div class="col-12 form-label" bl-translate>Set the filenames to use when exporting files</div>
-					<div class="col-12 form-group form-floating">
-						<input type="text" class="form-control hy-nostyle" name="xlsxFilename" placeholder="Excel filename (* BLL supported)" ng-model="view.settings.xlsxFilename" ng-model-options="{ debounce: 300 }" minlength="1" required="true" />
-						<label class="hy-nostyle" for="xlsxFilename" bl-translate>Excel filename (* BLL supported)</label>
-					</div>
-					<div class="col-12 form-group form-check form-switch">
-						<input class="form-check-input hy-nostyle" type="checkbox" role="switch" id="includeUtcInExcel" checked ng-model="view.settings.includeUtcInExcel" />
-						<label class="form-check-label" for="includeUtcInExcel">Include UTC in Excel</label>
-					</div>
+				<div class="card">
+					<div class="card-header" bl-translate>Exports</div>
+					<div class="card-body">
+						<div class="col-12 form-label" bl-translate>Set the filenames to use when exporting files</div>
+						<div class="col-12 form-group form-floating">
+							<input type="text" class="form-control hy-nostyle" name="xlsxFilename" placeholder="Excel filename (* BLL supported)" ng-model="view.settings.xlsxFilename" ng-model-options="{ debounce: 300 }" minlength="1" required="true" />
+							<label class="hy-nostyle" for="xlsxFilename" bl-translate>Excel filename (* BLL supported)</label>
+						</div>
+						<div class="col-12 form-group form-check form-switch">
+							<input class="form-check-input hy-nostyle" type="checkbox" role="switch" id="includeUtcInExcel" checked ng-model="view.settings.includeUtcInExcel" />
+							<label class="form-check-label" for="includeUtcInExcel">Include UTC in Excel</label>
+						</div>
 
-					<div class="col-12 form-group form-floating mb-2">
-						<input type="text" class="form-control hy-nostyle" name="csvFilename" placeholder="CSV filename (* BLL supported)" ng-model="view.settings.csvFilename" ng-model-options="{ debounce: 300 }" minlength="1" required="true" />
-						<label class="hy-nostyle" for="csvFilename" bl-translate>CSV filename (* BLL supported)</label>
-					</div>
+						<div class="col-12 form-group form-floating mb-2">
+							<input type="text" class="form-control hy-nostyle" name="csvFilename" placeholder="CSV filename (* BLL supported)" ng-model="view.settings.csvFilename" ng-model-options="{ debounce: 300 }" minlength="1" required="true" />
+							<label class="hy-nostyle" for="csvFilename" bl-translate>CSV filename (* BLL supported)</label>
+						</div>
 
-					<div class="col-12 form-group form-floating mb-2">
-						<input type="text" class="form-control hy-nostyle" name="jsonFilename" placeholder="JSON filename (* BLL supported)" ng-model="view.settings.jsonFilename" ng-model-options="{ debounce: 300 }" minlength="1" required="true" />
-						<label class="hy-nostyle" for="jsonFilename" bl-translate>JSON filename (* BLL supported)</label>
+						<div class="col-12 form-group form-floating mb-2">
+							<input type="text" class="form-control hy-nostyle" name="jsonFilename" placeholder="JSON filename (* BLL supported)" ng-model="view.settings.jsonFilename" ng-model-options="{ debounce: 300 }" minlength="1" required="true" />
+							<label class="hy-nostyle" for="jsonFilename" bl-translate>JSON filename (* BLL supported)</label>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="card">
-				<div class="card-header" bl-translate>Debug</div>
-				<div class="card-body">
-					<div class="col-12 form-label mt-2" bl-translate>Debug all logs (for diagnostic for developer only) - Heavy on memory</div>
-					<div class="col-12 form-group form-check form-switch">
-						<input class="form-check-input hy-nostyle" type="checkbox" role="switch" id="debugLogs" checked ng-model="view.settings.debugLogs" />
-						<label class="form-check-label" for="debugLogs">Debug</label>
+				<div class="card">
+					<div class="card-header" bl-translate="widgets.settings.android">Android links</div>
+					<div class="card-body">
+						<div class="col-12 form-label" bl-translate="widgets.settings.androidIntro">Android links let a Homey Web widget show a log widget that can scroll. Resetting stops every existing link from working; copy new links from your widgets afterwards.</div>
+						<button type="button" class="btn btn-outline-danger hy-nostyle" ng-click="resetAndroidLinks()" ng-disabled="view.androidResetBusy" bl-translate="widgets.settings.androidReset">Reset Android links</button>
+						<p class="mt-2 mb-0" role="status" ng-if="view.androidResetStatus">{{ view.androidResetStatus }}</p>
 					</div>
-					<!-- 
-					<div class="col-12 form-label mt-2" bl-translate>Include a Logbook into the diagnostic (only on request of developer)</div>
-					<div class="col-12 form-group mt-2">
-						<select class="hy-nostyle" type="checkbox" role="switch" id="logBookDiagnostic" ng-model="view.logBookDiagnostic" ng-ignore-dirty>
-							<option></option>
-							<option ng-repeat="logBook in view.logBooks" value="{{logBook.id}}">{{logBook.id}}</option>
-						</select>
-						<button type="button" class="btn homey-button-primary-shadow-full btn-primary" ng-click="submitLogBookForDiagnostic(view.logBookDiagnostic)" ng-disabled="!view.logBookDiagnostic" bl-translate>Submit into diagnostic</button>
-					</div> -->
 				</div>
+			</form>
+			<div class="main-buttons position-fixed bottom-0 w-100">
+				<button type="button" class="btn homey-button-primary-shadow-full btn-primary" ng-click="settingsForm.$valid && settingsForm.$dirty ? saveSettings() : null;" ng-disabled="!settingsForm.$valid || !settingsForm.$dirty" bl-translate>Save</button>
 			</div>
-		</form>
-		<div class="main-buttons position-fixed bottom-0 w-100">
-			<!-- <div class="homey-button-primary-shadow-full">Save</div> -->
-			<button type="button" class="btn homey-button-primary-shadow-full btn-primary" ng-click="settingsForm.$valid && settingsForm.$dirty ? saveSettings() : null;" ng-disabled="!settingsForm.$valid || !settingsForm.$dirty" bl-translate>Save</button>
+		</section>
+		<section class="settings-content" role="tabpanel" ng-show="view.settingsTab === 'widgets'">
+			<div id="widget-designer" class="widget-designer">
+				<div class="designer-screen" data-screen="editor">
+					<div class="template-header style-editor-header">
+						<h2 data-i18n="widgets.settings.styles">Default Styles</h2>
+						<button id="open-templates" class="hy-nostyle btn btn-outline-primary btn-sm" type="button"><i class="fa fa-solid fa-cloud-download-alt" aria-hidden="true"></i> <span data-i18n="widgets.settings.templates">Templates</span></button>
+					</div>
+					<p class="help-text" data-i18n="widgets.settings.intro">Design and save reusable widget designs and themes for your dashboard widgets.</p>
+					<p class="help-text" data-i18n="widgets.settings.onboarding">Copy a built-in design or theme to customize it.</p>
+					<fieldset class="hy-nostyle style-editor">
+						<div class="style-actions">
+							<button class="hy-nostyle btn btn-outline-primary btn-sm mode-button" type="button" data-mode="design" aria-pressed="true"><svg class="settings-widgets-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="2" y="2" width="9" height="12" rx="1"/><rect x="13" y="2" width="9" height="7" rx="1"/><rect x="2" y="16" width="9" height="6" rx="1"/><rect x="13" y="11" width="9" height="11" rx="1"/></svg> <span data-i18n="widgets.settings.designs">Design styles</span></button>
+							<button class="hy-nostyle btn btn-outline-primary btn-sm mode-button" type="button" data-mode="theme" aria-pressed="false"><i class="fa fa-solid fa-palette" aria-hidden="true"></i> <span data-i18n="widgets.settings.themes">Themes</span></button>
+						</div>
+						<div class="style-toolbar">
+							<label class="hy-nostyle" for="style-select" id="style-select-label">Design</label>
+							<select id="style-select" class="form-select"></select>
+							<div class="style-actions">
+								<button id="style-new" class="hy-nostyle btn btn-outline-primary btn-sm" type="button">
+									<i class="fa fa-solid fa-plus" aria-hidden="true"></i> <span id="style-new-label">New style</span>
+								</button>
+								<button id="style-copy" class="hy-nostyle btn btn-outline-primary btn-sm" type="button">
+									<i class="fa fa-solid fa-copy" aria-hidden="true"></i> <span data-i18n="widgets.settings.duplicate">Copy</span>
+								</button>
+								<button id="style-delete" class="hy-nostyle btn btn-outline-primary btn-sm" type="button" hidden>
+									<i class="fa fa-solid fa-trash" aria-hidden="true"></i> <span data-i18n="widgets.settings.delete">Delete</span>
+								</button>
+							</div>
+						</div>
+
+						<div class="style-design">
+							<div id="style-name-group">
+								<label class="hy-nostyle" for="style-name" data-i18n="widgets.settings.name">Name</label>
+								<input id="style-name" class="hy-nostyle form-control" type="text" maxlength="60">
+							</div>
+							<p id="style-builtin-hint" class="help-text" hidden></p>
+
+							<div class="style-design-selectors" data-mode-panel="design">
+								<h3 data-i18n="widgets.settings.design">Design</h3>
+								<label class="hy-nostyle style-full-row">
+									<input id="day-separators" class="hy-nostyle" type="checkbox">
+									<span data-i18n="widgets.settings.daySeparators">Show day separators</span>
+								</label>
+							</div>
+
+							<div class="style-preview-sticky">
+								<div class="style-design-selectors">
+									<h3 data-i18n="widgets.settings.preview">Design preview</h3>
+									<label class="hy-nostyle" for="preview-other" id="preview-other-label">Theme</label>
+									<select id="preview-other" class="form-select"></select>
+									<label class="hy-nostyle" for="preview-mode" data-i18n="widgets.settings.previewMode">Preview mode</label>
+									<select id="preview-mode" class="form-select">
+										<option value="light" data-i18n="widgets.settings.previewLight">Light</option>
+										<option value="dark" data-i18n="widgets.settings.previewDark">Dark</option>
+									</select>
+								</div>
+								<div id="widget-preview" class="ssl-widget preview-widget"></div>
+							</div>
+
+							<div data-mode-panel="design">
+								<h3 data-i18n="widgets.settings.fields">Visible fields and order</h3>
+								<p class="help-text" data-i18n="widgets.settings.fieldsHint">Use the arrows to change the order. The message wraps to fit.</p>
+								<ol id="design-fields" class="field-list"></ol>
+							</div>
+
+							<div data-mode-panel="theme" hidden>
+								<h3 data-i18n="widgets.settings.colorsTitle">Colors</h3>
+								<div id="theme-colors" class="style-colors ssl-palette"></div>
+							</div>
+						</div>
+					</fieldset>
+				</div>
+
+				<div class="designer-screen style-design style-template-screen" data-screen="templates" hidden>
+					<div class="template-header">
+						<h2 data-i18n="widgets.settings.exchange">The Widget Exchange(r)</h2>
+						<button id="open-exchange" class="hy-nostyle btn btn-outline-primary btn-sm" type="button"><i class="fa fa-solid fa-comments" aria-hidden="true"></i> <span data-i18n="widgets.settings.communityTopic">Community topic</span></button>
+					</div>
+					<nav class="template-navigation" data-i18n-aria-label="widgets.settings.exchange" aria-label="The Widget Exchange(r)">
+						<button class="hy-nostyle template-section-button" type="button" data-section="export" aria-pressed="true">
+							<i class="fa fa-solid fa-file-export" aria-hidden="true"></i> <span data-i18n="widgets.settings.exportShort">Export</span>
+						</button>
+						<button class="hy-nostyle template-section-button" type="button" data-section="import" aria-pressed="false">
+							<i class="fa fa-solid fa-file-import" aria-hidden="true"></i> <span data-i18n="widgets.settings.importShort">Import</span>
+						</button>
+						<button class="hy-nostyle template-section-button" type="button" data-section="catalog" aria-pressed="false">
+							<i class="fa fa-solid fa-list" aria-hidden="true"></i> <span data-i18n="widgets.settings.templates">Templates</span>
+						</button>
+					</nav>
+					<section data-template-section="export">
+						<h3 data-i18n="widgets.settings.exportTitle">Export template</h3>
+						<p class="help-text" data-i18n="widgets.settings.exportHint">Select a saved custom design and/or theme. Copy built-in items first.</p>
+						<p id="export-save-first" class="help-text" data-i18n="widgets.settings.saveFirst" hidden>Save or discard changes before using templates.</p>
+						<label class="hy-nostyle" for="export-design" data-i18n="widgets.settings.selectDesign">Design style</label>
+						<select id="export-design" class="form-select"></select>
+						<label class="hy-nostyle" for="export-theme" data-i18n="widgets.settings.theme">Theme</label>
+						<select id="export-theme" class="form-select"></select>
+						<div id="export-preview-group" hidden>
+							<h3 data-i18n="widgets.settings.preview">Design preview</h3>
+							<div id="export-preview" class="ssl-widget preview-widget"></div>
+						</div>
+						<button id="export-template" class="hy-nostyle btn btn-outline-primary btn-sm" type="button"><i class="fa fa-solid fa-file-code" aria-hidden="true"></i> <span data-i18n="widgets.settings.export">Create TWF</span></button>
+						<div id="export-result" hidden>
+							<label class="hy-nostyle" for="template-code">TWF</label>
+							<textarea id="template-code" class="form-control" rows="3" readonly spellcheck="false"></textarea>
+							<button id="copy-template" class="hy-nostyle btn btn-outline-primary btn-sm" type="button"><i class="fa fa-solid fa-copy" aria-hidden="true"></i> <span data-i18n="widgets.settings.copy">Copy TWF</span></button>
+							<label class="hy-nostyle" for="template-forum-post" data-i18n="widgets.settings.forumPost">Forum post</label>
+							<textarea id="template-forum-post" class="form-control" rows="5" readonly spellcheck="false"></textarea>
+							<button id="copy-forum-post" class="hy-nostyle btn btn-outline-primary btn-sm" type="button"><i class="fa fa-solid fa-clipboard" aria-hidden="true"></i> <span data-i18n="widgets.settings.duplicate">Copy</span></button>
+							<button id="post-forum" class="hy-nostyle btn btn-outline-primary btn-sm" type="button"><i class="fa fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> <span data-i18n="widgets.settings.postForum">Post on Forum</span></button>
+						</div>
+					</section>
+					<section data-template-section="import" hidden>
+						<h3 data-i18n="widgets.settings.importTitle">Import template</h3>
+						<label class="hy-nostyle" for="import-code" data-i18n="widgets.settings.importHint">Paste a Simple (Sys) Log TWF below.</label>
+						<textarea id="import-code" class="form-control" rows="4" spellcheck="false"></textarea>
+						<button id="import-template" class="hy-nostyle btn btn-outline-primary btn-sm" type="button" disabled><i class="fa fa-solid fa-file-import" aria-hidden="true"></i> <span data-i18n="widgets.settings.import">Read template</span></button>
+						<div id="import-review" hidden>
+							<h3 data-i18n="widgets.settings.review">Review template</h3>
+							<div id="import-design-group">
+								<label class="hy-nostyle"><input id="import-include-design" class="hy-nostyle" type="checkbox"> <span data-i18n="widgets.settings.importDesign">Import design</span></label>
+								<label class="hy-nostyle" for="import-design-name" data-i18n="widgets.settings.name">Name</label>
+								<input id="import-design-name" class="hy-nostyle form-control" type="text" maxlength="60">
+							</div>
+							<div id="import-theme-group">
+								<label class="hy-nostyle"><input id="import-include-theme" class="hy-nostyle" type="checkbox"> <span data-i18n="widgets.settings.importTheme">Import theme</span></label>
+								<label class="hy-nostyle" for="import-theme-name" data-i18n="widgets.settings.name">Name</label>
+								<input id="import-theme-name" class="hy-nostyle form-control" type="text" maxlength="60">
+							</div>
+							<label class="hy-nostyle" for="import-preview-design" data-i18n="widgets.settings.previewDesign">Preview design</label>
+							<select id="import-preview-design" class="form-select"></select>
+							<label class="hy-nostyle" for="import-preview-theme" data-i18n="widgets.settings.previewTheme">Preview theme</label>
+							<select id="import-preview-theme" class="form-select"></select>
+							<h3 data-i18n="widgets.settings.preview">Design preview</h3>
+							<div id="import-preview" class="ssl-widget preview-widget"></div>
+							<button id="save-template" class="hy-nostyle btn btn-outline-primary btn-sm" type="button"><i class="fa fa-solid fa-floppy-disk" aria-hidden="true"></i> <span data-i18n="widgets.settings.save">Save</span></button>
+						</div>
+					</section>
+					<section data-template-section="catalog" hidden>
+						<p id="catalog-loading" class="help-text" role="status" data-i18n="widgets.settings.loadingCatalog" hidden>Loading community templates...</p>
+						<div class="template-catalog-toolbar">
+							<button id="catalog-previews" class="hy-nostyle template-catalog-icon" type="button" aria-pressed="false" disabled
+								data-i18n-title="widgets.settings.showPreviews" title="Show previews" data-i18n-aria-label="widgets.settings.showPreviews" aria-label="Show previews">
+								<i class="fa fa-solid fa-eye-slash" aria-hidden="true"></i>
+							</button>
+							<input id="catalog-search" class="hy-nostyle form-control" type="search" disabled
+								data-i18n-placeholder="widgets.settings.search" placeholder="Search" data-i18n-aria-label="widgets.settings.search" aria-label="Search">
+							<select id="catalog-sort" class="form-select" disabled data-i18n-aria-label="widgets.settings.sort" aria-label="Sort by">
+								<option value="newest" data-i18n="widgets.settings.newest">Newest</option>
+								<option value="name" data-i18n="widgets.settings.name">Name</option>
+								<option value="likes" data-i18n="widgets.settings.likes">Likes</option>
+								<option value="favorites" data-i18n="widgets.settings.favorites">Favorites</option>
+							</select>
+							<button id="load-catalog" class="hy-nostyle template-catalog-icon" type="button"
+								data-i18n-title="widgets.settings.refresh" title="Refresh" data-i18n-aria-label="widgets.settings.refresh" aria-label="Refresh"><i class="fa fa-solid fa-rotate" aria-hidden="true"></i></button>
+						</div>
+						<p id="catalog-empty" class="help-text" data-i18n="widgets.settings.emptyCatalog" hidden>No matching templates found.</p>
+						<div id="template-catalog" class="template-catalog" role="list"></div>
+					</section>
+				</div>
+
+				<p id="designer-status" class="status help-text" role="status" aria-live="polite"></p>
+			</div>
+		</section>
+		<div class="designer-footers" ng-show="view.settingsTab === 'widgets'">
+			<footer id="designer-savebar" class="settings-savebar">
+				<button id="save-styles" class="hy-nostyle btn settings-save-button" type="button" disabled data-i18n="widgets.settings.save">Save</button>
+			</footer>
+			<footer id="designer-template-footer" class="settings-template-footer" hidden>
+				<button id="close-templates" class="hy-nostyle btn settings-history-button" type="button"><i class="fa fa-solid fa-arrow-left" aria-hidden="true"></i> <span data-i18n="widgets.settings.back">Back to designer</span></button>
+			</footer>
 		</div>
 	</div>
-
 	<script type="text/ng-template" id="custom-date-filter.html">
 		<div class="modal-content col-md-12 col-md-offset-0 col-sm-12 col-sm-offset-0 col-xs-12 col-xs-offset-0">		
 			<div class="modal-header">

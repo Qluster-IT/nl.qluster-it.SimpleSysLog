@@ -75,8 +75,6 @@ class SyslogClientDevice extends Homey.Device {
 					+ message
 					+ newline;
 			}
-			if(BL.homey.app.settings && BL.homey.app.settings.debugLogs) BL.homey.log('formattedMessage\n', formattedMessage);
-
 			//console.log(formattedMessage);
 			return Buffer.from(formattedMessage);
 		};

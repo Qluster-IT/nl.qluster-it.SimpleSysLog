@@ -104,6 +104,7 @@ test('startup catches up in limited mode before BLL becomes available', async t 
     set() {},
     on() {}
   };
+  app.homey.api = { realtime: async () => {} };
   let cleaned = false;
   app.clearBackLog = async days => {
     assert.equal(days, 7);
@@ -116,6 +117,59 @@ test('startup catches up in limited mode before BLL becomes available', async t 
   });
   await app.onInit();
   assert.equal(cleaned, true);
+});
+
+function prepareStartup(t, app, settings) {
+  const realtime = [];
+  app.log = () => {};
+  app.error = () => {};
+  app.buildCards = () => {};
+  app.addLogToDB = () => {};
+  app.clearBackLog = async () => {};
+  app.homey.settings = {
+    get: key => key === 'settings' ? settings : undefined,
+    set() {},
+    on() {}
+  };
+  app.homey.api = { realtime: async (event, data) => { realtime.push([event, data]); } };
+  t.mock.method(BL, 'init', async () => ({ ready: new Promise(() => {}) }));
+  return realtime;
+}
+
+test('startup announces API readiness without waiting for BLL', async t => {
+  const { app, settings, errors } = createApp();
+  const realtime = prepareStartup(t, app, settings);
+  const api = appRequire('./api');
+  assert.deepEqual(await api.getApiReady({ homey: { app } }), { ready: false });
+  await app.onInit();
+  assert.deepEqual(await api.getApiReady({ homey: { app } }), { ready: true });
+  assert.equal(JSON.stringify(realtime), JSON.stringify([['api-ready', { ready: true }]]));
+  assert.equal(app.Log, undefined);
+  assert.deepEqual(errors, []);
+});
+
+test('startup stays not ready when mandatory initialization fails', async t => {
+  for (const fail of [
+    app => { app.buildCards = () => { throw new Error('cards failed'); }; },
+    app => { app.homey.settings.get = () => { throw new Error('settings unavailable'); }; }
+  ]) {
+    const { app, settings } = createApp();
+    const realtime = prepareStartup(t, app, settings);
+    fail(app);
+    await app.onInit();
+    assert.equal(app.apiReady, false);
+    assert.deepEqual(realtime, []);
+  }
+});
+
+test('a failed api-ready notification keeps the readiness endpoint usable', async t => {
+  const { app, settings, errors } = createApp();
+  prepareStartup(t, app, settings);
+  app.homey.api.realtime = async () => { throw new Error('realtime unavailable'); };
+  await app.onInit();
+  assert.equal(app.apiReady, true);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0][1].message, /realtime unavailable/);
 });
 
 test('file-storage startup catches up only after initialization and backlog migration', async () => {
@@ -134,13 +188,14 @@ test('file-storage startup catches up only after initialization and backlog migr
   app.homey.settings.unset = () => {};
   app.BackLog = [['old message', 'group', {}]];
   app._addLogToDB = async () => { events.push('migrate'); };
+  app.homey.api = { realtime: async event => { events.push(event); } };
   const initializing = app.initRealApp();
   await Promise.resolve();
   await app.runAutomaticlyRemovalOfLogs();
   assert.deepEqual(events, ['init']);
   finishInit();
   await initializing;
-  assert.deepEqual(events, ['init', 'migrate', 'cleanup:7']);
+  assert.deepEqual(events, ['init', 'migrate', 'log_storage_ready', 'cleanup:7']);
 });
 
 test('disabling retention through settings releases its timer', () => {

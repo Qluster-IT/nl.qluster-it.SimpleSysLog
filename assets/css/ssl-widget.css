@@ -1,0 +1,396 @@
+html.ssl-widget-page,
+.ssl-widget-page body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+.ssl-widget-page body {
+  font-family: var(--homey-font-family, sans-serif);
+}
+
+.ssl-widget,
+.ssl-widget * {
+  box-sizing: border-box;
+}
+
+/* Named colours match the Chronograph widget palette and Homey colours. */
+.ssl-widget,
+.ssl-palette {
+  --ssl-color-red: var(--homey-color-red-500, #f25f5c);
+  --ssl-color-orange: var(--homey-color-orange-500, #f07a1f);
+  --ssl-color-yellow: #f5c518;
+  --ssl-color-green: var(--homey-color-green-500, #71d51b);
+  --ssl-color-teal: #1fc7b0;
+  --ssl-color-cyan: #2cc3e8;
+  --ssl-color-blue: var(--homey-color-blue-500, #2f8df6);
+  --ssl-color-indigo: #7c83f7;
+  --ssl-color-purple: #9033fc;
+  --ssl-color-pink: #f2549e;
+  --ssl-color-brown: #b9875a;
+  --ssl-color-grey: #9a9ca6;
+  --ssl-color-black: #101114;
+  --ssl-color-white: #ffffff;
+}
+
+.ssl-widget {
+  --ssl-background: #ffffff;
+  --ssl-surface: #f3f4f6;
+  --ssl-text: #202127;
+  --ssl-muted: #777982;
+  --ssl-border: #e2e3e8;
+  --ssl-accent: var(--ssl-color-blue);
+  --ssl-emergency: var(--ssl-color-purple);
+  --ssl-alert: var(--ssl-color-pink);
+  --ssl-critical: var(--ssl-color-red);
+  --ssl-error: var(--ssl-color-red);
+  --ssl-warning: var(--ssl-color-orange);
+  --ssl-notice: var(--ssl-color-green);
+  --ssl-info: var(--ssl-color-blue);
+  --ssl-debug: var(--ssl-color-grey);
+  --ssl-badge-text: #101114;
+  --ssl-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  color-scheme: light;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--ssl-border);
+  border-radius: 16px;
+  color: var(--ssl-text);
+  background: var(--ssl-background);
+  font-size: 13px;
+}
+
+.homey-dark-mode .ssl-mode-automatic,
+.ssl-mode-dark {
+  --ssl-color-black: #000000;
+  --ssl-background: #16171c;
+  --ssl-surface: #212329;
+  --ssl-text: #f2f3f5;
+  --ssl-muted: #9a9ca6;
+  --ssl-border: #2e3039;
+  color-scheme: dark;
+}
+
+.ssl-widget-toolbar {
+  flex: 0 0 auto;
+  padding: 10px 10px 6px;
+}
+
+.ssl-log-search {
+  display: block;
+  width: 100%;
+  min-height: 34px;
+  padding: 6px 14px;
+  border: 1px solid var(--ssl-border);
+  border-radius: 999px;
+  outline: none;
+  color: var(--ssl-text);
+  background: var(--ssl-surface);
+  font: inherit;
+}
+
+.ssl-log-search::placeholder {
+  color: var(--ssl-muted);
+}
+
+.ssl-log-search:focus-visible {
+  border-color: var(--ssl-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ssl-accent) 35%, transparent);
+}
+
+.ssl-log-list {
+  min-height: 0;
+  flex: 1 1 auto;
+  padding: 4px 10px 10px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.ssl-widget-toolbar + .ssl-log-list {
+  padding-top: 4px;
+}
+
+.ssl-log-entry + .ssl-log-entry {
+  margin-top: 6px;
+}
+
+.ssl-day-separator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 8px;
+  color: var(--ssl-text);
+  font-family: var(--ssl-mono);
+  font-size: 0.82em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ssl-log-entry:first-child .ssl-day-separator {
+  margin-top: 2px;
+}
+
+.ssl-day-separator::before,
+.ssl-day-separator::after {
+  content: "";
+  flex: 1 1 auto;
+  border-top: 1px solid var(--ssl-border);
+}
+
+.ssl-day-separator span {
+  padding: 3px 10px;
+  border: 1px solid var(--ssl-border);
+  border-radius: 999px;
+  background: var(--ssl-surface);
+}
+
+.ssl-log-card {
+  --ssl-sev: var(--ssl-muted);
+  display: flex;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--ssl-border);
+  border-left: 4px solid var(--ssl-sev);
+  border-radius: 10px;
+  background: var(--ssl-surface);
+}
+
+.ssl-sev-emergency { --ssl-sev: var(--ssl-emergency); }
+.ssl-sev-alert { --ssl-sev: var(--ssl-alert); }
+.ssl-sev-critical { --ssl-sev: var(--ssl-critical); }
+.ssl-sev-error { --ssl-sev: var(--ssl-error); }
+.ssl-sev-warning { --ssl-sev: var(--ssl-warning); }
+.ssl-sev-notice { --ssl-sev: var(--ssl-notice); }
+.ssl-sev-info { --ssl-sev: var(--ssl-info); }
+.ssl-sev-debug { --ssl-sev: var(--ssl-debug); }
+
+.ssl-log-side {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  min-width: 64px;
+  max-width: 40%;
+}
+
+.ssl-log-main {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ssl-field-timestamp {
+  color: var(--ssl-muted);
+  font-family: var(--ssl-mono);
+  font-size: 0.92em;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.ssl-field-severity {
+  padding: 2px 7px;
+  border-radius: 999px;
+  color: var(--ssl-badge-text);
+  background: var(--ssl-sev);
+  font-family: var(--ssl-mono);
+  font-size: 0.78em;
+  font-weight: 800;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.ssl-field-message {
+  font-family: var(--ssl-mono);
+  line-height: 1.4;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.ssl-log-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  font-family: var(--ssl-mono);
+  font-size: 0.88em;
+}
+
+.ssl-log-meta .ssl-field-app {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.ssl-log-meta .ssl-field-hostname {
+  color: var(--ssl-muted);
+  overflow-wrap: anywhere;
+}
+
+.ssl-log-meta .ssl-field-facility {
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--ssl-muted);
+  background: color-mix(in srgb, var(--ssl-muted) 18%, transparent);
+  font-size: 0.86em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ssl-widget-message {
+  margin: auto;
+  padding: 16px;
+  color: var(--ssl-muted);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.ssl-widget-error,
+.ssl-search-error {
+  color: var(--ssl-error);
+}
+
+.ssl-search-error {
+  display: block;
+  padding: 4px 14px 0;
+  font-size: 0.85em;
+}
+
+.ssl-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Copyable links for a Homey Web widget, shown when "Using scroll on Android?" is enabled. */
+.ssl-android-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 12px 14px;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+
+.ssl-android-title {
+  margin: 0 0 6px;
+  font-size: 1.15em;
+}
+
+.ssl-android-text,
+.ssl-android-hint {
+  margin: 0 0 10px;
+  color: var(--ssl-muted);
+  line-height: 1.4;
+}
+
+.ssl-android-warning {
+  color: var(--ssl-warning);
+}
+
+.ssl-android-link {
+  margin: 0 0 12px;
+  padding: 10px;
+  border: 1px solid var(--ssl-border);
+  border-radius: 10px;
+  background: var(--ssl-surface);
+}
+
+.ssl-android-label {
+  display: block;
+  margin-bottom: 2px;
+  font-weight: 700;
+}
+
+.ssl-android-hint {
+  margin-bottom: 8px;
+  font-size: 0.92em;
+}
+
+.ssl-android-row {
+  display: flex;
+  gap: 8px;
+}
+
+.ssl-android-url {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 32px;
+  padding: 4px 10px;
+  border: 1px solid var(--ssl-border);
+  border-radius: 8px;
+  color: var(--ssl-text);
+  background: var(--ssl-background);
+  font-family: var(--ssl-mono);
+  font-size: 0.9em;
+}
+
+.ssl-android-copy {
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 4px 14px;
+  border: 0;
+  border-radius: 999px;
+  color: #ffffff;
+  background: var(--ssl-accent);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ssl-android-url:focus-visible,
+.ssl-android-copy:focus-visible {
+  outline: 2px solid var(--ssl-accent);
+  outline-offset: 2px;
+}
+
+.ssl-android-status {
+  min-height: 1.4em;
+  margin: 0;
+}
+
+/* Inside a Homey Web widget the page itself scrolls, which works on Android. */
+html.ssl-widget-page.ssl-android-page,
+.ssl-android-page body {
+  height: auto;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.ssl-android-page .ssl-widget {
+  height: auto;
+  min-height: 100vh;
+  overflow: visible;
+}
+
+.ssl-android-page .ssl-log-list {
+  flex: 1 0 auto;
+  overflow: visible;
+}
+
+.ssl-android-page .ssl-widget-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-radius: 16px 16px 0 0;
+  background: var(--ssl-background);
+}

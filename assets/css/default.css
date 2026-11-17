@@ -209,3 +209,84 @@ input {
 .fa-icon-big {
     font-size:48px;
 }
+
+/* Settings view: General and Widget designer tabs, styled like Chronograph's settings. */
+.settings-view {
+    --ssl-primary: #BC274A;
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-tabs {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: stretch;
+    border-bottom: 1px solid var(--homey-color-mono-400, rgba(128, 128, 128, 0.35));
+    background: var(--homey-background-color, transparent);
+}
+
+.settings-tab {
+    display: flex;
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 58px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 5px 4px 4px;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    color: var(--homey-color-mono-600, inherit);
+    background: transparent;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.settings-tab span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.settings-tab:hover,
+.settings-tab:focus-visible,
+.settings-tab.active {
+    color: var(--ssl-primary);
+}
+
+.settings-tab.active {
+    border-bottom-color: var(--ssl-primary);
+}
+
+.settings-widgets-icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    vertical-align: -0.125em;
+}
+
+.settings-tab i,
+.settings-tab .settings-widgets-icon {
+    font-size: 1rem;
+}
+
+.settings-tab-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 2px;
+    padding: 0 8px;
+}
+
+.settings-content {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 14px 10px;
+}

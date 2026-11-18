@@ -1,4 +1,11 @@
-Den nye og forbedrede Simple (Sys) Log.
+Simple (Sys) Log.
+
+FUNKSJONER
+* Live-dashboardwidgeter med søk, nivå- og datofiltre, valgfri sideinndeling og lys/mørk modus.
+* Tilpass design og temaer, inkludert designene Kompakt, Journal og Konsoll og temaene Hav, Skog, Solnedgang og Konsoll.
+* Del design og temaer som TWF-er via Maler og Widget Exchange, med lyse og mørke forhåndsvisningsbilder.
+* Vis logger på et Android-dashboard med signerte Web-widgetlenker.
+* Opprett midlertidige nedlastingslenker for CSV, Excel eller JSON fra Advanced Flow.
 
 Denne appen gjør det mulig å legge til logging og/eller varsler i dine Flows. Valgfritt kan en logg ha, i tillegg til sin melding, en App/gruppe, seriøsitet og fasilitet.
 
@@ -6,9 +13,9 @@ Du kan også koble til flere Syslog-klienter for å a) sende spesifikke meldinge
 
 Og sist, men ikke minst, kan du opprette en Syslog Server-enhet for å la andre Syslog-klienter koble seg til, som vil bli skrevet inn i Simple (Sys) Log.
 
-Denne nye versjonen lagrer loggene i filer, og ikke i minnet, noe som gir en mye større logg enn før.
+Loggene lagres i filer i stedet for i minnet, slik at loggboken kan være større.
 
-Det er en helt ny Innstillinger-side, med en Syslog-aktig grensesnitt, hvor du kan:
+Innstillingssiden har et Syslog-lignende grensesnitt, hvor du kan:
 * Roter skjermen for en bedre visning på en mobil eller annen landskaps-skjerm enhet.
 * Søk og filtrer spesifikke meldinger, datoer, osv.
 * Skjul eller flytt kolonner.
@@ -17,6 +24,7 @@ Det er en helt ny Innstillinger-side, med en Syslog-aktig grensesnitt, hvor du k
 
 Du kan bruke API-endepunktene for å få tilgang til loggen.
 
-Se emnet på Community Forum for eksempler og informasjon.
+Better Logic Library støttes (valgfritt for grunnleggende logging, nødvendig for hele grensesnittet, eksport og widgeter). Bruk BLL-kode i støttede meldings- og gruppefelt i Flows; se innstillingene i Better Logic Library-appen for veiledning.
 
-* Denne appen fungerer fortsatt som en frittstående app som den pleide. Men, for å aktivere alle funksjoner og det nye grensesnittet, krever den at Better Logic Library App er installert.
+Se emnet på Community Forum for eksempler og informasjon.
+For Simple (Sys) Logs wiki og brukerveiledning velger du "Besøk nettsted" under "Utviklernettsted" på appens side i Homey App Store.

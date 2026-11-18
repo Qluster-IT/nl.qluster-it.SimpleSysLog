@@ -1,6 +1,6 @@
 {
   "id": "nl.nielsdeklerk.log",
-  "version": "3.1.6",
+  "version": "3.2.0",
   "sdk": 3,
   "brandColor": "#BC274A",
   "name": {
@@ -70,7 +70,7 @@
       "syslog",
       "bll",
       "ssl"
-    ],    
+    ],
     "da": [
       "Log",
       "Tools",
@@ -79,7 +79,7 @@
       "syslog",
       "bll",
       "ssl"
-    ],    
+    ],
     "es": [
       "Log",
       "Tools",
@@ -88,7 +88,7 @@
       "syslog",
       "bll",
       "ssl"
-    ],    
+    ],
     "fr": [
       "Log",
       "Tools",
@@ -97,7 +97,7 @@
       "syslog",
       "bll",
       "ssl"
-    ],    
+    ],
     "it": [
       "Log",
       "Tools",
@@ -106,7 +106,7 @@
       "syslog",
       "bll",
       "ssl"
-    ],    
+    ],
     "no": [
       "Log",
       "Tools",
@@ -115,7 +115,7 @@
       "syslog",
       "bll",
       "ssl"
-    ],    
+    ],
     "sv": [
       "Log",
       "Tools",
@@ -124,7 +124,7 @@
       "syslog",
       "bll",
       "ssl"
-    ],    
+    ],
     "pl": [
       "Log",
       "Tools",
@@ -133,7 +133,7 @@
       "syslog",
       "bll",
       "ssl"
-    ],    
+    ],
     "ru": [
       "Log",
       "Tools",
@@ -142,7 +142,7 @@
       "syslog",
       "bll",
       "ssl"
-    ],    
+    ],
     "ko": [
       "Log",
       "Tools",
@@ -151,7 +151,7 @@
       "syslog",
       "bll",
       "ssl"
-    ],    
+    ],
     "ar": [
       "Log",
       "Tools",
@@ -176,9 +176,9 @@
       "githubSponsors": {
         "username": "Qluster-IT"
       },
-			"bunq": {
-				"username": "QlusterIT"
-			}
+      "bunq": {
+        "username": "QlusterIT"
+      }
     }
   },
   "contributors": {
@@ -199,7 +199,7 @@
   },
   "athomForumDiscussionId": 3052,
   "homeyCommunityTopicId": 77533,
-	"homepage": "https://github.com/Qluster-IT/nl.qluster-it.SimpleSysLog/wiki",
+  "homepage": "https://github.com/Qluster-IT/nl.qluster-it.SimpleSysLog/wiki",
   "api": {
     "getApiReady": {
       "method": "GET",

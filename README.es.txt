@@ -1,4 +1,11 @@
-El nuevo y mejorado Simple (Sys) Log.
+Simple (Sys) Log.
+
+FUNCIONES
+* Widgets de panel en directo con búsqueda, filtros de nivel y fecha, paginación opcional y modos claro y oscuro.
+* Personaliza diseños y temas, incluidos los diseños Compacto, Diario y Consola y los temas Océano, Bosque, Atardecer y Consola.
+* Comparte diseños y temas como TWF mediante Plantillas y Widget Exchange, con imágenes de vista previa claras y oscuras.
+* Muestra registros en un panel Android mediante enlaces firmados de widgets web.
+* Crea enlaces temporales de descarga de CSV, Excel o JSON desde Advanced Flow.
 
 Esta aplicación hace posible añadir registros y/o notificaciones a tus Flows. Opcionalmente, un registro puede tener, además de su mensaje, una App/grupo, gravedad e instalación.
 
@@ -6,9 +13,9 @@ También puedes conectarte a múltiples clientes Syslog para a) enviar mensajes 
 
 Y por último, pero no menos importante, puedes crear un dispositivo servidor Syslog, para que otros clientes Syslog se conecten y que se escriba en el Simple (Sys) Log.
 
-Esta nueva versión guarda los registros en archivos y no en memoria, permitiendo un registro mucho más grande que antes.
+Los registros se guardan en archivos en lugar de en memoria, lo que permite un diario más grande.
 
-Hay una nueva página de Configuración, con una especie de interfaz Syslog, en la que puedes:
+La página de configuración tiene una interfaz de estilo Syslog, en la que puedes:
 * Rotar la pantalla para una mejor vista en un dispositivo Móvil u otro dispositivo de pantalla horizontal.
 * Buscar y filtrar mensajes específicos, fechas, etc.
 * Ocultar o mover columnas.
@@ -17,6 +24,7 @@ Hay una nueva página de Configuración, con una especie de interfaz Syslog, en 
 
 Puedes usar los puntos finales de la API para acceder al registro.
 
-Consulta el tema en el Foro de la Comunidad para obtener ejemplos e información.
+Better Logic Library es compatible (opcional para el registro básico, necesaria para la interfaz completa, las exportaciones y los widgets). Usa código BLL en los campos de mensaje y grupo compatibles de los Flows; consulta las instrucciones en los ajustes de la app Better Logic Library.
 
-* Esta aplicación aún funciona como una aplicación independiente como solía hacerlo. Sin embargo, para habilitar todas las funcionalidades y la nueva interfaz, se requiere que la aplicación Better Logic Library esté instalada.
+Consulta el tema en el Foro de la Comunidad para obtener ejemplos e información.
+Para acceder a la wiki y al manual de Simple (Sys) Log, selecciona "Visitar sitio web" en "Sitio web del desarrollador" en la página de esta app en Homey App Store.

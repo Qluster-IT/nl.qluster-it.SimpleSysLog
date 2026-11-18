@@ -1438,5 +1438,20 @@
     "ru": "Изменили исходный код и задачи с Bitbucket на GitHub.",
     "ko": "소스 코드와 문제를 Bitbucket에서 GitHub로 변경했습니다.",
     "ar": "تم تغيير الشيفرة المصدرية والمشكلات من Bitbucket إلى GitHub."
+  },
+  "3.2.0": {
+    "en": "Added dashboard widgets with customizable designs and themes, search, filters and paging. Share templates and use Android Web widgets. Added Flow export links and improved exports, log storage and reliability.",
+    "nl": "Dashboardwidgets toegevoegd met aanpasbare ontwerpen en thema's, zoeken, filters en paginering. Deel sjablonen en gebruik Android Web-widgets. Exportlinks voor Flows toegevoegd en exports, logopslag en betrouwbaarheid verbeterd.",
+    "da": "Tilføjet dashboardwidgets med tilpasselige design og temaer, søgning, filtre og sideinddeling. Del skabeloner og brug Android Web-widgets. Tilføjet eksportlinks til Flows og forbedret eksport, loglagring og stabilitet.",
+    "de": "Dashboard-Widgets mit anpassbaren Designs und Themen, Suche, Filtern und Seitennavigation hinzugefügt. Teile Vorlagen und nutze Android-Web-Widgets. Exportlinks für Flows ergänzt und Exporte, Logspeicherung und Zuverlässigkeit verbessert.",
+    "es": "Añadidos widgets de panel con diseños y temas personalizables, búsqueda, filtros y paginación. Comparte plantillas y usa widgets web en Android. Añadidos enlaces de exportación en Flows y mejoras en exportaciones, almacenamiento y fiabilidad.",
+    "fr": "Ajout de widgets de tableau de bord avec designs et thèmes personnalisables, recherche, filtres et pagination. Partagez des modèles et utilisez des widgets Web Android. Ajout de liens d'export dans les Flows et amélioration des exports, du stockage et de la fiabilité.",
+    "it": "Aggiunti widget della dashboard con design e temi personalizzabili, ricerca, filtri e paginazione. Condividi modelli e usa widget Web Android. Aggiunti link di esportazione nei Flows e migliorate esportazioni, archiviazione e affidabilità.",
+    "no": "Lagt til dashboardwidgeter med tilpassbare design og temaer, søk, filtre og sideinndeling. Del maler og bruk Android Web-widgeter. Lagt til eksportlenker i Flows og forbedret eksport, logglagring og stabilitet.",
+    "sv": "Lagt till dashboardwidgetar med anpassningsbara designer och teman, sökning, filter och sidindelning. Dela mallar och använd Android Web-widgetar. Lagt till exportlänkar i Flows och förbättrat export, logglagring och stabilitet.",
+    "pl": "Dodano widżety pulpitu z konfigurowalnymi projektami i motywami, wyszukiwaniem, filtrami i stronicowaniem. Udostępniaj szablony i używaj widżetów Web na Androidzie. Dodano linki eksportu w Flows oraz ulepszono eksport, przechowywanie logów i niezawodność.",
+    "ru": "Добавлены виджеты панели с настраиваемыми дизайнами и темами, поиском, фильтрами и постраничным просмотром. Делитесь шаблонами и используйте веб-виджеты Android. Добавлены ссылки экспорта в Flows, улучшены экспорт, хранение журналов и надёжность.",
+    "ko": "사용자 지정 디자인과 테마, 검색, 필터 및 페이지 이동을 지원하는 대시보드 위젯을 추가했습니다. 템플릿을 공유하고 Android 웹 위젯을 사용할 수 있습니다. Flow 내보내기 링크를 추가하고 내보내기, 로그 저장 및 안정성을 개선했습니다.",
+    "ar": "أُضيفت عناصر واجهة للوحة المعلومات مع تصاميم وسمات قابلة للتخصيص وبحث وفلاتر وتنقل بين الصفحات. شارك القوالب واستخدم عناصر واجهة الويب على Android. أُضيفت روابط تصدير في Flows وتحسن التصدير وتخزين السجلات والموثوقية."
   }
 }

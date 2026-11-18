@@ -1,5 +1,17 @@
 This app makes it possible to add logging to your Flows.
 
+# Changelog
+
+## 3.2.0
+
+- Added live dashboard widgets with search, Level/Date filters and optional paging.
+- Added the widget designer, built-in designs and themes, and TWF sharing through Templates and the Widget Exchange with light/dark images.
+- Added signed Web widget links for Android dashboards.
+- Added **Get log export URL** for CSV, Excel and JSON downloads from Advanced Flow.
+- Improved mobile and desktop Excel exports, log storage efficiency, automatic cleanup and widget preview consistency.
+
+# Features
+
 With simple log You can:
 
 - Add logging to your Flows

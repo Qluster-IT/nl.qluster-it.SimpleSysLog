@@ -48,7 +48,8 @@
       "compact": "Compact",
       "journal": "Journal",
       "console": "Console",
-      "aurora": "Aurore"
+      "aurora": "Aurore",
+      "widgetkeeper": "WidgetKeeper"
     },
     "theme": {
       "homey": "Homey",
@@ -58,7 +59,9 @@
       "forest": "Forêt",
       "sunset": "Coucher de soleil",
       "console": "Console",
-      "aurora": "Aurore"
+      "aurora": "Aurore",
+      "widgetkeeper": "WidgetKeeper",
+      "default-syslog": "Par défaut (Syslog)"
     },
     "datetime": {
       "customFormat": "Format de date et d’heure BLL personnalisé",
@@ -166,7 +169,24 @@
         "grey": "Gris",
         "black": "Noir",
         "white": "Blanc",
-        "black-light": "Noir (clair/sombre)"
+        "black-light": "Noir (clair/sombre)",
+        "red-soft": "Rouge (Erreur)",
+        "console-purple": "Violet (Console: Urgence)",
+        "console-pink": "Rose (Console: Alerte)",
+        "console-red": "Rouge (Console: Critique)",
+        "console-red-soft": "Rouge (Console: Erreur)",
+        "console-yellow": "Jaune (Console: Avertissement)",
+        "console-blue": "Bleu (Console: Avis)",
+        "console-green": "Vert (Console: Info)",
+        "console-grey": "Gris (Console: Débogage)",
+        "syslog-magenta": "Rose (Syslog: Urgence)",
+        "syslog-red": "Rouge (Syslog: Alerte)",
+        "syslog-critical-red": "Rouge (Syslog: Critique)",
+        "syslog-light-red": "Rouge (Syslog: Erreur)",
+        "syslog-amber": "Jaune (Syslog: Avertissement)",
+        "syslog-cyan": "Cyan (Syslog: Avis)",
+        "syslog-green": "Vert (Syslog: Info)",
+        "syslog-blue": "Bleu (Syslog: Débogage)"
       },
       "android": "Liens Android",
       "androidIntro": "Les liens Android permettent à un widget Web Homey d'afficher un widget de journal qui peut défiler. La réinitialisation désactive tous les liens existants ; copiez ensuite de nouveaux liens depuis vos widgets.",

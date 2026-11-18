@@ -57,7 +57,7 @@
   var colorRoles = ['background', 'surface', 'text', 'muted', 'border', 'accent',
     'emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug', 'outline'];
   var severityNames = ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'];
-  var colorNames = ['automatic', 'red', 'orange', 'yellow', 'green', 'teal', 'cyan', 'blue',
+  var colorNames = ['automatic', 'red', 'red-soft', 'orange', 'yellow', 'green', 'teal', 'cyan', 'blue',
     'indigo', 'purple', 'pink', 'brown', 'grey', 'black', 'black-light', 'white'];
   var elementColors = ['default', 'severity'].concat(colorNames.slice(1));
   var elementBackgrounds = ['default', 'none', 'severity'].concat(colorNames.slice(1));
@@ -70,7 +70,8 @@
   var colorNameFallbacks = {
     automatic: 'Automatic', red: 'Red', orange: 'Orange', yellow: 'Yellow', green: 'Green', teal: 'Teal',
     cyan: 'Cyan', blue: 'Blue', indigo: 'Indigo', purple: 'Purple', pink: 'Pink', brown: 'Brown',
-    grey: 'Grey', black: 'Black', 'black-light': 'Black (light/dark)', white: 'White'
+    grey: 'Grey', black: 'Black', 'black-light': 'Black (light/dark)', white: 'White',
+    'red-soft': 'Soft red'
   };
   var fontFallbacks = {
     system: 'System', 'sans-serif': 'Sans-serif (Arial)', serif: 'Serif (Georgia)', monospace: 'Monospace (Courier New)',
@@ -362,11 +363,10 @@
       ? t('widgets.settings.theme', 'Theme') : t('widgets.settings.selectDesign', 'Design');
     fillGroupedSelect(byId('preview-other'), isDesign ? builtInThemes : builtInDesigns,
       isDesign ? collection.themes : collection.designs, isDesign ? currentThemeId : currentDesignId, !isDesign);
-    // A new item or mode starts without a selection; theme mode starts on the Widget colors.
     var key = mode + ':' + item.id;
     if (key !== selectionKey) {
       selectionKey = key;
-      selection = isDesign ? null : { type: 'widget' };
+      selection = null;
     }
     renderLayoutEditor();
     renderPreview();
@@ -677,7 +677,7 @@
     helpToggle.querySelector('i').className = 'fa fa-solid ' + (help.expanded ? 'fa-chevron-up' : 'fa-chevron-down');
     var design = selectedDesign();
     if (!design.showDaySeparators && selection && selection.area === 'separator' && selection.type !== 'separator') {
-      selection = isDesign ? { type: 'separator', area: 'separator' } : { type: 'widget' };
+      selection = isDesign ? { type: 'separator', area: 'separator' } : null;
     }
     var editor = byId('group-editor');
     editor.replaceChildren();
@@ -1632,7 +1632,8 @@
     var inSeparator = selected.area === 'separator';
     if (!preview || !design || !theme) return;
     preview.className = 'ssl-widget preview-widget ssl-mode-' + (forcedMode || previewMode)
-      + (!forcedMode && homeyInvertsPage() ? ' preview-counter-invert' : '') + (extraClass ? ' ' + extraClass : '');
+      + (!forcedMode && homeyInvertsPage() ? ' preview-counter-invert' : '')
+      + (selected.type === 'widget' ? ' ssl-preview-selected' : '') + (extraClass ? ' ' + extraClass : '');
     preview.removeAttribute('style');
     var widgetStyle = layoutApi.widgetStyle(design, theme);
     Object.keys(widgetStyle).forEach(function (key) {
@@ -1809,7 +1810,6 @@
           severityClass: 'ssl-sev-' + severityNames[entry.severity],
           labels: labels,
           selectedElement: selectedElement,
-          selectedCard: selected.type === 'widget',
           selectedRow: !selected.area && selected.type === 'row' ? selected.row : undefined,
           selectedColumn: !selected.area && selected.type === 'column' ? { row: selected.row, column: selected.column } : undefined
         }));
@@ -2725,15 +2725,20 @@
     });
   }
 
+  function switchMode(next) {
+    mode = next;
+    if (isBuiltIn(editingItem().id) || !selection
+      || (selection.type !== 'widget' && selection.type !== 'element')) selection = null;
+    selectionKey = editingKey();
+    renderEditor();
+  }
+
   function bindEvents() {
     root.querySelectorAll('.mode-button').forEach(function (button) {
       button.addEventListener('click', function () {
         var next = button.dataset.mode === 'theme' ? 'theme' : 'design';
         if (next === mode) return;
-        leaveEditingItem(function () {
-          mode = next;
-          renderEditor();
-        });
+        leaveEditingItem(function () { switchMode(next); });
       });
     });
     byId('style-select').addEventListener('change', function (event) {

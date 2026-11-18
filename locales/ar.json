@@ -48,7 +48,8 @@
       "compact": "مضغوط",
       "journal": "يوميات",
       "console": "وحدة التحكم",
-      "aurora": "????? ??????"
+      "aurora": "????? ??????",
+      "widgetkeeper": "WidgetKeeper"
     },
     "theme": {
       "homey": "Homey",
@@ -58,7 +59,9 @@
       "forest": "الغابة",
       "sunset": "الغروب",
       "console": "وحدة التحكم",
-      "aurora": "????? ??????"
+      "aurora": "????? ??????",
+      "widgetkeeper": "WidgetKeeper",
+      "default-syslog": "افتراضي (Syslog)"
     },
     "datetime": {
       "customFormat": "تنسيق تاريخ ووقت مخصص من BLL",
@@ -166,7 +169,24 @@
         "grey": "رمادي",
         "black": "أسود",
         "white": "أبيض",
-        "black-light": "أسود (فاتح/داكن)"
+        "black-light": "أسود (فاتح/داكن)",
+        "red-soft": "أحمر (خطأ)",
+        "console-purple": "بنفسجي (Console: طوارئ)",
+        "console-pink": "وردي (Console: تنبيه)",
+        "console-red": "أحمر (Console: حرج)",
+        "console-red-soft": "أحمر (Console: خطأ)",
+        "console-yellow": "أصفر (Console: تحذير)",
+        "console-blue": "أزرق (Console: إشعار)",
+        "console-green": "أخضر (Console: معلومات)",
+        "console-grey": "رمادي (Console: تصحيح)",
+        "syslog-magenta": "وردي (Syslog: طوارئ)",
+        "syslog-red": "أحمر (Syslog: تنبيه)",
+        "syslog-critical-red": "أحمر (Syslog: حرج)",
+        "syslog-light-red": "أحمر (Syslog: خطأ)",
+        "syslog-amber": "أصفر (Syslog: تحذير)",
+        "syslog-cyan": "سماوي (Syslog: إشعار)",
+        "syslog-green": "أخضر (Syslog: معلومات)",
+        "syslog-blue": "أزرق (Syslog: تصحيح)"
       },
       "android": "روابط Android",
       "androidIntro": "تتيح روابط Android لأداة ويب في Homey عرض أداة سجل يمكن تمريرها. تؤدي إعادة التعيين إلى إيقاف جميع الروابط الحالية؛ انسخ بعد ذلك روابط جديدة من أدواتك.",

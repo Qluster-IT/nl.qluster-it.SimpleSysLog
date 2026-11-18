@@ -60,6 +60,7 @@
     },
     "theme": {
       "default": "Standaard",
+      "default-syslog": "Standaard (Syslog)",
       "ocean": "Oceaan",
       "forest": "Bos",
       "sunset": "Zonsondergang",
@@ -162,7 +163,8 @@
         "grey": "Grijs",
         "black": "Zwart",
         "white": "Wit",
-        "black-light": "Zwart (licht/donker)"
+        "black-light": "Zwart (licht/donker)",
+        "red-soft": "Rood (Fout)"
       },
       "none": "Geen",
       "invalidName": "Voer een naam van 1 tot 60 tekens in.",

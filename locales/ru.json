@@ -48,7 +48,8 @@
       "compact": "Компактный",
       "journal": "Журнал",
       "console": "Консоль",
-      "aurora": "???????? ??????"
+      "aurora": "???????? ??????",
+      "widgetkeeper": "WidgetKeeper"
     },
     "theme": {
       "homey": "Homey",
@@ -58,7 +59,9 @@
       "forest": "Лес",
       "sunset": "Закат",
       "console": "Консоль",
-      "aurora": "???????? ??????"
+      "aurora": "???????? ??????",
+      "widgetkeeper": "WidgetKeeper",
+      "default-syslog": "По умолчанию (Syslog)"
     },
     "datetime": {
       "customFormat": "Пользовательский формат даты и времени BLL",
@@ -166,7 +169,24 @@
         "grey": "Серый",
         "black": "Чёрный",
         "white": "Белый",
-        "black-light": "Чёрный (светлый/тёмный)"
+        "black-light": "Чёрный (светлый/тёмный)",
+        "red-soft": "Красный (Ошибка)",
+        "console-purple": "Фиолетовый (Console: Чрезвычайная ситуация)",
+        "console-pink": "Розовый (Console: Тревога)",
+        "console-red": "Красный (Console: Критично)",
+        "console-red-soft": "Красный (Console: Ошибка)",
+        "console-yellow": "Жёлтый (Console: Предупреждение)",
+        "console-blue": "Синий (Console: Уведомление)",
+        "console-green": "Зелёный (Console: Информация)",
+        "console-grey": "Серый (Console: Отладка)",
+        "syslog-magenta": "Розовый (Syslog: Чрезвычайная ситуация)",
+        "syslog-red": "Красный (Syslog: Тревога)",
+        "syslog-critical-red": "Красный (Syslog: Критично)",
+        "syslog-light-red": "Красный (Syslog: Ошибка)",
+        "syslog-amber": "Жёлтый (Syslog: Предупреждение)",
+        "syslog-cyan": "Голубой (Syslog: Уведомление)",
+        "syslog-green": "Зелёный (Syslog: Информация)",
+        "syslog-blue": "Синий (Syslog: Отладка)"
       },
       "android": "Ссылки Android",
       "androidIntro": "Ссылки Android позволяют веб-виджету Homey показывать виджет журнала с прокруткой. После сброса все существующие ссылки перестают работать; затем скопируйте новые ссылки из виджетов.",

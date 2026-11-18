@@ -65,6 +65,7 @@
     },
     "theme": {
       "default": "Standard",
+      "default-syslog": "Standard (Syslog)",
       "ocean": "Hav",
       "forest": "Skog",
       "sunset": "Solnedgang",
@@ -167,7 +168,8 @@
         "grey": "Grå",
         "black": "Svart",
         "white": "Hvit",
-        "black-light": "Svart (lys/mørk)"
+        "black-light": "Svart (lys/mørk)",
+        "red-soft": "Rød (Feil)"
       },
       "none": "Ingen",
       "invalidName": "Skriv inn et navn på 1 til 60 tegn.",

@@ -48,7 +48,8 @@
       "compact": "Compacto",
       "journal": "Diario",
       "console": "Consola",
-      "aurora": "Aurora"
+      "aurora": "Aurora",
+      "widgetkeeper": "WidgetKeeper"
     },
     "theme": {
       "homey": "Homey",
@@ -58,7 +59,9 @@
       "forest": "Bosque",
       "sunset": "Atardecer",
       "console": "Consola",
-      "aurora": "Aurora"
+      "aurora": "Aurora",
+      "widgetkeeper": "WidgetKeeper",
+      "default-syslog": "Predeterminado (Syslog)"
     },
     "datetime": {
       "customFormat": "Formato personalizado de fecha y hora de BLL",
@@ -166,7 +169,24 @@
         "grey": "Gris",
         "black": "Negro",
         "white": "Blanco",
-        "black-light": "Negro (claro/oscuro)"
+        "black-light": "Negro (claro/oscuro)",
+        "red-soft": "Rojo (Error)",
+        "console-purple": "Morado (Console: Emergencia)",
+        "console-pink": "Rosa (Console: Alerta)",
+        "console-red": "Rojo (Console: Crítico)",
+        "console-red-soft": "Rojo (Console: Error)",
+        "console-yellow": "Amarillo (Console: Advertencia)",
+        "console-blue": "Azul (Console: Aviso)",
+        "console-green": "Verde (Console: Información)",
+        "console-grey": "Gris (Console: Depuración)",
+        "syslog-magenta": "Rosa (Syslog: Emergencia)",
+        "syslog-red": "Rojo (Syslog: Alerta)",
+        "syslog-critical-red": "Rojo (Syslog: Crítico)",
+        "syslog-light-red": "Rojo (Syslog: Error)",
+        "syslog-amber": "Amarillo (Syslog: Advertencia)",
+        "syslog-cyan": "Cian (Syslog: Aviso)",
+        "syslog-green": "Verde (Syslog: Información)",
+        "syslog-blue": "Azul (Syslog: Depuración)"
       },
       "android": "Enlaces de Android",
       "androidIntro": "Los enlaces de Android permiten que un widget Web de Homey muestre un widget de registro que se puede desplazar. Al restablecerlos, todos los enlaces existentes dejan de funcionar; después, copia enlaces nuevos desde tus widgets.",

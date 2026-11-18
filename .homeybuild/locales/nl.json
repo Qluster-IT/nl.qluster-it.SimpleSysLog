@@ -43,7 +43,8 @@
       "compact": "Compact",
       "journal": "Dagboek",
       "console": "Console",
-      "aurora": "Noorderlicht"
+      "aurora": "Noorderlicht",
+      "widgetkeeper": "WidgetKeeper"
     },
     "theme": {
       "homey": "Homey",
@@ -53,7 +54,9 @@
       "forest": "Bos",
       "sunset": "Zonsondergang",
       "console": "Console",
-      "aurora": "Noorderlicht"
+      "aurora": "Noorderlicht",
+      "widgetkeeper": "WidgetKeeper",
+      "default-syslog": "Standaard (Syslog)"
     },
     "datetime": {
       "customFormat": "Aangepaste BLL-datum-/tijdnotatie",
@@ -161,7 +164,24 @@
         "grey": "Grijs",
         "black": "Zwart",
         "white": "Wit",
-        "black-light": "Zwart (licht/donker)"
+        "black-light": "Zwart (licht/donker)",
+        "red-soft": "Rood (Fout)",
+        "console-purple": "Paars (Console: Noodgeval)",
+        "console-pink": "Roze (Console: Alarm)",
+        "console-red": "Rood (Console: Kritiek)",
+        "console-red-soft": "Rood (Console: Fout)",
+        "console-yellow": "Geel (Console: Waarschuwing)",
+        "console-blue": "Blauw (Console: Melding)",
+        "console-green": "Groen (Console: Informatie)",
+        "console-grey": "Grijs (Console: Debug)",
+        "syslog-magenta": "Roze (Syslog: Noodgeval)",
+        "syslog-red": "Rood (Syslog: Alarm)",
+        "syslog-critical-red": "Rood (Syslog: Kritiek)",
+        "syslog-light-red": "Rood (Syslog: Fout)",
+        "syslog-amber": "Geel (Syslog: Waarschuwing)",
+        "syslog-cyan": "Cyaan (Syslog: Melding)",
+        "syslog-green": "Groen (Syslog: Informatie)",
+        "syslog-blue": "Blauw (Syslog: Debug)"
       },
       "android": "Android-links",
       "androidIntro": "Met Android-links toont een Homey Web-widget een logwidget die kan scrollen. Na een reset werken bestaande links niet meer; kopieer daarna nieuwe links vanuit je widgets.",

@@ -48,7 +48,8 @@
       "compact": "Compatto",
       "journal": "Diario",
       "console": "Console",
-      "aurora": "Aurora"
+      "aurora": "Aurora",
+      "widgetkeeper": "WidgetKeeper"
     },
     "theme": {
       "homey": "Homey",
@@ -58,7 +59,9 @@
       "forest": "Foresta",
       "sunset": "Tramonto",
       "console": "Console",
-      "aurora": "Aurora"
+      "aurora": "Aurora",
+      "widgetkeeper": "WidgetKeeper",
+      "default-syslog": "Predefinito (Syslog)"
     },
     "datetime": {
       "customFormat": "Formato data e ora BLL personalizzato",
@@ -166,7 +169,24 @@
         "grey": "Grigio",
         "black": "Nero",
         "white": "Bianco",
-        "black-light": "Nero (chiaro/scuro)"
+        "black-light": "Nero (chiaro/scuro)",
+        "red-soft": "Rosso (Errore)",
+        "console-purple": "Viola (Console: Emergenza)",
+        "console-pink": "Rosa (Console: Allerta)",
+        "console-red": "Rosso (Console: Critico)",
+        "console-red-soft": "Rosso (Console: Errore)",
+        "console-yellow": "Giallo (Console: Avviso)",
+        "console-blue": "Blu (Console: Notifica)",
+        "console-green": "Verde (Console: Info)",
+        "console-grey": "Grigio (Console: Debug)",
+        "syslog-magenta": "Rosa (Syslog: Emergenza)",
+        "syslog-red": "Rosso (Syslog: Allerta)",
+        "syslog-critical-red": "Rosso (Syslog: Critico)",
+        "syslog-light-red": "Rosso (Syslog: Errore)",
+        "syslog-amber": "Giallo (Syslog: Avviso)",
+        "syslog-cyan": "Ciano (Syslog: Notifica)",
+        "syslog-green": "Verde (Syslog: Info)",
+        "syslog-blue": "Blu (Syslog: Debug)"
       },
       "android": "Link Android",
       "androidIntro": "I link Android permettono a un widget Web di Homey di mostrare un widget del registro che può scorrere. Il ripristino disattiva tutti i link esistenti; in seguito copia nuovi link dai tuoi widget.",

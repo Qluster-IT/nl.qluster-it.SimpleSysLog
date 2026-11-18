@@ -168,6 +168,19 @@ function onHomeyReady(Homey) {
   }
 
   var widgetModule = angular.module('sslLogWidget', []);
+  widgetModule.directive('sslWidgetStyle', function () {
+    return {
+      restrict: 'A',
+      link: function (scope, element, attrs) {
+        var previous = [];
+        scope.$watch(attrs.sslWidgetStyle, function (style) {
+          previous.forEach(function (name) { element[0].style.removeProperty(name); });
+          previous = Object.keys(style || {});
+          previous.forEach(function (name) { element[0].style.setProperty(name, style[name]); });
+        });
+      }
+    };
+  });
   // Builds each entry card with the shared grid renderer, also used by the settings designer.
   widgetModule.directive('sslLogCard', function () {
     return {

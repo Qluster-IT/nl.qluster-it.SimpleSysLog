@@ -7,7 +7,7 @@ const vm = require('node:vm');
 const layout = require('../assets/js/ssl-widget-layout');
 const styles = require('../lib/widget-styles');
 
-function previewHarness(capture) {
+function previewHarness(capture, extraExports = '') {
   const document = {};
   function node(tag) {
     const item = {
@@ -59,13 +59,13 @@ function previewHarness(capture) {
   document.createElementNS = (_namespace, tag) => node(tag);
   document.createTextNode = text => Object.assign(node('#text'), { textContent: text });
   document.body = node('body');
-  const progress = node('p');
-  document.getElementById = id => id === 'template-image-progress' ? progress : null;
+  const nodes = { 'template-image-progress': node('p') };
+  document.getElementById = id => nodes[id] || (nodes[id] = node('div'));
   const window = { SSLWidgetLayout: layout, htmlToImage: { toCanvas: capture } };
   window.parent = window;
   const source = fs.readFileSync(require.resolve('../settings/widgets.js'), 'utf8')
     .replace('window.SSLWidgetDesigner = {',
-      'window.SSLWidgetDesigner = { renderWidgetPreview, templatePreviewImages,');
+      'window.SSLWidgetDesigner = { renderWidgetPreview, templatePreviewImages,' + extraExports);
   vm.runInNewContext(source, { window, document, setTimeout, clearTimeout });
   return { document, ...window.SSLWidgetDesigner };
 }
@@ -87,6 +87,105 @@ function snapshot(preview) {
     designerStyles: preview.parentNode.classList.contains('widget-designer')
   };
 }
+
+test('selecting the widget outlines the frame instead of each log card', () => {
+  const harness = previewHarness(() => {});
+  const preview = harness.document.createElement('div');
+  const design = styles.BUILT_IN_DESIGNS[0];
+  const theme = styles.BUILT_IN_THEMES[0];
+  harness.renderWidgetPreview(preview, design, theme, '', { type: 'widget' });
+  assert.ok(preview.classList.contains('ssl-preview-selected'));
+  assert.equal(preview.querySelectorAll('.ssl-preview-selected').length, 0);
+
+  harness.renderWidgetPreview(preview, design, theme, '', { type: 'row', row: 0 });
+  assert.ok(!preview.classList.contains('ssl-preview-selected'));
+  assert.ok(preview.querySelectorAll('.ssl-preview-selected').length > 0);
+});
+
+function selectionHarness() {
+  const exports = `
+    setupSelectionTest: function(homey, saved) {
+      Homey = homey;
+      root = { querySelectorAll: function() { return []; } };
+      builtInDesigns = [${JSON.stringify(styles.BUILT_IN_DESIGNS[0])}];
+      builtInThemes = [${JSON.stringify(styles.BUILT_IN_THEMES[0])}];
+      var design = Object.assign({}, builtInDesigns[0], { id: 'custom-design' });
+      var custom = Object.assign({}, builtInThemes[0], { id: 'custom-theme' });
+      collection = { version: 1, designs: [design], themes: [custom] };
+      savedCollection = { version: 1, designs: [design], themes: saved ? [custom] : [] };
+      mode = 'theme';
+      currentDesignId = design.id;
+      currentThemeId = custom.id;
+      selectionKey = '';
+      renderLayoutEditor = function() {};
+      renderExportSelectors = function() {};
+      updateHistoryButtons = function() {};
+      refreshSaveState = function() {};
+      renderPreview = function() {
+        renderWidgetPreview(byId('widget-preview'), selectedDesign(), selectedTheme(), '', selection);
+      };
+      renderEditor();
+    },
+    deleteSelected: deleteSelected,
+    switchMode: switchMode,
+    selectForTest: function(value) { selection = value; renderEditor(); },
+    selectionState: function() { return { selection: selection, theme: currentThemeId }; },
+  `;
+  return previewHarness(() => {}, exports);
+}
+
+test('deleting a custom theme clears its selection when the built-in theme is shown', async () => {
+  for (const saved of [false, true]) {
+    let confirmed = false;
+    let writes = 0;
+    const harness = selectionHarness();
+    harness.setupSelectionTest({
+      confirm(_message, _icon, callback) { callback(null, confirmed); },
+      set(_key, _value, callback) { writes++; callback(null); }
+    }, saved);
+    const preview = harness.document.getElementById('widget-preview');
+    assert.equal(harness.selectionState().selection, null);
+    harness.selectForTest({ type: 'widget' });
+    assert.equal(harness.selectionState().selection.type, 'widget');
+    assert.ok(preview.classList.contains('ssl-preview-selected'));
+    await harness.deleteSelected('theme');
+    assert.equal(harness.selectionState().theme, 'custom-theme');
+    assert.ok(preview.classList.contains('ssl-preview-selected'));
+    confirmed = true;
+    await harness.deleteSelected('theme');
+    assert.equal(harness.selectionState().theme, 'builtin:default');
+    assert.equal(harness.selectionState().selection, null);
+    assert.ok(!preview.classList.contains('ssl-preview-selected'));
+    assert.equal(writes, saved ? 1 : 0);
+  }
+});
+
+test('switching modes keeps only selections available in both editable grids', () => {
+  const harness = selectionHarness();
+  harness.setupSelectionTest({}, true);
+  const preview = harness.document.getElementById('widget-preview');
+  harness.switchMode('design');
+  harness.switchMode('theme');
+  assert.equal(harness.selectionState().selection, null);
+  assert.ok(!preview.classList.contains('ssl-preview-selected'));
+
+  for (const selected of [{ type: 'widget' }, { type: 'element', element: 'message' },
+    { type: 'element', element: 'daySeparator', area: 'separator' },
+    { type: 'element', element: 'search', area: 'toolbar' }]) {
+    harness.selectForTest(selected);
+    harness.switchMode('design');
+    assert.deepEqual(harness.selectionState().selection, selected);
+    harness.switchMode('theme');
+    assert.deepEqual(harness.selectionState().selection, selected);
+  }
+  for (const selected of [{ type: 'row', row: 0 }, { type: 'column', row: 0, column: 0 },
+    { type: 'separator', area: 'separator' }, { type: 'part', area: 'toolbar' }]) {
+    harness.switchMode('design');
+    harness.selectForTest(selected);
+    harness.switchMode('theme');
+    assert.equal(harness.selectionState().selection, null);
+  }
+});
 
 test('template images include every level and control without changing interactive preview paging', async () => {
   const captures = [];

@@ -48,7 +48,8 @@
       "compact": "간결",
       "journal": "일지",
       "console": "콘솔",
-      "aurora": "???"
+      "aurora": "???",
+      "widgetkeeper": "WidgetKeeper"
     },
     "theme": {
       "homey": "Homey",
@@ -58,7 +59,9 @@
       "forest": "숲",
       "sunset": "일몰",
       "console": "콘솔",
-      "aurora": "???"
+      "aurora": "???",
+      "widgetkeeper": "WidgetKeeper",
+      "default-syslog": "기본값 (Syslog)"
     },
     "datetime": {
       "customFormat": "사용자 지정 BLL 날짜/시간 형식",
@@ -166,7 +169,24 @@
         "grey": "회색",
         "black": "검정",
         "white": "흰색",
-        "black-light": "검정 (밝게/어둡게)"
+        "black-light": "검정 (밝게/어둡게)",
+        "red-soft": "빨간색 (오류)",
+        "console-purple": "보라색 (Console: 긴급)",
+        "console-pink": "분홍색 (Console: 경보)",
+        "console-red": "빨간색 (Console: 치명적)",
+        "console-red-soft": "빨간색 (Console: 오류)",
+        "console-yellow": "노란색 (Console: 경고)",
+        "console-blue": "파란색 (Console: 알림)",
+        "console-green": "초록색 (Console: 정보)",
+        "console-grey": "회색 (Console: 디버그)",
+        "syslog-magenta": "분홍색 (Syslog: 긴급)",
+        "syslog-red": "빨간색 (Syslog: 경보)",
+        "syslog-critical-red": "빨간색 (Syslog: 치명적)",
+        "syslog-light-red": "빨간색 (Syslog: 오류)",
+        "syslog-amber": "노란색 (Syslog: 경고)",
+        "syslog-cyan": "시안 (Syslog: 알림)",
+        "syslog-green": "초록색 (Syslog: 정보)",
+        "syslog-blue": "파란색 (Syslog: 디버그)"
       },
       "android": "Android 링크",
       "androidIntro": "Android 링크를 사용하면 Homey 웹 위젯에서 스크롤 가능한 로그 위젯을 표시할 수 있습니다. 재설정하면 기존 링크가 모두 작동하지 않으므로 이후 위젯에서 새 링크를 복사하세요.",

@@ -48,7 +48,8 @@
       "compact": "Kompakt",
       "journal": "Journal",
       "console": "Konsole",
-      "aurora": "Polarlicht"
+      "aurora": "Polarlicht",
+      "widgetkeeper": "WidgetKeeper"
     },
     "theme": {
       "homey": "Homey",
@@ -58,7 +59,9 @@
       "forest": "Wald",
       "sunset": "Sonnenuntergang",
       "console": "Konsole",
-      "aurora": "Polarlicht"
+      "aurora": "Polarlicht",
+      "widgetkeeper": "WidgetKeeper",
+      "default-syslog": "Standard (Syslog)"
     },
     "datetime": {
       "customFormat": "Benutzerdefiniertes BLL-Datums-/Zeitformat",
@@ -166,7 +169,24 @@
         "grey": "Grau",
         "black": "Schwarz",
         "white": "Weiß",
-        "black-light": "Schwarz (hell/dunkel)"
+        "black-light": "Schwarz (hell/dunkel)",
+        "red-soft": "Rot (Fehler)",
+        "console-purple": "Violett (Console: Notfall)",
+        "console-pink": "Rosa (Console: Alarm)",
+        "console-red": "Rot (Console: Kritisch)",
+        "console-red-soft": "Rot (Console: Fehler)",
+        "console-yellow": "Gelb (Console: Warnung)",
+        "console-blue": "Blau (Console: Hinweis)",
+        "console-green": "Grün (Console: Info)",
+        "console-grey": "Grau (Console: Debug)",
+        "syslog-magenta": "Rosa (Syslog: Notfall)",
+        "syslog-red": "Rot (Syslog: Alarm)",
+        "syslog-critical-red": "Rot (Syslog: Kritisch)",
+        "syslog-light-red": "Rot (Syslog: Fehler)",
+        "syslog-amber": "Gelb (Syslog: Warnung)",
+        "syslog-cyan": "Cyan (Syslog: Hinweis)",
+        "syslog-green": "Grün (Syslog: Info)",
+        "syslog-blue": "Blau (Syslog: Debug)"
       },
       "android": "Android-Links",
       "androidIntro": "Mit Android-Links zeigt ein Homey-Web-Widget ein Log-Widget an, das scrollen kann. Nach dem Zurücksetzen funktionieren bestehende Links nicht mehr; kopiere danach neue Links aus deinen Widgets.",

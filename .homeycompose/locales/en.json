@@ -64,6 +64,7 @@
     },
     "theme": {
       "default": "Default",
+      "default-syslog": "Default (Syslog)",
       "ocean": "Ocean",
       "forest": "Forest",
       "sunset": "Sunset",
@@ -166,7 +167,8 @@
         "grey": "Grey",
         "black": "Black",
         "white": "White",
-        "black-light": "Black (light/dark)"
+        "black-light": "Black (light/dark)",
+        "red-soft": "Red (Error)"
       },
       "none": "None",
       "invalidName": "Enter a name of 1 to 60 characters.",

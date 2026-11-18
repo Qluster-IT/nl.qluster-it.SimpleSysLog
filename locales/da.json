@@ -48,7 +48,8 @@
       "compact": "Kompakt",
       "journal": "Journal",
       "console": "Konsol",
-      "aurora": "Nordlys"
+      "aurora": "Nordlys",
+      "widgetkeeper": "WidgetKeeper"
     },
     "theme": {
       "homey": "Homey",
@@ -58,7 +59,9 @@
       "forest": "Skov",
       "sunset": "Solnedgang",
       "console": "Konsol",
-      "aurora": "Nordlys"
+      "aurora": "Nordlys",
+      "widgetkeeper": "WidgetKeeper",
+      "default-syslog": "Standard (Syslog)"
     },
     "datetime": {
       "customFormat": "Brugerdefineret BLL-dato-/tidsformat",
@@ -166,7 +169,24 @@
         "grey": "Grå",
         "black": "Sort",
         "white": "Hvid",
-        "black-light": "Sort (lys/mørk)"
+        "black-light": "Sort (lys/mørk)",
+        "red-soft": "Rød (Fejl)",
+        "console-purple": "Lilla (Console: Nødstilfælde)",
+        "console-pink": "Lyserød (Console: Alarm)",
+        "console-red": "Rød (Console: Kritisk)",
+        "console-red-soft": "Rød (Console: Fejl)",
+        "console-yellow": "Gul (Console: Advarsel)",
+        "console-blue": "Blå (Console: Meddelelse)",
+        "console-green": "Grøn (Console: Info)",
+        "console-grey": "Grå (Console: Debug)",
+        "syslog-magenta": "Lyserød (Syslog: Nødstilfælde)",
+        "syslog-red": "Rød (Syslog: Alarm)",
+        "syslog-critical-red": "Rød (Syslog: Kritisk)",
+        "syslog-light-red": "Rød (Syslog: Fejl)",
+        "syslog-amber": "Gul (Syslog: Advarsel)",
+        "syslog-cyan": "Cyan (Syslog: Meddelelse)",
+        "syslog-green": "Grøn (Syslog: Info)",
+        "syslog-blue": "Blå (Syslog: Debug)"
       },
       "android": "Android-links",
       "androidIntro": "Med Android-links kan en Homey Web-widget vise en log-widget, der kan rulle. En nulstilling får alle eksisterende links til at holde op med at virke; kopiér derefter nye links fra dine widgets.",

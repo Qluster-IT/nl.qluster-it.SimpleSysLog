@@ -133,15 +133,20 @@ own color and background; the separator line and borders only have a color. Sele
 Widget in a design also sets the **Border width**: **Homey default** preserves the
 standard frame, while **0** removes the border and its subtle dark-mode rim.
 The Widget also has optional padding for each side; rows have **Column gap**,
-columns have **Element gap**, and text elements have **Line height**.
+columns have **Element gap**, and text elements have **Line height**. Without
+paging, bottom padding remains visible beneath the scrolling log list, including
+in the Android Web widget. The Web widget also keeps the configured widget frame
+visible while the page scrolls.
 In a theme, set the **Widget border** color (default: Homey's line color),
 use named or HEX colors, and choose a solid or gradient background fill.
 Like Chronograph, the widget fills Homey's tile edge to edge with Homey's rounded corners
 (`--homey-border-radius-default`), and in dark mode uses a near-black `#181920` surface with a
 subtle light rim. Designer previews emulate the dashboard card's 10px corners instead of the
 settings page's radius. Blue, green, orange, red, grey and white follow Homey's own palette.
-Whatever you select is
-outlined in the preview. **Designer help** is open the first time and then
+Critical and Error use different red shades, both available in the designer.
+Default (Syslog) uses the Default theme's appearance with syslog-inspired severity colors.
+Whatever you select is outlined in the preview. Switching between Designs and
+Themes keeps a selection when it is available in both. **Designer help** is open the first time and then
 stays open or closed as you leave it.
 Search, Level/Date filters and paging work with sample entries in the preview;
 they do not change the filters saved for dashboard widgets.

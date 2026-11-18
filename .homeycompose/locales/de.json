@@ -65,6 +65,7 @@
     },
     "theme": {
       "default": "Standard",
+      "default-syslog": "Standard (Syslog)",
       "ocean": "Ozean",
       "forest": "Wald",
       "sunset": "Sonnenuntergang",
@@ -167,7 +168,8 @@
         "grey": "Grau",
         "black": "Schwarz",
         "white": "Weiß",
-        "black-light": "Schwarz (hell/dunkel)"
+        "black-light": "Schwarz (hell/dunkel)",
+        "red-soft": "Rot (Fehler)"
       },
       "none": "Keine",
       "invalidName": "Gib einen Namen mit 1 bis 60 Zeichen ein.",

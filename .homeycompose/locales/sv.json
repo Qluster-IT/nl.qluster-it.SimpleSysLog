@@ -65,6 +65,7 @@
     },
     "theme": {
       "default": "Standard",
+      "default-syslog": "Standard (Syslog)",
       "ocean": "Hav",
       "forest": "Skog",
       "sunset": "Solnedgång",
@@ -167,7 +168,8 @@
         "grey": "Grå",
         "black": "Svart",
         "white": "Vit",
-        "black-light": "Svart (ljus/mörk)"
+        "black-light": "Svart (ljus/mörk)",
+        "red-soft": "Röd (Fel)"
       },
       "none": "Ingen",
       "invalidName": "Ange ett namn med 1 till 60 tecken.",

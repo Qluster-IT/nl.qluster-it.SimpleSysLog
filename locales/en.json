@@ -47,7 +47,8 @@
       "compact": "Compact",
       "journal": "Journal",
       "console": "Console",
-      "aurora": "Aurora"
+      "aurora": "Aurora",
+      "widgetkeeper": "WidgetKeeper"
     },
     "theme": {
       "homey": "Homey",
@@ -57,7 +58,9 @@
       "forest": "Forest",
       "sunset": "Sunset",
       "console": "Console",
-      "aurora": "Aurora"
+      "aurora": "Aurora",
+      "widgetkeeper": "WidgetKeeper",
+      "default-syslog": "Default (Syslog)"
     },
     "datetime": {
       "customFormat": "Custom BLL date/time format",
@@ -165,7 +168,24 @@
         "grey": "Grey",
         "black": "Black",
         "white": "White",
-        "black-light": "Black (light/dark)"
+        "black-light": "Black (light/dark)",
+        "red-soft": "Red (Error)",
+        "console-purple": "Purple (Console: Emergency)",
+        "console-pink": "Pink (Console: Alert)",
+        "console-red": "Red (Console: Critical)",
+        "console-red-soft": "Red (Console: Error)",
+        "console-yellow": "Yellow (Console: Warning)",
+        "console-blue": "Blue (Console: Notice)",
+        "console-green": "Green (Console: Info)",
+        "console-grey": "Grey (Console: Debug)",
+        "syslog-magenta": "Pink (Syslog: Emergency)",
+        "syslog-red": "Red (Syslog: Alert)",
+        "syslog-critical-red": "Red (Syslog: Critical)",
+        "syslog-light-red": "Red (Syslog: Error)",
+        "syslog-amber": "Yellow (Syslog: Warning)",
+        "syslog-cyan": "Cyan (Syslog: Notice)",
+        "syslog-green": "Green (Syslog: Info)",
+        "syslog-blue": "Blue (Syslog: Debug)"
       },
       "android": "Android links",
       "androidIntro": "Android links let a Homey Web widget show a log widget that can scroll. Resetting stops every existing link from working; copy new links from your widgets afterwards.",

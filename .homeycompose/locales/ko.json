@@ -65,6 +65,7 @@
     },
     "theme": {
       "default": "기본값",
+      "default-syslog": "기본값 (Syslog)",
       "ocean": "바다",
       "forest": "숲",
       "sunset": "일몰",
@@ -167,7 +168,8 @@
         "grey": "회색",
         "black": "검정",
         "white": "흰색",
-        "black-light": "검정 (밝게/어둡게)"
+        "black-light": "검정 (밝게/어둡게)",
+        "red-soft": "빨간색 (오류)"
       },
       "none": "없음",
       "invalidName": "1~60자의 이름을 입력하세요.",

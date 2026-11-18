@@ -22,6 +22,7 @@ html.ssl-widget-page,
 .ssl-widget,
 .ssl-palette {
   --ssl-color-red: var(--homey-color-red, #f25f5c);
+  --ssl-color-red-soft: #d97878;
   --ssl-color-orange: var(--homey-color-orange, #f07a1f);
   --ssl-color-yellow: #f5c518;
   --ssl-color-green: var(--homey-color-green, #71d51b);
@@ -354,7 +355,10 @@ html.ssl-system-dark:not(.ssl-homey-theme) .ssl-mode-automatic,
 }
 
 .ssl-log-list:first-child { padding-top: var(--ssl-widget-padding-top, 4px); }
-.ssl-log-list:last-child { padding-bottom: var(--ssl-widget-padding-bottom, 10px); }
+.ssl-log-list:last-child {
+  margin-bottom: var(--ssl-widget-padding-bottom, 10px);
+  padding-bottom: 0;
+}
 
 .ssl-log-entry + .ssl-log-entry {
   margin-top: 6px;
@@ -668,8 +672,7 @@ html.ssl-system-dark:not(.ssl-homey-theme) .ssl-mode-automatic,
 }
 
 /* Inside a Homey Web widget the page itself scrolls, which works on Android. */
-html.ssl-widget-page.ssl-android-page,
-.ssl-android-page body {
+html.ssl-widget-page.ssl-android-page {
   height: auto;
   min-height: 100%;
   overflow-x: hidden;
@@ -677,6 +680,9 @@ html.ssl-widget-page.ssl-android-page,
 }
 
 .ssl-android-page body {
+  height: auto;
+  min-height: 100%;
+  overflow: visible;
   padding: 0;
 }
 
@@ -685,14 +691,39 @@ html.ssl-widget-page.ssl-android-page,
   height: auto;
   min-height: 100vh;
   overflow: visible;
+  border: 0;
   border-radius: 0;
   box-shadow: none;
+}
+
+.ssl-android-page .ssl-widget::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  border: var(--ssl-outline-width) solid var(--ssl-outline);
+  border-radius: var(--homey-border-radius-default, 16px);
+  box-shadow: var(--ssl-frame-shadow);
+  pointer-events: none;
 }
 
 .ssl-android-page .ssl-log-list {
   flex: 1 0 auto;
   overflow: visible;
   isolation: isolate;
+}
+
+.ssl-android-page .ssl-unpaged-list .ssl-log-list:last-child {
+  margin-bottom: 0;
+}
+
+.ssl-android-page .ssl-widget.ssl-unpaged-list::after {
+  content: "";
+  position: sticky;
+  bottom: 0;
+  flex: 0 0 var(--ssl-widget-padding-bottom, 10px);
+  background: inherit;
+  pointer-events: none;
 }
 
 .ssl-android-page .ssl-widget-toolbar {

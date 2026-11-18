@@ -65,6 +65,7 @@
     },
     "theme": {
       "default": "Predeterminado",
+      "default-syslog": "Predeterminado (Syslog)",
       "ocean": "Océano",
       "forest": "Bosque",
       "sunset": "Atardecer",
@@ -167,7 +168,8 @@
         "grey": "Gris",
         "black": "Negro",
         "white": "Blanco",
-        "black-light": "Negro (claro/oscuro)"
+        "black-light": "Negro (claro/oscuro)",
+        "red-soft": "Rojo (Error)"
       },
       "none": "Ninguno",
       "invalidName": "Introduce un nombre de 1 a 60 caracteres.",

@@ -65,6 +65,7 @@
     },
     "theme": {
       "default": "Domyślny",
+      "default-syslog": "Domyślny (Syslog)",
       "ocean": "Ocean",
       "forest": "Las",
       "sunset": "Zachód słońca",
@@ -167,7 +168,8 @@
         "grey": "Szary",
         "black": "Czarny",
         "white": "Biały",
-        "black-light": "Czarny (jasny/ciemny)"
+        "black-light": "Czarny (jasny/ciemny)",
+        "red-soft": "Czerwony (Błąd)"
       },
       "none": "Brak",
       "invalidName": "Wpisz nazwę o długości od 1 do 60 znaków.",

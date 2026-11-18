@@ -11,7 +11,7 @@
   <script src="../../assets/js/ssl-widget-android.js"></script>
 </head>
 <body class="homey-widget-full" ng-controller="SSLLogWidgetController">
-  <main class="ssl-widget" ng-class="modeClass" ng-style="themeStyle">
+  <main class="ssl-widget" ng-class="[modeClass, { 'ssl-unpaged-list': !paging && !loading && !error && !bllUnavailable && filteredLogs.length }]" ssl-widget-style="themeStyle">
     <header class="ssl-widget-toolbar" ng-if="showToolbar && !bllUnavailable">
       <div class="ssl-toolbar-row" ssl-control-layout="toolbar">
         <input id="ssl-log-search" class="ssl-log-search" data-ssl-control="search" type="search" ng-show="showSearch"

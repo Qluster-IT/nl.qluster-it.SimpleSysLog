@@ -48,7 +48,8 @@
       "compact": "Kompaktowy",
       "journal": "Dziennik",
       "console": "Konsola",
-      "aurora": "Zorza"
+      "aurora": "Zorza",
+      "widgetkeeper": "WidgetKeeper"
     },
     "theme": {
       "homey": "Homey",
@@ -58,7 +59,9 @@
       "forest": "Las",
       "sunset": "Zachód słońca",
       "console": "Konsola",
-      "aurora": "Zorza"
+      "aurora": "Zorza",
+      "widgetkeeper": "WidgetKeeper",
+      "default-syslog": "Domyślny (Syslog)"
     },
     "datetime": {
       "customFormat": "Niestandardowy format daty i czasu BLL",
@@ -166,7 +169,24 @@
         "grey": "Szary",
         "black": "Czarny",
         "white": "Biały",
-        "black-light": "Czarny (jasny/ciemny)"
+        "black-light": "Czarny (jasny/ciemny)",
+        "red-soft": "Czerwony (Błąd)",
+        "console-purple": "Fioletowy (Console: Alarm)",
+        "console-pink": "Różowy (Console: Ostrzeżenie)",
+        "console-red": "Czerwony (Console: Krytyczny)",
+        "console-red-soft": "Czerwony (Console: Błąd)",
+        "console-yellow": "Żółty (Console: Ostrzeżenie)",
+        "console-blue": "Niebieski (Console: Powiadomienie)",
+        "console-green": "Zielony (Console: Informacja)",
+        "console-grey": "Szary (Console: Debug)",
+        "syslog-magenta": "Różowy (Syslog: Alarm)",
+        "syslog-red": "Czerwony (Syslog: Ostrzeżenie)",
+        "syslog-critical-red": "Czerwony (Syslog: Krytyczny)",
+        "syslog-light-red": "Czerwony (Syslog: Błąd)",
+        "syslog-amber": "Żółty (Syslog: Ostrzeżenie)",
+        "syslog-cyan": "Cyjan (Syslog: Powiadomienie)",
+        "syslog-green": "Zielony (Syslog: Informacja)",
+        "syslog-blue": "Niebieski (Syslog: Debug)"
       },
       "android": "Linki Android",
       "androidIntro": "Linki Android pozwalają widżetowi Web w Homey wyświetlać widżet dziennika, który można przewijać. Reset sprawia, że wszystkie istniejące linki przestają działać; następnie skopiuj nowe linki z widżetów.",

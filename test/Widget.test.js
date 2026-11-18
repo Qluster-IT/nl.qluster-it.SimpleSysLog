@@ -2,6 +2,7 @@
 
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
+const path = require('node:path');
 const { createRequire } = require('node:module');
 const test = require('node:test');
 const vm = require('node:vm');
@@ -231,6 +232,82 @@ test('widget outline width and colour validate with defaults like Chronograph', 
   assert.equal(styles.validateTheme({ name: 'T', id: 't', colors: { ...colors, accent: 'black-light' } }).colors.accent, 'black-light');
   assert.throws(() => styles.validateTheme({ name: 'T', id: 't', colors: { ...colors, frame: 'red' } }), /Invalid widget theme/);
   assert.throws(() => styles.validateTheme({ name: 'T', id: 't', colors: { ...colors, surface: undefined } }), /Invalid widget theme/);
+});
+
+test('built-in severity shades are distinct and portable without changing saved colors', async () => {
+  const css = fs.readFileSync(require.resolve('../assets/css/ssl-widget.css'), 'utf8');
+  const colorHex = name => {
+    const match = css.match(new RegExp(`--ssl-color-${name}:\\s*(#[0-9a-f]{6})\\s*;`, 'i'));
+    assert.ok(match, `${name} must have a palette color`);
+    return match[1].toUpperCase();
+  };
+  const levels = ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'];
+  for (const theme of styles.BUILT_IN_THEMES) {
+    assert.notEqual(theme.colors.critical, theme.colors.error, `${theme.name} must distinguish Critical and Error`);
+  }
+  const builtin = styles.BUILT_IN_THEMES[0];
+  assert.equal(builtin.colors.critical, 'red');
+  assert.equal(builtin.colors.error, 'red-soft');
+  assert.notEqual(colorHex('red-soft'), '#F25F5C');
+  const syslog = styles.BUILT_IN_THEMES[1];
+  assert.equal(syslog.id, 'builtin:default-syslog');
+  assert.deepEqual(Object.fromEntries(levels.map(level => [level, syslog.colors[level]])), {
+    emergency: '#FF00FF', alert: '#FF0000', critical: '#F44336', error: '#E57373',
+    warning: '#FFC107', notice: '#00BCD4', info: '#4CAF50', debug: '#2196F3'
+  });
+  const luminance = hex => {
+    const [red, green, blue] = hex.slice(1).match(/../g).map(value => {
+      const channel = parseInt(value, 16) / 255;
+      return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+    });
+    return red * 0.2126 + green * 0.7152 + blue * 0.0722;
+  };
+  for (const level of levels) {
+    assert.ok((luminance(syslog.colors[level]) + 0.05) / (luminance('#101114') + 0.05) >= 4.5,
+      `${level} badge must have readable text`);
+  }
+  for (const key of ['background', 'surface', 'text', 'muted', 'border', 'accent', 'outline']) {
+    assert.equal(syslog.colors[key], builtin.colors[key]);
+  }
+  assert.deepEqual(syslog.elements, builtin.elements);
+  const theme = styles.validateTheme({ ...builtin, id: 'custom',
+    colors: { ...builtin.colors, error: 'red-soft' }, elements: { message: { color: 'red-soft', background: 'red-soft' } } });
+  assert.equal(layout.widgetStyle({}, theme)['--ssl-error'], 'var(--ssl-color-red-soft)');
+  const { id, ...expected } = theme;
+  assert.deepEqual(template.decodeTemplate(await template.encodeTemplate({ theme })).theme, expected);
+  const localeDirectory = path.join('.homeycompose', 'locales');
+  for (const file of fs.readdirSync(localeDirectory).filter(name => /^[a-z]{2}\.json$/.test(name))) {
+    const locale = JSON.parse(fs.readFileSync(path.join(localeDirectory, file), 'utf8'));
+    assert.ok(locale.widgets.theme['default-syslog'], `${file} must name the Syslog theme`);
+    assert.ok(locale.widgets.settings.colorNames['red-soft'], `${file} must name red-soft`);
+  }
+  const saved = styles.validateTheme({ ...builtin, id: 'saved', colors: { ...builtin.colors, error: 'red' } });
+  assert.equal(saved.colors.error, 'red');
+  assert.equal(layout.widgetStyle({}, saved)['--ssl-error'], 'var(--ssl-color-red)');
+});
+
+test('retired Console and Syslog palette names migrate to their original HEX colors', async () => {
+  const builtin = styles.BUILT_IN_THEMES[0];
+  const legacy = {
+    'console-purple': '#FF94E4', 'console-pink': '#FF94B8', 'console-red': '#FF7B7B',
+    'console-red-soft': '#FFB4AB', 'console-yellow': '#FFD580', 'console-blue': '#86D9F9',
+    'console-green': '#75E6A4', 'console-grey': '#A2B0AA',
+    'syslog-magenta': '#FF00FF', 'syslog-red': '#FF0000', 'syslog-critical-red': '#F44336',
+    'syslog-light-red': '#E57373', 'syslog-amber': '#FFC107', 'syslog-cyan': '#00BCD4',
+    'syslog-green': '#4CAF50', 'syslog-blue': '#2196F3'
+  };
+  for (const [name, hex] of Object.entries(legacy)) {
+    assert.ok(!styles.COLOR_NAMES.includes(name));
+    const theme = styles.validateTheme({ ...builtin, id: 'custom',
+      backgroundGradientEnd: name, colors: { ...builtin.colors, error: name },
+      elements: { message: { color: name, background: name }, daySeparatorLine: { color: name, background: 'default' } } });
+    assert.equal(theme.colors.error, hex);
+    assert.equal(theme.backgroundGradientEnd, hex);
+    assert.deepEqual(theme.elements.message, { color: hex, background: hex });
+    assert.equal(theme.elements.daySeparatorLine.color, hex);
+    const { id, ...expected } = theme;
+    assert.deepEqual(template.decodeTemplate(await template.encodeTemplate({ theme })).theme, expected);
+  }
 });
 
 test('frame overrides distinguish legacy default from borderless and survive TWF export', async () => {
@@ -877,12 +954,42 @@ test('widget waits for the Homey widget API before bootstrapping Angular', () =>
 
   context.onHomeyReady({ getSettings: () => ({}) });
   assert.equal(JSON.stringify(calls), JSON.stringify([
+    ['directive', 'sslWidgetStyle'],
     ['directive', 'sslLogCard'],
     ['directive', 'sslDaySeparator'],
     ['directive', 'sslControlLayout'],
     ['controller', 'SSLLogWidgetController', 'function'],
     ['bootstrap', 'sslLogWidget']
   ]));
+});
+
+test('widget applies and replaces frame and theme CSS properties', () => {
+  const source = fs.readFileSync(require.resolve('../assets/js/ssl-widget.js'), 'utf8');
+  let factory;
+  const angular = {
+    module: () => ({
+      directive: (name, fn) => { if (name === 'sslWidgetStyle') factory = fn; },
+      controller() {}
+    }),
+    bootstrap() {}
+  };
+  const context = vm.createContext({ angular, document: {} });
+  vm.runInContext(source, context);
+  context.onHomeyReady({ getSettings: () => ({}) });
+  const values = { unrelated: 'preserved' };
+  const style = {
+    setProperty(name, value) { values[name] = value; },
+    removeProperty(name) { delete values[name]; }
+  };
+  let update;
+  factory().link({ $watch(name, listener) { assert.equal(name, 'themeStyle'); update = listener; } },
+    [{ style }], { sslWidgetStyle: 'themeStyle' });
+  update({ '--ssl-outline-width': '3px', '--ssl-widget-padding-bottom': '24px',
+    'background-image': 'linear-gradient(red, blue)' });
+  assert.deepEqual(values, { unrelated: 'preserved', '--ssl-outline-width': '3px',
+    '--ssl-widget-padding-bottom': '24px', 'background-image': 'linear-gradient(red, blue)' });
+  update({ '--ssl-outline-width': '0px' });
+  assert.deepEqual(values, { unrelated: 'preserved', '--ssl-outline-width': '0px' });
 });
 
 test('widget explains that BLL is required when its AngularJS file is unavailable', () => {

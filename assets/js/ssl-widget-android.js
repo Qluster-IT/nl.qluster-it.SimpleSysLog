@@ -18,10 +18,15 @@
     return match ? decodeURIComponent(match[1]) : null;
   }
 
-  function fetchJson(url, timeoutMs) {
+  function fetchJson(url, timeoutMs, requestOptions) {
     var controller = typeof AbortController === 'function' ? new AbortController() : null;
     var timer = controller && timeoutMs ? setTimeout(function () { controller.abort(); }, timeoutMs) : null;
-    return fetch(url, { cache: 'no-store', credentials: 'omit', signal: controller ? controller.signal : undefined })
+    var options = Object.assign({
+      cache: 'no-store',
+      credentials: 'omit',
+      signal: controller ? controller.signal : undefined
+    }, requestOptions || {});
+    return fetch(url, options)
       .then(function (response) {
         return response.text().then(function (text) {
           var data = null;
@@ -76,14 +81,17 @@
       return probing;
     }
 
-    function request(path, extra, timeoutMs) {
+    function request(path, extra, timeoutMs, requestOptions) {
+      function fetchFrom(currentBase) {
+        return fetcher(url(currentBase, path, extra), timeoutMs, requestOptions);
+      }
       return chooseBase().then(function (currentBase) {
-        return fetcher(url(currentBase, path, extra), timeoutMs).catch(function (error) {
+        return fetchFrom(currentBase).catch(function (error) {
           // Only network failures switch to the cloud; server errors are the same on both routes.
           if (currentBase !== localBase || error.status) throw error;
           base = remoteBase;
           localCheckedAt = now();
-          return fetcher(url(remoteBase, path, extra), timeoutMs);
+          return fetchFrom(remoteBase);
         });
       });
     }
@@ -95,9 +103,10 @@
   function createHomey(state) {
     var listeners = {};
     var translations = state.translations || {};
+    var filterStateId = state.config.filterStateId || 'android';
     return {
       getSettings: function () { return state.config; },
-      getWidgetInstanceId: function () { return 'android'; },
+      getWidgetInstanceId: function () { return filterStateId; },
       ready: function () {},
       setHeight: function () { return Promise.resolve(); },
       __: function (key) {
@@ -112,15 +121,21 @@
       emitLocal: function (event, data) {
         (listeners[event] || []).slice().forEach(function (callback) { callback(data); });
       },
-      api: function (method, path) {
+      api: function (method, path, body) {
         var route = String(path).split('?')[0];
+        var filterStateRoute = /^\/filter-state\/([A-Za-z0-9._-]{1,128})$/.exec(route);
         // Links format timestamps on the server, so there is nothing to register.
         if (route === '/register-timestamp-format') return Promise.resolve({ registered: true });
         if (route === '/unregister-timestamp-format') return Promise.resolve({ unregistered: true });
         if (method === 'GET' && route === '/styles') return Promise.resolve(state.styles);
+        if (filterStateRoute && filterStateRoute[1] === filterStateId) {
+          if (method === 'GET' && typeof state.loadFilterState === 'function') return state.loadFilterState();
+          if (method === 'PUT' && typeof state.saveFilterState === 'function') return state.saveFilterState(body);
+        }
         if (method === 'GET' && route === '/logs') {
-          var levels = new URLSearchParams(String(path).split('?')[1] || '').get('severities');
-          return state.loadLogs(levels || null);
+          var params = new URLSearchParams(String(path).split('?')[1] || '');
+          return state.loadLogs(params.get('severities'), params.get('dateFrom'), params.get('dateTo'),
+            params.has('skip') ? params.get('skip') : undefined);
         }
         return Promise.reject(new Error('This action is not available in a Web widget.'));
       }
@@ -136,14 +151,18 @@
     var available = null;
     var running = false;
     var severities = null;
+    var dateFrom = null;
+    var dateTo = null;
     var generation = 0;
 
     function loop() {
       var started = generation;
       var extra = { after: after, instance: instance };
       if (severities) extra.severities = severities;
+      if (dateFrom) extra.dateFrom = dateFrom;
+      if (dateTo) extra.dateTo = dateTo;
       options.request('/android/updates', extra, POLL_CLIENT_TIMEOUT_MS).then(function (data) {
-        // The levels changed while this poll was waiting: its entries used the old levels.
+        // The filters changed while this poll was waiting, so discard its old results.
         if (started !== generation) {
           loop();
           return;
@@ -177,12 +196,22 @@
       loop();
     }
 
+    function setFilters(levels, from, to) {
+      levels = levels || null;
+      from = from || null;
+      to = to || null;
+      if (levels === severities && from === dateFrom && to === dateTo) return;
+      severities = levels;
+      dateFrom = from;
+      dateTo = to;
+      generation++;
+    }
+
     return {
       start: start,
+      setFilters: setFilters,
       setSeverities: function (value) {
-        if ((value || null) === severities) return;
-        severities = value || null;
-        generation++;
+        setFilters(value, dateFrom, dateTo);
       },
       update: function (data) {
         if (!data) return;
@@ -250,9 +279,24 @@
         config: init.config,
         styles: init.styles,
         translations: init.translations,
-        loadLogs: function (severities) {
-          poller.setSeverities(severities);
-          return connection.request('/android/logs', severities ? { severities: severities } : undefined).then(function (data) {
+        loadFilterState: function () {
+          return connection.request('/android/filter-state');
+        },
+        saveFilterState: function (body) {
+          return connection.request('/android/filter-state', {}, undefined, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          });
+        },
+        loadLogs: function (severities, dateFrom, dateTo, skip) {
+          poller.setFilters(severities, dateFrom, dateTo);
+          var query = {};
+          if (severities) query.severities = severities;
+          if (dateFrom) query.dateFrom = dateFrom;
+          if (dateTo) query.dateTo = dateTo;
+          if (skip !== undefined) query.skip = skip;
+          return connection.request('/android/logs', query).then(function (data) {
             poller.update(data);
             return data;
           });

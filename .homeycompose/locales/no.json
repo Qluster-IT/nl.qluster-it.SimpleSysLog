@@ -41,10 +41,16 @@
   "Auto refresh": "Automatisk oppdatering",
   "widgets": {
     "design": {
-      "default": "Standard"
+      "default": "Standard",
+      "compact": "Kompakt",
+      "journal": "Journal",
+      "console": "Konsoll"
     },
     "theme": {
-      "default": "Standard"
+      "default": "Standard",
+      "ocean": "Hav",
+      "forest": "Skog",
+      "sunset": "Solnedgang"
     },
     "datetime": {
       "customFormat": "Egendefinert BLL-dato-/tidsformat",
@@ -85,10 +91,10 @@
     "settings": {
       "title": "Widgeter",
       "intro": "Utform og lagre gjenbrukbare design og temaer for dashbordwidgetene dine.",
-      "designs": "Designstiler",
+      "designs": "Design",
       "themes": "Temaer",
       "templates": "Maler",
-      "selectDesign": "Designstil",
+      "selectDesign": "Design",
       "duplicate": "Kopier",
       "delete": "Slett",
       "name": "Navn",
@@ -140,7 +146,8 @@
         "brown": "Brun",
         "grey": "Grå",
         "black": "Svart",
-        "white": "Hvit"
+        "white": "Hvit",
+        "black-light": "Svart (lys/mørk)"
       },
       "none": "Ingen",
       "invalidName": "Skriv inn et navn på 1 til 60 tegn.",
@@ -180,7 +187,7 @@
       "customStyles": "Egendefinerte stiler",
       "confirmDeleteTheme": "Slette det egendefinerte temaet \"__name__\" permanent?",
       "exchange": "The Widget Exchange(r)",
-      "communityTopic": "Fellesskapsemne",
+      "communityTopic": "Emne",
       "saveFirst": "Lagre eller forkast endringer før du bruker maler.",
       "forumPost": "Foruminnlegg",
       "postForum": "Publiser på forumet",
@@ -246,7 +253,7 @@
         "size_invalid": "Angi et heltall fra 4 til 100.",
         "color": "Farge",
         "background": "Bakgrunn",
-        "color_default": "Temafarge",
+        "color_default": "Appstandard",
         "color_none": "Ingen",
         "font": "Skrift",
         "font_default": "Appstandard",
@@ -289,7 +296,68 @@
           "bottom": "Bunn"
         },
         "border_hint": "Tegner en kant på denne siden av kolonnen i alvorlighetsfargen, med mindre temaet angir en annen. Dekker kolonnen hele den siden av kortet, blir kanten kortets egen kant.",
-        "widget_border_width": "Kantbredde (px; 0 = standard Homey-ramme)"
+        "widget_border_width": "Kantbredde (px)",
+        "colors_hint": "Appstandard beholder widgetens egen farge, som følger lys og mørk modus.",
+        "element_colors_hint": "Appstandard beholder elementets vanlige utseende, basert på widgetfargene.",
+        "text_styles": {
+          "textCase": "Store/små bokstaver",
+          "weight": "Tykkelse",
+          "italic": "Kursiv",
+          "spacing": "Tegnavstand",
+          "textCase_values": {
+            "none": "Som skrevet",
+            "uppercase": "STORE BOKSTAVER",
+            "lowercase": "små bokstaver",
+            "capitalize": "Stor Forbokstav"
+          },
+          "weight_values": {
+            "normal": "Normal",
+            "medium": "Medium",
+            "semibold": "Halvfet",
+            "bold": "Fet",
+            "extrabold": "Ekstra fet"
+          },
+          "italic_values": {
+            "off": "Av",
+            "on": "På"
+          },
+          "spacing_values": {
+            "none": "Ingen",
+            "narrow": "Smal",
+            "wide": "Bred"
+          },
+          "wrap": "Tekstbryting",
+          "wrap_values": {
+            "normal": "Tilpass til bredden",
+            "nowrap": "Ingen tekstbryting",
+            "words": "Stable ved mellomrom"
+          }
+        },
+        "search_filters": "Søk og filtre",
+        "paging": "Sideinndeling",
+        "control_gap": "Avstand (px)",
+        "control_spacing_invalid": "Skriv inn et heltall fra 0 til 40.",
+        "control_height": "Minimumshøyde (px)",
+        "control_paddingX": "Vannrett innvendig avstand (px)",
+        "control_paddingY": "Loddrett innvendig avstand (px)",
+        "control_radius": "Hjørneradius (px)",
+        "control_value_invalid": "Skriv inn et heltall fra __min__ til __max__.",
+        "control_hint": "La tilpasninger stå tomme for å beholde appens standarder.",
+        "padding_default": "Homey-standard",
+        "padding_top": "Innvendig avstand øverst (px)",
+        "padding_right": "Innvendig avstand til høyre (px)",
+        "padding_bottom": "Innvendig avstand nederst (px)",
+        "padding_left": "Innvendig avstand til venstre (px)",
+        "column_gap": "Avstand mellom kolonner (px)",
+        "element_gap": "Avstand mellom elementer (px)",
+        "line_height": "Linjehøyde (px)",
+        "color_hex": "HEX",
+        "color_picker": "Fargevelger",
+        "hex_invalid": "Skriv inn en HEX-farge i formatet #RRGGBB.",
+        "background_fill": "Bakgrunnsfyll",
+        "background_solid": "Ensfarget",
+        "background_gradient": "Fargeovergang",
+        "widget_padding_hint": "Appens standard beholder widgetens vanlige innvendige avstand."
       },
       "undo": "Angre",
       "redo": "Gjør om",
@@ -297,9 +365,11 @@
       "copyPost": "Kopier innlegg og bilder",
       "imageHint": "To bilder viser widgeten med denne malen: først i lys modus, deretter i mørk modus, alltid med malens egne farger.",
       "rendering": "Lager forhåndsvisninger",
+      "generating": "Oppretter TWF og bilder. Vent litt.",
       "copyCopied": "Innlegget og begge bildene ble kopiert.",
       "copyNext": "Åpne forumet og lim dem inn i rik tekst-editoren.",
       "copyRetry": "Kopiering mislyktes. Bruk knappen Kopier innlegg og bilder for å prøve igjen.",
+      "copyHttp": "Automatisk kopiering er ikke tilgjengelig via denne HTTP-tilkoblingen. Klikk på Kopier innlegg og bilder, eller åpne Homey via HTTPS for å kopiere automatisk.",
       "pasteImageHint": "Bytt til rik tekst-editoren i forumet.",
       "pasteImageReason": "Da blir begge de genererte forhåndsvisningene med når du limer inn innlegget. Lim inn én gang,",
       "pasteEditDescription": "legg eventuelt til en beskrivelse på den tomme linjen under tittelen",
@@ -311,7 +381,20 @@
     "filters": {
       "button": "Filtre",
       "level": "Nivå",
-      "allLevels": "Alle nivåer"
+      "allLevels": "Alle nivåer",
+      "date": "Dato",
+      "fromDate": "Fra",
+      "toDate": "Til",
+      "allDates": "Alle datoer",
+      "invalidDateRange": "Startdatoen må være samme som eller før sluttdatoen.",
+      "futureDate": "Datoer kan ikke være senere enn i dag.",
+      "saveError": "Filtrene kunne ikke lagres. Det er ikke sikkert at de gjenopprettes etter en ny lasting."
+    },
+    "pagination": {
+      "label": "Loggsider",
+      "previous": "Forrige",
+      "next": "Neste",
+      "page": "Side"
     }
   }
 }

@@ -44,12 +44,18 @@
   "Auto refresh": "Automatisk uppdatering",
   "widgets": {
     "design": {
-      "default": "Standard"
+      "default": "Standard",
+      "compact": "Kompakt",
+      "journal": "Journal",
+      "console": "Konsol"
     },
     "theme": {
       "homey": "Homey",
       "dark": "Mörk",
-      "default": "Standard"
+      "default": "Standard",
+      "ocean": "Hav",
+      "forest": "Skog",
+      "sunset": "Solnedgång"
     },
     "datetime": {
       "customFormat": "Anpassat BLL-datum-/tidsformat",
@@ -76,10 +82,10 @@
       "back": "Tillbaka till designern",
       "title": "Widgetar",
       "intro": "Utforma och spara återanvändbara designer och teman för dina dashboardwidgetar.",
-      "designs": "Designstilar",
+      "designs": "Designer",
       "themes": "Teman",
       "templates": "Mallar",
-      "selectDesign": "Designstil",
+      "selectDesign": "Design",
       "selectTheme": "Tema",
       "new": "Ny",
       "duplicate": "Kopiera",
@@ -156,7 +162,8 @@
         "brown": "Brun",
         "grey": "Grå",
         "black": "Svart",
-        "white": "Vit"
+        "white": "Vit",
+        "black-light": "Svart (ljus/mörk)"
       },
       "android": "Android-länkar",
       "androidIntro": "Med Android-länkar kan en Homey Webb-widget visa en loggwidget som kan rulla. En återställning gör att alla befintliga länkar slutar fungera; kopiera sedan nya länkar från dina widgetar.",
@@ -180,7 +187,7 @@
       "customStyles": "Anpassade stilar",
       "confirmDeleteTheme": "Ta bort det anpassade temat \"__name__\" permanent?",
       "exchange": "The Widget Exchange(r)",
-      "communityTopic": "Communitytråden",
+      "communityTopic": "Ämne",
       "saveFirst": "Spara eller kasta ändringar innan du använder mallar.",
       "forumPost": "Foruminlägg",
       "postForum": "Publicera på forumet",
@@ -245,7 +252,7 @@
         "size_invalid": "Ange ett heltal mellan 4 och 100.",
         "color": "Färg",
         "background": "Bakgrund",
-        "color_default": "Temafärg",
+        "color_default": "Appstandard",
         "color_none": "Ingen",
         "day_separator": "Dagavdelare",
         "font": "Teckensnitt",
@@ -289,7 +296,62 @@
           "bottom": "Nederkant"
         },
         "border_hint": "Ritar en kant på den här sidan av kolumnen i allvarlighetsfärgen, om inte temat anger en annan. Täcker kolumnen hela den sidan av kortet blir kanten kortets egen kant.",
-        "widget_border_width": "Kantbredd (px; 0 = standardram för Homey)"
+        "widget_border_width": "Kantbredd (px)",
+        "colors_hint": "Appstandard behåller widgetens egen färg, som följer ljust och mörkt läge.",
+        "element_colors_hint": "Appstandard behåller elementets vanliga utseende, baserat på widgetens färger.",
+        "text_styles": {
+          "textCase": "Versaler/gemener",
+          "weight": "Tjocklek",
+          "italic": "Kursiv",
+          "spacing": "Teckenavstånd",
+          "textCase_values": {
+            "none": "Som skrivet",
+            "uppercase": "VERSALER",
+            "lowercase": "gemener",
+            "capitalize": "Stor Bokstav Varje Ord"
+          },
+          "weight_values": {
+            "normal": "Normal",
+            "medium": "Medium",
+            "semibold": "Halvfet",
+            "bold": "Fet",
+            "extrabold": "Extra fet"
+          },
+          "italic_values": {
+            "off": "Av",
+            "on": "På"
+          },
+          "spacing_values": {
+            "none": "Inget",
+            "narrow": "Smalt",
+            "wide": "Brett"
+          }
+        },
+        "search_filters": "Sökning och filter",
+        "paging": "Sidindelning",
+        "control_gap": "Avstånd (px)",
+        "control_spacing_invalid": "Ange ett heltal från 0 till 40.",
+        "control_height": "Minsta höjd (px)",
+        "control_paddingX": "Vågrätt inre avstånd (px)",
+        "control_paddingY": "Lodrätt inre avstånd (px)",
+        "control_radius": "Hörnradie (px)",
+        "control_value_invalid": "Ange ett heltal från __min__ till __max__.",
+        "control_hint": "Lämna anpassningar tomma för att behålla appens standardvärden.",
+        "padding_default": "Homeys standard",
+        "padding_top": "Inre avstånd upptill (px)",
+        "padding_right": "Inre avstånd till höger (px)",
+        "padding_bottom": "Inre avstånd nedtill (px)",
+        "padding_left": "Inre avstånd till vänster (px)",
+        "column_gap": "Avstånd mellan kolumner (px)",
+        "element_gap": "Avstånd mellan element (px)",
+        "line_height": "Radhöjd (px)",
+        "color_hex": "HEX",
+        "color_picker": "Färgväljare",
+        "hex_invalid": "Ange en HEX-färg i formatet #RRGGBB.",
+        "background_fill": "Bakgrundsfyllning",
+        "background_solid": "Enfärgad",
+        "background_gradient": "Toning",
+        "widget_padding_hint": "Appens standard behåller widgetens normala inre avstånd."
       },
       "timestampFormat": "Datum- och tidsformat",
       "timestampFormatHint": "Välj ett BLL-datum-/tidsformat, eller skriv och välj ett eget BLL-format. En widget kan åsidosätta det med ett eget format.",
@@ -310,7 +372,9 @@
       "pasteWaitImage": " och vänta tills båda bilderna har laddats upp innan du publicerar.",
       "editorSwitch": "Välj A:et till höger om den markerade reglaget för att använda rich text-redigeraren.",
       "prepareImageError": "Det gick inte att skapa förhandsbilderna. Skapa TWF:en igen för att försöka på nytt.",
-      "clipboardImageError": "Det gick inte att kopiera inlägget och bilderna. Du kan fortfarande kopiera TWF:en separat."
+      "clipboardImageError": "Det gick inte att kopiera inlägget och bilderna. Du kan fortfarande kopiera TWF:en separat.",
+      "generating": "Skapar TWF och bilder. Vänta ett ögonblick.",
+      "copyHttp": "Automatisk kopiering är inte tillgänglig via den här HTTP-anslutningen. Klicka på Kopiera inlägg och bilder eller öppna Homey via HTTPS för att kopiera automatiskt."
     },
     "bllNotInstalled": "Installera appen Better Logic Library för att använda den här widgeten.",
     "android": {
@@ -331,7 +395,20 @@
     "filters": {
       "button": "Filter",
       "level": "Nivå",
-      "allLevels": "Alla nivåer"
+      "allLevels": "Alla nivåer",
+      "date": "Datum",
+      "fromDate": "Från",
+      "toDate": "Till",
+      "allDates": "Alla datum",
+      "invalidDateRange": "Startdatumet måste vara samma som eller före slutdatumet.",
+      "saveError": "Filtren kunde inte sparas. De kanske inte återställs när widgeten laddas om.",
+      "futureDate": "Datum får inte vara senare än idag."
+    },
+    "pagination": {
+      "label": "Loggsidor",
+      "previous": "F?reg?ende",
+      "next": "N?sta",
+      "page": "Sida"
     }
   },
   "widget_features_notice": "Simple (Sys) Log har nu en widget för instrumentpanelen! Lägg till widgeten Simple Sys Log på en instrumentpanel och öppna appinställningarna för att utforma layout och färger på fliken Widgetar. Widgeten kräver appen Better Logic Library."

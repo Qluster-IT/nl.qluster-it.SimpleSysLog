@@ -44,12 +44,18 @@
   "Auto refresh": "تحديث تلقائي",
   "widgets": {
     "design": {
-      "default": "افتراضي"
+      "default": "افتراضي",
+      "compact": "مضغوط",
+      "journal": "يوميات",
+      "console": "وحدة التحكم"
     },
     "theme": {
       "homey": "Homey",
       "dark": "داكن",
-      "default": "افتراضي"
+      "default": "افتراضي",
+      "ocean": "المحيط",
+      "forest": "الغابة",
+      "sunset": "الغروب"
     },
     "datetime": {
       "customFormat": "تنسيق تاريخ ووقت مخصص من BLL",
@@ -76,10 +82,10 @@
       "back": "العودة إلى المصمم",
       "title": "الأدوات",
       "intro": "صمّم واحفظ تصميمات وسمات قابلة لإعادة الاستخدام لعناصر لوحة المعلومات.",
-      "designs": "أنماط التصميم",
+      "designs": "التصميمات",
       "themes": "السمات",
       "templates": "القوالب",
-      "selectDesign": "نمط التصميم",
+      "selectDesign": "التصميم",
       "selectTheme": "السمة",
       "new": "جديد",
       "duplicate": "نسخ",
@@ -156,7 +162,8 @@
         "brown": "بني",
         "grey": "رمادي",
         "black": "أسود",
-        "white": "أبيض"
+        "white": "أبيض",
+        "black-light": "أسود (فاتح/داكن)"
       },
       "android": "روابط Android",
       "androidIntro": "تتيح روابط Android لأداة ويب في Homey عرض أداة سجل يمكن تمريرها. تؤدي إعادة التعيين إلى إيقاف جميع الروابط الحالية؛ انسخ بعد ذلك روابط جديدة من أدواتك.",
@@ -180,7 +187,7 @@
       "customStyles": "أنماط مخصصة",
       "confirmDeleteTheme": "هل تريد حذف السمة المخصصة \"__name__\" نهائيًا؟",
       "exchange": "The Widget Exchange(r)",
-      "communityTopic": "موضوع المجتمع",
+      "communityTopic": "الموضوع",
       "saveFirst": "احفظ التغييرات أو تجاهلها قبل استخدام القوالب.",
       "forumPost": "منشور المنتدى",
       "postForum": "النشر في المنتدى",
@@ -245,7 +252,7 @@
         "size_invalid": "أدخل عدداً صحيحاً من 4 إلى 100.",
         "color": "اللون",
         "background": "الخلفية",
-        "color_default": "لون السمة",
+        "color_default": "الإعداد الافتراضي للتطبيق",
         "color_none": "بدون",
         "day_separator": "فاصل الأيام",
         "font": "الخط",
@@ -289,7 +296,62 @@
           "bottom": "أسفل"
         },
         "border_hint": "يرسم حدًا على هذا الجانب من العمود بلون الخطورة ما لم يحدد السمة لونًا آخر. عندما يغطي العمود هذا الجانب كاملًا من البطاقة، يصبح الحد حد البطاقة نفسها.",
-        "widget_border_width": "عرض الحد (px؛ 0 = إطار Homey القياسي)"
+        "widget_border_width": "عرض الحد (بكسل)",
+        "colors_hint": "يحتفظ الإعداد الافتراضي للتطبيق بلون الأداة الخاص الذي يتبع الوضعين الفاتح والداكن.",
+        "element_colors_hint": "يحتفظ الإعداد الافتراضي للتطبيق بالمظهر العادي للعنصر بناءً على ألوان الأداة.",
+        "text_styles": {
+          "textCase": "حالة الأحرف",
+          "weight": "السماكة",
+          "italic": "مائل",
+          "spacing": "تباعد الأحرف",
+          "textCase_values": {
+            "none": "كما هو مكتوب",
+            "uppercase": "أحرف كبيرة",
+            "lowercase": "أحرف صغيرة",
+            "capitalize": "أول حرف كبير"
+          },
+          "weight_values": {
+            "normal": "عادي",
+            "medium": "متوسط",
+            "semibold": "شبه عريض",
+            "bold": "عريض",
+            "extrabold": "عريض جدًا"
+          },
+          "italic_values": {
+            "off": "إيقاف",
+            "on": "تشغيل"
+          },
+          "spacing_values": {
+            "none": "بدون",
+            "narrow": "ضيق",
+            "wide": "واسع"
+          }
+        },
+        "search_filters": "البحث وعوامل التصفية",
+        "paging": "تقسيم الصفحات",
+        "control_gap": "التباعد (px)",
+        "control_spacing_invalid": "أدخل عددًا صحيحًا من 0 إلى 40.",
+        "control_height": "الحد الأدنى للارتفاع (px)",
+        "control_paddingX": "المسافة الداخلية الأفقية (px)",
+        "control_paddingY": "المسافة الداخلية الرأسية (px)",
+        "control_radius": "نصف قطر الزوايا (px)",
+        "control_value_invalid": "أدخل عددًا صحيحًا من __min__ إلى __max__.",
+        "control_hint": "اترك التجاوزات فارغة للاحتفاظ بالإعدادات الافتراضية للتطبيق.",
+        "padding_default": "إعداد Homey الافتراضي",
+        "padding_top": "الحشو العلوي (بكسل)",
+        "padding_right": "الحشو الأيمن (بكسل)",
+        "padding_bottom": "الحشو السفلي (بكسل)",
+        "padding_left": "الحشو الأيسر (بكسل)",
+        "column_gap": "المسافة بين الأعمدة (بكسل)",
+        "element_gap": "المسافة بين العناصر (بكسل)",
+        "line_height": "ارتفاع السطر (بكسل)",
+        "color_hex": "HEX",
+        "color_picker": "منتقي الألوان",
+        "hex_invalid": "أدخل لون HEX بالتنسيق ‎#RRGGBB.",
+        "background_fill": "تعبئة الخلفية",
+        "background_solid": "لون موحد",
+        "background_gradient": "تدرج لوني",
+        "widget_padding_hint": "يحافظ الخيار الافتراضي للتطبيق على الحشوة المعتادة للأداة."
       },
       "timestampFormat": "تنسيق التاريخ والوقت",
       "timestampFormatHint": "اختر تنسيق تاريخ ووقت BLL، أو اكتب تنسيق BLL مخصصًا وحدده. يمكن للأداة تجاوزه بتنسيقها الخاص.",
@@ -310,7 +372,9 @@
       "pasteWaitImage": "، وانتظر حتى يكتمل رفع الصورتين قبل النشر.",
       "editorSwitch": "اختر الحرف A على يمين المفتاح المحدد لاستخدام محرر النص المنسق.",
       "prepareImageError": "تعذّر إنشاء صور المعاينة. أنشئ TWF مرة أخرى للمحاولة من جديد.",
-      "clipboardImageError": "تعذّر نسخ المنشور والصور. لا يزال بإمكانك نسخ TWF بشكل منفصل."
+      "clipboardImageError": "تعذّر نسخ المنشور والصور. لا يزال بإمكانك نسخ TWF بشكل منفصل.",
+      "generating": "جارٍ إنشاء TWF والصور. يرجى الانتظار قليلًا.",
+      "copyHttp": "النسخ التلقائي غير متاح عبر اتصال HTTP هذا. انقر على «نسخ المنشور والصور» أو افتح Homey عبر HTTPS للنسخ تلقائيًا."
     },
     "bllNotInstalled": "ثبّت تطبيق Better Logic Library لاستخدام هذه الأداة.",
     "android": {
@@ -331,7 +395,20 @@
     "filters": {
       "button": "عوامل التصفية",
       "level": "المستوى",
-      "allLevels": "كل المستويات"
+      "allLevels": "كل المستويات",
+      "date": "التاريخ",
+      "fromDate": "من",
+      "toDate": "إلى",
+      "allDates": "كل التواريخ",
+      "invalidDateRange": "يجب أن يكون تاريخ البدء في نفس يوم تاريخ الانتهاء أو قبله.",
+      "saveError": "تعذّر حفظ عوامل التصفية. قد لا تُستعاد بعد إعادة تحميل الأداة.",
+      "futureDate": "لا يمكن أن تكون التواريخ بعد اليوم."
+    },
+    "pagination": {
+      "label": "????? ?????",
+      "previous": "??????",
+      "next": "??????",
+      "page": "????"
     }
   },
   "widget_features_notice": "أصبح لدى Simple (Sys) Log الآن أداة للوحة المعلومات! أضف أداة Simple Sys Log إلى لوحة معلومات، وافتح إعدادات التطبيق لتصميم تخطيطها وألوانها في علامة التبويب «الأدوات». تحتاج الأداة إلى تطبيق Better Logic Library."

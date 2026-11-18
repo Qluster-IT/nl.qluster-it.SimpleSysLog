@@ -36,10 +36,16 @@
   "Auto refresh": "Automatisch vernieuwen",
   "widgets": {
     "design": {
-      "default": "Standaard"
+      "default": "Standaard",
+      "compact": "Compact",
+      "journal": "Dagboek",
+      "console": "Console"
     },
     "theme": {
-      "default": "Standaard"
+      "default": "Standaard",
+      "ocean": "Oceaan",
+      "forest": "Bos",
+      "sunset": "Zonsondergang"
     },
     "datetime": {
       "customFormat": "Aangepaste BLL-datum-/tijdnotatie",
@@ -80,10 +86,10 @@
     "settings": {
       "title": "Widgets",
       "intro": "Ontwerp en bewaar herbruikbare widgetontwerpen en thema's voor je dashboardwidgets.",
-      "designs": "Ontwerpstijlen",
+      "designs": "Ontwerpen",
       "themes": "Thema's",
       "templates": "Sjablonen",
-      "selectDesign": "Ontwerpstijl",
+      "selectDesign": "Ontwerp",
       "duplicate": "Kopiëren",
       "delete": "Verwijderen",
       "name": "Naam",
@@ -135,7 +141,8 @@
         "brown": "Bruin",
         "grey": "Grijs",
         "black": "Zwart",
-        "white": "Wit"
+        "white": "Wit",
+        "black-light": "Zwart (licht/donker)"
       },
       "none": "Geen",
       "invalidName": "Voer een naam van 1 tot 60 tekens in.",
@@ -175,7 +182,7 @@
       "customStyles": "Eigen stijlen",
       "confirmDeleteTheme": "Het aangepaste thema \"__name__\" definitief verwijderen?",
       "exchange": "The Widget Exchange(r)",
-      "communityTopic": "Communitytopic",
+      "communityTopic": "Onderwerp",
       "saveFirst": "Sla wijzigingen op of verwerp ze voordat je sjablonen gebruikt.",
       "forumPost": "Forumbericht",
       "postForum": "Plaatsen op het forum",
@@ -241,7 +248,7 @@
         "size_invalid": "Voer een geheel getal van 4 tot 100 in.",
         "color": "Kleur",
         "background": "Achtergrond",
-        "color_default": "Themakleur",
+        "color_default": "App-standaard",
         "color_none": "Geen",
         "font": "Lettertype",
         "font_default": "App-standaard",
@@ -284,7 +291,68 @@
           "bottom": "Onder"
         },
         "border_hint": "Tekent een rand aan deze kant van de kolom, in de kleur van het niveau tenzij het thema een andere kleur instelt. Beslaat de kolom die hele kant van de kaart, dan wordt de rand de rand van de kaart zelf.",
-        "widget_border_width": "Randbreedte (px; 0 = standaard Homey-kader)"
+        "widget_border_width": "Randbreedte (px)",
+        "colors_hint": "App-standaard houdt de eigen kleur van de widget, die licht en donker volgt.",
+        "element_colors_hint": "App-standaard houdt het normale uiterlijk van het element, gebaseerd op de Widget-kleuren.",
+        "text_styles": {
+          "textCase": "Hoofdletters",
+          "weight": "Dikte",
+          "italic": "Cursief",
+          "spacing": "Letterafstand",
+          "textCase_values": {
+            "none": "Zoals geschreven",
+            "uppercase": "HOOFDLETTERS",
+            "lowercase": "kleine letters",
+            "capitalize": "Elk Woord Hoofdletter"
+          },
+          "weight_values": {
+            "normal": "Normaal",
+            "medium": "Medium",
+            "semibold": "Halfvet",
+            "bold": "Vet",
+            "extrabold": "Extra vet"
+          },
+          "italic_values": {
+            "off": "Uit",
+            "on": "Aan"
+          },
+          "spacing_values": {
+            "none": "Geen",
+            "narrow": "Smal",
+            "wide": "Breed"
+          },
+          "wrap": "Tekstomloop",
+          "wrap_values": {
+            "normal": "Passend afbreken",
+            "nowrap": "Niet afbreken",
+            "words": "Stapelen bij spaties"
+          }
+        },
+        "search_filters": "Zoeken en filters",
+        "paging": "Paginering",
+        "control_gap": "Tussenruimte (px)",
+        "control_spacing_invalid": "Voer een geheel getal van 0 tot 40 in.",
+        "control_height": "Minimale hoogte (px)",
+        "control_paddingX": "Horizontale opvulling (px)",
+        "control_paddingY": "Verticale opvulling (px)",
+        "control_radius": "Hoekradius (px)",
+        "control_value_invalid": "Voer een geheel getal van __min__ tot __max__ in.",
+        "control_hint": "Laat aanpassingen leeg om de appstandaarden te behouden.",
+        "padding_default": "Homey-standaard",
+        "padding_top": "Opvulling boven (px)",
+        "padding_right": "Opvulling rechts (px)",
+        "padding_bottom": "Opvulling onder (px)",
+        "padding_left": "Opvulling links (px)",
+        "column_gap": "Afstand tussen kolommen (px)",
+        "element_gap": "Afstand tussen elementen (px)",
+        "line_height": "Regelhoogte (px)",
+        "color_hex": "HEX",
+        "color_picker": "Kleurkiezer",
+        "hex_invalid": "Voer een HEX-kleur in als #RRGGBB.",
+        "background_fill": "Achtergrondvulling",
+        "background_solid": "Effen",
+        "background_gradient": "Kleurverloop",
+        "widget_padding_hint": "App-standaard behoudt de normale opvulling van de widget."
       },
       "undo": "Ongedaan maken",
       "redo": "Opnieuw uitvoeren",
@@ -292,9 +360,11 @@
       "copyPost": "Bericht en afbeeldingen kopiëren",
       "imageHint": "Twee afbeeldingen tonen de widget met deze template: eerst in lichte modus, daarna in donkere modus, altijd met de eigen kleuren van de template.",
       "rendering": "Voorbeelden maken",
+      "generating": "TWF en afbeeldingen worden gemaakt. Even geduld alstublieft.",
       "copyCopied": "Het bericht en beide afbeeldingen zijn gekopieerd.",
       "copyNext": "Open het forum en plak ze in de rich-text-editor.",
       "copyRetry": "Kopiëren mislukt. Gebruik de knop Bericht en afbeeldingen kopiëren om het opnieuw te proberen.",
+      "copyHttp": "Automatisch kopiëren is niet beschikbaar via deze HTTP-verbinding. Klik op Bericht en afbeeldingen kopiëren of open Homey via HTTPS om automatisch te kopiëren.",
       "pasteImageHint": "Schakel op het forum over naar de rich-text-editor.",
       "pasteImageReason": "Dan worden beide gemaakte voorbeeldafbeeldingen meegeplakt. Plak één keer,",
       "pasteEditDescription": "voeg eventueel een beschrijving toe op de lege regel onder de titel",
@@ -306,7 +376,20 @@
     "filters": {
       "button": "Filters",
       "level": "Niveau",
-      "allLevels": "Alle niveaus"
+      "allLevels": "Alle niveaus",
+      "date": "Datum",
+      "fromDate": "Vanaf",
+      "toDate": "Tot en met",
+      "allDates": "Alle datums",
+      "invalidDateRange": "De begindatum moet op of vóór de einddatum liggen.",
+      "futureDate": "Datums mogen niet later zijn dan vandaag.",
+      "saveError": "De filters konden niet worden opgeslagen. Mogelijk worden ze na opnieuw laden niet hersteld."
+    },
+    "pagination": {
+      "label": "Logpagina?s",
+      "previous": "Vorige",
+      "next": "Volgende",
+      "page": "Pagina"
     }
   }
 }

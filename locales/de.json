@@ -44,12 +44,18 @@
   "Auto refresh": "Automatische Aktualisierung",
   "widgets": {
     "design": {
-      "default": "Standard"
+      "default": "Standard",
+      "compact": "Kompakt",
+      "journal": "Journal",
+      "console": "Konsole"
     },
     "theme": {
       "homey": "Homey",
       "dark": "Dunkel",
-      "default": "Standard"
+      "default": "Standard",
+      "ocean": "Ozean",
+      "forest": "Wald",
+      "sunset": "Sonnenuntergang"
     },
     "datetime": {
       "customFormat": "Benutzerdefiniertes BLL-Datums-/Zeitformat",
@@ -76,10 +82,10 @@
       "back": "Zurück zum Designer",
       "title": "Widgets",
       "intro": "Erstelle und speichere wiederverwendbare Designs und Themen für deine Dashboard-Widgets.",
-      "designs": "Designstile",
+      "designs": "Designs",
       "themes": "Themen",
       "templates": "Vorlagen",
-      "selectDesign": "Designstil",
+      "selectDesign": "Design",
       "selectTheme": "Theme",
       "new": "Neu",
       "duplicate": "Kopieren",
@@ -156,7 +162,8 @@
         "brown": "Braun",
         "grey": "Grau",
         "black": "Schwarz",
-        "white": "Weiß"
+        "white": "Weiß",
+        "black-light": "Schwarz (hell/dunkel)"
       },
       "android": "Android-Links",
       "androidIntro": "Mit Android-Links zeigt ein Homey-Web-Widget ein Log-Widget an, das scrollen kann. Nach dem Zurücksetzen funktionieren bestehende Links nicht mehr; kopiere danach neue Links aus deinen Widgets.",
@@ -180,7 +187,7 @@
       "customStyles": "Benutzerdefinierte Stile",
       "confirmDeleteTheme": "Benutzerdefiniertes Thema \"__name__\" dauerhaft löschen?",
       "exchange": "The Widget Exchange(r)",
-      "communityTopic": "Community-Thema",
+      "communityTopic": "Thema",
       "saveFirst": "Änderungen vor der Verwendung von Vorlagen speichern oder verwerfen.",
       "forumPost": "Forumsbeitrag",
       "postForum": "Im Forum posten",
@@ -245,7 +252,7 @@
         "size_invalid": "Geben Sie eine ganze Zahl von 4 bis 100 ein.",
         "color": "Farbe",
         "background": "Hintergrund",
-        "color_default": "Themenfarbe",
+        "color_default": "App-Standard",
         "color_none": "Keine",
         "day_separator": "Tagestrenner",
         "font": "Schriftart",
@@ -289,7 +296,62 @@
           "bottom": "Unten"
         },
         "border_hint": "Zeichnet einen Rahmen an dieser Seite der Spalte, in der Schweregradfarbe, sofern das Design keine andere festlegt. Deckt die Spalte diese ganze Seite der Karte ab, wird der Rahmen zum Rahmen der Karte selbst.",
-        "widget_border_width": "Rahmenbreite (px; 0 = Standard-Homey-Rahmen)"
+        "widget_border_width": "Rahmenbreite (px)",
+        "colors_hint": "App-Standard behält die eigene Farbe des Widgets, die dem hellen und dunklen Modus folgt.",
+        "element_colors_hint": "App-Standard behält das normale Aussehen des Elements, basierend auf den Widget-Farben.",
+        "text_styles": {
+          "textCase": "Groß-/Kleinschreibung",
+          "weight": "Stärke",
+          "italic": "Kursiv",
+          "spacing": "Zeichenabstand",
+          "textCase_values": {
+            "none": "Wie geschrieben",
+            "uppercase": "GROSSBUCHSTABEN",
+            "lowercase": "kleinbuchstaben",
+            "capitalize": "Jedes Wort Groß"
+          },
+          "weight_values": {
+            "normal": "Normal",
+            "medium": "Mittel",
+            "semibold": "Halbfett",
+            "bold": "Fett",
+            "extrabold": "Extrafett"
+          },
+          "italic_values": {
+            "off": "Aus",
+            "on": "An"
+          },
+          "spacing_values": {
+            "none": "Kein",
+            "narrow": "Schmal",
+            "wide": "Weit"
+          }
+        },
+        "search_filters": "Suche und Filter",
+        "paging": "Seitennavigation",
+        "control_gap": "Abstand (px)",
+        "control_spacing_invalid": "Gib eine ganze Zahl von 0 bis 40 ein.",
+        "control_height": "Mindesthöhe (px)",
+        "control_paddingX": "Horizontaler Innenabstand (px)",
+        "control_paddingY": "Vertikaler Innenabstand (px)",
+        "control_radius": "Eckenradius (px)",
+        "control_value_invalid": "Gib eine ganze Zahl von __min__ bis __max__ ein.",
+        "control_hint": "Lass Anpassungen leer, um die App-Standardwerte beizubehalten.",
+        "padding_default": "Homey-Standard",
+        "padding_top": "Innenabstand oben (px)",
+        "padding_right": "Innenabstand rechts (px)",
+        "padding_bottom": "Innenabstand unten (px)",
+        "padding_left": "Innenabstand links (px)",
+        "column_gap": "Spaltenabstand (px)",
+        "element_gap": "Elementabstand (px)",
+        "line_height": "Zeilenhöhe (px)",
+        "color_hex": "HEX",
+        "color_picker": "Farbauswahl",
+        "hex_invalid": "Eine HEX-Farbe im Format #RRGGBB eingeben.",
+        "background_fill": "Hintergrundfüllung",
+        "background_solid": "Einfarbig",
+        "background_gradient": "Farbverlauf",
+        "widget_padding_hint": "App-Standard behält die normalen Innenabstände des Widgets bei."
       },
       "timestampFormat": "Datums- und Zeitformat",
       "timestampFormatHint": "Wähle ein BLL-Datums-/Zeitformat oder gib ein eigenes BLL-Format ein und wähle es aus. Ein Widget kann es mit einem eigenen Format überschreiben.",
@@ -310,7 +372,9 @@
       "pasteWaitImage": " und warte, bis beide Bilder hochgeladen sind, bevor du postest.",
       "editorSwitch": "Wähle das A rechts vom umrandeten Schalter, um den Rich-Text-Editor zu verwenden.",
       "prepareImageError": "Die Vorschaubilder konnten nicht erstellt werden. Erstelle die TWF erneut, um es noch einmal zu versuchen.",
-      "clipboardImageError": "Beitrag und Bilder konnten nicht kopiert werden. Die TWF kannst du weiterhin separat kopieren."
+      "clipboardImageError": "Beitrag und Bilder konnten nicht kopiert werden. Die TWF kannst du weiterhin separat kopieren.",
+      "generating": "TWF und Bilder werden erstellt. Bitte warten Sie einen Moment.",
+      "copyHttp": "Über diese HTTP-Verbindung ist automatisches Kopieren nicht verfügbar. Klicke auf Beitrag und Bilder kopieren oder öffne Homey über HTTPS, um automatisch zu kopieren."
     },
     "bllNotInstalled": "Installiere die Better Logic Library-App, um dieses Widget zu verwenden.",
     "android": {
@@ -331,7 +395,20 @@
     "filters": {
       "button": "Filter",
       "level": "Stufe",
-      "allLevels": "Alle Stufen"
+      "allLevels": "Alle Stufen",
+      "date": "Datum",
+      "fromDate": "Von",
+      "toDate": "Bis",
+      "allDates": "Alle Daten",
+      "invalidDateRange": "Das Startdatum muss am oder vor dem Enddatum liegen.",
+      "saveError": "Die Filter konnten nicht gespeichert werden. Nach einem Neuladen werden sie möglicherweise nicht wiederhergestellt.",
+      "futureDate": "Datumsangaben dürfen nicht nach dem heutigen Tag liegen."
+    },
+    "pagination": {
+      "label": "Protokollseiten",
+      "previous": "Zur?ck",
+      "next": "Weiter",
+      "page": "Seite"
     }
   },
   "widget_features_notice": "Simple (Sys) Log hat jetzt ein Dashboard-Widget! Füge das Simple Sys Log-Widget einem Dashboard hinzu und öffne die App-Einstellungen, um im Tab Widgets Layout und Farben zu gestalten. Das Widget benötigt die Better Logic Library-App."

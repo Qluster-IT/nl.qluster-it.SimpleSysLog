@@ -4,7 +4,7 @@ const { encodeTemplate, decodeTemplate } = require("./lib/widget-template");
 const { getCatalog } = require("./lib/widget-template-catalog");
 const { getWidgetStyles, resolveTimestampFormat, resolveDaySeparatorFormat } = require("./lib/widget-styles");
 const {
-  TRANSLATION_KEYS, matchesLinkFilters, resetSecret, verifyLink
+  TRANSLATION_KEYS, linkFilterStateId, matchesLinkFilters, resetSecret, verifyLink
 } = require("./lib/android-links");
 const widgetApi = require("./widgets/log_viewer/api");
 const { parseSeverities } = require("./lib/severity-filter");
@@ -25,14 +25,37 @@ function linkFormats(homey, config) {
   return { timestamp: resolveTimestampFormat(config.datetimeFormat, design), day: resolveDaySeparatorFormat(design) };
 }
 
-function linkLogQuery(config, formats, severities) {
-  const query = { take: config.entryCount, timestampFormat: formats.timestamp, dayFormat: formats.day };
+function linkLogQuery(config, formats, severities, dateRange, skip) {
+  const query = {
+    take: config.entryCount + (config.paging ? 1 : 0),
+    timestampFormat: formats.timestamp,
+    dayFormat: formats.day
+  };
+  if (config.paging && skip !== undefined) query.skip = skip;
   if (severities !== undefined) query.severities = severities.join(',');
   else if (config.minSeverity !== undefined) query.minSeverity = config.minSeverity;
+  if (dateRange && dateRange.from) query.dateFrom = dateRange.from;
+  if (dateRange && dateRange.to) query.dateTo = dateRange.to;
   if (config.facility !== undefined) query.facility = config.facility;
   if (config.appFilter !== undefined) query.app = config.appFilter;
   if (config.hostnameFilter !== undefined) query.hostname = config.hostnameFilter;
   return query;
+}
+
+function dateRangeBounds(range) {
+  const asLocaleMidnight = value => BL.datetime.asLocale(new Date(`${value}T00:00:00.000Z`));
+  const from = range.from ? asLocaleMidnight(range.from) : null;
+  const to = range.to ? asLocaleMidnight(range.to) : null;
+  if (to) to.setDate(to.getDate() + 1);
+  return { from, to };
+}
+
+function matchesDateRange(log, bounds) {
+  if (!bounds.from && !bounds.to) return true;
+  const timestamp = new Date(log.timestamp).getTime();
+  return Number.isFinite(timestamp)
+    && (!bounds.from || timestamp >= bounds.from.getTime())
+    && (!bounds.to || timestamp < bounds.to.getTime());
 }
 
 // Realtime entries only carry the formats registered by dashboard widgets; links add their own.
@@ -179,6 +202,7 @@ module.exports = {
   },
   async getAndroidInit({ homey, query }) {
     const config = verifiedLinkConfig(homey, query);
+    config.filterStateId = linkFilterStateId(query.ssl, config);
     const translations = {};
     TRANSLATION_KEYS.forEach(key => {
       const value = homey.__(key);
@@ -186,23 +210,41 @@ module.exports = {
     });
     return { config, styles: getWidgetStyles(homey), translations };
   },
+  getAndroidFilterState({ homey, query }) {
+    const config = verifiedLinkConfig(homey, query);
+    return widgetApi.getWidgetFilterState({
+      homey, params: { instanceId: linkFilterStateId(query.ssl, config) }
+    });
+  },
+  setAndroidFilterState({ homey, query, body }) {
+    const config = verifiedLinkConfig(homey, query);
+    return widgetApi.setWidgetFilterState({
+      homey, params: { instanceId: linkFilterStateId(query.ssl, config) }, body
+    });
+  },
   async getAndroidLogs({ homey, query }) {
     const config = verifiedLinkConfig(homey, query);
     const severities = linkSeverities(query);
+    const dateRange = widgetApi.parseDateRange(query);
     // Read the sequence first; entries written during the query are delivered again and deduplicated.
     const seq = homey.app.androidLinkFeed.touch();
-    const data = await widgetApi.getWidgetLogs({ homey, query: linkLogQuery(config, linkFormats(homey, config), severities) });
+    const data = await widgetApi.getWidgetLogs({
+      homey, query: linkLogQuery(config, linkFormats(homey, config), severities, dateRange, query.skip)
+    });
     return { ...data, seq, instance: homey.app.androidLinkFeed.instance };
   },
   async getAndroidUpdates({ homey, query }) {
     const config = verifiedLinkConfig(homey, query);
     const severities = linkSeverities(query);
+    const dateRange = widgetApi.parseDateRange(query);
     // Wrappers cannot receive the api-ready realtime event, so they poll until it was announced.
     if (!homey.app.apiReady || !homey.app.androidLinkFeed.instance) return { ready: false };
+    const dateBounds = homey.app.Log && (dateRange.from || dateRange.to) ? dateRangeBounds(dateRange) : null;
     const result = await homey.app.androidLinkFeed.wait({
       after: Number(query.after),
       instance: query.instance,
-      matches: log => matchesLinkFilters(config, log, severities),
+      matches: log => matchesLinkFilters(config, log, severities)
+        && (!dateBounds || matchesDateRange(log, dateBounds)),
       timeoutMs: ANDROID_POLL_TIMEOUT_MS,
       setTimeout: (callback, ms) => homey.setTimeout(callback, ms),
       clearTimeout: timer => homey.clearTimeout(timer)

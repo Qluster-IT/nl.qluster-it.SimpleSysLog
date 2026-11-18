@@ -261,6 +261,16 @@
       "path": "/android/init",
       "public": true
     },
+    "getAndroidFilterState": {
+      "method": "GET",
+      "path": "/android/filter-state",
+      "public": true
+    },
+    "setAndroidFilterState": {
+      "method": "PUT",
+      "path": "/android/filter-state",
+      "public": true
+    },
     "getAndroidLogs": {
       "method": "GET",
       "path": "/android/logs",

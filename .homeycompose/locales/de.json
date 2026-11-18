@@ -41,10 +41,16 @@
   "Auto refresh": "Automatische Aktualisierung",
   "widgets": {
     "design": {
-      "default": "Standard"
+      "default": "Standard",
+      "compact": "Kompakt",
+      "journal": "Journal",
+      "console": "Konsole"
     },
     "theme": {
-      "default": "Standard"
+      "default": "Standard",
+      "ocean": "Ozean",
+      "forest": "Wald",
+      "sunset": "Sonnenuntergang"
     },
     "datetime": {
       "customFormat": "Benutzerdefiniertes BLL-Datums-/Zeitformat",
@@ -85,10 +91,10 @@
     "settings": {
       "title": "Widgets",
       "intro": "Erstelle und speichere wiederverwendbare Designs und Themen für deine Dashboard-Widgets.",
-      "designs": "Designstile",
+      "designs": "Designs",
       "themes": "Themen",
       "templates": "Vorlagen",
-      "selectDesign": "Designstil",
+      "selectDesign": "Design",
       "duplicate": "Kopieren",
       "delete": "Löschen",
       "name": "Name",
@@ -140,7 +146,8 @@
         "brown": "Braun",
         "grey": "Grau",
         "black": "Schwarz",
-        "white": "Weiß"
+        "white": "Weiß",
+        "black-light": "Schwarz (hell/dunkel)"
       },
       "none": "Keine",
       "invalidName": "Gib einen Namen mit 1 bis 60 Zeichen ein.",
@@ -180,7 +187,7 @@
       "customStyles": "Benutzerdefinierte Stile",
       "confirmDeleteTheme": "Benutzerdefiniertes Thema \"__name__\" dauerhaft löschen?",
       "exchange": "The Widget Exchange(r)",
-      "communityTopic": "Community-Thema",
+      "communityTopic": "Thema",
       "saveFirst": "Änderungen vor der Verwendung von Vorlagen speichern oder verwerfen.",
       "forumPost": "Forumsbeitrag",
       "postForum": "Im Forum posten",
@@ -246,7 +253,7 @@
         "size_invalid": "Geben Sie eine ganze Zahl von 4 bis 100 ein.",
         "color": "Farbe",
         "background": "Hintergrund",
-        "color_default": "Themenfarbe",
+        "color_default": "App-Standard",
         "color_none": "Keine",
         "font": "Schriftart",
         "font_default": "App-Standard",
@@ -289,7 +296,68 @@
           "bottom": "Unten"
         },
         "border_hint": "Zeichnet einen Rahmen an dieser Seite der Spalte, in der Schweregradfarbe, sofern das Design keine andere festlegt. Deckt die Spalte diese ganze Seite der Karte ab, wird der Rahmen zum Rahmen der Karte selbst.",
-        "widget_border_width": "Rahmenbreite (px; 0 = Standard-Homey-Rahmen)"
+        "widget_border_width": "Rahmenbreite (px)",
+        "colors_hint": "App-Standard behält die eigene Farbe des Widgets, die dem hellen und dunklen Modus folgt.",
+        "element_colors_hint": "App-Standard behält das normale Aussehen des Elements, basierend auf den Widget-Farben.",
+        "text_styles": {
+          "textCase": "Groß-/Kleinschreibung",
+          "weight": "Stärke",
+          "italic": "Kursiv",
+          "spacing": "Zeichenabstand",
+          "textCase_values": {
+            "none": "Wie geschrieben",
+            "uppercase": "GROSSBUCHSTABEN",
+            "lowercase": "kleinbuchstaben",
+            "capitalize": "Jedes Wort Groß"
+          },
+          "weight_values": {
+            "normal": "Normal",
+            "medium": "Mittel",
+            "semibold": "Halbfett",
+            "bold": "Fett",
+            "extrabold": "Extrafett"
+          },
+          "italic_values": {
+            "off": "Aus",
+            "on": "An"
+          },
+          "spacing_values": {
+            "none": "Kein",
+            "narrow": "Schmal",
+            "wide": "Weit"
+          },
+          "wrap": "Textumbruch",
+          "wrap_values": {
+            "normal": "An Breite anpassen",
+            "nowrap": "Kein Umbruch",
+            "words": "An Leerzeichen stapeln"
+          }
+        },
+        "search_filters": "Suche und Filter",
+        "paging": "Seitennavigation",
+        "control_gap": "Abstand (px)",
+        "control_spacing_invalid": "Gib eine ganze Zahl von 0 bis 40 ein.",
+        "control_height": "Mindesthöhe (px)",
+        "control_paddingX": "Horizontaler Innenabstand (px)",
+        "control_paddingY": "Vertikaler Innenabstand (px)",
+        "control_radius": "Eckenradius (px)",
+        "control_value_invalid": "Gib eine ganze Zahl von __min__ bis __max__ ein.",
+        "control_hint": "Lass Anpassungen leer, um die App-Standardwerte beizubehalten.",
+        "padding_default": "Homey-Standard",
+        "padding_top": "Innenabstand oben (px)",
+        "padding_right": "Innenabstand rechts (px)",
+        "padding_bottom": "Innenabstand unten (px)",
+        "padding_left": "Innenabstand links (px)",
+        "column_gap": "Spaltenabstand (px)",
+        "element_gap": "Elementabstand (px)",
+        "line_height": "Zeilenhöhe (px)",
+        "color_hex": "HEX",
+        "color_picker": "Farbauswahl",
+        "hex_invalid": "Eine HEX-Farbe im Format #RRGGBB eingeben.",
+        "background_fill": "Hintergrundfüllung",
+        "background_solid": "Einfarbig",
+        "background_gradient": "Farbverlauf",
+        "widget_padding_hint": "App-Standard behält die normalen Innenabstände des Widgets bei."
       },
       "undo": "Rückgängig",
       "redo": "Wiederholen",
@@ -297,9 +365,11 @@
       "copyPost": "Beitrag und Bilder kopieren",
       "imageHint": "Zwei Bilder zeigen das Widget mit dieser Vorlage: zuerst im hellen, dann im dunklen Modus, immer mit den eigenen Farben der Vorlage.",
       "rendering": "Vorschauen werden erstellt",
+      "generating": "TWF und Bilder werden erstellt. Bitte warten Sie einen Moment.",
       "copyCopied": "Der Beitrag und beide Bilder wurden kopiert.",
       "copyNext": "Öffne das Forum und füge sie im Rich-Text-Editor ein.",
       "copyRetry": "Kopieren fehlgeschlagen. Verwende die Schaltfläche Beitrag und Bilder kopieren, um es erneut zu versuchen.",
+      "copyHttp": "Über diese HTTP-Verbindung ist automatisches Kopieren nicht verfügbar. Klicke auf Beitrag und Bilder kopieren oder öffne Homey über HTTPS, um automatisch zu kopieren.",
       "pasteImageHint": "Wechsle im Forum zum Rich-Text-Editor.",
       "pasteImageReason": "Dann werden beim Einfügen beide erstellten Vorschaubilder mit eingefügt. Füge einmal ein,",
       "pasteEditDescription": "füge optional in der leeren Zeile unter dem Titel eine Beschreibung hinzu",
@@ -311,7 +381,20 @@
     "filters": {
       "button": "Filter",
       "level": "Stufe",
-      "allLevels": "Alle Stufen"
+      "allLevels": "Alle Stufen",
+      "date": "Datum",
+      "fromDate": "Von",
+      "toDate": "Bis",
+      "allDates": "Alle Daten",
+      "invalidDateRange": "Das Startdatum muss am oder vor dem Enddatum liegen.",
+      "futureDate": "Datumsangaben dürfen nicht nach dem heutigen Tag liegen.",
+      "saveError": "Die Filter konnten nicht gespeichert werden. Nach einem Neuladen werden sie möglicherweise nicht wiederhergestellt."
+    },
+    "pagination": {
+      "label": "Protokollseiten",
+      "previous": "Zur?ck",
+      "next": "Weiter",
+      "page": "Seite"
     }
   }
 }

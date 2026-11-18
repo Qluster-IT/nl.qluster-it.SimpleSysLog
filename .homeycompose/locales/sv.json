@@ -41,10 +41,16 @@
   "Auto refresh": "Automatisk uppdatering",
   "widgets": {
     "design": {
-      "default": "Standard"
+      "default": "Standard",
+      "compact": "Kompakt",
+      "journal": "Journal",
+      "console": "Konsol"
     },
     "theme": {
-      "default": "Standard"
+      "default": "Standard",
+      "ocean": "Hav",
+      "forest": "Skog",
+      "sunset": "Solnedgång"
     },
     "datetime": {
       "customFormat": "Anpassat BLL-datum-/tidsformat",
@@ -85,10 +91,10 @@
     "settings": {
       "title": "Widgetar",
       "intro": "Utforma och spara återanvändbara designer och teman för dina dashboardwidgetar.",
-      "designs": "Designstilar",
+      "designs": "Designer",
       "themes": "Teman",
       "templates": "Mallar",
-      "selectDesign": "Designstil",
+      "selectDesign": "Design",
       "duplicate": "Kopiera",
       "delete": "Ta bort",
       "name": "Namn",
@@ -140,7 +146,8 @@
         "brown": "Brun",
         "grey": "Grå",
         "black": "Svart",
-        "white": "Vit"
+        "white": "Vit",
+        "black-light": "Svart (ljus/mörk)"
       },
       "none": "Ingen",
       "invalidName": "Ange ett namn med 1 till 60 tecken.",
@@ -180,7 +187,7 @@
       "customStyles": "Anpassade stilar",
       "confirmDeleteTheme": "Ta bort det anpassade temat \"__name__\" permanent?",
       "exchange": "The Widget Exchange(r)",
-      "communityTopic": "Communitytråden",
+      "communityTopic": "Ämne",
       "saveFirst": "Spara eller kasta ändringar innan du använder mallar.",
       "forumPost": "Foruminlägg",
       "postForum": "Publicera på forumet",
@@ -246,7 +253,7 @@
         "size_invalid": "Ange ett heltal mellan 4 och 100.",
         "color": "Färg",
         "background": "Bakgrund",
-        "color_default": "Temafärg",
+        "color_default": "Appstandard",
         "color_none": "Ingen",
         "font": "Teckensnitt",
         "font_default": "Appstandard",
@@ -289,7 +296,68 @@
           "bottom": "Nederkant"
         },
         "border_hint": "Ritar en kant på den här sidan av kolumnen i allvarlighetsfärgen, om inte temat anger en annan. Täcker kolumnen hela den sidan av kortet blir kanten kortets egen kant.",
-        "widget_border_width": "Kantbredd (px; 0 = standardram för Homey)"
+        "widget_border_width": "Kantbredd (px)",
+        "colors_hint": "Appstandard behåller widgetens egen färg, som följer ljust och mörkt läge.",
+        "element_colors_hint": "Appstandard behåller elementets vanliga utseende, baserat på widgetens färger.",
+        "text_styles": {
+          "textCase": "Versaler/gemener",
+          "weight": "Tjocklek",
+          "italic": "Kursiv",
+          "spacing": "Teckenavstånd",
+          "textCase_values": {
+            "none": "Som skrivet",
+            "uppercase": "VERSALER",
+            "lowercase": "gemener",
+            "capitalize": "Stor Bokstav Varje Ord"
+          },
+          "weight_values": {
+            "normal": "Normal",
+            "medium": "Medium",
+            "semibold": "Halvfet",
+            "bold": "Fet",
+            "extrabold": "Extra fet"
+          },
+          "italic_values": {
+            "off": "Av",
+            "on": "På"
+          },
+          "spacing_values": {
+            "none": "Inget",
+            "narrow": "Smalt",
+            "wide": "Brett"
+          },
+          "wrap": "Radbrytning",
+          "wrap_values": {
+            "normal": "Anpassa till bredden",
+            "nowrap": "Ingen radbrytning",
+            "words": "Stapla vid blanksteg"
+          }
+        },
+        "search_filters": "Sökning och filter",
+        "paging": "Sidindelning",
+        "control_gap": "Avstånd (px)",
+        "control_spacing_invalid": "Ange ett heltal från 0 till 40.",
+        "control_height": "Minsta höjd (px)",
+        "control_paddingX": "Vågrätt inre avstånd (px)",
+        "control_paddingY": "Lodrätt inre avstånd (px)",
+        "control_radius": "Hörnradie (px)",
+        "control_value_invalid": "Ange ett heltal från __min__ till __max__.",
+        "control_hint": "Lämna anpassningar tomma för att behålla appens standardvärden.",
+        "padding_default": "Homeys standard",
+        "padding_top": "Inre avstånd upptill (px)",
+        "padding_right": "Inre avstånd till höger (px)",
+        "padding_bottom": "Inre avstånd nedtill (px)",
+        "padding_left": "Inre avstånd till vänster (px)",
+        "column_gap": "Avstånd mellan kolumner (px)",
+        "element_gap": "Avstånd mellan element (px)",
+        "line_height": "Radhöjd (px)",
+        "color_hex": "HEX",
+        "color_picker": "Färgväljare",
+        "hex_invalid": "Ange en HEX-färg i formatet #RRGGBB.",
+        "background_fill": "Bakgrundsfyllning",
+        "background_solid": "Enfärgad",
+        "background_gradient": "Toning",
+        "widget_padding_hint": "Appens standard behåller widgetens normala inre avstånd."
       },
       "undo": "Ångra",
       "redo": "Gör om",
@@ -297,9 +365,11 @@
       "copyPost": "Kopiera inlägg och bilder",
       "imageHint": "Två bilder visar widgeten med den här mallen: först i ljust läge, sedan i mörkt läge, alltid med mallens egna färger.",
       "rendering": "Skapar förhandsvisningar",
+      "generating": "Skapar TWF och bilder. Vänta ett ögonblick.",
       "copyCopied": "Inlägget och båda bilderna kopierades.",
       "copyNext": "Öppna forumet och klistra in dem i rich text-redigeraren.",
       "copyRetry": "Kopieringen misslyckades. Använd knappen Kopiera inlägg och bilder för att försöka igen.",
+      "copyHttp": "Automatisk kopiering är inte tillgänglig via den här HTTP-anslutningen. Klicka på Kopiera inlägg och bilder eller öppna Homey via HTTPS för att kopiera automatiskt.",
       "pasteImageHint": "Växla till rich text-redigeraren i forumet.",
       "pasteImageReason": "Då följer båda genererade förhandsbilderna med när du klistrar in inlägget. Klistra in en gång,",
       "pasteEditDescription": "lägg eventuellt till en beskrivning på den tomma raden under rubriken",
@@ -311,7 +381,20 @@
     "filters": {
       "button": "Filter",
       "level": "Nivå",
-      "allLevels": "Alla nivåer"
+      "allLevels": "Alla nivåer",
+      "date": "Datum",
+      "fromDate": "Från",
+      "toDate": "Till",
+      "allDates": "Alla datum",
+      "invalidDateRange": "Startdatumet måste vara samma som eller före slutdatumet.",
+      "futureDate": "Datum får inte vara senare än idag.",
+      "saveError": "Filtren kunde inte sparas. De kanske inte återställs när widgeten laddas om."
+    },
+    "pagination": {
+      "label": "Loggsidor",
+      "previous": "F?reg?ende",
+      "next": "N?sta",
+      "page": "Sida"
     }
   }
 }

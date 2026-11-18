@@ -44,12 +44,18 @@
   "Auto refresh": "Aggiornamento automatico",
   "widgets": {
     "design": {
-      "default": "Predefinito"
+      "default": "Predefinito",
+      "compact": "Compatto",
+      "journal": "Diario",
+      "console": "Console"
     },
     "theme": {
       "homey": "Homey",
       "dark": "Scuro",
-      "default": "Predefinito"
+      "default": "Predefinito",
+      "ocean": "Oceano",
+      "forest": "Foresta",
+      "sunset": "Tramonto"
     },
     "datetime": {
       "customFormat": "Formato data e ora BLL personalizzato",
@@ -76,10 +82,10 @@
       "back": "Torna al designer",
       "title": "Widget",
       "intro": "Crea e salva design e temi riutilizzabili per i widget della dashboard.",
-      "designs": "Stili di design",
+      "designs": "Design",
       "themes": "Temi",
       "templates": "Modelli",
-      "selectDesign": "Stile di design",
+      "selectDesign": "Design",
       "selectTheme": "Tema",
       "new": "Nuovo",
       "duplicate": "Copia",
@@ -156,7 +162,8 @@
         "brown": "Marrone",
         "grey": "Grigio",
         "black": "Nero",
-        "white": "Bianco"
+        "white": "Bianco",
+        "black-light": "Nero (chiaro/scuro)"
       },
       "android": "Link Android",
       "androidIntro": "I link Android permettono a un widget Web di Homey di mostrare un widget del registro che può scorrere. Il ripristino disattiva tutti i link esistenti; in seguito copia nuovi link dai tuoi widget.",
@@ -180,7 +187,7 @@
       "customStyles": "Stili personalizzati",
       "confirmDeleteTheme": "Eliminare definitivamente il tema personalizzato \"__name__\"?",
       "exchange": "The Widget Exchange(r)",
-      "communityTopic": "Discussione della comunità",
+      "communityTopic": "Argomento",
       "saveFirst": "Salva o scarta le modifiche prima di usare i modelli.",
       "forumPost": "Messaggio del forum",
       "postForum": "Pubblica sul forum",
@@ -245,7 +252,7 @@
         "size_invalid": "Inserisci un numero intero da 4 a 100.",
         "color": "Colore",
         "background": "Sfondo",
-        "color_default": "Colore del tema",
+        "color_default": "Predefinito dell’app",
         "color_none": "Nessuno",
         "day_separator": "Separatore del giorno",
         "font": "Carattere",
@@ -289,7 +296,62 @@
           "bottom": "Basso"
         },
         "border_hint": "Disegna un bordo su questo lato della colonna, nel colore della gravità salvo che il tema ne imposti un altro. Se la colonna copre tutto quel lato della scheda, il bordo diventa il bordo della scheda stessa.",
-        "widget_border_width": "Spessore del bordo (px; 0 = cornice Homey standard)"
+        "widget_border_width": "Spessore del bordo (px)",
+        "colors_hint": "Predefinito dell’app mantiene il colore del widget, che segue la modalità chiara e scura.",
+        "element_colors_hint": "Predefinito dell’app mantiene l’aspetto normale dell’elemento, basato sui colori del widget.",
+        "text_styles": {
+          "textCase": "Maiuscole",
+          "weight": "Spessore",
+          "italic": "Corsivo",
+          "spacing": "Spaziatura lettere",
+          "textCase_values": {
+            "none": "Come scritto",
+            "uppercase": "MAIUSCOLO",
+            "lowercase": "minuscolo",
+            "capitalize": "Ogni Parola Maiuscola"
+          },
+          "weight_values": {
+            "normal": "Normale",
+            "medium": "Medio",
+            "semibold": "Semigrassetto",
+            "bold": "Grassetto",
+            "extrabold": "Extra grassetto"
+          },
+          "italic_values": {
+            "off": "No",
+            "on": "Sì"
+          },
+          "spacing_values": {
+            "none": "Nessuna",
+            "narrow": "Stretta",
+            "wide": "Ampia"
+          }
+        },
+        "search_filters": "Ricerca e filtri",
+        "paging": "Paginazione",
+        "control_gap": "Spaziatura (px)",
+        "control_spacing_invalid": "Inserisci un numero intero da 0 a 40.",
+        "control_height": "Altezza minima (px)",
+        "control_paddingX": "Spaziatura interna orizzontale (px)",
+        "control_paddingY": "Spaziatura interna verticale (px)",
+        "control_radius": "Raggio degli angoli (px)",
+        "control_value_invalid": "Inserisci un numero intero da __min__ a __max__.",
+        "control_hint": "Lascia vuote le personalizzazioni per mantenere i valori predefiniti dell’app.",
+        "padding_default": "Predefinito di Homey",
+        "padding_top": "Spaziatura superiore (px)",
+        "padding_right": "Spaziatura destra (px)",
+        "padding_bottom": "Spaziatura inferiore (px)",
+        "padding_left": "Spaziatura sinistra (px)",
+        "column_gap": "Distanza tra colonne (px)",
+        "element_gap": "Distanza tra elementi (px)",
+        "line_height": "Altezza della riga (px)",
+        "color_hex": "HEX",
+        "color_picker": "Selettore colore",
+        "hex_invalid": "Inserisci un colore HEX nel formato #RRGGBB.",
+        "background_fill": "Riempimento dello sfondo",
+        "background_solid": "Uniforme",
+        "background_gradient": "Sfumatura",
+        "widget_padding_hint": "Il valore predefinito dell’app mantiene la normale spaziatura interna del widget."
       },
       "timestampFormat": "Formato di data e ora",
       "timestampFormatHint": "Scegli un formato data/ora BLL oppure digita e seleziona un formato BLL personalizzato. Un widget può sostituirlo con il proprio formato.",
@@ -310,7 +372,9 @@
       "pasteWaitImage": " e attendi il caricamento di entrambe le immagini prima di pubblicare.",
       "editorSwitch": "Seleziona la A a destra dell'interruttore evidenziato per usare l'editor di testo formattato.",
       "prepareImageError": "Impossibile creare le immagini di anteprima. Crea di nuovo il TWF per riprovare.",
-      "clipboardImageError": "Impossibile copiare il post e le immagini. Puoi comunque copiare il TWF separatamente."
+      "clipboardImageError": "Impossibile copiare il post e le immagini. Puoi comunque copiare il TWF separatamente.",
+      "generating": "Generazione del TWF e delle immagini. Attendi un momento.",
+      "copyHttp": "La copia automatica non è disponibile con questa connessione HTTP. Fai clic su Copia post e immagini oppure apri Homey via HTTPS per copiare automaticamente."
     },
     "bllNotInstalled": "Installa l’app Better Logic Library per usare questo widget.",
     "android": {
@@ -331,7 +395,20 @@
     "filters": {
       "button": "Filtri",
       "level": "Livello",
-      "allLevels": "Tutti i livelli"
+      "allLevels": "Tutti i livelli",
+      "date": "Data",
+      "fromDate": "Da",
+      "toDate": "A",
+      "allDates": "Tutte le date",
+      "invalidDateRange": "La data iniziale deve essere precedente o uguale alla data finale.",
+      "saveError": "Impossibile salvare i filtri. Potrebbero non essere ripristinati dopo il ricaricamento.",
+      "futureDate": "Le date non possono essere successive a oggi."
+    },
+    "pagination": {
+      "label": "Pagine del registro",
+      "previous": "Precedente",
+      "next": "Successivo",
+      "page": "Pagina"
     }
   },
   "widget_features_notice": "Simple (Sys) Log ora ha un widget per la dashboard! Aggiungi il widget Simple Sys Log a una dashboard e apri le impostazioni dell’app per progettarne layout e colori nella scheda Widget. Il widget richiede l’app Better Logic Library."

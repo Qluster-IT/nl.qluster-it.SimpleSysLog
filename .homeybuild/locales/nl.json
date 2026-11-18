@@ -39,12 +39,18 @@
   "Auto refresh": "Automatisch vernieuwen",
   "widgets": {
     "design": {
-      "default": "Standaard"
+      "default": "Standaard",
+      "compact": "Compact",
+      "journal": "Dagboek",
+      "console": "Console"
     },
     "theme": {
       "homey": "Homey",
       "dark": "Donker",
-      "default": "Standaard"
+      "default": "Standaard",
+      "ocean": "Oceaan",
+      "forest": "Bos",
+      "sunset": "Zonsondergang"
     },
     "datetime": {
       "customFormat": "Aangepaste BLL-datum-/tijdnotatie",
@@ -71,10 +77,10 @@
       "back": "Terug naar ontwerper",
       "title": "Widgets",
       "intro": "Ontwerp en bewaar herbruikbare widgetontwerpen en thema's voor je dashboardwidgets.",
-      "designs": "Ontwerpstijlen",
+      "designs": "Ontwerpen",
       "themes": "Thema's",
       "templates": "Sjablonen",
-      "selectDesign": "Ontwerpstijl",
+      "selectDesign": "Ontwerp",
       "selectTheme": "Thema",
       "new": "Nieuw",
       "duplicate": "Kopiëren",
@@ -151,7 +157,8 @@
         "brown": "Bruin",
         "grey": "Grijs",
         "black": "Zwart",
-        "white": "Wit"
+        "white": "Wit",
+        "black-light": "Zwart (licht/donker)"
       },
       "android": "Android-links",
       "androidIntro": "Met Android-links toont een Homey Web-widget een logwidget die kan scrollen. Na een reset werken bestaande links niet meer; kopieer daarna nieuwe links vanuit je widgets.",
@@ -175,7 +182,7 @@
       "customStyles": "Eigen stijlen",
       "confirmDeleteTheme": "Het aangepaste thema \"__name__\" definitief verwijderen?",
       "exchange": "The Widget Exchange(r)",
-      "communityTopic": "Communitytopic",
+      "communityTopic": "Onderwerp",
       "saveFirst": "Sla wijzigingen op of verwerp ze voordat je sjablonen gebruikt.",
       "forumPost": "Forumbericht",
       "postForum": "Plaatsen op het forum",
@@ -240,7 +247,7 @@
         "size_invalid": "Voer een geheel getal van 4 tot 100 in.",
         "color": "Kleur",
         "background": "Achtergrond",
-        "color_default": "Themakleur",
+        "color_default": "App-standaard",
         "color_none": "Geen",
         "day_separator": "Dagscheiding",
         "font": "Lettertype",
@@ -284,7 +291,62 @@
           "bottom": "Onder"
         },
         "border_hint": "Tekent een rand aan deze kant van de kolom, in de kleur van het niveau tenzij het thema een andere kleur instelt. Beslaat de kolom die hele kant van de kaart, dan wordt de rand de rand van de kaart zelf.",
-        "widget_border_width": "Randbreedte (px; 0 = standaard Homey-kader)"
+        "widget_border_width": "Randbreedte (px)",
+        "colors_hint": "App-standaard houdt de eigen kleur van de widget, die licht en donker volgt.",
+        "element_colors_hint": "App-standaard houdt het normale uiterlijk van het element, gebaseerd op de Widget-kleuren.",
+        "text_styles": {
+          "textCase": "Hoofdletters",
+          "weight": "Dikte",
+          "italic": "Cursief",
+          "spacing": "Letterafstand",
+          "textCase_values": {
+            "none": "Zoals geschreven",
+            "uppercase": "HOOFDLETTERS",
+            "lowercase": "kleine letters",
+            "capitalize": "Elk Woord Hoofdletter"
+          },
+          "weight_values": {
+            "normal": "Normaal",
+            "medium": "Medium",
+            "semibold": "Halfvet",
+            "bold": "Vet",
+            "extrabold": "Extra vet"
+          },
+          "italic_values": {
+            "off": "Uit",
+            "on": "Aan"
+          },
+          "spacing_values": {
+            "none": "Geen",
+            "narrow": "Smal",
+            "wide": "Breed"
+          }
+        },
+        "search_filters": "Zoeken en filters",
+        "paging": "Paginering",
+        "control_gap": "Tussenruimte (px)",
+        "control_spacing_invalid": "Voer een geheel getal van 0 tot 40 in.",
+        "control_height": "Minimale hoogte (px)",
+        "control_paddingX": "Horizontale opvulling (px)",
+        "control_paddingY": "Verticale opvulling (px)",
+        "control_radius": "Hoekradius (px)",
+        "control_value_invalid": "Voer een geheel getal van __min__ tot __max__ in.",
+        "control_hint": "Laat aanpassingen leeg om de appstandaarden te behouden.",
+        "padding_default": "Homey-standaard",
+        "padding_top": "Opvulling boven (px)",
+        "padding_right": "Opvulling rechts (px)",
+        "padding_bottom": "Opvulling onder (px)",
+        "padding_left": "Opvulling links (px)",
+        "column_gap": "Afstand tussen kolommen (px)",
+        "element_gap": "Afstand tussen elementen (px)",
+        "line_height": "Regelhoogte (px)",
+        "color_hex": "HEX",
+        "color_picker": "Kleurkiezer",
+        "hex_invalid": "Voer een HEX-kleur in als #RRGGBB.",
+        "background_fill": "Achtergrondvulling",
+        "background_solid": "Effen",
+        "background_gradient": "Kleurverloop",
+        "widget_padding_hint": "App-standaard behoudt de normale opvulling van de widget."
       },
       "timestampFormat": "Datum- en tijdnotatie",
       "timestampFormatHint": "Kies een BLL-datum-/tijdnotatie, of typ en selecteer een eigen BLL-notatie. Een widget kan deze overschrijven met een eigen notatie.",
@@ -305,7 +367,9 @@
       "pasteWaitImage": " en wacht tot beide afbeeldingen zijn geüpload voordat je plaatst.",
       "editorSwitch": "Kies de A rechts van de omlijnde schakelaar om de rich-text-editor te gebruiken.",
       "prepareImageError": "Kan de voorbeeldafbeeldingen niet maken. Maak de TWF opnieuw om het nog eens te proberen.",
-      "clipboardImageError": "Kan het bericht en de afbeeldingen niet kopiëren. Je kunt de TWF nog wel apart kopiëren."
+      "clipboardImageError": "Kan het bericht en de afbeeldingen niet kopiëren. Je kunt de TWF nog wel apart kopiëren.",
+      "generating": "TWF en afbeeldingen worden gemaakt. Even geduld alstublieft.",
+      "copyHttp": "Automatisch kopiëren is niet beschikbaar via deze HTTP-verbinding. Klik op Bericht en afbeeldingen kopiëren of open Homey via HTTPS om automatisch te kopiëren."
     },
     "bllNotInstalled": "Installeer de Better Logic Library-app om deze widget te gebruiken.",
     "android": {
@@ -326,7 +390,20 @@
     "filters": {
       "button": "Filters",
       "level": "Niveau",
-      "allLevels": "Alle niveaus"
+      "allLevels": "Alle niveaus",
+      "date": "Datum",
+      "fromDate": "Vanaf",
+      "toDate": "Tot en met",
+      "allDates": "Alle datums",
+      "invalidDateRange": "De begindatum moet op of vóór de einddatum liggen.",
+      "saveError": "De filters konden niet worden opgeslagen. Mogelijk worden ze na opnieuw laden niet hersteld.",
+      "futureDate": "Datums mogen niet later zijn dan vandaag."
+    },
+    "pagination": {
+      "label": "Logpagina?s",
+      "previous": "Vorige",
+      "next": "Volgende",
+      "page": "Pagina"
     }
   },
   "widget_features_notice": "Simple (Sys) Log heeft nu een dashboardwidget! Voeg de Simple Sys Log-widget toe aan een dashboard en open de app-instellingen om op het tabblad Widgets de indeling en kleuren te ontwerpen. De widget heeft de Better Logic Library-app nodig."

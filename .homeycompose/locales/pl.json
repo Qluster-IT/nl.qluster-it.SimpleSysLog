@@ -41,10 +41,16 @@
   "Auto refresh": "Automatyczne odświeżanie",
   "widgets": {
     "design": {
-      "default": "Domyślny"
+      "default": "Domyślny",
+      "compact": "Kompaktowy",
+      "journal": "Dziennik",
+      "console": "Konsola"
     },
     "theme": {
-      "default": "Domyślny"
+      "default": "Domyślny",
+      "ocean": "Ocean",
+      "forest": "Las",
+      "sunset": "Zachód słońca"
     },
     "datetime": {
       "customFormat": "Niestandardowy format daty i czasu BLL",
@@ -85,10 +91,10 @@
     "settings": {
       "title": "Widżety",
       "intro": "Projektuj i zapisuj projekty oraz motywy do ponownego użycia w widżetach pulpitu.",
-      "designs": "Style projektu",
+      "designs": "Projekty",
       "themes": "Motywy",
       "templates": "Szablony",
-      "selectDesign": "Styl projektu",
+      "selectDesign": "Projekt",
       "duplicate": "Kopiuj",
       "delete": "Usuń",
       "name": "Nazwa",
@@ -140,7 +146,8 @@
         "brown": "Brązowy",
         "grey": "Szary",
         "black": "Czarny",
-        "white": "Biały"
+        "white": "Biały",
+        "black-light": "Czarny (jasny/ciemny)"
       },
       "none": "Brak",
       "invalidName": "Wpisz nazwę o długości od 1 do 60 znaków.",
@@ -180,7 +187,7 @@
       "customStyles": "Style niestandardowe",
       "confirmDeleteTheme": "Trwale usunąć niestandardowy motyw \"__name__\"?",
       "exchange": "The Widget Exchange(r)",
-      "communityTopic": "Temat społeczności",
+      "communityTopic": "Temat",
       "saveFirst": "Zapisz lub odrzuć zmiany przed użyciem szablonów.",
       "forumPost": "Post na forum",
       "postForum": "Opublikuj na forum",
@@ -246,7 +253,7 @@
         "size_invalid": "Wpisz liczbę całkowitą od 4 do 100.",
         "color": "Kolor",
         "background": "Tło",
-        "color_default": "Kolor motywu",
+        "color_default": "Domyślne aplikacji",
         "color_none": "Brak",
         "font": "Czcionka",
         "font_default": "Domyślna aplikacji",
@@ -289,7 +296,68 @@
           "bottom": "Dół"
         },
         "border_hint": "Rysuje krawędź po tej stronie kolumny w kolorze ważności, chyba że motyw ustawia inny. Gdy kolumna zajmuje całą tę stronę karty, krawędź staje się krawędzią samej karty.",
-        "widget_border_width": "Szerokość krawędzi (px; 0 = standardowa ramka Homey)"
+        "widget_border_width": "Szerokość obramowania (px)",
+        "colors_hint": "Domyślne aplikacji zachowuje własny kolor widżetu, który dopasowuje się do trybu jasnego i ciemnego.",
+        "element_colors_hint": "Domyślne aplikacji zachowuje zwykły wygląd elementu, oparty na kolorach widżetu.",
+        "text_styles": {
+          "textCase": "Wielkość liter",
+          "weight": "Grubość",
+          "italic": "Kursywa",
+          "spacing": "Odstęp liter",
+          "textCase_values": {
+            "none": "Jak napisano",
+            "uppercase": "WIELKIE LITERY",
+            "lowercase": "małe litery",
+            "capitalize": "Każde Słowo Wielką Literą"
+          },
+          "weight_values": {
+            "normal": "Normalna",
+            "medium": "Średnia",
+            "semibold": "Półgruba",
+            "bold": "Gruba",
+            "extrabold": "Bardzo gruba"
+          },
+          "italic_values": {
+            "off": "Wył.",
+            "on": "Wł."
+          },
+          "spacing_values": {
+            "none": "Brak",
+            "narrow": "Wąski",
+            "wide": "Szeroki"
+          },
+          "wrap": "Zawijanie tekstu",
+          "wrap_values": {
+            "normal": "Dopasuj do szerokości",
+            "nowrap": "Bez zawijania",
+            "words": "Układaj wiersze przy spacjach"
+          }
+        },
+        "search_filters": "Wyszukiwanie i filtry",
+        "paging": "Stronicowanie",
+        "control_gap": "Odstęp (px)",
+        "control_spacing_invalid": "Wpisz liczbę całkowitą od 0 do 40.",
+        "control_height": "Minimalna wysokość (px)",
+        "control_paddingX": "Odstęp wewnętrzny w poziomie (px)",
+        "control_paddingY": "Odstęp wewnętrzny w pionie (px)",
+        "control_radius": "Promień narożników (px)",
+        "control_value_invalid": "Wpisz liczbę całkowitą od __min__ do __max__.",
+        "control_hint": "Pozostaw puste ustawienia, aby zachować domyślne wartości aplikacji.",
+        "padding_default": "Domyślne Homey",
+        "padding_top": "Odstęp u góry (px)",
+        "padding_right": "Odstęp z prawej (px)",
+        "padding_bottom": "Odstęp u dołu (px)",
+        "padding_left": "Odstęp z lewej (px)",
+        "column_gap": "Odstęp między kolumnami (px)",
+        "element_gap": "Odstęp między elementami (px)",
+        "line_height": "Wysokość wiersza (px)",
+        "color_hex": "HEX",
+        "color_picker": "Wybór koloru",
+        "hex_invalid": "Wpisz kolor HEX w formacie #RRGGBB.",
+        "background_fill": "Wypełnienie tła",
+        "background_solid": "Jednolity",
+        "background_gradient": "Gradient",
+        "widget_padding_hint": "Domyślne ustawienie aplikacji zachowuje normalne odstępy wewnętrzne widżetu."
       },
       "undo": "Cofnij",
       "redo": "Ponów",
@@ -297,9 +365,11 @@
       "copyPost": "Kopiuj post i obrazy",
       "imageHint": "Dwa obrazy pokazują widżet z tym szablonem: najpierw w trybie jasnym, potem w trybie ciemnym, zawsze z własnymi kolorami szablonu.",
       "rendering": "Tworzenie podglądów",
+      "generating": "Trwa tworzenie TWF i obrazów. Proszę chwilę poczekać.",
       "copyCopied": "Skopiowano post i oba obrazy.",
       "copyNext": "Otwórz forum i wklej je w edytorze tekstu sformatowanego.",
       "copyRetry": "Kopiowanie nie powiodło się. Użyj przycisku Kopiuj post i obrazy, aby spróbować ponownie.",
+      "copyHttp": "Automatyczne kopiowanie nie jest dostępne przez to połączenie HTTP. Kliknij Kopiuj post i obrazy lub otwórz Homey przez HTTPS, aby kopiować automatycznie.",
       "pasteImageHint": "Przełącz się na forum na edytor tekstu sformatowanego.",
       "pasteImageReason": "Wtedy po wklejeniu posta zostaną dołączone oba wygenerowane obrazy podglądu. Wklej raz,",
       "pasteEditDescription": "opcjonalnie dodaj opis w pustym wierszu pod tytułem",
@@ -311,7 +381,20 @@
     "filters": {
       "button": "Filtry",
       "level": "Poziom",
-      "allLevels": "Wszystkie poziomy"
+      "allLevels": "Wszystkie poziomy",
+      "date": "Data",
+      "fromDate": "Od",
+      "toDate": "Do",
+      "allDates": "Wszystkie daty",
+      "invalidDateRange": "Data początkowa musi być wcześniejsza lub taka sama jak końcowa.",
+      "futureDate": "Daty nie mogą być późniejsze niż dzisiaj.",
+      "saveError": "Nie udało się zapisać filtrów. Mogą nie zostać przywrócone po ponownym załadowaniu."
+    },
+    "pagination": {
+      "label": "Strony dziennika",
+      "previous": "Poprzednia",
+      "next": "Nast?pna",
+      "page": "Strona"
     }
   }
 }

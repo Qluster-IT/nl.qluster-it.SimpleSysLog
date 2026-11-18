@@ -43,12 +43,18 @@
   "Auto refresh": "Auto refresh",
   "widgets": {
     "design": {
-      "default": "Default"
+      "default": "Default",
+      "compact": "Compact",
+      "journal": "Journal",
+      "console": "Console"
     },
     "theme": {
       "homey": "Homey",
       "dark": "Dark",
-      "default": "Default"
+      "default": "Default",
+      "ocean": "Ocean",
+      "forest": "Forest",
+      "sunset": "Sunset"
     },
     "datetime": {
       "customFormat": "Custom BLL date/time format",
@@ -75,10 +81,10 @@
       "back": "Back to designer",
       "title": "Widgets",
       "intro": "Design and save reusable widget designs and themes for your dashboard widgets.",
-      "designs": "Design styles",
+      "designs": "Designs",
       "themes": "Themes",
       "templates": "Templates",
-      "selectDesign": "Design style",
+      "selectDesign": "Design",
       "selectTheme": "Theme",
       "new": "New",
       "duplicate": "Copy",
@@ -155,7 +161,8 @@
         "brown": "Brown",
         "grey": "Grey",
         "black": "Black",
-        "white": "White"
+        "white": "White",
+        "black-light": "Black (light/dark)"
       },
       "android": "Android links",
       "androidIntro": "Android links let a Homey Web widget show a log widget that can scroll. Resetting stops every existing link from working; copy new links from your widgets afterwards.",
@@ -179,7 +186,7 @@
       "customStyles": "Custom styles",
       "confirmDeleteTheme": "Permanently delete the custom theme \"__name__\"?",
       "exchange": "The Widget Exchange(r)",
-      "communityTopic": "Community topic",
+      "communityTopic": "Topic",
       "saveFirst": "Save or discard changes before using templates.",
       "forumPost": "Forum post",
       "postForum": "Post on Forum",
@@ -244,7 +251,7 @@
         "size_invalid": "Enter a whole number from 4 to 100.",
         "color": "Color",
         "background": "Background",
-        "color_default": "Theme color",
+        "color_default": "App default",
         "color_none": "None",
         "day_separator": "Day separator",
         "font": "Font",
@@ -288,7 +295,62 @@
           "bottom": "Bottom"
         },
         "border_hint": "Draws a border on this side of the column, in the severity colour unless the theme sets another. When the column covers that whole side of the card, the border becomes the card's own border.",
-        "widget_border_width": "Border width (px; 0 = standard Homey frame)"
+        "widget_border_width": "Border width (px)",
+        "colors_hint": "App default keeps the widget's own color, which follows light and dark mode.",
+        "element_colors_hint": "App default keeps the element's normal appearance, based on the Widget colors.",
+        "text_styles": {
+          "textCase": "Text case",
+          "weight": "Weight",
+          "italic": "Italic",
+          "spacing": "Letter spacing",
+          "textCase_values": {
+            "none": "As written",
+            "uppercase": "UPPERCASE",
+            "lowercase": "lowercase",
+            "capitalize": "Capitalize Words"
+          },
+          "weight_values": {
+            "normal": "Normal",
+            "medium": "Medium",
+            "semibold": "Semi-bold",
+            "bold": "Bold",
+            "extrabold": "Extra bold"
+          },
+          "italic_values": {
+            "off": "Off",
+            "on": "On"
+          },
+          "spacing_values": {
+            "none": "None",
+            "narrow": "Narrow",
+            "wide": "Wide"
+          }
+        },
+        "search_filters": "Search and filters",
+        "paging": "Paging",
+        "control_gap": "Spacing (px)",
+        "control_spacing_invalid": "Enter a whole number from 0 to 40.",
+        "control_height": "Minimum height (px)",
+        "control_paddingX": "Horizontal padding (px)",
+        "control_paddingY": "Vertical padding (px)",
+        "control_radius": "Corner radius (px)",
+        "control_value_invalid": "Enter a whole number from __min__ to __max__.",
+        "control_hint": "Leave overrides empty to keep the app defaults.",
+        "padding_default": "Homey default",
+        "padding_top": "Top padding (px)",
+        "padding_right": "Right padding (px)",
+        "padding_bottom": "Bottom padding (px)",
+        "padding_left": "Left padding (px)",
+        "column_gap": "Column gap (px)",
+        "element_gap": "Element gap (px)",
+        "line_height": "Line height (px)",
+        "color_hex": "HEX",
+        "color_picker": "Color picker",
+        "hex_invalid": "Enter a HEX color in #RRGGBB format.",
+        "background_fill": "Background fill",
+        "background_solid": "Solid",
+        "background_gradient": "Gradient",
+        "widget_padding_hint": "App default preserves the widget's normal padding."
       },
       "timestampFormat": "Date and time format",
       "timestampFormatHint": "Choose a BLL date/time format, or type a custom BLL format and select it. A widget can overrule it with its own format.",
@@ -309,7 +371,9 @@
       "pasteWaitImage": ", and wait for both images to finish uploading before posting.",
       "editorSwitch": "Select the A on the right of the outlined switch to use the rich-text editor.",
       "prepareImageError": "Could not create the preview images. Create the TWF again to retry.",
-      "clipboardImageError": "Could not copy the post and images. You can still copy the TWF separately."
+      "clipboardImageError": "Could not copy the post and images. You can still copy the TWF separately.",
+      "generating": "Generating the TWF and images. Please wait a moment.",
+      "copyHttp": "Automatic copying is unavailable over this HTTP connection. Click Copy post and images, or open Homey over HTTPS to copy automatically."
     },
     "bllNotInstalled": "Install the Better Logic Library app to use this widget.",
     "android": {
@@ -330,7 +394,20 @@
     "filters": {
       "button": "Filters",
       "level": "Level",
-      "allLevels": "All levels"
+      "allLevels": "All levels",
+      "date": "Date",
+      "fromDate": "From",
+      "toDate": "To",
+      "allDates": "All dates",
+      "invalidDateRange": "The start date must be on or before the end date.",
+      "saveError": "Could not save your filters. They may not be restored after a reload.",
+      "futureDate": "Dates cannot be later than today."
+    },
+    "pagination": {
+      "label": "Log pages",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page"
     }
   },
   "widget_features_notice": "Simple (Sys) Log now has a dashboard widget! Add the Simple Sys Log widget to a dashboard, and open the app settings to design its layout and colors on the Widgets tab. The widget needs the Better Logic Library app."

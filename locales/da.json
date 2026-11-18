@@ -44,12 +44,18 @@
   "Auto refresh": "Automatisk opdatering",
   "widgets": {
     "design": {
-      "default": "Standard"
+      "default": "Standard",
+      "compact": "Kompakt",
+      "journal": "Journal",
+      "console": "Konsol"
     },
     "theme": {
       "homey": "Homey",
       "dark": "Mørk",
-      "default": "Standard"
+      "default": "Standard",
+      "ocean": "Hav",
+      "forest": "Skov",
+      "sunset": "Solnedgang"
     },
     "datetime": {
       "customFormat": "Brugerdefineret BLL-dato-/tidsformat",
@@ -76,10 +82,10 @@
       "back": "Tilbage til designeren",
       "title": "Widgets",
       "intro": "Design og gem genbrugelige designs og temaer til dine dashboard-widgets.",
-      "designs": "Designstile",
+      "designs": "Designs",
       "themes": "Temaer",
       "templates": "Skabeloner",
-      "selectDesign": "Designstil",
+      "selectDesign": "Design",
       "selectTheme": "Tema",
       "new": "Ny",
       "duplicate": "Kopiér",
@@ -156,7 +162,8 @@
         "brown": "Brun",
         "grey": "Grå",
         "black": "Sort",
-        "white": "Hvid"
+        "white": "Hvid",
+        "black-light": "Sort (lys/mørk)"
       },
       "android": "Android-links",
       "androidIntro": "Med Android-links kan en Homey Web-widget vise en log-widget, der kan rulle. En nulstilling får alle eksisterende links til at holde op med at virke; kopiér derefter nye links fra dine widgets.",
@@ -180,7 +187,7 @@
       "customStyles": "Brugerdefinerede stile",
       "confirmDeleteTheme": "Slet det brugerdefinerede tema \"__name__\" permanent?",
       "exchange": "The Widget Exchange(r)",
-      "communityTopic": "Fællesskabsemne",
+      "communityTopic": "Emne",
       "saveFirst": "Gem eller kassér ændringer før brug af skabeloner.",
       "forumPost": "Forumindlæg",
       "postForum": "Slå op på forummet",
@@ -245,7 +252,7 @@
         "size_invalid": "Angiv et heltal fra 4 til 100.",
         "color": "Farve",
         "background": "Baggrund",
-        "color_default": "Temafarve",
+        "color_default": "App-standard",
         "color_none": "Ingen",
         "day_separator": "Dagsadskiller",
         "font": "Skrifttype",
@@ -289,7 +296,62 @@
           "bottom": "Bund"
         },
         "border_hint": "Tegner en kant på denne side af kolonnen i alvorlighedsfarven, medmindre temaet angiver en anden. Dækker kolonnen hele den side af kortet, bliver kanten kortets egen kant.",
-        "widget_border_width": "Kantbredde (px; 0 = standard Homey-ramme)"
+        "widget_border_width": "Kantbredde (px)",
+        "colors_hint": "App-standard beholder widgettens egen farve, som følger lys og mørk tilstand.",
+        "element_colors_hint": "App-standard beholder elementets normale udseende, baseret på widgettens farver.",
+        "text_styles": {
+          "textCase": "Store/små bogstaver",
+          "weight": "Tykkelse",
+          "italic": "Kursiv",
+          "spacing": "Tegnafstand",
+          "textCase_values": {
+            "none": "Som skrevet",
+            "uppercase": "STORE BOGSTAVER",
+            "lowercase": "små bogstaver",
+            "capitalize": "Stort Forbogstav"
+          },
+          "weight_values": {
+            "normal": "Normal",
+            "medium": "Medium",
+            "semibold": "Halvfed",
+            "bold": "Fed",
+            "extrabold": "Ekstra fed"
+          },
+          "italic_values": {
+            "off": "Fra",
+            "on": "Til"
+          },
+          "spacing_values": {
+            "none": "Ingen",
+            "narrow": "Smal",
+            "wide": "Bred"
+          }
+        },
+        "search_filters": "Søgning og filtre",
+        "paging": "Sideinddeling",
+        "control_gap": "Afstand (px)",
+        "control_spacing_invalid": "Indtast et heltal fra 0 til 40.",
+        "control_height": "Minimumshøjde (px)",
+        "control_paddingX": "Vandret indvendig afstand (px)",
+        "control_paddingY": "Lodret indvendig afstand (px)",
+        "control_radius": "Hjørneradius (px)",
+        "control_value_invalid": "Indtast et heltal fra __min__ til __max__.",
+        "control_hint": "Lad tilpasninger være tomme for at beholde appens standarder.",
+        "padding_default": "Homeys standard",
+        "padding_top": "Indvendig afstand øverst (px)",
+        "padding_right": "Indvendig afstand til højre (px)",
+        "padding_bottom": "Indvendig afstand nederst (px)",
+        "padding_left": "Indvendig afstand til venstre (px)",
+        "column_gap": "Afstand mellem kolonner (px)",
+        "element_gap": "Afstand mellem elementer (px)",
+        "line_height": "Linjehøjde (px)",
+        "color_hex": "HEX",
+        "color_picker": "Farvevælger",
+        "hex_invalid": "Indtast en HEX-farve i formatet #RRGGBB.",
+        "background_fill": "Baggrundsudfyldning",
+        "background_solid": "Ensfarvet",
+        "background_gradient": "Farveforløb",
+        "widget_padding_hint": "Appens standard bevarer widgettens normale indvendige afstand."
       },
       "timestampFormat": "Dato- og tidsformat",
       "timestampFormatHint": "Vælg et BLL-dato-/tidsformat, eller indtast og vælg et brugerdefineret BLL-format. En widget kan tilsidesætte det med sit eget format.",
@@ -310,7 +372,9 @@
       "pasteWaitImage": ", og vent, til begge billeder er uploadet, før du poster.",
       "editorSwitch": "Vælg A'et til højre for den markerede kontakt for at bruge rich-text-editoren.",
       "prepareImageError": "Kunne ikke oprette forhåndsvisningerne. Opret TWF'en igen for at prøve igen.",
-      "clipboardImageError": "Kunne ikke kopiere opslaget og billederne. Du kan stadig kopiere TWF'en separat."
+      "clipboardImageError": "Kunne ikke kopiere opslaget og billederne. Du kan stadig kopiere TWF'en separat.",
+      "generating": "Opretter TWF og billeder. Vent venligst et øjeblik.",
+      "copyHttp": "Automatisk kopiering er ikke tilgængelig via denne HTTP-forbindelse. Klik på Kopiér indlæg og billeder, eller åbn Homey via HTTPS for at kopiere automatisk."
     },
     "bllNotInstalled": "Installer Better Logic Library-appen for at bruge denne widget.",
     "android": {
@@ -331,7 +395,20 @@
     "filters": {
       "button": "Filtre",
       "level": "Niveau",
-      "allLevels": "Alle niveauer"
+      "allLevels": "Alle niveauer",
+      "date": "Dato",
+      "fromDate": "Fra",
+      "toDate": "Til",
+      "allDates": "Alle datoer",
+      "invalidDateRange": "Startdatoen skal være den samme som eller før slutdatoen.",
+      "saveError": "Filtrene kunne ikke gemmes. De gendannes muligvis ikke efter en genindlæsning.",
+      "futureDate": "Datoer må ikke være senere end i dag."
+    },
+    "pagination": {
+      "label": "Logside",
+      "previous": "Forrige",
+      "next": "N?ste",
+      "page": "Side"
     }
   },
   "widget_features_notice": "Simple (Sys) Log har nu en dashboard-widget! Tilføj Simple Sys Log-widgetten til et dashboard, og åbn appindstillingerne for at designe layout og farver på fanen Widgets. Widgetten kræver Better Logic Library-appen."

@@ -37,6 +37,7 @@
 	<script type="text/javascript" src="simplelog.module.js"></script>
 	<script type="text/javascript" src="../assets/js/ssl-widget-layout.js"></script>
 	<script type="text/javascript" src="../assets/js/html-to-image.min.js"></script>
+	<script type="text/javascript" src="template-clipboard.js"></script>
 	<script type="text/javascript" src="widgets.js"></script>
 
 	<link rel="stylesheet" href="../assets/css/default.css" type="text/css" />
@@ -376,7 +377,7 @@
 			<!-- <div uib-pagination total-items="vars.logTotal" ng-model="vars.logCurrentPage" items-per-page="vars.logPerPage"></div> -->
 		</div>
 	</div>
-	<div class="main-view settings-view" ng-show="view.id=='settings'">
+	<div class="main-view settings-view" id="settings-main-view" ng-show="view.id=='settings'">
 		<nav class="settings-tabs" role="tablist">
 			<button type="button" class="hy-nostyle settings-tab" role="tab"
 				ng-class="{ active: view.settingsTab !== 'widgets' }"
@@ -459,7 +460,7 @@
 					<p class="help-text" data-i18n="widgets.settings.onboarding">Copy a built-in design or theme to customize it.</p>
 					<fieldset class="hy-nostyle style-editor">
 						<div class="style-actions">
-							<button class="hy-nostyle btn btn-outline-primary btn-sm mode-button" type="button" data-mode="design" aria-pressed="true"><svg class="settings-widgets-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="2" y="2" width="9" height="12" rx="1"/><rect x="13" y="2" width="9" height="7" rx="1"/><rect x="2" y="16" width="9" height="6" rx="1"/><rect x="13" y="11" width="9" height="11" rx="1"/></svg> <span data-i18n="widgets.settings.designs">Design styles</span></button>
+							<button class="hy-nostyle btn btn-outline-primary btn-sm mode-button" type="button" data-mode="design" aria-pressed="true"><svg class="settings-widgets-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="2" y="2" width="9" height="12" rx="1"/><rect x="13" y="2" width="9" height="7" rx="1"/><rect x="2" y="16" width="9" height="6" rx="1"/><rect x="13" y="11" width="9" height="11" rx="1"/></svg> <span data-i18n="widgets.settings.designs">Designs</span></button>
 							<button class="hy-nostyle btn btn-outline-primary btn-sm mode-button" type="button" data-mode="theme" aria-pressed="false"><i class="fa fa-solid fa-palette" aria-hidden="true"></i> <span data-i18n="widgets.settings.themes">Themes</span></button>
 						</div>
 						<div class="style-toolbar">
@@ -515,7 +516,7 @@
 				<div class="designer-screen style-design style-template-screen" data-screen="templates" hidden>
 					<div class="template-header">
 						<h2 data-i18n="widgets.settings.exchange">The Widget Exchange(r)</h2>
-						<button id="open-exchange" class="hy-nostyle btn btn-outline-primary btn-sm" type="button"><i class="fa fa-solid fa-comments" aria-hidden="true"></i> <span data-i18n="widgets.settings.communityTopic">Community topic</span></button>
+						<button id="open-exchange" class="hy-nostyle btn btn-outline-primary btn-sm" type="button"><i class="fa fa-solid fa-comments" aria-hidden="true"></i> <span data-i18n="widgets.settings.communityTopic">Topic</span></button>
 					</div>
 					<nav class="template-navigation" data-i18n-aria-label="widgets.settings.exchange" aria-label="The Widget Exchange(r)">
 						<button class="hy-nostyle template-section-button" type="button" data-section="export" aria-pressed="true">
@@ -532,7 +533,7 @@
 						<h3 data-i18n="widgets.settings.exportTitle">Export template</h3>
 						<p class="help-text" data-i18n="widgets.settings.exportHint">Select a saved custom design and/or theme. Copy built-in items first.</p>
 						<p id="export-save-first" class="help-text" data-i18n="widgets.settings.saveFirst" hidden>Save or discard changes before using templates.</p>
-						<label class="hy-nostyle" for="export-design" data-i18n="widgets.settings.selectDesign">Design style</label>
+						<label class="hy-nostyle" for="export-design" data-i18n="widgets.settings.selectDesign">Design</label>
 						<select id="export-design" class="form-select"></select>
 						<label class="hy-nostyle" for="export-theme" data-i18n="widgets.settings.theme">Theme</label>
 						<select id="export-theme" class="form-select"></select>
@@ -547,9 +548,9 @@
 							<textarea id="template-code" class="form-control" rows="3" readonly spellcheck="false"></textarea>
 							<button id="copy-template" class="hy-nostyle btn btn-outline-primary btn-sm" type="button"><i class="fa fa-solid fa-copy" aria-hidden="true"></i> <span data-i18n="widgets.settings.copy">Copy TWF</span></button>
 							<label class="hy-nostyle" for="template-forum-post" data-i18n="widgets.settings.forumPost">Forum post</label>
-							<textarea id="template-forum-post" class="form-control" rows="5" readonly spellcheck="false"></textarea>
+							<textarea id="template-forum-post" class="form-control" rows="3" readonly spellcheck="false"></textarea>
 							<button id="copy-forum-post" class="hy-nostyle btn btn-outline-primary btn-sm" type="button" disabled><i class="fa fa-solid fa-clipboard" aria-hidden="true"></i> <span data-i18n="widgets.settings.copyPost">Copy post and images</span></button>
-							<button id="post-forum" class="hy-nostyle btn btn-outline-primary btn-sm" type="button"><i class="fa fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> <span data-i18n="widgets.settings.postForum">Post on Forum</span></button>
+							<button id="post-forum" class="hy-nostyle btn btn-outline-primary btn-sm" type="button" disabled><i class="fa fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> <span data-i18n="widgets.settings.postForum">Post on Forum</span></button>
 							<p id="template-copy-status" class="help-text template-export-instruction" role="status" hidden></p>
 							<p class="help-text template-export-instruction"><strong data-i18n="widgets.settings.pasteImageHint">Switch to the rich-text editor in the forum.</strong> <span data-i18n="widgets.settings.pasteImageReason">This includes both generated preview images when you paste the post. Paste once,</span> <strong data-i18n="widgets.settings.pasteEditDescription">optionally add a description in the blank line below the title</strong><span data-i18n="widgets.settings.pasteWaitImage">, and wait for both images to finish uploading before posting.</span></p>
 							<p class="help-text" data-i18n="widgets.settings.editorSwitch">Select the A on the right of the outlined switch to use the rich-text editor.</p>
@@ -624,6 +625,12 @@
 				<button type="button" class="hy-nostyle btn settings-save-button" ng-class="{ 'is-dirty': settingsForm.$dirty }"
 					ng-click="settingsForm.$valid && settingsForm.$dirty ? saveSettings() : null;" ng-disabled="!settingsForm.$valid || !settingsForm.$dirty" bl-translate>Save</button>
 			</footer>
+		</div>
+	</div>
+	<div id="template-generation-overlay" class="template-generation-overlay" role="status" aria-live="polite" hidden>
+		<div class="template-generation-panel">
+			<p data-i18n="widgets.settings.generating">Generating the TWF and images. Please wait a moment.</p>
+			<p id="template-generation-progress" hidden></p>
 		</div>
 	</div>
 	<script type="text/ng-template" id="custom-date-filter.html">

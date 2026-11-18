@@ -12,21 +12,21 @@
 </head>
 <body class="homey-widget-full" ng-controller="SSLLogWidgetController">
   <main class="ssl-widget" ng-class="modeClass" ng-style="themeStyle">
-    <header class="ssl-widget-toolbar" ng-if="showSearch && !bllUnavailable">
-      <div class="ssl-toolbar-row">
-        <label class="ssl-visually-hidden" for="ssl-log-search">{{ labels.search }}</label>
-        <input id="ssl-log-search" class="ssl-log-search" type="search" ng-model="search.text"
+    <header class="ssl-widget-toolbar" ng-if="showToolbar && !bllUnavailable">
+      <div class="ssl-toolbar-row" ssl-control-layout="toolbar">
+        <input id="ssl-log-search" class="ssl-log-search" data-ssl-control="search" type="search" ng-show="showSearch"
+          ng-attr-aria-label="{{ labels.search }}" ng-model="search.text"
           ng-change="validateSearch()" ng-attr-placeholder="{{ labels.search }}">
-        <div class="ssl-filter" ng-keydown="filterKeydown($event)">
-          <button type="button" class="ssl-filter-button" ng-class="{ 'is-active': hasLevelFilter() }"
+        <div class="ssl-filter" data-ssl-control="filter" ng-show="showFilters" ng-keydown="filterKeydown($event)">
+          <button type="button" class="ssl-filter-button" ng-class="{ 'is-active': hasLevelFilter() || hasDateFilter() }"
             aria-haspopup="menu" ng-attr-aria-expanded="{{ filterMenu.open }}" ng-attr-aria-label="{{ labels.filters }}"
             ng-attr-title="{{ labels.filters }}" ng-click="toggleFilterMenu()">
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 5h18l-7 8.5V19l-4 2v-7.5z"/></svg>
           </button>
           <div class="ssl-filter-menu" role="menu" ng-if="filterMenu.open">
-            <div class="ssl-filter-group" ng-mouseenter="filterMenu.level = true" ng-mouseleave="filterMenu.level = false">
+            <div class="ssl-filter-group">
               <button type="button" class="ssl-filter-item" role="menuitem" aria-haspopup="true"
-                ng-attr-aria-expanded="{{ filterMenu.level }}" ng-click="filterMenu.level = true">
+                ng-attr-aria-expanded="{{ filterMenu.level }}" ng-click="openFilterGroup('level')">
                 <span>{{ labels.level }}</span><span class="ssl-filter-count" ng-if="hasLevelFilter()">{{ selectedLevelCount() }}</span><span aria-hidden="true">›</span>
               </button>
               <div class="ssl-filter-options" role="group" ng-attr-aria-label="{{ labels.level }}" ng-if="filterMenu.level">
@@ -38,10 +38,31 @@
                   ng-disabled="!hasLevelFilter()">{{ labels.allLevels }}</button>
               </div>
             </div>
+            <div class="ssl-filter-group">
+              <button type="button" class="ssl-filter-item" role="menuitem" aria-haspopup="true"
+                ng-attr-aria-expanded="{{ filterMenu.date }}" ng-click="openFilterGroup('date')">
+                <span>{{ labels.date }}</span><span class="ssl-filter-count" ng-if="hasDateFilter()">{{ dateFilterCount() }}</span><span aria-hidden="true">›</span>
+              </button>
+              <div class="ssl-filter-options ssl-filter-date-range" role="group" ng-attr-aria-label="{{ labels.date }}" ng-if="filterMenu.date">
+                <label>{{ labels.fromDate }}
+                  <input type="date" ng-model="dateFilter.from" ng-change="dateRangeChanged()"
+                    ng-model-options="{ allowInvalid: true }" ng-attr-max="{{ maxFromDate() }}">
+                </label>
+                <label>{{ labels.toDate }}
+                  <input type="date" ng-model="dateFilter.to" ng-change="dateRangeChanged()"
+                    ng-model-options="{ allowInvalid: true }" ng-attr-max="{{ todayDate() }}"
+                    ng-attr-min="{{ dateFilter.from | date:'yyyy-MM-dd' }}">
+                </label>
+                <span class="ssl-filter-date-error" role="alert" ng-if="dateFilterError">{{ dateFilterError }}</span>
+                <button type="button" class="ssl-filter-clear" role="menuitem" ng-click="clearDateRange()"
+                  ng-disabled="!hasDateFilter()">{{ labels.allDates }}</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <span class="ssl-search-error" role="alert" ng-if="searchError">{{ searchError }}</span>
+      <span class="ssl-filter-save-error" role="status" ng-if="filterSaveError">{{ filterSaveError }}</span>
     </header>
 
     <p class="ssl-widget-message" ng-if="loading">{{ labels.loading }}</p>
@@ -57,6 +78,16 @@
         <div ssl-log-card="log"></div>
       </div>
     </section>
+    <nav class="ssl-widget-pagination" ssl-control-layout="paging"
+      ng-if="paging && !loading && !error && !bllUnavailable" aria-label="{{ labels.pagination }}">
+      <button type="button" class="ssl-page-button" data-ssl-control="previousPage" ng-click="previousPage()" ng-disabled="pageIndex === 0 || pageLoading">
+        {{ labels.previousPage }}
+      </button>
+      <span data-ssl-control="pageNumber">{{ labels.page }} {{ pageIndex + 1 }}</span>
+      <button type="button" class="ssl-page-button" data-ssl-control="nextPage" ng-click="nextPage()" ng-disabled="!hasNextPage || pageLoading">
+        {{ labels.nextPage }}
+      </button>
+    </nav>
   </main>
 </body>
 </html>

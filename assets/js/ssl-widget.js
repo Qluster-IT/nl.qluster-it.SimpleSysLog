@@ -118,6 +118,9 @@ function sslShowAndroidLinks(Homey, settings, widgetHeight) {
   return Promise.resolve().then(function () {
     // A Web widget cannot read the Homey app's theme, so an automatic link keeps the theme of this moment.
     var linkSettings = Object.assign({}, settings);
+    if (typeof Homey.getWidgetInstanceId === 'function') {
+      linkSettings.filterStateId = Homey.getWidgetInstanceId();
+    }
     if (linkSettings.colorMode !== 'light' && linkSettings.colorMode !== 'dark') {
       linkSettings.colorMode = document.documentElement.classList.contains('homey-dark-mode') ? 'dark' : 'light';
     }
@@ -209,6 +212,30 @@ function onHomeyReady(Homey) {
       }
     };
   });
+  widgetModule.directive('sslControlLayout', function () {
+    return {
+      restrict: 'A',
+      link: function (scope, element, attrs) {
+        var nodes = {};
+        element[0].querySelectorAll('[data-ssl-control]').forEach(function (node) {
+          nodes[node.getAttribute('data-ssl-control')] = node;
+        });
+        scope.$watch('styleVersion', function () {
+          window.SSLWidgetLayout.renderControls(document, element[0], attrs.sslControlLayout, scope.design, scope.theme, nodes);
+        });
+        if (attrs.sslControlLayout === 'toolbar') {
+          scope.$watch('filterMenu.open', function (open) {
+            if (open) scope.$evalAsync(function () {
+              var menu = element[0].querySelector('.ssl-filter-menu');
+              if (!menu) return;
+              window.SSLWidgetLayout.applyControlText(menu, scope.design, scope.theme, 'filter');
+              window.SSLWidgetLayout.positionFilterMenu(menu);
+            });
+          });
+        }
+      }
+    };
+  });
   widgetModule.controller('SSLLogWidgetController', [
     '$scope',
     '$timeout',
@@ -217,6 +244,9 @@ function onHomeyReady(Homey) {
       var count = settings.entryCount === undefined || settings.entryCount === null
         ? 25 : Number(settings.entryCount);
       var searchMode = settings.searchMode === 'advanced' ? 'advanced' : 'simple';
+      var searchEnabled = settings.searchMode !== 'none';
+      var showFilters = settings.showFilters !== false;
+      var paging = settings.paging === true;
       // The design's format applies unless this widget chose its own; it is resolved once the styles load.
       var ownFormat = settings.datetimeFormat && typeof settings.datetimeFormat === 'object'
         ? settings.datetimeFormat.id : settings.datetimeFormat;
@@ -225,6 +255,8 @@ function onHomeyReady(Homey) {
       var dayFormat = 'ddd d MMM';
       var filters = readFilters(settings);
       var instanceId = Homey.getWidgetInstanceId();
+      var filterStatePath = '/filter-state/' + encodeURIComponent(instanceId);
+      var filterSaveQueue = Promise.resolve();
       var sequence = 0;
       var severities = {};
       var facilities = {};
@@ -243,9 +275,20 @@ function onHomeyReady(Homey) {
         filters: translate('widgets.filters.button', 'Filters'),
         level: translate('widgets.filters.level', 'Level'),
         allLevels: translate('widgets.filters.allLevels', 'All levels'),
+        date: translate('widgets.filters.date', 'Date'),
+        fromDate: translate('widgets.filters.fromDate', 'From'),
+        toDate: translate('widgets.filters.toDate', 'To'),
+        allDates: translate('widgets.filters.allDates', 'All dates'),
+        invalidDateRange: translate('widgets.filters.invalidDateRange', 'The start date must be on or before the end date.'),
+        futureDate: translate('widgets.filters.futureDate', 'Dates cannot be later than today.'),
+        filterSaveError: translate('widgets.filters.saveError', 'Could not save your filters. They may not be restored after a reload.'),
         loading: translate('widgets.loading', 'Loading logs…'),
         bllRequired: translate('widgets.bllRequired', 'Better Logic Library must be running when this widget is loaded.'),
-        noLogs: translate('widgets.noLogs', 'No matching log entries.')
+        noLogs: translate('widgets.noLogs', 'No matching log entries.'),
+        pagination: translate('widgets.pagination.label', 'Log pages'),
+        previousPage: translate('widgets.pagination.previous', 'Previous'),
+        nextPage: translate('widgets.pagination.next', 'Next'),
+        page: translate('widgets.pagination.page', 'Page')
       };
 
       $scope.loading = true;
@@ -261,6 +304,7 @@ function onHomeyReady(Homey) {
       $scope.theme = { elements: {} };
       $scope.styleVersion = 0;
       var alignTimer = null;
+      var scrollPending = false;
       // Every card is its own grid, so content-sized columns (time and level in the default design)
       // are aligned across the list after cards render; a timeout also runs in background tabs.
       $scope.scheduleTrackAlignment = function () {
@@ -274,11 +318,21 @@ function onHomeyReady(Homey) {
       if (typeof window.addEventListener === 'function') window.addEventListener('resize', $scope.scheduleTrackAlignment);
       if (document.fonts && document.fonts.ready) document.fonts.ready.then($scope.scheduleTrackAlignment);
       $scope.themeStyle = {};
-      $scope.showSearch = settings.showSearch !== false;
+      $scope.searchMode = searchEnabled ? searchMode : 'none';
+      $scope.showSearch = searchEnabled;
+      $scope.showFilters = showFilters;
+      $scope.showToolbar = searchEnabled || showFilters;
+      $scope.paging = paging;
+      $scope.pageIndex = 0;
+      $scope.hasNextPage = false;
+      $scope.pageLoading = false;
       $scope.modeClass = sslColorModeClass(settings);
-      $scope.filterMenu = { open: false, level: false };
+      $scope.filterMenu = { open: false, level: false, date: false };
       // Chosen levels by id; when any are chosen they replace the widget's minimum level.
       $scope.levelFilter = {};
+      $scope.dateFilter = { from: null, to: null };
+      $scope.dateFilterError = '';
+      $scope.filterSaveError = '';
       $scope.levels = SSL_SEVERITY_NAMES.map(function (name, id) {
         return {
           id: id,
@@ -294,9 +348,104 @@ function onHomeyReady(Homey) {
 
       $scope.hasLevelFilter = function () { return selectedLevels().length > 0; };
       $scope.selectedLevelCount = function () { return selectedLevels().length; };
+      function dateValue(value) {
+        if (value === undefined || value === null || value === '') return '';
+        var date = value instanceof Date ? value : new Date(value);
+        if (!Number.isFinite(date.getTime())) return '';
+        return String(date.getFullYear()).padStart(4, '0') + '-'
+          + String(date.getMonth() + 1).padStart(2, '0') + '-'
+          + String(date.getDate()).padStart(2, '0');
+      }
+      $scope.todayDate = function () { return dateValue(new Date()); };
+      $scope.maxFromDate = function () {
+        var to = dateValue($scope.dateFilter.to);
+        var today = $scope.todayDate();
+        return to && to < today ? to : today;
+      };
+      function localDate(value) {
+        if (value === null) return null;
+        if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+          throw new Error('The saved widget filter dates are invalid.');
+        }
+        var date = new Date(value + 'T00:00:00');
+        if (!Number.isFinite(date.getTime()) || dateValue(date) !== value) {
+          throw new Error('The saved widget filter dates are invalid.');
+        }
+        return date;
+      }
+      function restoreFilterState(state) {
+        if (!state || !Array.isArray(state.levels)) throw new Error('The saved widget filter state is invalid.');
+        var levels = {};
+        state.levels.forEach(function (id) {
+          if (!Number.isInteger(id) || id < 0 || id >= $scope.levels.length || levels[id]) {
+            throw new Error('The saved widget filter levels are invalid.');
+          }
+          levels[id] = true;
+        });
+        var from = localDate(state.from);
+        var to = localDate(state.to);
+        if (from && to && dateValue(from) > dateValue(to)) {
+          throw new Error('The saved widget filter dates are invalid.');
+        }
+        $scope.levelFilter = levels;
+        $scope.dateFilter = { from: from, to: to };
+      }
+      function persistFilterState() {
+        if (hasFutureDate()) return;
+        var state = {
+          levels: selectedLevels(),
+          from: dateValue($scope.dateFilter.from) || null,
+          to: dateValue($scope.dateFilter.to) || null
+        };
+        filterSaveQueue = filterSaveQueue.then(function () {
+          return Homey.api('PUT', filterStatePath, state);
+        }).then(function () {
+          if (destroyed) return;
+          $scope.$applyAsync(function () { $scope.filterSaveError = ''; });
+        }).catch(function (error) {
+          if (destroyed) return;
+          console.error('Unable to save Simple Sys Log widget filters', error);
+          $scope.$applyAsync(function () { $scope.filterSaveError = labels.filterSaveError; });
+        });
+      }
+      $scope.hasDateFilter = function () {
+        return !!(dateValue($scope.dateFilter.from) || dateValue($scope.dateFilter.to));
+      };
+      $scope.dateFilterCount = function () {
+        return Number(!!dateValue($scope.dateFilter.from)) + Number(!!dateValue($scope.dateFilter.to));
+      };
+      function hasFutureDate() {
+        var today = $scope.todayDate();
+        if (dateValue($scope.dateFilter.from) <= today && dateValue($scope.dateFilter.to) <= today) return false;
+        $scope.dateFilterError = labels.futureDate;
+        return true;
+      }
+      $scope.dateRangeChanged = function () {
+        var from = dateValue($scope.dateFilter.from);
+        var to = dateValue($scope.dateFilter.to);
+        if (hasFutureDate()) return;
+        if (from && to && from > to) {
+          $scope.dateFilterError = labels.invalidDateRange;
+          return;
+        }
+        $scope.dateFilterError = '';
+        persistFilterState();
+        reloadLogs(true);
+      };
+      $scope.clearDateRange = function () {
+        $scope.dateFilter = { from: null, to: null };
+        $scope.dateFilterError = '';
+        persistFilterState();
+        reloadLogs(true);
+      };
       $scope.toggleFilterMenu = function () {
         $scope.filterMenu.open = !$scope.filterMenu.open;
         $scope.filterMenu.level = false;
+        $scope.filterMenu.date = false;
+      };
+      $scope.openFilterGroup = function (group) {
+        $scope.filterMenu.level = group === 'level';
+        $scope.filterMenu.date = group === 'date';
       };
       $scope.filterKeydown = function (event) {
         if (event.key !== 'Escape' || !$scope.filterMenu.open) return;
@@ -306,10 +455,22 @@ function onHomeyReady(Homey) {
       };
       $scope.toggleLevel = function (id) {
         $scope.levelFilter[id] = !$scope.levelFilter[id];
-        reloadLogs();
+        persistFilterState();
+        reloadLogs(true);
       };
       $scope.clearLevels = function () {
         $scope.levelFilter = {};
+        persistFilterState();
+        reloadLogs(true);
+      };
+      $scope.previousPage = function () {
+        if (!paging || $scope.pageIndex <= 0 || $scope.pageLoading) return;
+        $scope.pageIndex--;
+        reloadLogs();
+      };
+      $scope.nextPage = function () {
+        if (!paging || !$scope.hasNextPage || $scope.pageLoading) return;
+        $scope.pageIndex++;
         reloadLogs();
       };
 
@@ -340,13 +501,19 @@ function onHomeyReady(Homey) {
 
       // Mirrors the server-side widget filters for realtime entries.
       function matchesFilters(entry) {
-        var levels = selectedLevels();
+        var levels = showFilters ? selectedLevels() : [];
         if (levels.length) {
           if (levels.indexOf(Number(entry.severity)) < 0) return false;
         } else if (filters.minSeverity !== undefined && !(Number(entry.severity) <= filters.minSeverity)) return false;
         if (filters.facility !== undefined && Number(entry.facility) !== filters.facility) return false;
         if (filters.app !== undefined && !containsText(entry.app, filters.app)) return false;
         if (filters.hostname !== undefined && !containsText(entry.hostname, filters.hostname)) return false;
+        var from = showFilters ? dateValue($scope.dateFilter.from) : '';
+        var to = showFilters ? dateValue($scope.dateFilter.to) : '';
+        if (from || to) {
+          var entryDate = dateValue(entry.timestamp);
+          if (!entryDate || (from && entryDate < from) || (to && entryDate > to)) return false;
+        }
         return true;
       }
 
@@ -390,13 +557,7 @@ function onHomeyReady(Homey) {
           dayFormat = design.daySeparatorFormat;
         }
         $scope.styleVersion++;
-        var style = {};
-        Object.keys(theme.colors).forEach(function (key) {
-          var color = theme.colors[key];
-          if (color && color !== 'automatic') style['--ssl-' + key] = 'var(--ssl-color-' + color + ')';
-        });
-        if (design.widgetBorderWidth) style['--ssl-outline-width'] = design.widgetBorderWidth + 'px';
-        $scope.themeStyle = style;
+        $scope.themeStyle = window.SSLWidgetLayout.widgetStyle(design, theme);
       }
 
       function fingerprint(log) {
@@ -419,7 +580,7 @@ function onHomeyReady(Homey) {
       function refreshSearch() {
         try {
           $scope.filteredLogs = $scope.logs.filter(function (log) {
-            return window.SSLWidgetSearch.matches(log, $scope.search.text, searchMode);
+            return window.SSLWidgetSearch.matches(log, searchEnabled ? $scope.search.text : '', searchMode);
           });
           $scope.searchError = '';
         } catch (error) {
@@ -475,6 +636,8 @@ function onHomeyReady(Homey) {
         var list = document.getElementById('ssl-log-list');
         // Web widget wrappers scroll the page itself; dashboard widgets scroll the list.
         var pageScroll = !!document.documentElement && document.documentElement.classList.contains('ssl-android-page');
+        var scroller = pageScroll ? document.scrollingElement || document.documentElement : list;
+        var followTop = !!scroller && scroller.scrollTop <= 24;
         var toolbar = pageScroll ? document.querySelector('.ssl-widget-toolbar') : null;
         var viewTop = !list ? 0 : pageScroll ? (toolbar ? toolbar.getBoundingClientRect().bottom : 0)
           : list.getBoundingClientRect().top;
@@ -485,13 +648,18 @@ function onHomeyReady(Homey) {
         $scope.$applyAsync(function () {
           if ($scope.logs.some(function (item) { return item._fingerprint === log._fingerprint; })) return;
           $scope.logs.unshift(log);
-          if ($scope.logs.length > count) $scope.logs.length = count;
+          if ($scope.logs.length > count) {
+            $scope.logs.length = count;
+            if (paging) $scope.hasNextPage = true;
+          }
           refreshSearch();
-          if (!anchor) return;
+          if (scrollPending || (!anchor && !followTop)) return;
+          scrollPending = true;
           window.requestAnimationFrame(function () {
-            if (destroyed || !list.contains(anchor)) return;
-            var scroller = pageScroll ? document.scrollingElement || document.documentElement : list;
-            scroller.scrollTop += anchor.getBoundingClientRect().top - top;
+            scrollPending = false;
+            if (destroyed) return;
+            if (followTop) scroller.scrollTop = 0;
+            else if (list.contains(anchor)) scroller.scrollTop += anchor.getBoundingClientRect().top - top;
           });
         });
       }
@@ -512,6 +680,7 @@ function onHomeyReady(Homey) {
 
       function onRealtimeLog(entry) {
         if (destroyed || $scope.bllUnavailable || !entry || !Number.isSafeInteger(count)) return;
+        if (paging && $scope.pageIndex > 0) return;
         if (!matchesFilters(entry)) return;
         if (!realtimeReady) {
           if (pendingRealtimeEntries.length >= count) pendingRealtimeEntries.shift();
@@ -529,13 +698,18 @@ function onHomeyReady(Homey) {
       }
 
       function logsPath() {
-        var path = '/logs?take=' + encodeURIComponent(count)
+        var path = '/logs?take=' + encodeURIComponent(count + (paging ? 1 : 0))
           + '&timestampFormat=' + encodeURIComponent(datetimeFormat)
           + '&dayFormat=' + encodeURIComponent(dayFormat);
+        if (paging) path += '&skip=' + encodeURIComponent($scope.pageIndex * count);
         Object.keys(filters).forEach(function (key) {
           path += '&' + key + '=' + encodeURIComponent(filters[key]);
         });
-        var levels = selectedLevels();
+        var from = showFilters ? dateValue($scope.dateFilter.from) : '';
+        var to = showFilters ? dateValue($scope.dateFilter.to) : '';
+        if (from) path += '&dateFrom=' + encodeURIComponent(from);
+        if (to) path += '&dateTo=' + encodeURIComponent(to);
+        var levels = showFilters ? selectedLevels() : [];
         if (levels.length) path += '&severities=' + encodeURIComponent(levels.join(','));
         return path;
       }
@@ -543,6 +717,7 @@ function onHomeyReady(Homey) {
       function applyLogData(data) {
         if (!data.available) {
           $scope.bllUnavailable = true;
+          $scope.pageLoading = false;
           pendingRealtimeEntries.length = 0;
           realtimeReady = true;
           return;
@@ -550,7 +725,9 @@ function onHomeyReady(Homey) {
         $scope.bllUnavailable = false;
         severities = data.severities || {};
         facilities = data.facilities || {};
-        $scope.logs = data.logs.map(normalizeLog);
+        $scope.hasNextPage = paging && data.logs.length > count;
+        $scope.logs = data.logs.slice(0, count).map(normalizeLog);
+        $scope.pageLoading = false;
         refreshSearch();
         realtimeReady = true;
         var pending = pendingRealtimeEntries;
@@ -558,15 +735,18 @@ function onHomeyReady(Homey) {
         pending.forEach(insertRealtimeEntry);
       }
 
-      // Refetches with the levels chosen in the filter menu; only the latest request applies.
+      // Refetches with the current filters; only the latest request applies.
       var levelRequest = 0;
-      var levelsChangedDuringLoad = false;
-      function reloadLogs() {
+      var filtersChangedDuringLoad = false;
+      function reloadLogs(resetPage) {
+        if (showFilters && hasFutureDate()) return;
+        if (resetPage && paging) $scope.pageIndex = 0;
         if (initialLoadPending) {
-          levelsChangedDuringLoad = true;
+          filtersChangedDuringLoad = true;
           return;
         }
         if (destroyed || $scope.bllUnavailable) return;
+        $scope.pageLoading = paging;
         var request = ++levelRequest;
         realtimeReady = false;
         pendingRealtimeEntries.length = 0;
@@ -577,6 +757,7 @@ function onHomeyReady(Homey) {
         }).catch(function (error) {
           if (destroyed || request !== levelRequest) return;
           $scope.$applyAsync(function () {
+            $scope.pageLoading = false;
             $scope.error = error && error.message
               ? error.message : translate('widgets.loadError', 'Unable to load log entries.');
             pendingRealtimeEntries.length = 0;
@@ -600,6 +781,7 @@ function onHomeyReady(Homey) {
         }).catch(function (error) {
           if (destroyed) return;
           $scope.$applyAsync(function () {
+            $scope.pageLoading = false;
             $scope.error = error && error.message
               ? error.message : translate('widgets.loadError', 'Unable to load log entries.');
             pendingRealtimeEntries.length = 0;
@@ -623,7 +805,11 @@ function onHomeyReady(Homey) {
       var storageReadyDuringInitialLoad = false;
       Homey.on('log_updated', onRealtimeLog);
       Homey.on('log_storage_ready', onLogStorageReady);
-      Homey.api('GET', '/styles', {}).then(function (styles) {
+      Homey.api('GET', filterStatePath, {}).then(function (state) {
+        if (destroyed) return null;
+        restoreFilterState(state);
+        return Homey.api('GET', '/styles', {});
+      }).then(function (styles) {
         if (destroyed) return null;
         applyStyles(styles);
         return Homey.api('POST', '/register-timestamp-format', {
@@ -644,8 +830,11 @@ function onHomeyReady(Homey) {
         if (destroyed) return;
         applyLogData(data);
       }).catch(function (error) {
-        if (!destroyed) $scope.error = error && error.message
-          ? error.message : translate('widgets.loadError', 'Unable to load log entries.');
+        if (!destroyed) {
+          $scope.pageLoading = false;
+          $scope.error = error && error.message
+            ? error.message : translate('widgets.loadError', 'Unable to load log entries.');
+        }
         pendingRealtimeEntries.length = 0;
         realtimeReady = true;
       }).finally(function () {
@@ -657,21 +846,12 @@ function onHomeyReady(Homey) {
         });
         Homey.ready({ height: widgetHeight });
         if (storageReadyDuringInitialLoad && !$scope.error) reloadAfterStorageReady();
-        else if (levelsChangedDuringLoad && !$scope.error) reloadLogs();
+        else if (filtersChangedDuringLoad && !$scope.error) reloadLogs();
       });
 
       document.addEventListener('visibilitychange', function () {
         if (document.hidden === false && !destroyed && !$scope.bllUnavailable) {
-          Homey.api('GET', logsPath(), {}).then(function (data) {
-            if (!destroyed && data.available) {
-              $scope.$applyAsync(function () {
-                $scope.logs = data.logs.map(normalizeLog);
-                refreshSearch();
-              });
-            }
-          }).catch(function (error) {
-            console.error('Unable to refresh visible Simple Sys Log widget', error);
-          });
+          reloadLogs();
         }
       });
 

@@ -20,34 +20,34 @@
       "id": "entryCount",
       "type": "number",
       "title": {
-        "en": "Entries to display",
-        "nl": "Aantal logregels",
-        "da": "Antal logposter",
-        "de": "Anzahl der Einträge",
-        "es": "Entradas para mostrar",
-        "fr": "Entrées à afficher",
-        "it": "Voci da visualizzare",
-        "no": "Antall oppføringer",
-        "sv": "Antal poster",
-        "pl": "Liczba wpisów",
-        "ru": "Количество записей",
-        "ko": "표시할 항목 수",
-        "ar": "عدد السجلات المعروضة"
+        "en": "Entries per page",
+        "nl": "Logregels per pagina",
+        "da": "Logposter pr. side",
+        "de": "Einträge pro Seite",
+        "es": "Entradas por página",
+        "fr": "Entrées par page",
+        "it": "Voci per pagina",
+        "no": "Oppføringer per side",
+        "sv": "Poster per sida",
+        "pl": "Wpisy na stronę",
+        "ru": "Записей на страницу",
+        "ko": "페이지당 항목 수",
+        "ar": "السجلات لكل صفحة"
       },
       "hint": {
-        "en": "Show the newest entries. Enter a whole number of 1 or more.",
-        "nl": "Toon de nieuwste logregels. Voer een heel getal van 1 of hoger in.",
-        "da": "Vis de nyeste poster. Angiv et helt tal på mindst 1.",
-        "de": "Zeigt die neuesten Einträge. Gib eine ganze Zahl ab 1 ein.",
-        "es": "Muestra las entradas más recientes. Introduce un número entero de 1 o más.",
-        "fr": "Affiche les entrées les plus récentes. Saisissez un nombre entier supérieur ou égal à 1.",
-        "it": "Mostra le voci più recenti. Inserisci un numero intero pari o superiore a 1.",
-        "no": "Vis de nyeste oppføringene. Skriv inn et heltall på minst 1.",
-        "sv": "Visa de senaste posterna. Ange ett heltal på minst 1.",
-        "pl": "Wyświetl najnowsze wpisy. Wpisz liczbę całkowitą nie mniejszą niż 1.",
-        "ru": "Показывать последние записи. Введите целое число не меньше 1.",
-        "ko": "최신 항목을 표시합니다. 1 이상의 정수를 입력하세요.",
-        "ar": "اعرض أحدث السجلات. أدخل عددًا صحيحًا لا يقل عن 1."
+        "en": "With paging enabled, this is the number of entries on each page. Otherwise, it is the number of newest entries to show.",
+        "nl": "Met paginering is dit het aantal logregels per pagina. Anders is dit het aantal nieuwste logregels dat wordt getoond.",
+        "da": "Med sideinddeling er dette antallet logposter pr. side. Ellers er det antallet nyeste poster, der vises.",
+        "de": "Bei aktivierter Seitennavigation ist dies die Anzahl der Einträge pro Seite. Andernfalls ist es die Anzahl der neuesten Einträge.",
+        "es": "Con la paginación activada, indica las entradas por página. De lo contrario, indica cuántas entradas recientes se muestran.",
+        "fr": "Lorsque la pagination est activée, nombre d’entrées par page. Sinon, nombre d’entrées récentes affichées.",
+        "it": "Con la paginazione attiva, indica le voci per pagina. Altrimenti, indica quante voci recenti mostrare.",
+        "no": "Med sideinndeling er dette antallet oppføringer per side. Ellers er det antallet nyeste oppføringer som vises.",
+        "sv": "Med sidindelning är detta antalet poster per sida. Annars är det antalet senaste poster som visas.",
+        "pl": "Przy włączonej paginacji jest to liczba wpisów na stronę. W przeciwnym razie określa liczbę wyświetlanych najnowszych wpisów.",
+        "ru": "При включённой пагинации это число записей на страницу. Иначе это число отображаемых последних записей.",
+        "ko": "페이지 나누기를 사용하면 페이지당 항목 수입니다. 사용하지 않으면 표시할 최신 항목 수입니다.",
+        "ar": "عند تفعيل تقسيم الصفحات، يحدد هذا عدد السجلات في كل صفحة. وإلا يحدد عدد أحدث السجلات المعروضة."
       },
       "value": 25,
       "min": 1
@@ -268,26 +268,6 @@
       }
     },
     {
-      "id": "showSearch",
-      "type": "checkbox",
-      "title": {
-        "en": "Show search bar",
-        "nl": "Zoekbalk tonen",
-        "da": "Vis søgefelt",
-        "de": "Suchleiste anzeigen",
-        "es": "Mostrar barra de búsqueda",
-        "fr": "Afficher la barre de recherche",
-        "it": "Mostra barra di ricerca",
-        "no": "Vis søkefelt",
-        "sv": "Visa sökfält",
-        "pl": "Pokaż pasek wyszukiwania",
-        "ru": "Показывать строку поиска",
-        "ko": "검색 표시줄 표시",
-        "ar": "إظهار شريط البحث"
-      },
-      "value": true
-    },
-    {
       "id": "searchMode",
       "type": "dropdown",
       "title": {
@@ -307,6 +287,24 @@
       },
       "value": "simple",
       "values": [
+        {
+          "id": "none",
+          "title": {
+            "en": "None",
+            "nl": "Geen",
+            "da": "Ingen",
+            "de": "Keine",
+            "es": "Ninguno",
+            "fr": "Aucun",
+            "it": "Nessuno",
+            "no": "Ingen",
+            "sv": "Ingen",
+            "pl": "Brak",
+            "ru": "Нет",
+            "ko": "없음",
+            "ar": "بدون"
+          }
+        },
         {
           "id": "simple",
           "title": {
@@ -344,6 +342,61 @@
           }
         }
       ]
+    },
+    {
+      "id": "showFilters",
+      "type": "checkbox",
+      "title": {
+        "en": "Show filters",
+        "nl": "Filters tonen",
+        "da": "Vis filtre",
+        "de": "Filter anzeigen",
+        "es": "Mostrar filtros",
+        "fr": "Afficher les filtres",
+        "it": "Mostra filtri",
+        "no": "Vis filtre",
+        "sv": "Visa filter",
+        "pl": "Pokaż filtry",
+        "ru": "Показывать фильтры",
+        "ko": "필터 표시",
+        "ar": "إظهار عوامل التصفية"
+      },
+      "value": true
+    },
+    {
+      "id": "paging",
+      "type": "checkbox",
+      "title": {
+        "en": "Enable paging",
+        "nl": "Paginering inschakelen",
+        "da": "Aktivér sideinddeling",
+        "de": "Seitennavigation aktivieren",
+        "es": "Activar paginación",
+        "fr": "Activer la pagination",
+        "it": "Attiva paginazione",
+        "no": "Aktiver sideinndeling",
+        "sv": "Aktivera sidindelning",
+        "pl": "Włącz paginację",
+        "ru": "Включить пагинацию",
+        "ko": "페이지 나누기 사용",
+        "ar": "تفعيل تقسيم الصفحات"
+      },
+      "hint": {
+        "en": "Show Previous and Next buttons below the log entries.",
+        "nl": "Toon knoppen Vorige en Volgende onder de logregels.",
+        "da": "Vis knapperne Forrige og Næste under logposterne.",
+        "de": "Zeigt die Schaltflächen Zurück und Weiter unter den Einträgen.",
+        "es": "Muestra los botones Anterior y Siguiente debajo de las entradas.",
+        "fr": "Affiche les boutons Précédent et Suivant sous les entrées.",
+        "it": "Mostra i pulsanti Precedente e Successivo sotto le voci.",
+        "no": "Vis knappene Forrige og Neste under oppføringene.",
+        "sv": "Visa knapparna Föregående och Nästa under posterna.",
+        "pl": "Pokaż przyciski Poprzednia i Następna pod wpisami.",
+        "ru": "Показывать кнопки «Назад» и «Далее» под записями.",
+        "ko": "항목 아래에 이전 및 다음 버튼을 표시합니다.",
+        "ar": "إظهار زري السابق والتالي أسفل السجلات."
+      },
+      "value": false
     },
     {
       "id": "minSeverity",
@@ -1105,6 +1158,14 @@
     }
   ],
   "api": {
+    "getWidgetFilterState": {
+      "method": "GET",
+      "path": "/filter-state/:instanceId"
+    },
+    "setWidgetFilterState": {
+      "method": "PUT",
+      "path": "/filter-state/:instanceId"
+    },
     "getWidgetStyles": {
       "method": "GET",
       "path": "/styles"

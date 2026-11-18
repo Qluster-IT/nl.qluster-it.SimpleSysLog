@@ -57,7 +57,7 @@
   var colorRoles = ['background', 'surface', 'text', 'muted', 'border', 'accent',
     'emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug', 'outline'];
   var colorNames = ['automatic', 'red', 'orange', 'yellow', 'green', 'teal', 'cyan', 'blue',
-    'indigo', 'purple', 'pink', 'brown', 'grey', 'black', 'white'];
+    'indigo', 'purple', 'pink', 'brown', 'grey', 'black', 'black-light', 'white'];
   var elementColors = ['default', 'severity'].concat(colorNames.slice(1));
   var elementBackgrounds = ['default', 'none', 'severity'].concat(colorNames.slice(1));
   var separatorColors = ['default'].concat(colorNames.slice(1));
@@ -69,13 +69,21 @@
   var colorNameFallbacks = {
     automatic: 'Automatic', red: 'Red', orange: 'Orange', yellow: 'Yellow', green: 'Green', teal: 'Teal',
     cyan: 'Cyan', blue: 'Blue', indigo: 'Indigo', purple: 'Purple', pink: 'Pink', brown: 'Brown',
-    grey: 'Grey', black: 'Black', white: 'White'
+    grey: 'Grey', black: 'Black', 'black-light': 'Black (light/dark)', white: 'White'
   };
   var fontFallbacks = {
     system: 'System', 'sans-serif': 'Sans-serif (Arial)', serif: 'Serif (Georgia)', monospace: 'Monospace (Courier New)',
     verdana: 'Verdana', trebuchet: 'Trebuchet MS', times: 'Times New Roman'
   };
   var lineStyleFallbacks = { solid: 'Solid', dashed: 'Dashed', dotted: 'Dotted', double: 'Double' };
+  var textStyleFallbacks = { textCase: 'Text case', weight: 'Weight', italic: 'Italic', spacing: 'Letter spacing', wrap: 'Text wrapping' };
+  var textStyleValueFallbacks = {
+    textCase: { none: 'As written', uppercase: 'UPPERCASE', lowercase: 'lowercase', capitalize: 'Capitalize Words' },
+    weight: { normal: 'Normal', medium: 'Medium', semibold: 'Semi-bold', bold: 'Bold', extrabold: 'Extra bold' },
+    italic: { off: 'Off', on: 'On' },
+    spacing: { none: 'None', narrow: 'Narrow', wide: 'Wide' },
+    wrap: { normal: 'Wrap to fit', nowrap: 'No wrapping', words: 'Stack at spaces' }
+  };
   var linePositionFallbacks = { behind: 'Behind the date', above: 'Above the date', below: 'Below the date' };
   // Homey shows app settings in dark mode by inverting the settings iframe with a CSS filter.
   // That filter is invisible from inside the frame, so it is detected through the system color scheme.
@@ -87,9 +95,9 @@
   var mode = 'design';
   var forumTopicUrl = 'https://community.homey.app/t/162351';
   var templates = {
-    section: 'export', busy: false, review: null, exportText: '', exportDesignName: '', exportThemeName: '',
+    section: 'export', busy: false, generating: false, review: null, exportText: '', exportDesignName: '', exportThemeName: '',
     catalog: null, favorites: {}, selectedId: null, showPreviews: false, previewsAvailable: false,
-    imageData: null
+    imageData: null, copyStatus: null
   };
 
   function t(key, fallback) {
@@ -166,7 +174,7 @@
   function setSaveState(isDirty) {
     dirty = isDirty;
     var button = document.getElementById('save-styles');
-    button.disabled = !isDirty;
+    button.disabled = !isDirty || !!root.querySelector('.style-color-control [aria-invalid="true"]');
     button.classList.toggle('is-dirty', isDirty);
     updateHistoryButtons();
   }
@@ -333,7 +341,7 @@
       button.setAttribute('aria-pressed', String(button.dataset.mode === mode));
     });
     byId('style-select-label').textContent = isDesign
-      ? t('widgets.settings.selectDesign', 'Design style') : t('widgets.settings.theme', 'Theme');
+      ? t('widgets.settings.selectDesign', 'Design') : t('widgets.settings.theme', 'Theme');
     byId('style-new-label').textContent = isDesign
       ? t('widgets.settings.newDesign', 'New style') : t('widgets.settings.newTheme', 'New theme');
     fillGroupedSelect(byId('style-select'), isDesign ? builtInDesigns : builtInThemes,
@@ -350,7 +358,7 @@
       panel.hidden = panel.dataset.modePanel !== mode;
     });
     byId('preview-other-label').textContent = isDesign
-      ? t('widgets.settings.theme', 'Theme') : t('widgets.settings.selectDesign', 'Design style');
+      ? t('widgets.settings.theme', 'Theme') : t('widgets.settings.selectDesign', 'Design');
     fillGroupedSelect(byId('preview-other'), isDesign ? builtInThemes : builtInDesigns,
       isDesign ? collection.themes : collection.designs, isDesign ? currentThemeId : currentDesignId, !isDesign);
     // A new item or mode starts without a selection; theme mode starts on the Widget colors.
@@ -366,6 +374,11 @@
 
   function L(key, fallback) { return t('widgets.settings.layout.' + key, fallback); }
   function elementLabel(id) {
+    if (id === 'search') return t('widgets.search', 'Search');
+    if (id === 'filter') return t('widgets.filters.button', 'Filters');
+    if (id === 'previousPage') return t('widgets.pagination.previous', 'Previous');
+    if (id === 'pageNumber') return t('widgets.pagination.page', 'Page');
+    if (id === 'nextPage') return t('widgets.pagination.next', 'Next');
     if (id === SEPARATOR_ID) return L('separator_date', 'Date');
     if (id === LINE_ID) return L('separator_line', 'Line');
     if (isBorder(id)) return L('border', 'Border') + ' ' + (layoutApi.BORDER_IDS.indexOf(id) + 1);
@@ -373,14 +386,23 @@
   }
   function clone(value) { return JSON.parse(JSON.stringify(value)); }
 
-  // The design's card grid, or with area "separator" the design's day separator grid.
-  function gridFor(area, design) {
+  function gridFor(area, design, editing) {
     design = design || selectedDesign();
+    if (layoutApi.CONTROL_AREAS[area]) {
+      var key = layoutApi.CONTROL_AREAS[area].key;
+      if (editing && !design[key]) design[key] = layoutApi.defaultControlLayout(area);
+      return design[key] || layoutApi.defaultControlLayout(area);
+    }
     if (area !== 'separator') return design;
     if (!design.daySeparatorLayout) design.daySeparatorLayout = layoutApi.defaultSeparatorLayout();
     return design.daySeparatorLayout;
   }
-  function maxRowsFor(area) { return area === 'separator' ? layoutApi.MAX_SEPARATOR_ROWS : layoutApi.MAX_ROWS; }
+  function maxRowsFor(area) { return area ? layoutApi.MAX_SEPARATOR_ROWS : layoutApi.MAX_ROWS; }
+  function partLabel(area) {
+    if (area === 'toolbar') return L('search_filters', 'Search and filters');
+    if (area === 'paging') return L('paging', 'Paging');
+    return L('day_separator', 'Day separator');
+  }
 
   function newColumn(span) {
     return { span: span, rowSpan: 1, align: 'left', valign: 'top', direction: 'horizontal', width: 'span', elements: [] };
@@ -439,7 +461,7 @@
   }
 
   function changeDesign(change, area) {
-    var grid = gridFor(area);
+    var grid = gridFor(area, undefined, true);
     var keep = change(grid);
     fitRows(grid, keep);
     setDirty();
@@ -653,13 +675,28 @@
     helpToggle.setAttribute('aria-expanded', String(help.expanded));
     helpToggle.querySelector('i').className = 'fa fa-solid ' + (help.expanded ? 'fa-chevron-up' : 'fa-chevron-down');
     var design = selectedDesign();
+    if (!design.showDaySeparators && selection && selection.area === 'separator' && selection.type !== 'separator') {
+      selection = isDesign ? { type: 'separator', area: 'separator' } : { type: 'widget' };
+    }
     var editor = byId('group-editor');
     editor.replaceChildren();
     var widget = editorButton('style-row-select style-widget-select', L('widget', 'Widget'));
     setPressed(widget, isSelected('widget'), 'style-row-selected');
     widget.addEventListener('click', function () { toggleSelection({ type: 'widget' }); });
     editor.appendChild(widget);
-    renderGridEditor(editor, design, undefined, layoutApi.CARD_ELEMENT_IDS, isDesign);
+
+    function controlArea(area) {
+      var node = element('div', 'style-separator-area');
+      node.setAttribute('data-style-area', area);
+      var button = editorButton('style-row-select style-widget-select', partLabel(area));
+      button.disabled = !isDesign;
+      setPressed(button, isSelected('part', undefined, undefined, undefined, area), 'style-row-selected');
+      button.addEventListener('click', function () { toggleSelection({ type: 'part', area: area }); });
+      node.appendChild(button);
+      renderGridEditor(node, gridFor(area, design), area, layoutApi.CONTROL_AREAS[area].ids, isDesign);
+      editor.appendChild(node);
+    }
+    controlArea('toolbar');
 
     // The day separator has its own grid; the drag code keeps elements, rows and columns within their area.
     var separatorArea = element('div', 'style-separator-area');
@@ -670,8 +707,12 @@
     setPressed(separator, isSelected('separator', undefined, undefined, undefined, 'separator'), 'style-row-selected');
     separator.addEventListener('click', function () { toggleSelection({ type: 'separator', area: 'separator' }); });
     separatorArea.appendChild(separator);
-    renderGridEditor(separatorArea, gridFor('separator', design), 'separator', layoutApi.SEPARATOR_ELEMENT_IDS, isDesign);
+    if (design.showDaySeparators) {
+      renderGridEditor(separatorArea, gridFor('separator', design), 'separator', layoutApi.SEPARATOR_ELEMENT_IDS, isDesign);
+    }
     editor.appendChild(separatorArea);
+    renderGridEditor(editor, design, undefined, layoutApi.CARD_ELEMENT_IDS, isDesign);
+    controlArea('paging');
     renderSelectionControls();
   }
 
@@ -698,6 +739,68 @@
     if (isAlert) hint.setAttribute('role', 'alert');
     container.appendChild(hint);
     return hint;
+  }
+
+  function syncColorValidity() {
+    var invalid = !!root.querySelector('.style-color-control [aria-invalid="true"]');
+    root.querySelectorAll('.mode-button, #style-select, #preview-other').forEach(function (control) {
+      control.disabled = invalid;
+    });
+    setSaveState(dirty);
+  }
+
+  function addColorSelect(container, name, label, options, value, onChange) {
+    var custom = layoutApi.isHexColor(value);
+    var wrapper = element('div', 'style-color-control');
+    var hexControls = element('div', 'style-hex-controls');
+    hexControls.hidden = !custom;
+    var text = element('input', 'hy-nostyle form-control');
+    text.type = 'text';
+    text.maxLength = 7;
+    text.spellcheck = false;
+    text.value = custom ? value : '#2F8DF6';
+    text.setAttribute('aria-label', L('color_hex', 'HEX'));
+    var picker = element('input', 'hy-nostyle form-control form-control-color');
+    picker.type = 'color';
+    picker.value = text.value;
+    picker.setAttribute('aria-label', L('color_picker', 'Color picker'));
+    var select = addSelect(container, name, label, options.concat([['hex', L('color_hex', 'HEX')]]),
+      custom ? 'hex' : value, function (choice) {
+        hexControls.hidden = choice !== 'hex';
+        if (choice === 'hex') {
+          if (!layoutApi.isHexColor(text.value)) text.value = '#2F8DF6';
+          commit();
+        } else {
+          text.removeAttribute('aria-invalid');
+          error.hidden = true;
+          onChange(choice);
+          syncColorValidity();
+        }
+      });
+    select.replaceWith(wrapper);
+    hexControls.append(text, picker);
+    wrapper.append(select, hexControls);
+    var error = addHint(wrapper, L('hex_invalid', 'Enter a HEX color in #RRGGBB format.'), true);
+    error.hidden = true;
+    function commit() {
+      var valid = layoutApi.isHexColor(text.value);
+      text.setAttribute('aria-invalid', String(!valid));
+      error.hidden = valid;
+      if (valid) {
+        picker.value = text.value;
+        onChange(text.value);
+      }
+      syncColorValidity();
+    }
+    text.addEventListener('input', commit);
+    picker.addEventListener('input', function () { text.value = picker.value; commit(); });
+    return select;
+  }
+
+  function addPixelSelect(container, name, label, value, min, max, fallback, onChange) {
+    return addSelect(container, name, label, [['', fallback]].concat(range(min, max).map(function (pixel) {
+      return [pixel, pixel];
+    })), value === undefined ? '' : value, onChange);
   }
 
   // Number inputs only store valid values; an invalid value shows an alert instead.
@@ -829,7 +932,7 @@
 
   function colorOptions(values) {
     return values.map(function (value) {
-      if (value === 'default') return [value, L('color_default', 'Theme color')];
+      if (value === 'default') return [value, L('color_default', 'App default')];
       if (value === 'none') return [value, L('color_none', 'None')];
       if (value === 'severity') return [value, t('widgets.fields.severity', 'Severity')];
       return [value, t('widgets.settings.colorNames.' + value, colorNameFallbacks[value])];
@@ -839,6 +942,7 @@
   function renderSelectionControls() {
     var container = byId('selection-controls');
     container.replaceChildren();
+    syncColorValidity();
     var item = mode === 'design' ? selectedDesign() : selectedTheme();
     if (!selection || isBuiltIn(item.id)) return;
     if (mode === 'theme') {
@@ -850,9 +954,10 @@
     var grid = gridFor(area, design);
     var group;
     var controls = element('div', 'style-position-controls');
-    if (selection.type === 'widget' || selection.type === 'separator') {
+    if (selection.type === 'widget' || selection.type === 'separator' || selection.type === 'part') {
       var isSeparator = selection.type === 'separator';
-      group = fieldset('style-progress-controls', isSeparator ? L('day_separator', 'Day separator') : L('widget', 'Widget'));
+      var isControlPart = selection.type === 'part';
+      group = fieldset('style-progress-controls', area ? partLabel(area) : L('widget', 'Widget'));
       if (isSeparator) {
         var show = element('label', 'hy-nostyle style-full-row');
         var checkbox = element('input', 'hy-nostyle');
@@ -862,22 +967,56 @@
         checkbox.addEventListener('change', function () {
           selectedDesign().showDaySeparators = checkbox.checked;
           setDirty();
-          renderPreview();
+          renderLayoutEditor();
+          byId(controlId('day-separators')).focus();
         });
         show.append(checkbox, element('span', '', t('widgets.settings.daySeparators', 'Show day separators')));
         controls.appendChild(show);
       }
-      addSelect(controls, 'row-count', L('row_count', 'Number of rows'),
-        range(1, maxRowsFor(area)).map(function (value) { return [value, value]; }), grid.rows.length, function (value) {
-          setRowCount(Number(value), area).catch(function (error) { setStatus(error.message, true); });
+      if (!isSeparator || design.showDaySeparators) {
+        addSelect(controls, 'row-count', L('row_count', 'Number of rows'),
+          range(1, maxRowsFor(area)).map(function (value) { return [value, value]; }), grid.rows.length, function (value) {
+            setRowCount(Number(value), area).catch(function (error) { setStatus(error.message, true); });
+          });
+      }
+      if (isControlPart) {
+        var gap = addNumber(controls, 'control-gap', L('control_gap', 'Spacing (px)'), grid.gap, 0, 40,
+          layoutApi.CONTROL_AREAS[area].gap);
+        var gapError = addHint(controls, L('control_spacing_invalid', 'Enter a whole number from 0 to 40.'), true);
+        gapError.hidden = true;
+        gap.addEventListener('input', function () {
+          var valid = gap.value === '' || (Number.isInteger(Number(gap.value)) && Number(gap.value) >= 0 && Number(gap.value) <= 40);
+          gapError.hidden = valid;
+          if (!valid) return;
+          var current = gridFor(area, undefined, true);
+          if (gap.value === '') delete current.gap;
+          else current.gap = Number(gap.value);
+          setDirty();
         });
-      if (isSeparator) addHint(controls, L('separator_hint', 'Arrange the date and the line like the entries, in up to two rows.'));
+      } else if (isSeparator) {
+        if (design.showDaySeparators) addHint(controls, L('separator_hint', 'Arrange the date and the line like the entries, in up to two rows.'));
+      }
       else {
-        addSelect(controls, 'widget-border-width', L('widget_border_width', 'Border width (px; 0 = standard Homey frame)'),
-          range(0, 20).map(function (value) { return [value, value]; }), design.widgetBorderWidth || 0, function (value) {
-            selectedDesign().widgetBorderWidth = Number(value);
+        addPixelSelect(controls, 'widget-border-width', L('widget_border_width', 'Border width (px)'),
+          design.widgetBorderless ? 0 : design.widgetBorderWidth || undefined, 0, 20, L('padding_default', 'Homey default'), function (value) {
+            var current = selectedDesign();
+            current.widgetBorderWidth = value === '' ? 0 : Number(value);
+            if (value === '0') current.widgetBorderless = true;
+            else delete current.widgetBorderless;
             setDirty();
           });
+        addHint(controls, L('widget_padding_hint', 'App default preserves the widget\'s normal padding.'));
+        ['top', 'right', 'bottom', 'left'].forEach(function (side) {
+          addPixelSelect(controls, 'widget-padding-' + side, L('padding_' + side, side),
+            (design.widgetPadding || {})[side], 0, 100, L('color_default', 'App default'), function (value) {
+              var current = selectedDesign();
+              var padding = current.widgetPadding = current.widgetPadding || {};
+              if (value === '') delete padding[side];
+              else padding[side] = Number(value);
+              if (!Object.keys(padding).length) delete current.widgetPadding;
+              setDirty();
+            });
+        });
       }
     } else if (selection.type === 'row') {
       var rowIndex = selection.row;
@@ -886,7 +1025,7 @@
         selection = null;
         return;
       }
-      group = fieldset('style-row-rules', (isSeparatorArea(area) ? L('day_separator', 'Day separator') + ' - ' : '')
+      group = fieldset('style-row-rules', (area ? partLabel(area) + ' - ' : '')
         + L('row', 'Row') + ' ' + (rowIndex + 1));
       addSelect(controls, 'row-columns', L('row_columns', 'Number of columns'),
         range(1, Math.max(1, availableUnits(grid, rowIndex))).map(function (value) { return [value, value]; }),
@@ -900,9 +1039,16 @@
         var valid = padding.value !== '' && Number.isInteger(value) && value >= 0 && value <= 100;
         paddingError.hidden = valid;
         if (!valid) return;
-        gridFor(area).rows[rowIndex].padding = value;
+        gridFor(area, undefined, true).rows[rowIndex].padding = value;
         setDirty();
       });
+      addPixelSelect(controls, 'row-column-gap', L('column_gap', 'Column gap (px)'), row.columnGap,
+        0, 100, L('color_default', 'App default'), function (value) {
+          var current = gridFor(area, undefined, true).rows[rowIndex];
+          if (value === '') delete current.columnGap;
+          else current.columnGap = Number(value);
+          setDirty();
+        });
     } else if (selection.type === 'column') {
       var columnRow = selection.row;
       var columnIndex = selection.column;
@@ -911,7 +1057,7 @@
         selection = null;
         return;
       }
-      group = fieldset('style-column-controls', (isSeparatorArea(area) ? L('day_separator', 'Day separator') + ' - ' : '')
+      group = fieldset('style-column-controls', (area ? partLabel(area) + ' - ' : '')
         + L('column', 'Column') + ' ' + (columnRow + 1) + '.' + (columnIndex + 1));
       var maxSpan = Math.max(1, availableUnits(grid, columnRow) - (grid.rows[columnRow].columns.length - 1));
       addSelect(group, 'column-span', L('column_span', 'Column span'), range(1, maxSpan).map(function (value) { return [value, value]; }),
@@ -939,6 +1085,14 @@
         ['span', L('width_span', 'Fill available space by span')], ['content', L('width_content', 'Fit to content')]
       ], column.width, function (value) { setColumnValue(columnRow, columnIndex, 'width', value, area); });
       if (column.rowSpan > 1) addHint(group, L('row_span_fit_hint', ''));
+      addPixelSelect(group, 'column-element-gap', L('element_gap', 'Element gap (px)'), column.elementGap,
+        0, 100, L('color_default', 'App default'), function (value) {
+          changeDesign(function (current) {
+            var column = current.rows[columnRow].columns[columnIndex];
+            if (value === '') delete column.elementGap;
+            else column.elementGap = Number(value);
+          }, area);
+        });
       container.appendChild(group);
       return;
     } else if (selection.type === 'element' && selection.element === LINE_ID) {
@@ -1004,6 +1158,15 @@
         setDirty();
       });
       var fonts = design.elementFonts || {};
+      addPixelSelect(controls, 'element-line-height', L('line_height', 'Line height (px)'),
+        (design.elementLineHeights || {})[id], 4, 100, L('color_default', 'App default'), function (value) {
+          var current = selectedDesign();
+          var heights = current.elementLineHeights = current.elementLineHeights || {};
+          if (value === '') delete heights[id];
+          else heights[id] = Number(value);
+          if (!Object.keys(heights).length) delete current.elementLineHeights;
+          setDirty();
+        });
       addSelect(controls, 'element-font', L('font', 'Font'), [['', L('font_default', 'App default')]].concat(
         layoutApi.FONT_IDS.map(function (font) { return [font, L('fonts.' + font, fontFallbacks[font])]; })
       ), fonts[id] || '', function (value) {
@@ -1014,6 +1177,49 @@
         setDirty();
       });
       addHint(controls, L('font_hint', 'Leave on App default to keep the widget\'s own font.'));
+      var textStyles = (design.elementTextStyles || {})[id] || {};
+      Object.keys(layoutApi.TEXT_STYLES).forEach(function (option) {
+        if (option === 'wrap' && id !== 'timestamp') return;
+        addSelect(controls, 'element-text-' + option, L('text_styles.' + option, textStyleFallbacks[option]),
+          [['', L('font_default', 'App default')]].concat(Object.keys(layoutApi.TEXT_STYLES[option].values).map(function (value) {
+            return [value, L('text_styles.' + option + '_values.' + value, textStyleValueFallbacks[option][value])];
+          })), textStyles[option] || '', function (value) {
+            var current = selectedDesign();
+            var styles = current.elementTextStyles = current.elementTextStyles || {};
+            var next = Object.assign({}, styles[id]);
+            if (value) next[option] = value;
+            else delete next[option];
+            if (Object.keys(next).length) styles[id] = next;
+            else delete styles[id];
+            setDirty();
+          });
+      });
+      if (layoutApi.CONTROL_IDS.indexOf(id) !== -1) {
+        addHint(controls, L('control_hint', 'Leave overrides empty to keep the app defaults.'));
+        Object.keys(layoutApi.CONTROL_STYLE_LIMITS).forEach(function (key) {
+          var limits = layoutApi.CONTROL_STYLE_LIMITS[key];
+          var input = addNumber(controls, 'control-' + key, L('control_' + key, key),
+            (design.controlStyles && design.controlStyles[id] || {})[key], limits[0], limits[1]);
+          var error = addHint(controls, L('control_value_invalid', 'Enter a whole number from __min__ to __max__.')
+            .replace('__min__', limits[0]).replace('__max__', limits[1]), true);
+          error.hidden = true;
+          input.addEventListener('input', function () {
+            var value = Number(input.value);
+            var valid = input.value === '' || (Number.isInteger(value) && value >= limits[0] && value <= limits[1]);
+            error.hidden = valid;
+            if (!valid) return;
+            var current = selectedDesign();
+            var styles = current.controlStyles = current.controlStyles || {};
+            var next = Object.assign({}, styles[id]);
+            if (input.value === '') delete next[key];
+            else next[key] = value;
+            if (Object.keys(next).length) styles[id] = next;
+            else delete styles[id];
+            if (!Object.keys(styles).length) delete current.controlStyles;
+            setDirty();
+          });
+        });
+      }
       if (id === 'timestamp') {
         addFormatAutocomplete(controls, design.timestampFormat, {
           name: 'timestamp-format',
@@ -1050,11 +1256,13 @@
       var colors = element('div', 'style-colors ssl-palette');
       container.appendChild(colors);
       renderColors(colors);
+      addHint(container, L('colors_hint', 'App default keeps the widget\'s own color, which follows light and dark mode.'));
       return;
     }
     if (selection.type !== 'element') return;
     var id = selection.element;
     var inSeparator = id === SEPARATOR_ID || id === LINE_ID;
+    var isControl = layoutApi.CONTROL_IDS.indexOf(id) !== -1;
     var fieldsetNode = fieldset('style-colors ssl-palette', inSeparator
       ? L('day_separator', 'Day separator') + ' - ' + elementLabel(id) : elementLabel(id));
     var theme = selectedTheme();
@@ -1069,15 +1277,17 @@
       setDirty();
     }
     // The line and borders only have a colour; their thickness and position belong to the design.
-    var entries = [['color', L('color', 'Color'), inSeparator ? separatorColors : elementColors]];
-    if (id !== LINE_ID && !isBorder(id)) entries.push(['background', L('background', 'Background'), inSeparator ? separatorBackgrounds : elementBackgrounds]);
+    var entries = [['color', L('color', 'Color'), inSeparator || isControl ? separatorColors : elementColors]];
+    if (id !== LINE_ID && !isBorder(id)) entries.push(['background', L('background', 'Background'),
+      inSeparator || isControl ? separatorBackgrounds : elementBackgrounds]);
     entries.forEach(function (entry) {
       var row = element('div', 'style-color-row');
-      addSelect(row, 'element-' + entry[0], entry[1], colorOptions(entry[2]), current[entry[0]], function (value) {
+      addColorSelect(row, 'element-' + entry[0], entry[1], colorOptions(entry[2]), current[entry[0]], function (value) {
         update(entry[0], value);
       });
       fieldsetNode.appendChild(row);
     });
+    addHint(fieldsetNode, L('element_colors_hint', 'App default keeps the element\'s normal appearance, based on the Widget colors.'));
     container.appendChild(fieldsetNode);
   }
 
@@ -1125,7 +1335,10 @@
     return unused ? 0 : index;
   }
 
-  function areaOf(node) { return node.closest('[data-style-area="separator"]') ? 'separator' : undefined; }
+  function areaOf(node) {
+    var area = node.closest('[data-style-area]');
+    return area ? area.getAttribute('data-style-area') : undefined;
+  }
 
   function findDropTarget(drag, x, y) {
     clearInsertion();
@@ -1224,32 +1437,33 @@
     colorRoles.forEach(function (key) {
       var row = document.createElement('div');
       row.className = 'style-color-row';
-      var label = document.createElement('label');
-      label.className = 'hy-nostyle';
-      label.htmlFor = 'style-color-' + key;
       var swatch = document.createElement('span');
       swatch.className = 'color-swatch';
       swatch.style.background = swatchColor(theme.colors[key]);
-      label.append(swatch, document.createTextNode(t(translations[key][0], translations[key][1])));
-      var input = document.createElement('select');
-      input.id = 'style-color-' + key;
-      input.className = 'form-select';
-      colorNames.forEach(function (name) {
-        var option = document.createElement('option');
-        option.value = name;
-        option.textContent = name === 'automatic' ? L('color_default', 'Theme color')
-          : t('widgets.settings.colorNames.' + name, colorNameFallbacks[name]);
-        input.appendChild(option);
+      var choices = colorNames.map(function (name) {
+        return [name, name === 'automatic' ? L('color_default', 'App default')
+          : t('widgets.settings.colorNames.' + name, colorNameFallbacks[name])];
       });
-      input.value = theme.colors[key];
-      input.disabled = builtin;
-      input.addEventListener('change', function () {
-        selectedTheme().colors[key] = input.value;
-        swatch.style.background = swatchColor(input.value);
+      var input = addColorSelect(row, 'theme-color-' + key, t(translations[key][0], translations[key][1]), choices, theme.colors[key], function (value) {
+        selectedTheme().colors[key] = value;
+        swatch.style.background = swatchColor(value);
         setDirty();
       });
-      row.append(label, input);
+      row.querySelector('label').prepend(swatch);
+      input.disabled = builtin;
       colors.appendChild(row);
+      if (key === 'background') {
+        var fill = element('div', 'style-color-row');
+        addSelect(fill, 'background-gradient', L('background_fill', 'Background fill'), [
+          ['solid', L('background_solid', 'Solid')], ['gradient', L('background_gradient', 'Gradient')]
+        ], theme.backgroundGradient ? 'gradient' : 'solid', function (value) {
+          var current = selectedTheme();
+          if (value === 'gradient') current.backgroundGradient = true;
+          else delete current.backgroundGradient;
+          setDirty();
+        });
+        colors.appendChild(fill);
+      }
     });
   }
 
@@ -1295,7 +1509,27 @@
     byId('catalog-previews').disabled = busy || !templates.previewsAvailable;
     byId('import-template').disabled = busy || !byId('import-code').value.trim();
     byId('copy-forum-post').disabled = busy || !templates.imageData;
+    byId('post-forum').disabled = busy || templates.copyStatus !== 'copied';
     updateExport();
+  }
+
+  function setGenerating(generating) {
+    templates.generating = generating;
+    var settingsMain = document.getElementById('settings-main-view');
+    var overlay = document.getElementById('template-generation-overlay');
+    if (settingsMain) {
+      if (generating) {
+        settingsMain.setAttribute('inert', '');
+        settingsMain.setAttribute('aria-busy', 'true');
+      } else {
+        settingsMain.removeAttribute('inert');
+        settingsMain.removeAttribute('aria-busy');
+      }
+    }
+    if (overlay) {
+      overlay.hidden = !generating;
+      overlay.setAttribute('aria-busy', String(generating));
+    }
   }
 
   function openExchange(number) {
@@ -1314,17 +1548,18 @@
     if (!field || !field.value) return;
     field.focus();
     field.select();
-    var copied = false;
+    var copied;
     try {
       copied = document.execCommand('copy');
     } catch (error) {
       copied = false;
     }
     if (!copied) alertMessage(t('widgets.settings.copyError', 'Could not copy. Select the text and copy it manually.'));
+    else if (id === 'template-code' && templates.copyStatus === 'copied') setCopyStatus(null);
   }
 
   function swatchColor(name) {
-    return name === 'automatic' ? 'transparent' : 'var(--ssl-color-' + name + ')';
+    return name === 'automatic' ? 'transparent' : layoutApi.colorValue(name);
   }
 
   function element(tag, className, text) {
@@ -1350,19 +1585,136 @@
     preview.className = 'ssl-widget preview-widget ssl-mode-' + (forcedMode || previewMode)
       + (!forcedMode && homeyInvertsPage() ? ' preview-counter-invert' : '') + (extraClass ? ' ' + extraClass : '');
     preview.removeAttribute('style');
-    colorRoles.forEach(function (key) {
-      if (theme.colors[key] && theme.colors[key] !== 'automatic') {
-        preview.style.setProperty('--ssl-' + key, 'var(--ssl-color-' + theme.colors[key] + ')');
+    var widgetStyle = layoutApi.widgetStyle(design, theme);
+    Object.keys(widgetStyle).forEach(function (key) {
+      preview.style.setProperty(key, widgetStyle[key]);
+    });
+    preview.replaceChildren();
+    var toolbar = element('header', 'ssl-widget-toolbar');
+    var toolbarRow = element('div', 'ssl-toolbar-row');
+    var search = element('input', 'ssl-log-search');
+    search.type = 'search';
+    search.placeholder = t('widgets.search', 'Search');
+    search.setAttribute('aria-label', t('widgets.search', 'Search'));
+    var filter = element('div', 'ssl-filter');
+    var filterButton = element('button', 'ssl-filter-button');
+    filterButton.type = 'button';
+    filterButton.setAttribute('aria-label', t('widgets.filters.button', 'Filters'));
+    filterButton.setAttribute('aria-haspopup', 'menu');
+    filterButton.setAttribute('aria-expanded', 'false');
+    var filterIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    filterIcon.setAttribute('viewBox', '0 0 24 24');
+    filterIcon.setAttribute('aria-hidden', 'true');
+    var filterPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    filterPath.setAttribute('d', 'M3 5h18l-7 8.5V19l-4 2v-7.5z');
+    filterIcon.appendChild(filterPath);
+    filterButton.appendChild(filterIcon);
+    filter.appendChild(filterButton);
+    var menu = element('div', 'ssl-filter-menu');
+    menu.setAttribute('role', 'menu');
+    menu.hidden = true;
+    filter.appendChild(menu);
+    var levelInputs = [];
+    var dateInputs = [];
+    var filterGroups = [];
+    var pageIndex = 0;
+    function setMenuOpen(open) {
+      menu.hidden = !open;
+      filterButton.setAttribute('aria-expanded', String(open));
+      if (open) {
+        filterGroups.forEach(function (expand) { expand(false); });
+        updateDateLimits();
+        layoutApi.positionFilterMenu(menu);
+      }
+    }
+    filterButton.addEventListener('click', function () { setMenuOpen(menu.hidden); });
+    filter.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setMenuOpen(false);
+        filterButton.focus();
       }
     });
-    if (design.widgetBorderWidth) preview.style.setProperty('--ssl-outline-width', design.widgetBorderWidth + 'px');
-    preview.replaceChildren();
+    filter.addEventListener('focusout', function (event) {
+      if (event.relatedTarget && !filter.contains(event.relatedTarget)) setMenuOpen(false);
+    });
+    function addFilterGroup(label, className) {
+      var group = element('div', 'ssl-filter-group');
+      var button = element('button', 'ssl-filter-item');
+      button.type = 'button';
+      button.setAttribute('role', 'menuitem');
+      button.setAttribute('aria-haspopup', 'true');
+      button.setAttribute('aria-expanded', 'false');
+      var count = element('span', 'ssl-filter-count');
+      count.hidden = true;
+      button.append(element('span', '', label), count, element('span', '', '\u203a'));
+      var options = element('div', 'ssl-filter-options' + (className ? ' ' + className : ''));
+      options.setAttribute('role', 'group');
+      options.setAttribute('aria-label', label);
+      options.hidden = true;
+      function expand(open) {
+        options.hidden = !open;
+        button.setAttribute('aria-expanded', String(open));
+      }
+      filterGroups.push(expand);
+      button.addEventListener('click', function () {
+        filterGroups.forEach(function (other) { other(other === expand); });
+      });
+      group.append(button, options);
+      menu.appendChild(group);
+      return { options: options, count: count };
+    }
+    var levelGroup = addFilterGroup(t('widgets.filters.level', 'Level'));
+    var severityNames = ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'];
+    severityNames.forEach(function (name) {
+      var label = element('label', 'ssl-filter-option ssl-sev-' + name);
+      var input = element('input');
+      input.type = 'checkbox';
+      input.setAttribute('role', 'menuitemcheckbox');
+      input.addEventListener('change', filtersChanged);
+      label.append(input, element('span', 'ssl-filter-dot'),
+        document.createTextNode(t('widgets.settings.colors.' + name, name.charAt(0).toUpperCase() + name.slice(1))));
+      levelInputs.push(input);
+      levelGroup.options.appendChild(label);
+    });
+    var clearLevels = element('button', 'ssl-filter-clear', t('widgets.filters.allLevels', 'All levels'));
+    clearLevels.type = 'button';
+    clearLevels.addEventListener('click', function () {
+      levelInputs.forEach(function (input) { input.checked = false; });
+      filtersChanged();
+    });
+    levelGroup.options.appendChild(clearLevels);
+    var dateGroup = addFilterGroup(t('widgets.filters.date', 'Date'), 'ssl-filter-date-range');
+    ['fromDate', 'toDate'].forEach(function (key, index) {
+      var label = element('label', '', t('widgets.filters.' + key, index === 0 ? 'From' : 'To'));
+      var input = element('input');
+      input.type = 'date';
+      input.addEventListener('change', filtersChanged);
+      dateInputs.push(input);
+      label.appendChild(input);
+      dateGroup.options.appendChild(label);
+    });
+    var dateError = element('span', 'ssl-filter-date-error');
+    dateError.setAttribute('role', 'alert');
+    dateGroup.options.appendChild(dateError);
+    var clearDates = element('button', 'ssl-filter-clear', t('widgets.filters.allDates', 'All dates'));
+    clearDates.type = 'button';
+    clearDates.addEventListener('click', function () {
+      dateInputs.forEach(function (input) { input.value = ''; });
+      filtersChanged();
+    });
+    dateGroup.options.appendChild(clearDates);
+    toolbarRow.append(search, filter);
+    toolbar.appendChild(toolbarRow);
     var list = element('div', 'ssl-log-list');
     var examples = [
       { date: previewDates[0], severity: 4, severityName: t('widgets.settings.colors.warning', 'Warning'), facility: 'Flow', app: 'Heating', hostname: 'Homey', message: 'A temperature has changed. This message wraps to fit the widget.' },
       { date: previewDates[0], severity: 5, severityName: t('widgets.settings.colors.notice', 'Notice'), facility: 'User', app: 'Backup', hostname: 'Homey', message: 'Network backup completed.' },
       { date: previewDates[1], severity: 3, severityName: t('widgets.settings.colors.error', 'Error'), facility: 'System', app: 'Simple (Sys) Log', hostname: 'Homey', message: 'Widget preview entry.' }
     ];
+    examples = examples.concat(examples.map(function (entry) {
+      return Object.assign({}, entry, { date: previewDates[1] });
+    }));
     var formatted = previewTimestamps(design.timestampFormat);
     var days = previewTimestamps(design.daySeparatorFormat);
     function dayText(date) {
@@ -1371,39 +1723,117 @@
     }
     var labels = {};
     layoutApi.ELEMENT_IDS.forEach(function (id) { labels[id] = elementLabel(id); });
-    var severityNames = ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'];
-    examples.forEach(function (entry, index) {
-      var row = element('div', 'ssl-log-entry');
-      var day = dayText(entry.date);
-      if (design.showDaySeparators && (index === 0 || dayText(examples[index - 1].date) !== day)) {
-        row.appendChild(layoutApi.renderDaySeparator(document, design, theme, day, {
+    function renderEntries() {
+      var levels = levelInputs.map(function (input, index) { return input.checked ? index : -1; })
+        .filter(function (level) { return level >= 0; });
+      var filtered = examples.filter(function (entry) {
+        var date = entry.date;
+        var day = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0')
+          + '-' + String(date.getDate()).padStart(2, '0');
+        return (!levels.length || levels.indexOf(entry.severity) !== -1)
+          && (!dateInputs[0].value || day >= dateInputs[0].value)
+          && (!dateInputs[1].value || day <= dateInputs[1].value);
+      });
+      pageIndex = Math.min(pageIndex, Math.max(0, Math.ceil(filtered.length / 3) - 1));
+      previous.disabled = pageIndex === 0;
+      next.disabled = (pageIndex + 1) * 3 >= filtered.length;
+      page.textContent = t('widgets.pagination.page', 'Page') + ' ' + (pageIndex + 1);
+      var visible = filtered.slice(pageIndex * 3, pageIndex * 3 + 3).filter(function (entry) {
+        return [entry.message, entry.app, entry.hostname].join('\n').toLowerCase()
+          .indexOf(search.value.trim().toLowerCase()) !== -1;
+      });
+      list.replaceChildren();
+      visible.forEach(function (entry, index) {
+        var row = element('div', 'ssl-log-entry');
+        var day = dayText(entry.date);
+        if (design.showDaySeparators && (index === 0 || dayText(visible[index - 1].date) !== day)) {
+          row.appendChild(layoutApi.renderDaySeparator(document, design, theme, day, {
+            selectedElement: selectedElement,
+            selectedSeparator: selected.type === 'separator',
+            selectedRow: inSeparator && selected.type === 'row' ? selected.row : undefined,
+            selectedColumn: inSeparator && selected.type === 'column' ? { row: selected.row, column: selected.column } : undefined
+          }));
+        }
+        var values = {
+          timestamp: formatted ? formatted[previewDates.indexOf(entry.date)]
+            : entry.date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }),
+          severity: entry.severityName,
+          facility: entry.facility,
+          app: entry.app,
+          hostname: entry.hostname,
+          message: entry.message
+        };
+        row.appendChild(layoutApi.renderCard(document, design, theme, values, {
+          severityClass: 'ssl-sev-' + severityNames[entry.severity],
+          labels: labels,
           selectedElement: selectedElement,
-          selectedSeparator: selected.type === 'separator',
-          selectedRow: inSeparator && selected.type === 'row' ? selected.row : undefined,
-          selectedColumn: inSeparator && selected.type === 'column' ? { row: selected.row, column: selected.column } : undefined
+          selectedCard: selected.type === 'widget',
+          selectedRow: !selected.area && selected.type === 'row' ? selected.row : undefined,
+          selectedColumn: !selected.area && selected.type === 'column' ? { row: selected.row, column: selected.column } : undefined
         }));
+        list.appendChild(row);
+      });
+      if (!visible.length) list.appendChild(element('p', 'ssl-widget-message', t('widgets.noLogs', 'No log entries found.')));
+      list.scrollTop = 0;
+      layoutApi.alignContentTracks(list);
+    }
+    function updateDateLimits() {
+      var now = new Date();
+      var today = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0')
+        + '-' + String(now.getDate()).padStart(2, '0');
+      dateInputs[0].max = dateInputs[1].value && dateInputs[1].value < today ? dateInputs[1].value : today;
+      dateInputs[1].max = today;
+      dateInputs[1].min = dateInputs[0].value;
+      return today;
+    }
+    function filtersChanged() {
+      var levelCount = levelInputs.filter(function (input) { return input.checked; }).length;
+      var dateCount = dateInputs.filter(function (input) { return !!input.value; }).length;
+      levelGroup.count.textContent = levelCount;
+      levelGroup.count.hidden = !levelCount;
+      dateGroup.count.textContent = dateCount;
+      dateGroup.count.hidden = !dateCount;
+      clearLevels.disabled = !levelCount;
+      clearDates.disabled = !dateCount;
+      filterButton.classList.toggle('is-active', !!(levelCount || dateCount));
+      var today = updateDateLimits();
+      if (dateInputs.some(function (input) { return input.value > today; })) {
+        dateError.textContent = t('widgets.filters.futureDate', 'Dates cannot be later than today.');
+        return;
       }
-      var values = {
-        timestamp: formatted ? formatted[previewDates.indexOf(entry.date)]
-          : entry.date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }),
-        severity: entry.severityName,
-        facility: entry.facility,
-        app: entry.app,
-        hostname: entry.hostname,
-        message: entry.message
-      };
-      row.appendChild(layoutApi.renderCard(document, design, theme, values, {
-        severityClass: 'ssl-sev-' + severityNames[entry.severity],
-        labels: labels,
-        selectedElement: selectedElement,
-        selectedCard: selected.type === 'widget',
-        selectedRow: !inSeparator && selected.type === 'row' ? selected.row : undefined,
-        selectedColumn: !inSeparator && selected.type === 'column' ? { row: selected.row, column: selected.column } : undefined
-      }));
-      list.appendChild(row);
+      var invalid = dateInputs[0].value && dateInputs[1].value && dateInputs[0].value > dateInputs[1].value;
+      dateError.textContent = invalid ? t('widgets.filters.invalidDateRange', 'The start date must be on or before the end date.') : '';
+      if (invalid) return;
+      pageIndex = 0;
+      renderEntries();
+    }
+    var pagination = element('nav', 'ssl-widget-pagination');
+    pagination.setAttribute('aria-label', t('widgets.pagination.label', 'Log pages'));
+    var previous = element('button', 'ssl-page-button', t('widgets.pagination.previous', 'Previous'));
+    previous.type = 'button';
+    previous.disabled = true;
+    var page = element('span', '', t('widgets.pagination.page', 'Page') + ' 1');
+    var next = element('button', 'ssl-page-button', t('widgets.pagination.next', 'Next'));
+    next.type = 'button';
+    previous.addEventListener('click', function () { pageIndex--; renderEntries(); });
+    next.addEventListener('click', function () { pageIndex++; renderEntries(); });
+    search.addEventListener('input', renderEntries);
+    pagination.append(previous, page, next);
+    preview.append(toolbar, list, pagination);
+    preview.querySelectorAll('button, input, label').forEach(function (control) {
+      control.classList.add('hy-nostyle');
     });
-    preview.appendChild(list);
-    layoutApi.alignContentTracks(list);
+    ['toolbar', 'paging'].forEach(function (area) {
+      var active = selected.area === area;
+      layoutApi.renderControls(document, area === 'toolbar' ? toolbarRow : pagination, area, design, theme,
+        area === 'toolbar' ? { search: search, filter: filter } : { previousPage: previous, pageNumber: page, nextPage: next }, {
+          selectedPart: active && selected.type === 'part',
+          selectedElement: active ? selectedElement : undefined,
+          selectedRow: active && selected.type === 'row' ? selected.row : undefined,
+          selectedColumn: active && selected.type === 'column' ? { row: selected.row, column: selected.column } : undefined
+        });
+    });
+    filtersChanged();
   }
 
   function renderPreview() {
@@ -1481,10 +1911,14 @@
   }
 
   function setCopyStatus(status) {
+    templates.copyStatus = status;
     var node = byId('template-copy-status');
     node.hidden = !status;
     node.replaceChildren();
-    if (status === 'copied') {
+    byId('post-forum').disabled = templates.busy || status !== 'copied';
+    if (status === 'http') {
+      node.textContent = t('widgets.settings.copyHttp', 'Automatic copying is unavailable over this HTTP connection. Click Copy post and images, or open Homey over HTTPS to copy automatically.');
+    } else if (status === 'copied') {
       node.append(element('strong', '', t('widgets.settings.copyCopied', 'The post and both images were copied.')),
         document.createTextNode(' ' + t('widgets.settings.copyNext', 'Open the forum and paste them into the rich-text editor.')));
     } else if (status === 'retry') {
@@ -1493,9 +1927,15 @@
   }
 
   function setImageProgress(done) {
+    var text = done === null ? '' : t('widgets.settings.rendering', 'Creating previews') + ' ' + done + '/' + IMAGE_MODES.length;
     var node = byId('template-image-progress');
     node.hidden = done === null;
-    node.textContent = done === null ? '' : t('widgets.settings.rendering', 'Creating previews') + ' ' + done + '/' + IMAGE_MODES.length;
+    node.textContent = text;
+    var overlayProgress = document.getElementById('template-generation-progress');
+    if (overlayProgress) {
+      overlayProgress.hidden = done === null;
+      overlayProgress.textContent = text;
+    }
   }
 
   // Template images never follow the settings or dashboard mode: all light images first, then the same in dark.
@@ -1559,76 +1999,159 @@
     });
   }
 
-  function prepareTemplateImages(design, theme) {
-    clearTemplateImages();
-    setBusy(true);
-    setImageProgress(0);
-    return templatePreviewImages(design, theme).then(function (images) {
-      templates.imageData = images;
-      setImageProgress(null);
-      setBusy(false);
-      copyForumPost(true);
-    }, function (error) {
-      setImageProgress(null);
-      setBusy(false);
-      alertMessage(t('widgets.settings.prepareImageError', 'Could not create the preview images. Create the TWF again to retry.')
-        + '\n' + (error && error.message ? error.message : String(error)));
-    });
-  }
-
   function escapeHtml(value) {
     return value.replace(/[&<>"']/g, function (character) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character];
     });
   }
 
-  // Copies the post as rich text with the images embedded, so the forum's rich-text editor uploads them.
-  function copyForumPost(automatic) {
-    if (templates.busy || !templates.exportText || !templates.imageData || !templates.imageData.length) return;
-    setCopyStatus(null);
+  function forumPostContent() {
     var text = forumPost();
     var heading = text.slice(2, text.indexOf('\n\n'));
     var html = '<h1>' + escapeHtml(heading) + '</h1><p><br></p>'
       + templates.imageData.map(function (image) { return '<p><img alt="Widget preview" src="' + image + '"></p>'; }).join('')
       + '<p>TWF:</p><pre data-params="javascript"><code class="language-javascript">' + escapeHtml(templates.exportText) + '</code></pre>';
+    return { text: text, html: html };
+  }
+
+  function requiresManualCopyOnHttp() {
+    return window.SSLTemplateClipboard.requiresManualCopyOnHttp(window.location, window.isSecureContext);
+  }
+
+  function startDeferredClipboardWrite() {
+    if (requiresManualCopyOnHttp()) return null;
+    return window.SSLTemplateClipboard.startWrite(navigator.clipboard, window.ClipboardItem, Blob);
+  }
+
+  function resolveDeferredClipboardWrite(write, content) {
+    return !!write && write.complete(content.text, content.html);
+  }
+
+  function rejectDeferredClipboardWrite(write, error) {
+    if (!write) return;
+    write.reject(error);
+  }
+
+  function writeRichClipboard(content) {
+    if (requiresManualCopyOnHttp()) return null;
+    return window.SSLTemplateClipboard.writeNow(
+      navigator.clipboard, window.ClipboardItem, Blob, content.text, content.html);
+  }
+
+  function finishForumPostCopy(error, automatic) {
+    setBusy(false);
+    setCopyStatus(error ? 'retry' : 'copied');
+    if (error && !automatic) {
+      alertMessage(t('widgets.settings.clipboardImageError', 'Could not copy the post and images. You can still copy the TWF separately.')
+        + '\n' + (error.message || String(error)));
+    }
+  }
+
+  function legacyCopyForumPost(content) {
     var copied = false;
     function onCopy(event) {
       event.preventDefault();
-      event.clipboardData.setData('text/plain', text);
-      event.clipboardData.setData('text/html', html);
+      event.clipboardData.setData('text/plain', content.text);
+      event.clipboardData.setData('text/html', content.html);
       copied = true;
     }
-    var copyError;
+    var copyError = null;
+    var selection = null;
     try {
       var field = byId('template-forum-post');
+      if (!field) throw new Error('Forum post is unavailable');
       field.focus();
       field.select();
       document.addEventListener('copy', onCopy);
-      if (!document.execCommand('copy') || !copied) throw new Error('Clipboard copy was blocked');
+      var successful = document.execCommand('copy');
+      if ((!successful || !copied) && document.createRange && window.getSelection && field.setSelectionRange) {
+        var editable = field.contentEditable;
+        var readOnly = field.readOnly;
+        try {
+          field.contentEditable = true;
+          field.readOnly = false;
+          var range = document.createRange();
+          range.selectNodeContents(field);
+          selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+          field.setSelectionRange(0, field.value.length);
+          successful = document.execCommand('copy');
+        } finally {
+          field.contentEditable = editable;
+          field.readOnly = readOnly;
+          if (selection) selection.removeAllRanges();
+        }
+      }
+      if (!successful || !copied) throw new Error('Clipboard copy was blocked');
     } catch (error) {
       copyError = error;
     } finally {
       document.removeEventListener('copy', onCopy);
     }
-    function finish(error) {
-      setBusy(false);
-      setCopyStatus(error ? 'retry' : 'copied');
-      if (error && !automatic) {
-        alertMessage(t('widgets.settings.clipboardImageError', 'Could not copy the post and images. You can still copy the TWF separately.')
-          + '\n' + (error.message || String(error)));
+    return copyError;
+  }
+
+  function copyForumPost(automatic) {
+    if ((!automatic && templates.busy) || !templates.exportText || !templates.imageData || !templates.imageData.length) return;
+    setCopyStatus(null);
+    var content = forumPostContent();
+    var write = writeRichClipboard(content);
+    if (write) {
+      if (!automatic) setBusy(true);
+      write.then(function (result) {
+        if (result.copied) finishForumPostCopy(null, automatic);
+        else copyForumPostFallback(content, automatic, result.error);
+      });
+    } else {
+      if (!automatic) setBusy(true);
+      copyForumPostFallback(content, automatic);
+    }
+  }
+
+  function copyForumPostFallback(content, automatic, clipboardError) {
+    var copyError = legacyCopyForumPost(content);
+    if (!copyError) {
+      finishForumPostCopy(null, automatic);
+      return;
+    }
+    var write = writeRichClipboard(content);
+    if (!write) {
+      finishForumPostCopy(clipboardError || copyError, automatic);
+      return;
+    }
+    write.then(function (result) {
+      finishForumPostCopy(result.copied ? null : result.error || clipboardError || copyError, automatic);
+    });
+  }
+
+  function prepareTemplateImages(design, theme, clipboardWrite) {
+    setImageProgress(0);
+    return templatePreviewImages(design, theme).then(function (images) {
+      templates.imageData = images;
+      setImageProgress(null);
+      setGenerating(false);
+      var content = forumPostContent();
+      byId('template-forum-post').value = content.text;
+      if (requiresManualCopyOnHttp()) {
+        setBusy(false);
+        setCopyStatus('http');
+      } else if (resolveDeferredClipboardWrite(clipboardWrite, content)) {
+        clipboardWrite.result.then(function (result) {
+          if (result.copied) finishForumPostCopy(null, true);
+          else copyForumPostFallback(content, true, result.error);
+        });
+      } else {
+        copyForumPostFallback(content, true);
       }
-    }
-    if (!copyError) { finish(); return; }
-    if (!navigator.clipboard || !navigator.clipboard.write || !window.ClipboardItem) { finish(copyError); return; }
-    try {
-      setBusy(true);
-      navigator.clipboard.write([new window.ClipboardItem({
-        'text/plain': new Blob([text], { type: 'text/plain' }),
-        'text/html': new Blob([html], { type: 'text/html' })
-      })]).then(function () { finish(); }, finish);
-    } catch (error) {
-      finish(error);
-    }
+    }, function (error) {
+      rejectDeferredClipboardWrite(clipboardWrite, error);
+      setImageProgress(null);
+      setGenerating(false);
+      setBusy(false);
+      alertMessage(t('widgets.settings.prepareImageError', 'Could not create the preview images. Create the TWF again to retry.')
+        + '\n' + (error && error.message ? error.message : String(error)));
+    });
   }
 
   function forumPost() {
@@ -1645,21 +2168,24 @@
       alertMessage(t('widgets.settings.chooseTemplate', 'Select a design or theme.'));
       return;
     }
+    clearTemplateImages();
+    var clipboardWrite = startDeferredClipboardWrite();
     setBusy(true);
-    var prepared = false;
+    setGenerating(true);
+    setImageProgress(0);
     api('POST', '/widget-template/encode', { design: selection.design, theme: selection.theme }).then(function (text) {
       templates.exportText = text;
       templates.exportDesignName = selection.design ? selection.design.name : '';
       templates.exportThemeName = selection.theme ? selection.theme.name : '';
       byId('template-code').value = text;
-      byId('template-forum-post').value = forumPost();
       byId('export-result').hidden = false;
-      prepared = true;
+      return prepareTemplateImages(selection.design || defaultDesign(), selection.theme || defaultTheme(), clipboardWrite);
     }).catch(function (error) {
-      setStatus(error.message, true);
-    }).finally(function () {
+      rejectDeferredClipboardWrite(clipboardWrite, error);
+      setImageProgress(null);
+      setGenerating(false);
       setBusy(false);
-      if (prepared) prepareTemplateImages(selection.design || defaultDesign(), selection.theme || defaultTheme());
+      setStatus(error.message, true);
     });
   }
 
@@ -1669,6 +2195,11 @@
   }
 
   function save() {
+    if (root.querySelector('.style-color-control [aria-invalid="true"]')) {
+      var message = L('hex_invalid', 'Enter a HEX color in #RRGGBB format.');
+      setStatus(message, true);
+      return Promise.reject(new Error(message));
+    }
     var design = selectedDesign();
     var theme = selectedTheme();
     if (!design.name.trim() || design.name.trim().length > 60) {
@@ -1734,8 +2265,12 @@
       daySeparatorLayout: clone(original.daySeparatorLayout || layoutApi.defaultSeparatorLayout()),
       elementBorders: clone(original.elementBorders || {}),
       elementSizes: clone(original.elementSizes || {}),
-      elementFonts: clone(original.elementFonts || {})
+      elementFonts: clone(original.elementFonts || {}),
+      elementTextStyles: clone(original.elementTextStyles || {})
     };
+    ['toolbarLayout', 'pagingLayout', 'controlStyles', 'widgetPadding', 'elementLineHeights', 'widgetBorderless'].forEach(function (key) {
+      if (original[key]) design[key] = clone(original[key]);
+    });
     collection.designs.push(design);
     currentDesignId = design.id;
     mode = 'design';
@@ -1751,6 +2286,7 @@
       colors: Object.assign({}, original.colors),
       elements: clone(original.elements || {})
     };
+    if (original.backgroundGradient !== undefined) theme.backgroundGradient = original.backgroundGradient;
     collection.themes.push(theme);
     currentThemeId = theme.id;
     mode = 'theme';
@@ -2162,7 +2698,10 @@
     });
     byId('preview-other').addEventListener('change', function (event) {
       if (mode === 'design') currentThemeId = event.target.value;
-      else currentDesignId = event.target.value;
+      else {
+        currentDesignId = event.target.value;
+        renderLayoutEditor();
+      }
       renderPreview();
     });
     byId('style-name').addEventListener('input', function (event) {
@@ -2175,23 +2714,23 @@
     byId('designer-help-toggle').addEventListener('click', toggleHelp);
     var sticky = root.querySelector('.style-preview-sticky');
     if (sticky) {
-      // The sentinel stays in the flow above the preview, so it only moves above the preview once it sticks.
-      // Comparing positions works for any scroll container; the stuck preview is shorter.
+      var scrollContainer = sticky.closest('.settings-content');
       var sentinel = element('div', 'style-preview-sentinel');
       sentinel.setAttribute('aria-hidden', 'true');
       sticky.parentNode.insertBefore(sentinel, sticky);
-      var stuckFrame = 0;
+      var stuckTimer = null;
       var updateStuck = function () {
-        stuckFrame = 0;
-        var stuck = sentinel.getBoundingClientRect().top < sticky.getBoundingClientRect().top - 0.5;
-        sticky.classList.toggle('is-stuck', stuck);
-        // Keeps the scroll height while the preview is shorter, so a page scrolled to the end stays stuck.
-        sticky.parentNode.classList.toggle('style-preview-stuck-space', stuck);
+        stuckTimer = null;
+        if (!scrollContainer || !scrollContainer.clientHeight || !sticky.getClientRects().length) return;
+        if (scrollContainer.scrollTop <= 0) sticky.classList.remove('is-stuck');
+        else if (sentinel.getBoundingClientRect().top < sticky.getBoundingClientRect().top - 0.5) {
+          sticky.classList.add('is-stuck');
+        }
       };
       var scheduleStuck = function () {
-        if (!stuckFrame) stuckFrame = window.requestAnimationFrame(updateStuck);
+        if (stuckTimer === null) stuckTimer = window.setTimeout(updateStuck, 0);
       };
-      document.addEventListener('scroll', scheduleStuck, { capture: true, passive: true });
+      if (scrollContainer) scrollContainer.addEventListener('scroll', scheduleStuck, { passive: true });
       window.addEventListener('resize', scheduleStuck);
       scheduleStuck();
     }

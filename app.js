@@ -297,14 +297,14 @@ class simpleLog extends Homey.App {
       const designs = getWidgetStyles(this.homey).designs;
       return designs.map(item => ({
         id: item.id,
-        name: item.id === 'builtin:default' ? this.homey.__('widgets.design.default') : item.name
+        name: item.id.startsWith('builtin:') ? this.homey.__('widgets.design.' + item.id.slice(8)) : item.name
       }));
     });
     register('colorTheme', () => {
       const themes = getWidgetStyles(this.homey).themes;
       return themes.map(item => ({
         id: item.id,
-        name: item.id === 'builtin:default' ? this.homey.__('widgets.theme.default') : item.name
+        name: item.id.startsWith('builtin:') ? this.homey.__('widgets.theme.' + item.id.slice(8)) : item.name
       }));
     });
     register('datetimeFormat', query => {

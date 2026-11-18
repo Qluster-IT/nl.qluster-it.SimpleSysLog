@@ -17,16 +17,25 @@ With simple log You can:
 The Simple Sys Log dashboard widget shows recent entries and updates as new
 entries arrive. Each widget can set:
 
-- its entry count and height (100 to 5000 pixels; the search bar stays at the top);
+- its entries per page and height (100 to 5000 pixels; the search bar stays at the top);
 - light, dark, or automatic mode (automatic follows the dashboard);
-- whether the search bar is shown, and simple or advanced search;
+- no, simple, or advanced search, with filters controlled separately;
+- optional Previous/Next paging (off by default);
 - a BLL date/time format or a custom format;
 - filters for a minimum severity, a facility, and app/group or hostname text.
 
-The filter button next to the search bar opens extra filters. Under **Level**
+With **Show filters** enabled, the filter button appears next to the search
+field, or on its own when Search Mode is **None**. Click **Level** or **Date**
+to open that section; only one section opens at a time.
+Under **Level**
 you can select one or more levels to show only those entries, even levels
-below the widget's minimum severity. **All levels** clears the selection, and
-it resets when the widget reloads.
+below the widget's minimum severity. Under **Date**, choose an inclusive
+**From**/**To** range up to today; either end can be left blank, and changes apply
+immediately. **All levels** and **All dates** clear their filters. These
+interactive filters are saved separately for each widget instance and restored
+when it reloads.
+When paging is enabled, **Entries per page** controls the page size; otherwise,
+it controls how many recent entries are shown.
 
 The widget needs the Better Logic Library app. When BLL starts after the
 widget has loaded, the widget loads its entries automatically.
@@ -40,21 +49,42 @@ are read-only, so copy them to customize. The built-in **Default** design and
 uses fixed severity colors and an automatic background that follows the
 dashboard. Theme colors are named colors (red,
 orange, yellow, green, teal, cyan, blue, indigo, purple, pink, brown, grey,
-black, white) or **Automatic**, so every theme works in light and dark mode.
+black, Black (light/dark), white) or **App default** (the widget's own color),
+so every theme works in light and dark mode.
+Black (light/dark) is the fixed `#2B2C36` shade; pure Black remains unchanged.
+For an element, App default means its normal appearance based on the Widget colors.
 
 Designs use a grid like Chronograph: select the **Widget**, a row, an `r.c`
 column or an element to see its options. Each row has up to five columns that
 share five units; a column can span several rows, and each element appears at
 most once. Drag the selected row, column or element to move it, or drag an
-element to **Unused** to hide it. Select an element to override its size or
-font; both are empty by default and then use the widget's own size and font.
+element to **Unused** to hide it. Select an element to override its size, font,
+text case, weight, italic or letter spacing; all are App default by default and
+then keep the element's own look (for example the uppercase, bold severity pill).
+Alongside Default, the built-in **Compact**, **Journal** and **Console** designs
+offer dense, spacious and monospace layouts. **Ocean**, **Forest** and **Sunset**
+themes add gentle gradient backgrounds that adapt to light and dark mode.
+Compact shows the date above the time, centered, because it has no day separators.
+Use the Timestamp element's **Text wrapping** option to wrap to fit, prevent wrapping or
+stack its text at spaces; the column's alignment also aligns the text.
+Duplicate any built-in preset to customize it; existing widget selections stay unchanged.
+**Search and filters** sits below Widget, above Day separator; **Paging** sits
+below the log-card rows. Both have their own grid of up to two rows. Arrange
+Search and Filters, or Previous, Page and Next, just like card elements.
+Select either section to set its spacing, or an element to set its text styling,
+minimum height, padding and corner radius. Themes can set each control's color
+and background. The widget's search, filter and paging settings still determine
+which controls are shown. Existing designs keep their appearance until edited.
 Select the Timestamp element to pick its
 BLL date/time format (default `timeshort`) or type your own; a format set in
 the widget settings overrules it. The **Day separator** has its own small grid
 of up to two rows with two elements: **Date** and **Line**. Select the Day
-separator bar to show or hide the separators and set its number of rows. Select
-the Date to set its size, font and format (default `ddd d MMM`), and the Line
-to set its position (behind, above or below the date), thickness and style.
+separator bar to show or hide the separators and set its number of rows.
+While off, their rows and element controls are hidden without losing the layout;
+the bar remains available to turn them back on. Select
+the Date to set its size, font, text options and format (default `ddd d MMM`),
+and the Line to set its position (behind, above or below the date), thickness
+and style.
 With the line behind the date, the column's vertical alignment places it at the
 top, middle or bottom; you can also drag the line into its own row or column.
 **Border 1–4** are border elements: drag one into a column and select it to set
@@ -65,14 +95,23 @@ borders just that column. The Default design has Border 1 as a first column
 spanning all rows, which gives the severity bar on the left. In
 **Themes**, select the Widget to set the theme colors, or an element to set its
 own color and background; the separator line and borders only have a color. Selecting the
-Widget in a design also sets an optional outline width (0–20 px; 0 keeps the standard
-Homey frame), and in a theme its **Widget border** color (default: Homey's line color).
+Widget in a design also sets the **Border width**: **Homey default** preserves the
+standard frame, while **0** removes the border and its subtle dark-mode rim.
+The Widget also has optional padding for each side; rows have **Column gap**,
+columns have **Element gap**, and text elements have **Line height**.
+In a theme, set the **Widget border** color (default: Homey's line color),
+use named or HEX colors, and choose a solid or gradient background fill.
 Like Chronograph, the widget fills Homey's tile edge to edge with Homey's rounded corners
 (`--homey-border-radius-default`), and in dark mode uses a near-black `#181920` surface with a
-subtle light rim. Blue, green, orange, red, grey and white follow Homey's own palette.
+subtle light rim. Designer previews emulate the dashboard card's 10px corners instead of the
+settings page's radius. Blue, green, orange, red, grey and white follow Homey's own palette.
 Whatever you select is
 outlined in the preview. **Designer help** is open the first time and then
 stays open or closed as you leave it.
+Search, Level/Date filters and paging work with sample entries in the preview;
+they do not change the filters saved for dashboard widgets.
+Live updates keep the configured entry limit. New entries return the list to
+the top when you are already near it; scrolling further down keeps your reading position.
 
 Use the undo and redo buttons next to **Save** to step through the changes of
 the design or theme you are editing. Switching to another design or theme,
@@ -88,7 +127,11 @@ imported; TWFs from other apps, such as Chronograph, are rejected.
 **Create TWF** also creates two preview images of the template, first in light
 mode and then in dark mode, and copies a ready-made forum post with the images.
 Switch the forum to its rich-text editor before pasting, so the images are
-uploaded with the post. If copying fails, use **Copy post and images**.
+uploaded with the post. Automatic copying requires a secure context and
+clipboard permission, which the Homey settings frame may block. If settings
+are opened over HTTP or automatic copying is blocked, click **Copy post and
+images** after generation; it copies the post and images without rendering
+them again. Opening Homey over HTTPS resolves the insecure-HTTP case.
 
 ## Scrolling on Android
 

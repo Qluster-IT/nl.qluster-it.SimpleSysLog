@@ -41,10 +41,16 @@
   "Auto refresh": "Aggiornamento automatico",
   "widgets": {
     "design": {
-      "default": "Predefinito"
+      "default": "Predefinito",
+      "compact": "Compatto",
+      "journal": "Diario",
+      "console": "Console"
     },
     "theme": {
-      "default": "Predefinito"
+      "default": "Predefinito",
+      "ocean": "Oceano",
+      "forest": "Foresta",
+      "sunset": "Tramonto"
     },
     "datetime": {
       "customFormat": "Formato data e ora BLL personalizzato",
@@ -85,10 +91,10 @@
     "settings": {
       "title": "Widget",
       "intro": "Crea e salva design e temi riutilizzabili per i widget della dashboard.",
-      "designs": "Stili di design",
+      "designs": "Design",
       "themes": "Temi",
       "templates": "Modelli",
-      "selectDesign": "Stile di design",
+      "selectDesign": "Design",
       "duplicate": "Copia",
       "delete": "Elimina",
       "name": "Nome",
@@ -140,7 +146,8 @@
         "brown": "Marrone",
         "grey": "Grigio",
         "black": "Nero",
-        "white": "Bianco"
+        "white": "Bianco",
+        "black-light": "Nero (chiaro/scuro)"
       },
       "none": "Nessuno",
       "invalidName": "Inserisci un nome da 1 a 60 caratteri.",
@@ -180,7 +187,7 @@
       "customStyles": "Stili personalizzati",
       "confirmDeleteTheme": "Eliminare definitivamente il tema personalizzato \"__name__\"?",
       "exchange": "The Widget Exchange(r)",
-      "communityTopic": "Discussione della comunità",
+      "communityTopic": "Argomento",
       "saveFirst": "Salva o scarta le modifiche prima di usare i modelli.",
       "forumPost": "Messaggio del forum",
       "postForum": "Pubblica sul forum",
@@ -246,7 +253,7 @@
         "size_invalid": "Inserisci un numero intero da 4 a 100.",
         "color": "Colore",
         "background": "Sfondo",
-        "color_default": "Colore del tema",
+        "color_default": "Predefinito dell’app",
         "color_none": "Nessuno",
         "font": "Carattere",
         "font_default": "Predefinito dell’app",
@@ -289,7 +296,68 @@
           "bottom": "Basso"
         },
         "border_hint": "Disegna un bordo su questo lato della colonna, nel colore della gravità salvo che il tema ne imposti un altro. Se la colonna copre tutto quel lato della scheda, il bordo diventa il bordo della scheda stessa.",
-        "widget_border_width": "Spessore del bordo (px; 0 = cornice Homey standard)"
+        "widget_border_width": "Spessore del bordo (px)",
+        "colors_hint": "Predefinito dell’app mantiene il colore del widget, che segue la modalità chiara e scura.",
+        "element_colors_hint": "Predefinito dell’app mantiene l’aspetto normale dell’elemento, basato sui colori del widget.",
+        "text_styles": {
+          "textCase": "Maiuscole",
+          "weight": "Spessore",
+          "italic": "Corsivo",
+          "spacing": "Spaziatura lettere",
+          "textCase_values": {
+            "none": "Come scritto",
+            "uppercase": "MAIUSCOLO",
+            "lowercase": "minuscolo",
+            "capitalize": "Ogni Parola Maiuscola"
+          },
+          "weight_values": {
+            "normal": "Normale",
+            "medium": "Medio",
+            "semibold": "Semigrassetto",
+            "bold": "Grassetto",
+            "extrabold": "Extra grassetto"
+          },
+          "italic_values": {
+            "off": "No",
+            "on": "Sì"
+          },
+          "spacing_values": {
+            "none": "Nessuna",
+            "narrow": "Stretta",
+            "wide": "Ampia"
+          },
+          "wrap": "Testo a capo",
+          "wrap_values": {
+            "normal": "Adatta alla larghezza",
+            "nowrap": "Non andare a capo",
+            "words": "Impila agli spazi"
+          }
+        },
+        "search_filters": "Ricerca e filtri",
+        "paging": "Paginazione",
+        "control_gap": "Spaziatura (px)",
+        "control_spacing_invalid": "Inserisci un numero intero da 0 a 40.",
+        "control_height": "Altezza minima (px)",
+        "control_paddingX": "Spaziatura interna orizzontale (px)",
+        "control_paddingY": "Spaziatura interna verticale (px)",
+        "control_radius": "Raggio degli angoli (px)",
+        "control_value_invalid": "Inserisci un numero intero da __min__ a __max__.",
+        "control_hint": "Lascia vuote le personalizzazioni per mantenere i valori predefiniti dell’app.",
+        "padding_default": "Predefinito di Homey",
+        "padding_top": "Spaziatura superiore (px)",
+        "padding_right": "Spaziatura destra (px)",
+        "padding_bottom": "Spaziatura inferiore (px)",
+        "padding_left": "Spaziatura sinistra (px)",
+        "column_gap": "Distanza tra colonne (px)",
+        "element_gap": "Distanza tra elementi (px)",
+        "line_height": "Altezza della riga (px)",
+        "color_hex": "HEX",
+        "color_picker": "Selettore colore",
+        "hex_invalid": "Inserisci un colore HEX nel formato #RRGGBB.",
+        "background_fill": "Riempimento dello sfondo",
+        "background_solid": "Uniforme",
+        "background_gradient": "Sfumatura",
+        "widget_padding_hint": "Il valore predefinito dell’app mantiene la normale spaziatura interna del widget."
       },
       "undo": "Annulla",
       "redo": "Ripristina",
@@ -297,9 +365,11 @@
       "copyPost": "Copia post e immagini",
       "imageHint": "Due immagini mostrano il widget con questo modello: prima in modalità chiara, poi in modalità scura, sempre con i colori propri del modello.",
       "rendering": "Creazione anteprime",
+      "generating": "Generazione del TWF e delle immagini. Attendi un momento.",
       "copyCopied": "Il post ed entrambe le immagini sono stati copiati.",
       "copyNext": "Apri il forum e incollali nell'editor di testo formattato.",
       "copyRetry": "Copia non riuscita. Usa il pulsante Copia post e immagini per riprovare.",
+      "copyHttp": "La copia automatica non è disponibile con questa connessione HTTP. Fai clic su Copia post e immagini oppure apri Homey via HTTPS per copiare automaticamente.",
       "pasteImageHint": "Passa all'editor di testo formattato nel forum.",
       "pasteImageReason": "Così entrambe le immagini di anteprima generate vengono incluse quando incolli il post. Incolla una volta,",
       "pasteEditDescription": "aggiungi facoltativamente una descrizione nella riga vuota sotto il titolo",
@@ -311,7 +381,20 @@
     "filters": {
       "button": "Filtri",
       "level": "Livello",
-      "allLevels": "Tutti i livelli"
+      "allLevels": "Tutti i livelli",
+      "date": "Data",
+      "fromDate": "Da",
+      "toDate": "A",
+      "allDates": "Tutte le date",
+      "invalidDateRange": "La data iniziale deve essere precedente o uguale alla data finale.",
+      "futureDate": "Le date non possono essere successive a oggi.",
+      "saveError": "Impossibile salvare i filtri. Potrebbero non essere ripristinati dopo il ricaricamento."
+    },
+    "pagination": {
+      "label": "Pagine del registro",
+      "previous": "Precedente",
+      "next": "Successivo",
+      "page": "Pagina"
     }
   }
 }

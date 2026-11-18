@@ -40,10 +40,16 @@
   "Auto refresh": "Auto refresh",
   "widgets": {
     "design": {
-      "default": "Default"
+      "default": "Default",
+      "compact": "Compact",
+      "journal": "Journal",
+      "console": "Console"
     },
     "theme": {
-      "default": "Default"
+      "default": "Default",
+      "ocean": "Ocean",
+      "forest": "Forest",
+      "sunset": "Sunset"
     },
     "datetime": {
       "customFormat": "Custom BLL date/time format",
@@ -84,10 +90,10 @@
     "settings": {
       "title": "Widgets",
       "intro": "Design and save reusable widget designs and themes for your dashboard widgets.",
-      "designs": "Design styles",
+      "designs": "Designs",
       "themes": "Themes",
       "templates": "Templates",
-      "selectDesign": "Design style",
+      "selectDesign": "Design",
       "duplicate": "Copy",
       "delete": "Delete",
       "name": "Name",
@@ -139,7 +145,8 @@
         "brown": "Brown",
         "grey": "Grey",
         "black": "Black",
-        "white": "White"
+        "white": "White",
+        "black-light": "Black (light/dark)"
       },
       "none": "None",
       "invalidName": "Enter a name of 1 to 60 characters.",
@@ -179,7 +186,7 @@
       "customStyles": "Custom styles",
       "confirmDeleteTheme": "Permanently delete the custom theme \"__name__\"?",
       "exchange": "The Widget Exchange(r)",
-      "communityTopic": "Community topic",
+      "communityTopic": "Topic",
       "saveFirst": "Save or discard changes before using templates.",
       "forumPost": "Forum post",
       "postForum": "Post on Forum",
@@ -245,7 +252,7 @@
         "size_invalid": "Enter a whole number from 4 to 100.",
         "color": "Color",
         "background": "Background",
-        "color_default": "Theme color",
+        "color_default": "App default",
         "color_none": "None",
         "font": "Font",
         "font_default": "App default",
@@ -288,7 +295,68 @@
           "bottom": "Bottom"
         },
         "border_hint": "Draws a border on this side of the column, in the severity colour unless the theme sets another. When the column covers that whole side of the card, the border becomes the card's own border.",
-        "widget_border_width": "Border width (px; 0 = standard Homey frame)"
+        "widget_border_width": "Border width (px)",
+        "colors_hint": "App default keeps the widget's own color, which follows light and dark mode.",
+        "element_colors_hint": "App default keeps the element's normal appearance, based on the Widget colors.",
+        "text_styles": {
+          "textCase": "Text case",
+          "weight": "Weight",
+          "italic": "Italic",
+          "spacing": "Letter spacing",
+          "textCase_values": {
+            "none": "As written",
+            "uppercase": "UPPERCASE",
+            "lowercase": "lowercase",
+            "capitalize": "Capitalize Words"
+          },
+          "weight_values": {
+            "normal": "Normal",
+            "medium": "Medium",
+            "semibold": "Semi-bold",
+            "bold": "Bold",
+            "extrabold": "Extra bold"
+          },
+          "italic_values": {
+            "off": "Off",
+            "on": "On"
+          },
+          "spacing_values": {
+            "none": "None",
+            "narrow": "Narrow",
+            "wide": "Wide"
+          },
+          "wrap": "Text wrapping",
+          "wrap_values": {
+            "normal": "Wrap to fit",
+            "nowrap": "No wrapping",
+            "words": "Stack at spaces"
+          }
+        },
+        "search_filters": "Search and filters",
+        "paging": "Paging",
+        "control_gap": "Spacing (px)",
+        "control_spacing_invalid": "Enter a whole number from 0 to 40.",
+        "control_height": "Minimum height (px)",
+        "control_paddingX": "Horizontal padding (px)",
+        "control_paddingY": "Vertical padding (px)",
+        "control_radius": "Corner radius (px)",
+        "control_value_invalid": "Enter a whole number from __min__ to __max__.",
+        "control_hint": "Leave overrides empty to keep the app defaults.",
+        "padding_default": "Homey default",
+        "padding_top": "Top padding (px)",
+        "padding_right": "Right padding (px)",
+        "padding_bottom": "Bottom padding (px)",
+        "padding_left": "Left padding (px)",
+        "column_gap": "Column gap (px)",
+        "element_gap": "Element gap (px)",
+        "line_height": "Line height (px)",
+        "color_hex": "HEX",
+        "color_picker": "Color picker",
+        "hex_invalid": "Enter a HEX color in #RRGGBB format.",
+        "background_fill": "Background fill",
+        "background_solid": "Solid",
+        "background_gradient": "Gradient",
+        "widget_padding_hint": "App default preserves the widget's normal padding."
       },
       "undo": "Undo",
       "redo": "Redo",
@@ -296,9 +364,11 @@
       "copyPost": "Copy post and images",
       "imageHint": "Two images show the widget with this template: first in light mode, then in dark mode, always with the template's own colors.",
       "rendering": "Creating previews",
+      "generating": "Generating the TWF and images. Please wait a moment.",
       "copyCopied": "The post and both images were copied.",
       "copyNext": "Open the forum and paste them into the rich-text editor.",
       "copyRetry": "Copying failed. Use the Copy post and images button to try again.",
+      "copyHttp": "Automatic copying is unavailable over this HTTP connection. Click Copy post and images, or open Homey over HTTPS to copy automatically.",
       "pasteImageHint": "Switch to the rich-text editor in the forum.",
       "pasteImageReason": "This includes both generated preview images when you paste the post. Paste once,",
       "pasteEditDescription": "optionally add a description in the blank line below the title",
@@ -310,7 +380,20 @@
     "filters": {
       "button": "Filters",
       "level": "Level",
-      "allLevels": "All levels"
+      "allLevels": "All levels",
+      "date": "Date",
+      "fromDate": "From",
+      "toDate": "To",
+      "allDates": "All dates",
+      "invalidDateRange": "The start date must be on or before the end date.",
+      "futureDate": "Dates cannot be later than today.",
+      "saveError": "Could not save your filters. They may not be restored after a reload."
+    },
+    "pagination": {
+      "label": "Log pages",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page"
     }
   }
 }

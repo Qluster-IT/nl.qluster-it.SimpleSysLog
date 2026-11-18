@@ -13,6 +13,154 @@ const search = require('../assets/js/ssl-widget-search');
 const layout = require('../assets/js/ssl-widget-layout');
 const widgetApi = require('../widgets/log_viewer/api');
 
+test('built-in presets remain valid and portable across every design and theme combination', async () => {
+  const doc = { createElement: () => {
+    const node = { style: {}, children: [], className: '', setAttribute() {}, appendChild(child) { this.children.push(child); } };
+    node.classList = { add: name => { node.className += ' ' + name; } };
+    return node;
+  } };
+  const values = { message: 'A sample log entry', timestamp: '13:45', severity: 'Info', app: 'Example',
+    hostname: 'homey', facility: 'Flow' };
+  const containsMessage = node => node.textContent === values.message || node.children.some(containsMessage);
+  for (const originalDesign of styles.BUILT_IN_DESIGNS) {
+    const design = styles.validateDesign(originalDesign);
+    for (const originalTheme of styles.BUILT_IN_THEMES) {
+      const theme = styles.validateTheme(originalTheme);
+      assert.ok(containsMessage(layout.renderCard(doc, design, theme, values)));
+      const decoded = template.decodeTemplate(await template.encodeTemplate({ design, theme }));
+      const { id: designId, ...expectedDesign } = design;
+      const { id: themeId, ...expectedTheme } = theme;
+      assert.deepEqual(decoded.design, expectedDesign);
+      assert.deepEqual(decoded.theme, expectedTheme);
+    }
+  }
+});
+
+test('timestamp wrapping is optional, portable and stacks Compact at spaces without splitting words', async () => {
+  const doc = { createElement: () => {
+    const node = { style: {}, children: [], className: '', setAttribute() {}, appendChild(child) { this.children.push(child); } };
+    node.classList = { add: name => { node.className += ' ' + name; } };
+    return node;
+  } };
+  const findTimestamp = node => node.className.includes('ssl-field-timestamp') ? node : node.children.map(findTimestamp).find(Boolean);
+  const original = styles.BUILT_IN_DESIGNS[0];
+  const values = { timestamp: '18-11-2026 16:19', severity: 'Warning', message: 'Test' };
+  const defaultTimestamp = findTimestamp(layout.renderCard(doc, original, null, values));
+  assert.equal(defaultTimestamp.style.whiteSpace, undefined);
+  assert.equal(defaultTimestamp.style.inlineSize, undefined);
+  for (const wrap of ['normal', 'nowrap', 'words']) {
+    const design = styles.validateDesign({ ...original, id: 'wrapping', elementTextStyles: { timestamp: { wrap } } });
+    const timestamp = findTimestamp(layout.renderCard(doc, design, null, values));
+    assert.equal(timestamp.textContent, wrap === 'words' ? '18-11-2026\n16:19' : values.timestamp);
+    assert.equal(timestamp.style.whiteSpace, wrap === 'words' ? 'pre' : wrap === 'nowrap' ? 'nowrap' : 'normal');
+    const decoded = template.decodeTemplate(await template.encodeTemplate({ design }));
+    assert.deepEqual(decoded.design.elementTextStyles, design.elementTextStyles);
+  }
+  assert.throws(() => styles.validateDesign({ ...original, elementTextStyles: { timestamp: { wrap: 'invalid' } } }), /Invalid widget design/);
+  assert.throws(() => styles.validateDesign({ ...original, elementTextStyles: { message: { wrap: 'words' } } }), /Invalid widget design/);
+  const compact = styles.BUILT_IN_DESIGNS.find(design => design.id === 'builtin:compact');
+  const timestamp = findTimestamp(layout.renderCard(doc, compact, null, values));
+  assert.equal(timestamp.textContent, '18-11-2026\n16:19');
+  assert.equal(timestamp.style.whiteSpace, 'pre');
+});
+
+test('control layouts and overrides validate and survive TWF export without changing older designs', async () => {
+  const base = { ...styles.BUILT_IN_DESIGNS[0], id: 'controls' };
+  assert.equal(styles.validateDesign(base).toolbarLayout, undefined);
+  assert.equal(styles.validateDesign(base).pagingLayout, undefined);
+  const design = styles.validateDesign({ ...base,
+    toolbarLayout: layout.defaultControlLayout('toolbar'),
+    pagingLayout: layout.defaultControlLayout('paging'),
+    controlStyles: { search: { height: 40, paddingX: 10, radius: 5 }, filter: {} },
+    elementSizes: { search: 16, pageNumber: 14 },
+    elementFonts: { previousPage: 'serif' },
+    elementTextStyles: { nextPage: { weight: 'bold' } }
+  });
+  assert.deepEqual(design.controlStyles, { search: { height: 40, paddingX: 10, radius: 5 } });
+  const theme = styles.validateTheme({ ...styles.BUILT_IN_THEMES[0], id: 'controls',
+    elements: { search: { color: 'blue', background: 'white' }, filter: { color: 'red', background: 'none' } } });
+  const exported = await template.encodeTemplate({ design, theme });
+  const decoded = template.decodeTemplate(exported);
+  assert.deepEqual(decoded.design, styles.validateDesign({ ...design, id: undefined }, { allowMissingId: true }));
+  assert.deepEqual(decoded.theme, styles.validateTheme({ ...theme, id: undefined }, { allowMissingId: true }));
+  const badLayouts = [
+    { ...design.toolbarLayout, gap: 41 },
+    { ...design.toolbarLayout, unexpected: true },
+    { rows: [...design.toolbarLayout.rows, ...design.toolbarLayout.rows, ...design.toolbarLayout.rows] },
+    { rows: [{ columns: [{ ...design.toolbarLayout.rows[0].columns[0], elements: ['nextPage'] }] }] },
+    { rows: [{ columns: [{ ...design.toolbarLayout.rows[0].columns[0], elements: ['search', 'search'] }] }] }
+  ];
+  for (const toolbarLayout of badLayouts) assert.throws(() => styles.validateDesign({ ...base, toolbarLayout }), /Invalid widget design/);
+  for (const controlStyles of [{ search: { height: 3 } }, { filter: { radius: 101 } }, { search: { paddingX: -1 } },
+    { nextPage: { paddingY: 1.5 } }, { message: { height: 40 } }, { search: { unknown: 1 } }]) {
+    assert.throws(() => styles.validateDesign({ ...base, controlStyles }), /Invalid widget design/);
+  }
+  assert.throws(() => styles.validateTheme({ ...theme, elements: { search: { color: 'severity', background: 'default' } } }), /Invalid widget theme/);
+});
+
+test('shared control renderer reuses live controls, arranges them and clears removed overrides', () => {
+  const doc = { createElement: () => {
+    const node = { style: { setProperty(key, value) { this[key] = value; }, removeProperty(key) {
+      delete this[key.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())];
+    } }, children: [], className: '', setAttribute() {},
+    appendChild(child) { this.children.push(child); }, replaceChildren() { this.children = []; } };
+    node.classList = {
+      add(...names) { node.className += ' ' + names.join(' '); },
+      remove(...names) { node.className = node.className.split(/\s+/).filter(name => !names.includes(name)).join(' '); }
+    };
+    return node;
+  } };
+  const root = doc.createElement('div');
+  const nodes = { previousPage: doc.createElement('button'), pageNumber: doc.createElement('span'), nextPage: doc.createElement('button') };
+  nodes.nextPage.onclick = () => 'next';
+  const design = { ...styles.BUILT_IN_DESIGNS[0], pagingLayout: layout.defaultControlLayout('paging'),
+    controlStyles: { nextPage: { height: 40, paddingX: 12, radius: 8 } },
+    elementLineHeights: { nextPage: 24 },
+    elementFonts: { nextPage: 'serif' }, elementTextStyles: { nextPage: { weight: 'bold' } } };
+  design.pagingLayout.rows[0].columns.reverse();
+  layout.renderControls(doc, root, 'paging', design, { elements: { nextPage: { color: 'red', background: 'white' } } }, nodes,
+    { selectedColumn: { row: 0, column: 0 }, selectedElement: 'nextPage' });
+  assert.equal(root.children[0].children[0].children[0], nodes.nextPage);
+  assert.match(root.children[0].children[0].className, /ssl-preview-selected/);
+  assert.match(nodes.nextPage.className, /ssl-element-selected/);
+  assert.equal(nodes.nextPage.style.minHeight, '40px');
+  assert.equal(nodes.nextPage.style.fontWeight, '700');
+  assert.equal(nodes.nextPage.style.lineHeight, '24px');
+  assert.equal(nodes.nextPage.style.color, 'var(--ssl-color-red)');
+  assert.equal(nodes.nextPage.onclick(), 'next');
+  const { controlStyles, elementFonts, elementTextStyles, elementLineHeights, pagingLayout, ...oldDesign } = design;
+  layout.renderControls(doc, root, 'paging', oldDesign, {}, nodes);
+  assert.deepEqual(root.children, [nodes.previousPage, nodes.pageNumber, nodes.nextPage]);
+  assert.equal(nodes.nextPage.style.minHeight, undefined);
+  assert.equal(nodes.nextPage.style.fontWeight, undefined);
+  assert.equal(nodes.nextPage.style.lineHeight, undefined);
+  assert.equal(nodes.nextPage.style.color, undefined);
+  assert.doesNotMatch(root.className, /ssl-grid-card/);
+  assert.doesNotMatch(nodes.nextPage.className, /ssl-element-selected/);
+  design.pagingLayout.rows[0].columns.forEach(column => { column.elements = []; });
+  layout.renderControls(doc, root, 'paging', design, {}, nodes);
+  assert.ok(root.children[0].children.every(column => column.children.length === 0));
+});
+
+test('filter menus stay inside the widget when the filter moves left or into a lower row', () => {
+  const widget = { getBoundingClientRect: () => ({ left: 100, right: 260, width: 160, top: 0, bottom: 200 }) };
+  const menu = { style: {}, closest: () => widget, scrollHeight: 140,
+    parentElement: { getBoundingClientRect: () => ({ top: 40 }) },
+    getBoundingClientRect: () => ({ left: -60, right: 80, top: 78 }) };
+  layout.positionFilterMenu(menu);
+  assert.equal(menu.style.minWidth, '140px');
+  assert.equal(menu.style.maxWidth, '140px');
+  assert.equal(menu.style.right, '-170px');
+  assert.equal(menu.style.maxHeight, '114px');
+  menu.parentElement.getBoundingClientRect = () => ({ top: 160 });
+  menu.getBoundingClientRect = () => ({ left: 130, right: 270, top: 198 });
+  layout.positionFilterMenu(menu);
+  assert.equal(menu.style.right, '20px');
+  assert.equal(menu.style.top, 'auto');
+  assert.equal(menu.style.bottom, 'calc(100% + 4px)');
+  assert.equal(menu.style.maxHeight, '152px');
+});
+
 test('designer preview outlines the selected widget, row and column', () => {
   const doc = { createElement: () => {
     const node = { style: {}, children: [], className: '', setAttribute() {},
@@ -52,8 +200,101 @@ test('widget outline width and colour validate with defaults like Chronograph', 
   assert.equal(outline, 'automatic');
   assert.equal(styles.validateTheme({ name: 'T', id: 't', colors }).colors.outline, 'automatic');
   assert.equal(styles.validateTheme({ name: 'T', id: 't', colors: { ...colors, outline: 'red' } }).colors.outline, 'red');
+  assert.equal(styles.validateTheme({ name: 'T', id: 't', colors: { ...colors, accent: 'black-light' } }).colors.accent, 'black-light');
   assert.throws(() => styles.validateTheme({ name: 'T', id: 't', colors: { ...colors, frame: 'red' } }), /Invalid widget theme/);
   assert.throws(() => styles.validateTheme({ name: 'T', id: 't', colors: { ...colors, surface: undefined } }), /Invalid widget theme/);
+});
+
+test('frame overrides distinguish legacy default from borderless and survive TWF export', async () => {
+  const base = { ...styles.BUILT_IN_DESIGNS[0], id: 'frame', widgetBorderWidth: 0 };
+  const theme = styles.BUILT_IN_THEMES[0];
+  assert.equal(styles.validateDesign(base).widgetBorderless, undefined);
+  const defaultStyle = layout.widgetStyle(styles.validateDesign(base), theme);
+  assert.equal(defaultStyle['--ssl-outline-width'], undefined);
+  assert.equal(defaultStyle['--ssl-frame-shadow'], undefined);
+  const design = styles.validateDesign({ ...base, widgetBorderless: true,
+    widgetPadding: { top: 0, right: 100, bottom: 8, left: 4 }, elementLineHeights: { message: 24, search: 30 } });
+  assert.deepEqual(layout.widgetStyle(design, theme), {
+    ...defaultStyle,
+    '--ssl-outline-width': '0px', '--ssl-frame-shadow': 'none',
+    '--ssl-widget-padding-top': '0px', '--ssl-widget-padding-right': '100px',
+    '--ssl-widget-padding-bottom': '8px', '--ssl-widget-padding-left': '4px'
+  });
+  assert.equal(layout.widgetStyle({ ...base, widgetBorderWidth: 3 }, theme)['--ssl-outline-width'], '3px');
+  const decoded = template.decodeTemplate(await template.encodeTemplate({ design }));
+  const { id, ...expected } = design;
+  assert.deepEqual(decoded.design, expected);
+  for (const changes of [{ widgetBorderless: 0 }, { widgetPadding: { top: -1 } },
+    { widgetPadding: { left: 101 } }, { widgetPadding: { left: 1.5 } }, { widgetPadding: { other: 2 } },
+    { elementLineHeights: { message: 3 } }, { elementLineHeights: { search: 101 } },
+    { elementLineHeights: { border1: 20 } }]) {
+    assert.throws(() => styles.validateDesign({ ...base, ...changes }), /Invalid widget design/);
+  }
+});
+
+test('HEX colors and optional gradient fill validate and round-trip for widget and element colors', async () => {
+  const base = { ...styles.BUILT_IN_THEMES[0], id: 'hex' };
+  const theme = styles.validateTheme({ ...base, colors: { ...base.colors, background: '#2F8df6', outline: '#001122' },
+    elements: { message: { color: '#123456', background: '#ABCDEF' }, border1: { color: '#001122', background: 'default' } },
+    backgroundGradient: true });
+  assert.equal(layout.colorValue(theme.elements.message.color), '#123456');
+  assert.equal(layout.widgetStyle({}, theme)['--ssl-outline'], '#001122');
+  assert.match(layout.widgetStyle({}, theme)['background-image'],
+    /^linear-gradient\(to bottom, color-mix\(in srgb, #2F8df6 22%, var\(--ssl-gradient-surface\)\), color-mix\(in srgb, #2F8df6 11%,/);
+  assert.equal(layout.widgetStyle({}, { ...theme, backgroundGradient: false })['--ssl-background'], '#2F8df6');
+  assert.equal(layout.widgetStyle({}, { ...base, backgroundGradient: true })['background-image'], undefined);
+  const { id, ...expected } = theme;
+  assert.deepEqual(template.decodeTemplate(await template.encodeTemplate({ theme })).theme, expected);
+  for (const color of ['#fff', '#fffffff', '#GG0000', 'red; color:black']) {
+    assert.throws(() => styles.validateTheme({ ...base, colors: { ...base.colors, background: color } }), /Invalid widget theme/);
+    assert.throws(() => styles.validateTheme({ ...base, elements: { message: { color, background: 'default' } } }), /Invalid widget theme/);
+    assert.throws(() => styles.validateTheme({ ...base, elements: { message: { color: 'default', background: color } } }), /Invalid widget theme/);
+  }
+  assert.throws(() => styles.validateTheme({ ...base, backgroundGradient: 'yes' }), /Invalid widget theme/);
+  assert.throws(() => styles.validateTheme({ ...base, elements: { border1: { color: '#123456', background: '#123456' } } }), /Invalid widget theme/);
+});
+
+test('optional row and element gaps render in flat and spanning grids without changing omitted defaults', async () => {
+  const doc = { createElement: () => {
+    const node = { style: {}, children: [], className: '', setAttribute() {}, appendChild(child) { this.children.push(child); } };
+    node.classList = { add: name => { node.className += ' ' + name; } };
+    return node;
+  } };
+  const column = (elements, span, options = {}) => ({ elements, span, rowSpan: 1,
+    align: 'left', valign: 'top', direction: 'horizontal', width: 'span', ...options });
+  const design = styles.validateDesign({ ...styles.BUILT_IN_DESIGNS[0], id: 'spacing',
+    elementLineHeights: { message: 28 },
+    rows: [
+      { columnGap: 0, columns: [column(['message', 'border2'], 2, { elementGap: 3 }), column(['app'], 3)] },
+      { columnGap: 17, columns: [column(['timestamp'], 5)] }
+    ] });
+  const values = { message: 'Message', app: 'App', timestamp: '12:00' };
+  const flat = layout.renderCard(doc, design, null, values);
+  assert.equal(flat.children[0].style.columnGap, '0px');
+  assert.equal(flat.children[1].style.columnGap, '17px');
+  assert.equal(flat.children[0].children[0].style.gap, '3px');
+  assert.equal(flat.children[0].children[0].children[0].style.lineHeight, '28px');
+  const spanning = structuredClone(design);
+  spanning.rows[0].columns[0].rowSpan = 2;
+  const card = layout.renderCard(doc, spanning, null, values);
+  assert.equal(card.style.columnGap, '0px');
+  assert.equal(card.children[0].style.paddingRight, 'calc(0px + var(--ssl-border-padding-right, 0px))');
+  assert.match(card.children[0].className, /ssl-border-right/);
+  assert.equal(card.children[1].style.paddingRight, undefined);
+  assert.equal(card.children[2].style.paddingRight, undefined);
+  const legacy = structuredClone(spanning);
+  legacy.rows.forEach(row => { delete row.columnGap; });
+  assert.equal(layout.renderCard(doc, legacy, null, values).style.columnGap, undefined);
+  const { id, ...expected } = design;
+  assert.deepEqual(template.decodeTemplate(await template.encodeTemplate({ design })).design, expected);
+  for (const gap of [-1, 101, 2.5]) {
+    const badRow = structuredClone(design);
+    badRow.rows[0].columnGap = gap;
+    assert.throws(() => styles.validateDesign(badRow), /Invalid widget design/);
+    const badColumn = structuredClone(design);
+    badColumn.rows[0].columns[0].elementGap = gap;
+    assert.throws(() => styles.validateDesign(badColumn), /Invalid widget design/);
+  }
 });
 
 test('border elements draw the card edge or a column side in the severity colour', () => {
@@ -199,6 +440,20 @@ test('widget style collection provides built-ins and validates custom entries', 
   for (const elementFonts of [{ message: 'comic' }, { message: '' }, { nope: 'serif' }]) {
     assert.throws(() => styles.validateDesign({ ...custom.designs[0], elementFonts }), /Invalid widget design/);
   }
+  const styled = styles.validateDesign({ ...custom.designs[0], elementTextStyles: {
+    message: { textCase: 'capitalize', weight: 'bold', italic: 'on', spacing: 'wide' }, daySeparator: { textCase: 'none' }, app: {}
+  } });
+  assert.deepEqual(styled.elementTextStyles, {
+    message: { textCase: 'capitalize', weight: 'bold', italic: 'on', spacing: 'wide' }, daySeparator: { textCase: 'none' }
+  });
+  const styledMessage = layout.renderCard(fakeDocument(), styled, null, { message: 'hi' }).firstChild.firstChild.firstChild.style;
+  assert.deepEqual([styledMessage.textTransform, styledMessage.fontWeight, styledMessage.fontStyle, styledMessage.letterSpacing],
+    ['capitalize', '700', 'italic', '0.08em']);
+  assert.equal(layout.renderDaySeparator(fakeDocument(), styled, null, 'Mon').firstChild.firstChild.firstChild.style.textTransform, 'none');
+  assert.equal(layout.renderCard(fakeDocument(), fonted, null, { message: 'hi' }).firstChild.firstChild.firstChild.style.textTransform, undefined);
+  for (const elementTextStyles of [{ message: { weight: 'heavy' } }, { message: { color: 'red' } }, { nope: { italic: 'on' } }, { message: 'bold' }]) {
+    assert.throws(() => styles.validateDesign({ ...custom.designs[0], elementTextStyles }), /Invalid widget design/);
+  }
   const separatorTheme = styles.validateTheme({
     id: 'separator', name: 'Separator', colors: styles.BUILT_IN_THEMES[0].colors,
     elements: { daySeparator: { color: 'red', background: 'none' } }
@@ -227,7 +482,7 @@ test('widget style collection provides built-ins and validates custom entries', 
   assert.throws(() => styles.normalizeCollection({
     version: 1,
     designs: [],
-    themes: [{ id: 'bad', name: 'Bad', colors: { ...styles.BUILT_IN_THEMES[0].colors, text: '#ff0000' } }]
+    themes: [{ id: 'bad', name: 'Bad', colors: { ...styles.BUILT_IN_THEMES[0].colors, text: '#ff000' } }]
   }), /Invalid widget theme/);
   const named = styles.normalizeCollection({
     version: 1,
@@ -239,7 +494,7 @@ test('widget style collection provides built-ins and validates custom entries', 
 
 test('widget templates round-trip and reject invalid or oversized input', async () => {
   const value = {
-    design: { ...styles.BUILT_IN_DESIGNS[0], id: undefined },
+    design: { ...styles.BUILT_IN_DESIGNS[0], id: undefined, elementTextStyles: { severity: { textCase: 'none', italic: 'on' } } },
     theme: { ...styles.BUILT_IN_THEMES[0], id: undefined }
   };
   const encoded = await template.encodeTemplate(value);
@@ -317,9 +572,18 @@ test('widget API validates entry count, handles initial BLL absence, and formats
   assert.equal(receivedOptions.maxSeverity, undefined);
   await widgetApi.getWidgetLogs({
     homey: { app: { Log: { getLogs: async options => { receivedOptions = options; return { logs: [], count: 0 }; } } } },
-    query: { take: '1', timestampFormat: 'HH:mm', dayFormat: 'dddd' }
+    query: { take: '1', skip: '10', timestampFormat: 'HH:mm', dayFormat: 'dddd' }
   });
   assert.equal(JSON.stringify(receivedOptions.timestampFormat), '["HH:mm","dddd"]');
+  assert.equal(receivedOptions.skip, 10);
+  await assert.rejects(() => widgetApi.getWidgetLogs({
+    homey: { app: { Log: { getLogs: async () => ({ logs: [] }) } } },
+    query: { take: '1', skip: '-1' }
+  }), /non-negative whole number/);
+  await assert.rejects(() => widgetApi.getWidgetLogs({
+    homey: { app: { Log: { getLogs: async () => ({ logs: [] }) } } },
+    query: { take: '1', skip: '1.5' }
+  }), /non-negative whole number/);
 });
 
 test('widget API validates and forwards per-widget log filters', async () => {
@@ -338,12 +602,38 @@ test('widget API validates and forwards per-widget log filters', async () => {
   assert.equal('hostname' in receivedOptions, false);
   await widgetApi.getWidgetLogs({ homey, query: { take: '5', facility: 'all' } });
   assert.equal('facility' in receivedOptions, false);
+  await widgetApi.getWidgetLogs({ homey, query: { take: '5', dateFrom: '2026-11-17', dateTo: '2026-11-18' } });
+  assert.equal(receivedOptions.timestamp_fromUTC, '2026-11-17');
+  assert.equal(receivedOptions.timestamp_toUTC, '2026-11-18');
+  await widgetApi.getWidgetLogs({ homey, query: { take: '5', dateFrom: '2026-11-17' } });
+  assert.equal(receivedOptions.timestamp_fromUTC, '2026-11-17');
+  assert.equal('timestamp_toUTC' in receivedOptions, false);
+  await assert.rejects(() => widgetApi.getWidgetLogs({ homey, query: { take: '5', dateFrom: '2026-02-30' } }), /valid calendar date/);
+  await assert.rejects(() => widgetApi.getWidgetLogs({ homey, query: { take: '5', dateFrom: '2026-11-18', dateTo: '2026-11-17' } }), /on or before/);
   await assert.rejects(() => widgetApi.getWidgetLogs({ homey, query: { take: '5', minSeverity: '8' } }), /minimum severity/);
   await assert.rejects(() => widgetApi.getWidgetLogs({ homey, query: { take: '5', facility: '1.5' } }), /facility/);
   await widgetApi.getWidgetLogs({ homey, query: { take: '5', minSeverity: '4', severities: '7,6,7' } });
   assert.deepEqual([...receivedOptions.severities], [6, 7]);
   assert.equal('maxSeverity' in receivedOptions, false);
   await assert.rejects(() => widgetApi.getWidgetLogs({ homey, query: { take: '5', severities: '6,8' } }), /levels/);
+});
+
+test('widget filter state is saved independently for each Homey widget instance', () => {
+  const settings = new Map();
+  const homey = { settings: { get: key => settings.get(key), set: (key, value) => settings.set(key, value) } };
+  const instance = id => ({ homey, params: { instanceId: id } });
+  assert.deepEqual(widgetApi.getWidgetFilterState(instance('widget-one')), { levels: [], from: null, to: null });
+  assert.deepEqual(widgetApi.setWidgetFilterState({
+    ...instance('widget-one'),
+    body: { levels: [6, 3], from: '2026-11-17', to: '2026-11-18' }
+  }), { saved: true });
+  assert.deepEqual(widgetApi.getWidgetFilterState(instance('widget-one')),
+    { levels: [3, 6], from: '2026-11-17', to: '2026-11-18' });
+  assert.deepEqual(widgetApi.getWidgetFilterState(instance('widget-two')), { levels: [], from: null, to: null });
+  assert.throws(() => widgetApi.setWidgetFilterState({
+    ...instance('widget-one'), body: { levels: [8], from: null, to: null }
+  }), /levels are invalid/);
+  assert.throws(() => widgetApi.getWidgetFilterState(instance('../widget-two')), /instance ID is invalid/);
 });
 
 test('widget timestamp format registration is scoped to the widget instance', async () => {
@@ -414,6 +704,11 @@ test('custom datetime widget suggestions mirror the BLL format Flow autocomplete
   assert.equal(custom[0].id, 'yyyy-MM-dd HH:mm');
   assert.equal(custom[0].description, `yyyy-MM-dd HH:mm:${new Date().getFullYear()}`);
 
+  const nl = require('../.homeycompose/locales/nl.json');
+  app.homey.__ = key => key.split('.').reduce((value, part) => value[part], nl);
+  assert.equal((await listeners.designStyle(nl.widgets.design.journal))[0].id, 'builtin:journal');
+  assert.equal((await listeners.colorTheme(nl.widgets.theme.forest))[0].id, 'builtin:forest');
+
   assert.equal([...app.getWidgetTimestampFormats()].join(','), 'datetime');
   assert.throws(() => app.registerWidgetTimestampFormat('', 'datetime'), /instance ID/);
   assert.throws(() => app.registerWidgetTimestampFormat('widget-invalid', ''), /date and time format/);
@@ -460,6 +755,7 @@ test('widget waits for the Homey widget API before bootstrapping Angular', () =>
   assert.equal(JSON.stringify(calls), JSON.stringify([
     ['directive', 'sslLogCard'],
     ['directive', 'sslDaySeparator'],
+    ['directive', 'sslControlLayout'],
     ['controller', 'SSLLogWidgetController', 'function'],
     ['bootstrap', 'sslLogWidget']
   ]));
@@ -500,7 +796,203 @@ test('widget applies its height and filters to loaded and realtime entries', asy
     getWidgetInstanceId: () => 'widget-1',
     on: (event, handler) => { handlers[event] = handler; },
     ready: options => { readyOptions = options; },
+    api(method, path, body) {
+      if (path === '/filter-state/widget-1' && method === 'GET') {
+        return Promise.resolve({ levels: [], from: null, to: null });
+      }
+      if (path === '/filter-state/widget-1' && method === 'PUT') {
+        filterStates.push(body);
+        return Promise.resolve({ saved: true });
+      }
+      if (path === '/register-timestamp-format') return Promise.resolve({ registered: true });
+      if (path === '/styles') return Promise.resolve(styles.getWidgetStyles({ settings: { get: () => undefined } }));
+      logRequests.push(path);
+      return Promise.resolve({ available: true, logs: [], severities: {}, facilities: {} });
+    }
+  };
+  const filterStates = [];
+  const context = vm.createContext({
+    angular,
+    document: { addEventListener() {}, getElementById: () => null },
+    window: { SSLWidgetSearch: search, SSLWidgetLayout: layout },
+    console
+  });
+  vm.runInContext(source, context);
+  context.onHomeyReady(homey);
+  const scope = { $applyAsync: fn => fn && fn(), $on() {} };
+  controller(scope, () => {});
+  await new Promise(resolve => setImmediate(resolve));
+
+  assert.equal(readyOptions.height, 5000);
+  assert.equal(scope.paging, false);
+  assert.equal(scope.showFilters, true);
+  scope.toggleFilterMenu();
+  scope.openFilterGroup('date');
+  assert.equal(scope.filterMenu.open, true);
+  assert.equal(scope.filterMenu.date, true);
+  assert.equal(scope.filterMenu.level, false);
+  scope.openFilterGroup('level');
+  assert.equal(scope.filterMenu.open, true);
+  assert.equal(scope.filterMenu.level, true);
+  assert.equal(scope.filterMenu.date, false);
+  scope.openFilterGroup('date');
+  scope.openFilterGroup('date');
+  assert.equal(scope.filterMenu.open, true);
+  assert.equal(scope.filterMenu.date, true);
+  assert.equal(scope.filterMenu.level, false);
+  scope.toggleFilterMenu();
+  assert.equal(logRequests[0], '/logs?take=25&timestampFormat=timeshort&dayFormat=ddd%20d%20MMM&minSeverity=4&app=Heat');
+  const formatted = { datetime: 'formatted' };
+  handlers.log_updated({ timestamp: '2026-11-17T09:00:00.000Z', severity: 6, app: 'Heating', message: 'info', timestamp_formatted: formatted });
+  handlers.log_updated({ timestamp: '2026-11-17T09:01:00.000Z', severity: 3, app: 'Lights', message: 'other app', timestamp_formatted: formatted });
+  handlers.log_updated({ timestamp: '2026-11-17T09:02:00.000Z', severity: 3, app: 'Heating', message: 'shown', timestamp_formatted: formatted });
+  assert.equal(JSON.stringify(scope.logs.map(log => log.message)), JSON.stringify(['shown']));
+  scope.dateFilter.from = new Date(2026, 10, 17);
+  scope.dateFilter.to = new Date(2026, 10, 17);
+  scope.dateRangeChanged();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.ok(logRequests[1].endsWith('&dateFrom=2026-11-17&dateTo=2026-11-17'));
+  assert.deepEqual(JSON.parse(JSON.stringify(filterStates[0])), { levels: [], from: '2026-11-17', to: '2026-11-17' });
+  scope.toggleLevel(3);
+  await new Promise(resolve => setImmediate(resolve));
+  assert.deepEqual(JSON.parse(JSON.stringify(filterStates[1])), { levels: [3], from: '2026-11-17', to: '2026-11-17' });
+  assert.ok(logRequests[2].endsWith('&dateFrom=2026-11-17&dateTo=2026-11-17&severities=3'));
+  handlers.log_updated({ timestamp: new Date(2026, 10, 17, 12).toISOString(), severity: 3, app: 'Heating', message: 'inside',
+    timestamp_formatted: { datetime: 'formatted' } });
+  handlers.log_updated({ timestamp: new Date(2026, 10, 16, 12).toISOString(), severity: 3, app: 'Heating', message: 'outside',
+    timestamp_formatted: { datetime: 'formatted' } });
+  assert.deepEqual(scope.logs.map(log => log.message), ['inside']);
+  const requestsBeforeInvalidRange = logRequests.length;
+  scope.dateFilter.from = new Date(2026, 10, 18);
+  scope.dateRangeChanged();
+  assert.equal(logRequests.length, requestsBeforeInvalidRange);
+  assert.ok(scope.dateFilterError);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  scope.dateFilter = { from: today, to: today };
+  scope.dateRangeChanged();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(scope.dateFilterError, '');
+  assert.equal(scope.maxFromDate(), scope.todayDate());
+  const requestsBeforeFutureDate = logRequests.length;
+  const savesBeforeFutureDate = filterStates.length;
+  for (const bound of ['from', 'to']) {
+    scope.dateFilter = { from: null, to: null };
+    scope.dateFilter[bound] = tomorrow;
+    scope.dateRangeChanged();
+    scope.toggleLevel(4);
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(scope.dateFilterError, 'Dates cannot be later than today.');
+    assert.equal(logRequests.length, requestsBeforeFutureDate);
+    assert.equal(filterStates.length, savesBeforeFutureDate);
+  }
+  scope.dateFilter = { from: null, to: new Date(2026, 10, 17) };
+  assert.equal(scope.maxFromDate(), '2026-11-17');
+});
+
+test('live and visibility updates keep five entries and follow the top only within 24 px in both scrollers', async () => {
+  const source = fs.readFileSync(require.resolve('../assets/js/ssl-widget.js'), 'utf8');
+  for (const paging of [false, true]) {
+    for (const pageScroll of [false, true]) {
+      for (const initialTop of [0, 24, 25, 100]) {
+        let controller;
+        const events = {};
+        const documentEvents = {};
+        const frames = [];
+        let anchorPosition = 150;
+        const page = { scrollTop: initialTop };
+        const list = {
+          scrollTop: initialTop,
+          getBoundingClientRect: () => ({ top: 0 }),
+          querySelectorAll: () => [anchor],
+          contains: node => node === anchor
+        };
+        const scroller = pageScroll ? page : list;
+        const anchor = { getBoundingClientRect: () => ({
+          top: anchorPosition - scroller.scrollTop, bottom: anchorPosition - scroller.scrollTop + 40
+        }) };
+        const entry = id => ({ id, timestamp: '2026-11-18T10:00:00.000Z', severity: 6, app: 'Example',
+          message: 'Entry ' + id, timestamp_formatted: { timeshort: '10:00' } });
+        const homey = {
+          __: () => '',
+          getSettings: () => ({ entryCount: 5, paging }),
+          getWidgetInstanceId: () => 'live-limit',
+          on: (name, handler) => { events[name] = handler; },
+          ready() {},
+          api(method, path) {
+            if (path === '/filter-state/live-limit') return Promise.resolve({ levels: [], from: null, to: null });
+            if (path === '/styles') return Promise.resolve(styles.getWidgetStyles({ settings: { get: () => undefined } }));
+            if (path === '/register-timestamp-format') return Promise.resolve({ registered: true });
+            if (path.startsWith('/logs?')) {
+              return Promise.resolve({ available: true, logs: Array.from({ length: 6 }, (_, index) => entry(index)) });
+            }
+            throw new Error('Unexpected request: ' + path);
+          }
+        };
+        const context = vm.createContext({
+          angular: {
+            module: () => ({ directive() {}, controller: (_name, definition) => { controller = definition.at(-1); } }),
+            bootstrap() {}
+          },
+          document: {
+            hidden: false,
+            documentElement: { classList: { contains: () => pageScroll } },
+            scrollingElement: page,
+            getElementById: () => list,
+            querySelector: () => ({ getBoundingClientRect: () => ({ bottom: 30 }) }),
+            addEventListener: (name, handler) => { documentEvents[name] = handler; }
+          },
+          window: { SSLWidgetSearch: search, SSLWidgetLayout: layout, requestAnimationFrame: callback => frames.push(callback) },
+          console
+        });
+        vm.runInContext(source, context);
+        context.onHomeyReady(homey);
+        const scope = { $applyAsync: fn => fn && fn(), $on() {} };
+        controller(scope, () => {});
+        await new Promise(resolve => setImmediate(resolve));
+        assert.equal(scope.logs.length, 5);
+        for (const id of [10, 11, 12]) {
+          events.log_updated(entry(id));
+          anchorPosition += 40;
+          assert.equal(scope.logs.length, 5);
+          assert.equal(scope.filteredLogs.length, 5);
+        }
+        assert.equal(scope.logs.map(log => log.id).join(','), '12,11,10,0,1');
+        frames.splice(0).forEach(frame => frame());
+        assert.equal(scroller.scrollTop, initialTop <= 24 ? 0 : initialTop + 120);
+        events.log_updated(entry(12));
+        assert.equal(scope.logs.length, 5);
+        assert.equal(frames.length, 0);
+        documentEvents.visibilitychange();
+        await new Promise(resolve => setImmediate(resolve));
+        assert.equal(scope.logs.length, 5);
+        assert.equal(scope.filteredLogs.length, 5);
+        assert.equal(scope.hasNextPage, paging);
+      }
+    }
+  }
+});
+
+test('widget restores its instance filters before the first log request', async () => {
+  const source = fs.readFileSync(require.resolve('../assets/js/ssl-widget.js'), 'utf8');
+  let controller;
+  const angular = {
+    module: () => ({ directive() {}, controller: (_name, definition) => { controller = definition.at(-1); } }),
+    bootstrap() {}
+  };
+  const saved = { levels: [3, 6], from: '2026-11-17', to: '2026-11-18' };
+  const logRequests = [];
+  const homey = {
+    __: () => '',
+    getSettings: () => ({ entryCount: 25 }),
+    getWidgetInstanceId: () => 'widget-restore',
+    on() {},
+    ready() {},
     api(method, path) {
+      if (path === '/filter-state/widget-restore') return Promise.resolve(saved);
       if (path === '/register-timestamp-format') return Promise.resolve({ registered: true });
       if (path === '/styles') return Promise.resolve(styles.getWidgetStyles({ settings: { get: () => undefined } }));
       logRequests.push(path);
@@ -519,13 +1011,81 @@ test('widget applies its height and filters to loaded and realtime entries', asy
   controller(scope, () => {});
   await new Promise(resolve => setImmediate(resolve));
 
-  assert.equal(readyOptions.height, 5000);
-  assert.equal(logRequests[0], '/logs?take=25&timestampFormat=timeshort&dayFormat=ddd%20d%20MMM&minSeverity=4&app=Heat');
-  const formatted = { datetime: 'formatted' };
-  handlers.log_updated({ timestamp: '2026-11-17T09:00:00.000Z', severity: 6, app: 'Heating', message: 'info', timestamp_formatted: formatted });
-  handlers.log_updated({ timestamp: '2026-11-17T09:01:00.000Z', severity: 3, app: 'Lights', message: 'other app', timestamp_formatted: formatted });
-  handlers.log_updated({ timestamp: '2026-11-17T09:02:00.000Z', severity: 3, app: 'Heating', message: 'shown', timestamp_formatted: formatted });
-  assert.equal(JSON.stringify(scope.logs.map(log => log.message)), JSON.stringify(['shown']));
+  assert.equal(scope.selectedLevelCount(), 2);
+  assert.equal(scope.hasDateFilter(), true);
+  assert.ok(logRequests[0].includes('&dateFrom=2026-11-17&dateTo=2026-11-18&severities=3%2C6'));
+});
+
+test('widget paging is opt-in and requests adjacent pages; search and filters can be hidden independently', async () => {
+  const source = fs.readFileSync(require.resolve('../assets/js/ssl-widget.js'), 'utf8');
+  let controller;
+  const angular = {
+    module: () => ({ directive() {}, controller: (_name, definition) => { controller = definition.at(-1); } }),
+    bootstrap() {}
+  };
+  const logRequests = [];
+  const entries = (start, length) => Array.from({ length }, (_, index) => ({
+    id: `${start + index}`,
+    timestamp: `2026-11-18T10:${String(start + index).padStart(2, '0')}:00.000Z`,
+    timestamp_formatted: { datetime: 'formatted', timeshort: '10:00' },
+    severity: 6,
+    facility: 1,
+    message: `entry ${start + index}`
+  }));
+  const homey = {
+    __: () => '',
+    getSettings: () => ({ entryCount: 2, paging: true, searchMode: 'none', showFilters: false }),
+    getWidgetInstanceId: () => 'widget-page',
+    on() {},
+    ready() {},
+    api(method, path) {
+      if (path === '/filter-state/widget-page') return Promise.resolve({ levels: [3], from: '2026-11-18', to: null });
+      if (path === '/register-timestamp-format') return Promise.resolve({ registered: true });
+      if (path === '/styles') return Promise.resolve(styles.getWidgetStyles({ settings: { get: () => undefined } }));
+      logRequests.push(path);
+      return Promise.resolve({
+        available: true,
+        logs: path.includes('skip=2') ? entries(2, 1) : entries(0, 3),
+        severities: {},
+        facilities: {}
+      });
+    }
+  };
+  const context = vm.createContext({
+    angular,
+    document: { addEventListener() {}, getElementById: () => null },
+    window: { SSLWidgetSearch: search, SSLWidgetLayout: layout },
+    console
+  });
+  vm.runInContext(source, context);
+  context.onHomeyReady(homey);
+  const scope = { $applyAsync: fn => fn && fn(), $on() {} };
+  controller(scope, () => {});
+  const settle = () => new Promise(resolve => setImmediate(resolve));
+  await settle();
+
+  assert.equal(scope.searchMode, 'none');
+  assert.equal(scope.showSearch, false);
+  assert.equal(scope.showFilters, false);
+  assert.equal(scope.showToolbar, false);
+  assert.equal(scope.logs.length, 2);
+  assert.equal(scope.hasNextPage, true);
+  assert.ok(logRequests[0].includes('take=3'));
+  assert.ok(logRequests[0].includes('&skip=0'));
+  assert.ok(!logRequests[0].includes('dateFrom='));
+  assert.ok(!logRequests[0].includes('severities='));
+
+  scope.nextPage();
+  await settle();
+  assert.equal(scope.pageIndex, 1);
+  assert.equal(scope.logs.length, 1);
+  assert.equal(scope.hasNextPage, false);
+  assert.ok(logRequests[1].includes('&skip=2'));
+
+  scope.previousPage();
+  await settle();
+  assert.equal(scope.pageIndex, 0);
+  assert.ok(logRequests[2].includes('&skip=0'));
 });
 
 async function runWidgetStorageScenario(storageReadyDuringLoad) {
@@ -546,6 +1106,7 @@ async function runWidgetStorageScenario(storageReadyDuringLoad) {
     on: (event, handler) => { handlers[event] = handler; },
     ready() {},
     api(method, path) {
+      if (path === '/filter-state/widget-1') return Promise.resolve({ levels: [], from: null, to: null });
       if (path === '/register-timestamp-format') return Promise.resolve({ registered: true });
       if (path === '/styles') return Promise.resolve(styles.getWidgetStyles({ settings: { get: () => undefined } }));
       logRequests.push(path);

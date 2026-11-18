@@ -4,6 +4,7 @@ const Homey = require("homey");
 const { Log, SEVERITIES, FACILITIES } = require("./lib/Log");
 const { BUILT_IN_DESIGNS, BUILT_IN_THEMES, getWidgetStyles } = require("./lib/widget-styles");
 const { AndroidLinkFeed } = require("./lib/android-links");
+const { getLogExportUrls } = require("./lib/log-export");
 
 const DBLIMIT = 2000;
 
@@ -624,6 +625,9 @@ class simpleLog extends Homey.App {
       return { "log": s };
 
     });
+
+    this.homey.flow.getActionCard('get_log_export_url')
+      .registerRunListener(({ returnType }) => getLogExportUrls(this, returnType));
   }
 }
 module.exports = simpleLog;

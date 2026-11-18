@@ -56,6 +56,7 @@
   };
   var colorRoles = ['background', 'surface', 'text', 'muted', 'border', 'accent',
     'emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug', 'outline'];
+  var severityNames = ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'];
   var colorNames = ['automatic', 'red', 'orange', 'yellow', 'green', 'teal', 'cyan', 'blue',
     'indigo', 'purple', 'pink', 'brown', 'grey', 'black', 'black-light', 'white'];
   var elementColors = ['default', 'severity'].concat(colorNames.slice(1));
@@ -1444,6 +1445,7 @@
         return [name, name === 'automatic' ? L('color_default', 'App default')
           : t('widgets.settings.colorNames.' + name, colorNameFallbacks[name])];
       });
+      if (key === 'background') choices.unshift(['none', L('color_none', 'None')]);
       var input = addColorSelect(row, 'theme-color-' + key, t(translations[key][0], translations[key][1]), choices, theme.colors[key], function (value) {
         selectedTheme().colors[key] = value;
         swatch.style.background = swatchColor(value);
@@ -1454,15 +1456,32 @@
       colors.appendChild(row);
       if (key === 'background') {
         var fill = element('div', 'style-color-row');
-        addSelect(fill, 'background-gradient', L('background_fill', 'Background fill'), [
+        var fillInput = addSelect(fill, 'background-gradient', L('background_fill', 'Background fill'), [
+          ['default', L('color_default', 'App default')],
           ['solid', L('background_solid', 'Solid')], ['gradient', L('background_gradient', 'Gradient')]
-        ], theme.backgroundGradient ? 'gradient' : 'solid', function (value) {
+        ], theme.backgroundGradient === undefined ? 'default' : theme.backgroundGradient ? 'gradient' : 'solid', function (value) {
           var current = selectedTheme();
-          if (value === 'gradient') current.backgroundGradient = true;
-          else delete current.backgroundGradient;
+          if (value === 'default') delete current.backgroundGradient;
+          else current.backgroundGradient = value === 'gradient';
+          syncGradientEnd();
           setDirty();
         });
+        fillInput.disabled = builtin;
         colors.appendChild(fill);
+        var end = element('div', 'style-color-row');
+        addColorSelect(end, 'background-gradient-end', L('background_gradient_end', 'Gradient end color'),
+          choices.filter(function (choice) { return choice[0] !== 'none'; }), theme.backgroundGradientEnd || 'automatic', function (value) {
+            if (value === 'automatic') delete selectedTheme().backgroundGradientEnd;
+            else selectedTheme().backgroundGradientEnd = value;
+            setDirty();
+          });
+        function syncGradientEnd() {
+          end.querySelectorAll('select, input').forEach(function (control) {
+            control.disabled = builtin || !selectedTheme().backgroundGradient;
+          });
+        }
+        syncGradientEnd();
+        colors.appendChild(end);
       }
     });
   }
@@ -1575,8 +1594,38 @@
     node.replaceChildren(glyph, document.createTextNode(' ' + text));
   }
 
-  // Uses the widget stylesheet and markup so the preview matches the dashboard widget.
-  // forcedMode renders a fixed light or dark widget without the settings page's counter-invert (template images).
+  function previewEntries(allLevels) {
+    var examples = [
+      { date: previewDates[0], severity: 4, severityName: t('widgets.settings.colors.warning', 'Warning'), facility: 'Flow', app: 'Heating', hostname: 'Homey', message: 'A temperature has changed. This message wraps to fit the widget.' },
+      { date: previewDates[0], severity: 5, severityName: t('widgets.settings.colors.notice', 'Notice'), facility: 'User', app: 'Backup', hostname: 'Homey', message: 'Network backup completed.' },
+      { date: previewDates[1], severity: 3, severityName: t('widgets.settings.colors.error', 'Error'), facility: 'System', app: 'Simple (Sys) Log', hostname: 'Homey', message: 'Widget preview entry.' }
+    ];
+    if (!allLevels) {
+      return examples.concat(examples.map(function (entry) {
+        return Object.assign({}, entry, { date: previewDates[1] });
+      }));
+    }
+    return [
+      { facility: 'System', app: 'Homey', message: 'System unavailable. Immediate action required.' },
+      { facility: 'System', app: 'Storage', message: 'Storage is almost full. Action is required.' },
+      { facility: 'System', app: 'Services', message: 'A service stopped unexpectedly.' },
+      examples[2],
+      examples[0],
+      examples[1],
+      { facility: 'Flow', app: 'Flows', message: 'The scheduled Flow completed successfully.' },
+      { facility: 'System', app: 'Devices', message: 'Received a new device status update.' }
+    ].map(function (entry, level) {
+      var name = severityNames[level];
+      return Object.assign({}, entry, {
+        date: previewDates[level < 4 ? 0 : 1],
+        severity: level,
+        severityName: t('widgets.settings.colors.' + name, name.charAt(0).toUpperCase() + name.slice(1)),
+        hostname: 'Homey'
+      });
+    });
+  }
+
+  // forcedMode captures the complete widget and every severity without the settings page's counter-invert.
   function renderWidgetPreview(preview, design, theme, extraClass, selected, forcedMode) {
     selected = selected || {};
     var selectedElement = selected.type === 'element' ? selected.element : undefined;
@@ -1665,7 +1714,6 @@
       return { options: options, count: count };
     }
     var levelGroup = addFilterGroup(t('widgets.filters.level', 'Level'));
-    var severityNames = ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'];
     severityNames.forEach(function (name) {
       var label = element('label', 'ssl-filter-option ssl-sev-' + name);
       var input = element('input');
@@ -1707,14 +1755,8 @@
     toolbarRow.append(search, filter);
     toolbar.appendChild(toolbarRow);
     var list = element('div', 'ssl-log-list');
-    var examples = [
-      { date: previewDates[0], severity: 4, severityName: t('widgets.settings.colors.warning', 'Warning'), facility: 'Flow', app: 'Heating', hostname: 'Homey', message: 'A temperature has changed. This message wraps to fit the widget.' },
-      { date: previewDates[0], severity: 5, severityName: t('widgets.settings.colors.notice', 'Notice'), facility: 'User', app: 'Backup', hostname: 'Homey', message: 'Network backup completed.' },
-      { date: previewDates[1], severity: 3, severityName: t('widgets.settings.colors.error', 'Error'), facility: 'System', app: 'Simple (Sys) Log', hostname: 'Homey', message: 'Widget preview entry.' }
-    ];
-    examples = examples.concat(examples.map(function (entry) {
-      return Object.assign({}, entry, { date: previewDates[1] });
-    }));
+    var examples = previewEntries(!!forcedMode);
+    var pageSize = forcedMode ? examples.length : 3;
     var formatted = previewTimestamps(design.timestampFormat);
     var days = previewTimestamps(design.daySeparatorFormat);
     function dayText(date) {
@@ -1734,11 +1776,11 @@
           && (!dateInputs[0].value || day >= dateInputs[0].value)
           && (!dateInputs[1].value || day <= dateInputs[1].value);
       });
-      pageIndex = Math.min(pageIndex, Math.max(0, Math.ceil(filtered.length / 3) - 1));
+      pageIndex = Math.min(pageIndex, Math.max(0, Math.ceil(filtered.length / pageSize) - 1));
       previous.disabled = pageIndex === 0;
-      next.disabled = (pageIndex + 1) * 3 >= filtered.length;
+      next.disabled = (pageIndex + 1) * pageSize >= filtered.length;
       page.textContent = t('widgets.pagination.page', 'Page') + ' ' + (pageIndex + 1);
-      var visible = filtered.slice(pageIndex * 3, pageIndex * 3 + 3).filter(function (entry) {
+      var visible = filtered.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize).filter(function (entry) {
         return [entry.message, entry.app, entry.hostname].join('\n').toLowerCase()
           .indexOf(search.value.trim().toLowerCase()) !== -1;
       });
@@ -1961,7 +2003,7 @@
 
   async function templatePreviewImages(design, theme) {
     if (!window.htmlToImage) throw new Error('Template preview is unavailable');
-    var host = element('div');
+    var host = element('div', 'widget-designer');
     host.setAttribute('aria-hidden', 'true');
     host.style.cssText = 'position:fixed;left:-10000px;top:0;width:' + IMAGE_WIDTH + 'px;pointer-events:none;';
     var preview = element('div');
@@ -1973,8 +2015,14 @@
         var imageMode = IMAGE_MODES[index];
         renderWidgetPreview(preview, design, theme, '', null, imageMode);
         preview.style.width = IMAGE_WIDTH + 'px';
+        preview.style.height = 'auto';
+        preview.style.maxHeight = 'none';
+        var list = preview.querySelector('.ssl-log-list');
+        list.style.flex = 'none';
+        list.style.overflow = 'visible';
         // A timer instead of requestAnimationFrame: rAF never fires while the settings page is in a background tab.
         await new Promise(function (resolve) { setTimeout(resolve, 50); });
+        layoutApi.alignContentTracks(list);
         images.push({ mode: imageMode, canvas: await captureNode(preview) });
         setImageProgress(index + 1);
       }
@@ -2287,6 +2335,7 @@
       elements: clone(original.elements || {})
     };
     if (original.backgroundGradient !== undefined) theme.backgroundGradient = original.backgroundGradient;
+    if (original.backgroundGradientEnd !== undefined) theme.backgroundGradientEnd = original.backgroundGradientEnd;
     collection.themes.push(theme);
     currentThemeId = theme.id;
     mode = 'theme';

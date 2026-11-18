@@ -182,7 +182,8 @@
     var style = {};
     Object.keys(theme && theme.colors || {}).forEach(function (key) {
       var value = theme.colors[key];
-      if (value && value !== 'automatic') style['--ssl-' + key] = colorValue(value);
+      if (key === 'background' && value === 'none') style['background-color'] = 'transparent';
+      else if (value && value !== 'automatic') style['--ssl-' + key] = colorValue(value);
     });
     if (design && design.widgetBorderWidth) style['--ssl-outline-width'] = design.widgetBorderWidth + 'px';
     if (design && design.widgetBorderless) {
@@ -193,12 +194,16 @@
       style['--ssl-widget-padding-' + side] = design.widgetPadding[side] + 'px';
     });
     var background = theme && theme.colors && theme.colors.background;
-    if (theme && theme.backgroundGradient && background && background !== 'automatic') {
-      var surface = 'var(--ssl-gradient-surface)';
+    if (theme && theme.backgroundGradient && background && background !== 'automatic' && background !== 'none') {
       var color = colorValue(background);
-      style['--ssl-background'] = surface;
-      style['background-image'] = 'linear-gradient(to bottom, color-mix(in srgb, ' + color
-        + ' 22%, ' + surface + '), color-mix(in srgb, ' + color + ' 11%, ' + surface + '))';
+      if (theme.backgroundGradientEnd && theme.backgroundGradientEnd !== 'automatic') {
+        style['background-image'] = 'linear-gradient(to bottom, ' + color + ', ' + colorValue(theme.backgroundGradientEnd) + ')';
+      } else {
+        var surface = 'var(--ssl-gradient-surface)';
+        style['--ssl-background'] = surface;
+        style['background-image'] = 'linear-gradient(to bottom, color-mix(in srgb, ' + color
+          + ' 22%, ' + surface + '), color-mix(in srgb, ' + color + ' 11%, ' + surface + '))';
+      }
     }
     return style;
   }

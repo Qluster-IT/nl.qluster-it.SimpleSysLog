@@ -1,4 +1,5 @@
 {
+  "exportFailed": "Не удалось создать или загрузить экспорт. Попробуйте ещё раз.",
   "bllNotStartedYet": "Приложение Better Logic Library еще не запущено.",
   "bllNotRunning": "Приложение Better Logic Library должно быть запущено для использования этой функции.",
   "fullyEnableInstallBll": "Чтобы полностью включить Новый Простой (Сис) ЛОГ, все его функции и новый интерфейс, установите <a href=\"#\" id=\"bllAppLink\" onClick=\"openBllAppLink()\">приложение Better Logic Library.</a>",
@@ -50,7 +51,8 @@
       "default": "По умолчанию",
       "ocean": "Океан",
       "forest": "Лес",
-      "sunset": "Закат"
+      "sunset": "Закат",
+      "console": "Консоль"
     },
     "datetime": {
       "customFormat": "Пользовательский формат даты и времени BLL",
@@ -357,7 +359,8 @@
         "background_fill": "Заливка фона",
         "background_solid": "Сплошной",
         "background_gradient": "Градиент",
-        "widget_padding_hint": "Значение по умолчанию сохраняет обычные внутренние отступы виджета."
+        "widget_padding_hint": "Значение по умолчанию сохраняет обычные внутренние отступы виджета.",
+        "background_gradient_end": "Конечный цвет градиента"
       },
       "undo": "Отменить",
       "redo": "Повторить",

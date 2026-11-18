@@ -1,4 +1,5 @@
 {
+  "exportFailed": "De export kon niet worden gemaakt of geüpload. Probeer het opnieuw.",
   "bllNotStartedYet": "De Better Logic Library-app is nog niet gestart.",
   "bllNotRunning": "De Better Logic Library-app moet actief zijn om deze functie te gebruiken.",
   "fullyEnableInstallBll": "Installeer de app <a href=\"#\" id=\"bllAppLink\" onClick=\"openBllAppLink()\">Better Logic Library</a> om alle functies en nieuwe interface van de nieuwe Simple (Sys) Log volledig in te schakelen.",
@@ -45,7 +46,8 @@
       "default": "Standaard",
       "ocean": "Oceaan",
       "forest": "Bos",
-      "sunset": "Zonsondergang"
+      "sunset": "Zonsondergang",
+      "console": "Console"
     },
     "datetime": {
       "customFormat": "Aangepaste BLL-datum-/tijdnotatie",
@@ -352,7 +354,8 @@
         "background_fill": "Achtergrondvulling",
         "background_solid": "Effen",
         "background_gradient": "Kleurverloop",
-        "widget_padding_hint": "App-standaard behoudt de normale opvulling van de widget."
+        "widget_padding_hint": "App-standaard behoudt de normale opvulling van de widget.",
+        "background_gradient_end": "Eindkleur kleurverloop"
       },
       "undo": "Ongedaan maken",
       "redo": "Opnieuw uitvoeren",

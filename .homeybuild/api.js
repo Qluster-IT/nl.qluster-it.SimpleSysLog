@@ -1,5 +1,6 @@
 "use strict";
 const { BL } = require("betterlogiclibrary");
+const { exportMetadata } = require("./lib/log-export");
 const { encodeTemplate, decodeTemplate } = require("./lib/widget-template");
 const { getCatalog } = require("./lib/widget-template-catalog");
 const { getWidgetStyles, resolveTimestampFormat, resolveDaySeparatorFormat } = require("./lib/widget-styles");
@@ -81,7 +82,7 @@ function fillLogDownload(homey, link, returnType, contentKey) {
       await BL.setDownloadUrl({ link, [contentKey]: logs[returnType], callback: ready => homey.api.realtime('downloadFileReady', ready) });
     } catch (error) {
       homey.error(`Log download (${returnType}) could not be generated`, error);
-      homey.api.realtime('downloadFileFailed', { token: link.token });
+      homey.api.realtime('downloadFileFailed', { token: link.token, message: error.message });
     }
   }, 0);
 }
@@ -94,48 +95,12 @@ module.exports = {
   async getLogDownloadUrl({ homey, params: { returnType } }) {
     if (!homey.app.Log) throw new Error(homey.__('bllNotStartedYet'));
     try {
-      switch (returnType) {
-        case 'csv': {
-          let filename = homey.app.settings && homey.app.settings.csvFilename ?
-            await BL.decode(homey.app.settings.csvFilename) :
-            "Logs " + BL.datetime.toString('datetimeshort') + '.csv';
-
-          const link = await BL.getDownloadUrl({ contentType: 'text/csv', filename });
-          fillLogDownload(homey, link, 'csv', 'text');
-          return link;
-        }
-          break;
-        case 'xlsx': {
-          try {
-            let filename = homey.app.settings && homey.app.settings.xlsxFilename ?
-              await BL.decode(homey.app.settings.xlsxFilename) :
-              "Logs " + BL.datetime.toString('datetimeshort') + '.xlsx';
-
-            const link = await BL.getDownloadUrl({ contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename });
-            fillLogDownload(homey, link, 'xlsx', 'buffer');
-            return link;
-          } catch (error) {
-            homey.error(error);
-          }
-        }
-          break;
-        case 'json': {
-          let filename = //false && //LET OP! false weg
-            homey.app.settings && homey.app.settings.jsonFilename ?
-              await BL.decode(homey.app.settings.jsonFilename) :
-              "Logs " + BL.datetime.toString('datetimeshort') + '.json';
-
-          const link = await BL.getDownloadUrl({ contentType: 'text/json', filename });
-          fillLogDownload(homey, link, 'json', 'text');
-          return link;
-        }
-      }
-      if (returnType === 'csv') {
-      }
+      const link = await BL.getDownloadUrl(await exportMetadata(homey.app, returnType));
+      fillLogDownload(homey, link, returnType, returnType === 'xlsx' ? 'buffer' : 'text');
+      return link;
     } catch (error) {
-      //homey.error(error);
-      let msg = error.message || error;
-      if (msg.indexOf('App Not Ready') > -1) throw new Error(homey.__('bllNotRunning'));
+      homey.error('Log download could not be started', error);
+      throw error;
     }
   },
 

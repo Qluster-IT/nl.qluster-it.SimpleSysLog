@@ -1,4 +1,5 @@
 {
+  "exportFailed": "Eksporten kunne ikke oprettes eller uploades. Prøv igen.",
   "bllNotStartedYet": "Better Logic Library Appen er ikke startet endnu.",
   "bllNotRunning": "Better Logic Library Appen skal køre for at bruge denne funktion.",
   "fullyEnableInstallBll": "For at aktivere alle funktionerne i den nye Simple (Sys) LOG og den nye grænseflade, installer <a href=\"#\" id=\"bllAppLink\" onClick=\"openBllAppLink()\">Better Logic Library appen.</a>",
@@ -50,7 +51,8 @@
       "default": "Standard",
       "ocean": "Hav",
       "forest": "Skov",
-      "sunset": "Solnedgang"
+      "sunset": "Solnedgang",
+      "console": "Konsol"
     },
     "datetime": {
       "customFormat": "Brugerdefineret BLL-dato-/tidsformat",
@@ -357,7 +359,8 @@
         "background_fill": "Baggrundsudfyldning",
         "background_solid": "Ensfarvet",
         "background_gradient": "Farveforløb",
-        "widget_padding_hint": "Appens standard bevarer widgettens normale indvendige afstand."
+        "widget_padding_hint": "Appens standard bevarer widgettens normale indvendige afstand.",
+        "background_gradient_end": "Slutfarve for farveovergang"
       },
       "undo": "Fortryd",
       "redo": "Annuller fortryd",

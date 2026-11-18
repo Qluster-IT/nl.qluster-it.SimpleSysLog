@@ -55,7 +55,8 @@
       "default": "Standard",
       "ocean": "Hav",
       "forest": "Skov",
-      "sunset": "Solnedgang"
+      "sunset": "Solnedgang",
+      "console": "Konsol"
     },
     "datetime": {
       "customFormat": "Brugerdefineret BLL-dato-/tidsformat",
@@ -325,6 +326,12 @@
             "none": "Ingen",
             "narrow": "Smal",
             "wide": "Bred"
+          },
+          "wrap": "Tekstombrydning",
+          "wrap_values": {
+            "normal": "Tilpas til bredden",
+            "nowrap": "Ingen ombrydning",
+            "words": "Stabl ved mellemrum"
           }
         },
         "search_filters": "Søgning og filtre",
@@ -351,7 +358,8 @@
         "background_fill": "Baggrundsudfyldning",
         "background_solid": "Ensfarvet",
         "background_gradient": "Farveforløb",
-        "widget_padding_hint": "Appens standard bevarer widgettens normale indvendige afstand."
+        "widget_padding_hint": "Appens standard bevarer widgettens normale indvendige afstand.",
+        "background_gradient_end": "Slutfarve for farveovergang"
       },
       "timestampFormat": "Dato- og tidsformat",
       "timestampFormatHint": "Vælg et BLL-dato-/tidsformat, eller indtast og vælg et brugerdefineret BLL-format. En widget kan tilsidesætte det med sit eget format.",
@@ -411,5 +419,6 @@
       "page": "Side"
     }
   },
-  "widget_features_notice": "Simple (Sys) Log har nu en dashboard-widget! Tilføj Simple Sys Log-widgetten til et dashboard, og åbn appindstillingerne for at designe layout og farver på fanen Widgets. Widgetten kræver Better Logic Library-appen."
+  "widget_features_notice": "Simple (Sys) Log har nu en dashboard-widget! Tilføj Simple Sys Log-widgetten til et dashboard, og åbn appindstillingerne for at designe layout og farver på fanen Widgets. Widgetten kræver Better Logic Library-appen.",
+  "exportFailed": "Eksporten kunne ikke oprettes eller uploades. Prøv igen."
 }

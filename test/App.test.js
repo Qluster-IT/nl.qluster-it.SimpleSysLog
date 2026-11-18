@@ -2,6 +2,8 @@
 
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
+const http = require('node:http');
+const { once } = require('node:events');
 const { createRequire } = require('node:module');
 const test = require('node:test');
 const vm = require('node:vm');
@@ -267,6 +269,77 @@ test('age-based cleanup rejects unsafe token values in file and limited modes, w
   }
 });
 
+test('the export Flow returns both local URLs only after a successful upload', async t => {
+  const { app, settings } = createApp();
+  const listeners = new Map();
+  const card = id => ({ registerRunListener: listener => listeners.set(id, listener) });
+  app.homey.flow = { getActionCard: card, getConditionCard: card, getTriggerCard: card };
+  app.homey.__ = key => key;
+  app.settings = settings;
+  app.buildCards();
+  const run = listeners.get('get_log_export_url');
+  await assert.rejects(async () => run({ returnType: 'json' }), /bllNotStartedYet/);
+
+  const exports = { csv: '', xlsx: Uint8Array.of(0, 0x50, 0x4b, 0xe9, 0xff, 0).subarray(1, 5), json: '[{"message":"caf\u00e9"}]' };
+  let generated, request, resolveUpload;
+  app.Log = { async getLogs({ returnType }) {
+    generated = returnType;
+    return { [returnType]: exports[returnType] };
+  } };
+  const server = http.createServer(async (req, res) => {
+    const chunks = [];
+    for await (const chunk of req) chunks.push(chunk);
+    resolveUpload({ req, res, body: Buffer.concat(chunks) });
+  });
+  server.listen(0, '127.0.0.1');
+  await once(server, 'listening');
+  t.after(() => {
+    server.closeAllConnections();
+    return new Promise(resolve => server.close(resolve));
+  });
+  const route = '/getfile/a1b2c3/';
+  t.mock.method(BL, 'decode', async filename => filename.replace('logs', 'My logs #1'));
+  t.mock.method(BL, 'getDownloadUrl', async ({ filename, contentType }) => {
+    assert.equal(filename, settings[`${generated}Filename`].replace('logs', 'My logs #1'));
+    const filePath = `/app/net.i-dev.betterlogic/userdata${route}`;
+    request = { contentType, filePath: filePath + encodeURIComponent(filename) };
+    return {
+      filename, host: '127.0.0.1', path: route,
+      url: `http://127.0.0.1:${server.address().port}${route}`,
+      localUrl: `https://127-0-0-1.homey.homeylocal.com${filePath}${filename}`
+    };
+  });
+  for (const [returnType, status, contentType] of [
+    ['csv', 200, 'text/csv'],
+    ['xlsx', 200, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+    ['json', 200, 'text/json'],
+    ['json', 400, 'text/json']
+  ]) {
+    const received = new Promise(resolve => { resolveUpload = resolve; });
+    let settled = false;
+    const result = run({ returnType }).finally(() => { settled = true; });
+    const { req, res, body } = await received;
+    assert.equal(settled, false);
+    assert.equal(req.method, 'POST');
+    assert.equal(req.url, route);
+    assert.equal(req.headers.accept, contentType);
+    assert.equal(Number(req.headers['content-length']), body.length);
+    assert.deepEqual(body, Buffer.from(exports[returnType]));
+    res.writeHead(status).end();
+    if (status === 400) {
+      await assert.rejects(result, /rejected the log export upload \(HTTP 400\)/);
+    } else {
+      assert.deepEqual(await result, {
+        localUrl: `http://127.0.0.1${request.filePath}`,
+        localSslUrl: `https://127-0-0-1.homey.homeylocal.com${request.filePath}`
+      });
+    }
+  }
+  await assert.rejects(run({ returnType: 'json_base64' }), /Unsupported log export format/);
+  app.Log.getLogs = async () => { throw new Error('disk unavailable'); };
+  await assert.rejects(run({ returnType: 'json' }), /disk unavailable/);
+});
+
 test('the add-log and clear-log API calls finish the work before answering and report failures', async () => {
   const api = appRequire('./api');
   const { app } = createApp();
@@ -298,7 +371,24 @@ test('a log download that cannot be generated is logged and reported to the sett
     ['Log download (xlsx) could not be generated', 'disk unavailable'],
     ['Log download (json) could not be generated', 'disk unavailable']
   ]);
-  assert.deepEqual(realtime, Array(3).fill(['downloadFileFailed', { token: 'download' }]));
+  assert.deepEqual(realtime, Array(3).fill(['downloadFileFailed', { token: 'download', message: 'disk unavailable' }]));
+});
+
+test('settings exports reject unsupported formats and reservation failures before scheduling generation', async t => {
+  const api = appRequire('./api');
+  const { app, timers, errors } = createApp();
+  app.settings = { csvFilename: 'logs', jsonFilename: 'logs', xlsxFilename: 'logs' };
+  app.Log = {};
+  const homey = { app, setTimeout: app.homey.setTimeout, error: app.homey.error };
+  t.mock.method(BL, 'decode', async filename => filename);
+  const failure = new Error('file server unavailable');
+  t.mock.method(BL, 'getDownloadUrl', async () => { throw failure; });
+  await assert.rejects(api.getLogDownloadUrl({ homey, params: { returnType: 'invalid' } }), /Unsupported log export format/);
+  for (const returnType of ['csv', 'xlsx', 'json']) {
+    await assert.rejects(api.getLogDownloadUrl({ homey, params: { returnType } }), error => error === failure);
+  }
+  assert.equal(timers.size, 0);
+  assert.equal(errors.length, 4);
 });
 
 test('a received syslog message that cannot be stored is logged by the server device', async () => {

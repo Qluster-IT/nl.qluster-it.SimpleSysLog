@@ -1,4 +1,5 @@
 {
+  "exportFailed": "Impossible de créer ou de transférer l’export. Veuillez réessayer.",
   "bllNotStartedYet": "L'application Better Logic Library n'a pas encore été démarrée.",
   "bllNotRunning": "L'application Better Logic Library doit être en cours d'exécution pour utiliser cette fonction.",
   "fullyEnableInstallBll": "Pour activer pleinement le New Simple (Sys) LOG, toutes ses fonctionnalités et sa nouvelle interface, installez l'<a href=\"#\" id=\"bllAppLink\" onClick=\"openBllAppLink()\">application Better Logic Library</a>.",
@@ -50,7 +51,8 @@
       "default": "Par défaut",
       "ocean": "Océan",
       "forest": "Forêt",
-      "sunset": "Coucher de soleil"
+      "sunset": "Coucher de soleil",
+      "console": "Console"
     },
     "datetime": {
       "customFormat": "Format de date et d’heure BLL personnalisé",
@@ -357,7 +359,8 @@
         "background_fill": "Remplissage du fond",
         "background_solid": "Uni",
         "background_gradient": "Dégradé",
-        "widget_padding_hint": "Le réglage par défaut de l’app conserve les marges intérieures habituelles du widget."
+        "widget_padding_hint": "Le réglage par défaut de l’app conserve les marges intérieures habituelles du widget.",
+        "background_gradient_end": "Couleur de fin du dégradé"
       },
       "undo": "Annuler",
       "redo": "Rétablir",

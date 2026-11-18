@@ -55,7 +55,8 @@
       "default": "Domyślny",
       "ocean": "Ocean",
       "forest": "Las",
-      "sunset": "Zachód słońca"
+      "sunset": "Zachód słońca",
+      "console": "Konsola"
     },
     "datetime": {
       "customFormat": "Niestandardowy format daty i czasu BLL",
@@ -325,6 +326,12 @@
             "none": "Brak",
             "narrow": "Wąski",
             "wide": "Szeroki"
+          },
+          "wrap": "Zawijanie tekstu",
+          "wrap_values": {
+            "normal": "Dopasuj do szerokości",
+            "nowrap": "Bez zawijania",
+            "words": "Układaj wiersze przy spacjach"
           }
         },
         "search_filters": "Wyszukiwanie i filtry",
@@ -351,7 +358,8 @@
         "background_fill": "Wypełnienie tła",
         "background_solid": "Jednolity",
         "background_gradient": "Gradient",
-        "widget_padding_hint": "Domyślne ustawienie aplikacji zachowuje normalne odstępy wewnętrzne widżetu."
+        "widget_padding_hint": "Domyślne ustawienie aplikacji zachowuje normalne odstępy wewnętrzne widżetu.",
+        "background_gradient_end": "Kolor końcowy gradientu"
       },
       "timestampFormat": "Format daty i godziny",
       "timestampFormatHint": "Wybierz format daty i godziny BLL lub wpisz i wybierz własny format BLL. Widżet może go zastąpić własnym formatem.",
@@ -411,5 +419,6 @@
       "page": "Strona"
     }
   },
-  "widget_features_notice": "Simple (Sys) Log ma teraz widżet na pulpit! Dodaj widżet Simple Sys Log do pulpitu i otwórz ustawienia aplikacji, aby na karcie Widżety zaprojektować jego układ i kolory. Widżet wymaga aplikacji Better Logic Library."
+  "widget_features_notice": "Simple (Sys) Log ma teraz widżet na pulpit! Dodaj widżet Simple Sys Log do pulpitu i otwórz ustawienia aplikacji, aby na karcie Widżety zaprojektować jego układ i kolory. Widżet wymaga aplikacji Better Logic Library.",
+  "exportFailed": "Nie udało się utworzyć lub przesłać eksportu. Spróbuj ponownie."
 }

@@ -55,7 +55,8 @@
       "default": "Predefinito",
       "ocean": "Oceano",
       "forest": "Foresta",
-      "sunset": "Tramonto"
+      "sunset": "Tramonto",
+      "console": "Console"
     },
     "datetime": {
       "customFormat": "Formato data e ora BLL personalizzato",
@@ -325,6 +326,12 @@
             "none": "Nessuna",
             "narrow": "Stretta",
             "wide": "Ampia"
+          },
+          "wrap": "Testo a capo",
+          "wrap_values": {
+            "normal": "Adatta alla larghezza",
+            "nowrap": "Non andare a capo",
+            "words": "Impila agli spazi"
           }
         },
         "search_filters": "Ricerca e filtri",
@@ -351,7 +358,8 @@
         "background_fill": "Riempimento dello sfondo",
         "background_solid": "Uniforme",
         "background_gradient": "Sfumatura",
-        "widget_padding_hint": "Il valore predefinito dell’app mantiene la normale spaziatura interna del widget."
+        "widget_padding_hint": "Il valore predefinito dell’app mantiene la normale spaziatura interna del widget.",
+        "background_gradient_end": "Colore finale della sfumatura"
       },
       "timestampFormat": "Formato di data e ora",
       "timestampFormatHint": "Scegli un formato data/ora BLL oppure digita e seleziona un formato BLL personalizzato. Un widget può sostituirlo con il proprio formato.",
@@ -411,5 +419,6 @@
       "page": "Pagina"
     }
   },
-  "widget_features_notice": "Simple (Sys) Log ora ha un widget per la dashboard! Aggiungi il widget Simple Sys Log a una dashboard e apri le impostazioni dell’app per progettarne layout e colori nella scheda Widget. Il widget richiede l’app Better Logic Library."
+  "widget_features_notice": "Simple (Sys) Log ora ha un widget per la dashboard! Aggiungi il widget Simple Sys Log a una dashboard e apri le impostazioni dell’app per progettarne layout e colori nella scheda Widget. Il widget richiede l’app Better Logic Library.",
+  "exportFailed": "Impossibile creare o caricare l’esportazione. Riprova."
 }

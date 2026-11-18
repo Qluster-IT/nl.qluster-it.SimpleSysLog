@@ -1,0 +1,80 @@
+{
+  "advanced": true,
+  "platforms": ["local"],
+  "title": {
+    "en": "Get log export URL",
+    "nl": "Krijg de export-URL van het logboek",
+    "da": "Hent URL til logeksport",
+    "de": "URL für den Logbuchexport abrufen",
+    "es": "Obtener la URL de exportación del registro",
+    "fr": "Obtenir l’URL d’export du journal",
+    "it": "Ottieni l’URL di esportazione del registro",
+    "no": "Hent URL for loggeksport",
+    "sv": "Hämta URL för loggexport",
+    "pl": "Pobierz adres URL eksportu dziennika",
+    "ru": "Получить ссылку для экспорта журнала",
+    "ko": "로그 내보내기 URL 가져오기",
+    "ar": "احصل على رابط تصدير السجل"
+  },
+  "titleFormatted": {
+    "en": "Get log export URL for [[returnType]]",
+    "nl": "Krijg de export-URL van het logboek voor [[returnType]]",
+    "da": "Hent URL til logeksport som [[returnType]]",
+    "de": "URL für den Logbuchexport als [[returnType]] abrufen",
+    "es": "Obtener la URL de exportación del registro en [[returnType]]",
+    "fr": "Obtenir l’URL d’export du journal au format [[returnType]]",
+    "it": "Ottieni l’URL di esportazione del registro in [[returnType]]",
+    "no": "Hent URL for loggeksport som [[returnType]]",
+    "sv": "Hämta URL för loggexport som [[returnType]]",
+    "pl": "Pobierz adres URL eksportu dziennika w formacie [[returnType]]",
+    "ru": "Получить ссылку для экспорта журнала в формате [[returnType]]",
+    "ko": "[[returnType]] 로그 내보내기 URL 가져오기",
+    "ar": "احصل على رابط تصدير السجل بتنسيق [[returnType]]"
+  },
+  "args": [{
+    "name": "returnType",
+    "type": "dropdown",
+    "values": [
+      { "id": "csv", "label": { "en": "CSV" } },
+      { "id": "xlsx", "label": { "en": "Excel" } },
+      { "id": "json", "label": { "en": "JSON" } }
+    ]
+  }],
+  "tokens": [{
+    "name": "localUrl",
+    "type": "string",
+    "title": {
+      "en": "Local URL",
+      "nl": "Lokale URL",
+      "da": "Lokal URL",
+      "de": "Lokale URL",
+      "es": "URL local",
+      "fr": "URL locale",
+      "it": "URL locale",
+      "no": "Lokal URL",
+      "sv": "Lokal URL",
+      "pl": "Lokalny adres URL",
+      "ru": "Локальный URL",
+      "ko": "로컬 URL",
+      "ar": "الرابط المحلي"
+    }
+  }, {
+    "name": "localSslUrl",
+    "type": "string",
+    "title": {
+      "en": "Local (SSL) URL",
+      "nl": "Lokale URL (SSL)",
+      "da": "Lokal URL (SSL)",
+      "de": "Lokale URL (SSL)",
+      "es": "URL local (SSL)",
+      "fr": "URL locale (SSL)",
+      "it": "URL locale (SSL)",
+      "no": "Lokal URL (SSL)",
+      "sv": "Lokal URL (SSL)",
+      "pl": "Lokalny adres URL (SSL)",
+      "ru": "Локальный URL (SSL)",
+      "ko": "로컬 URL (SSL)",
+      "ar": "الرابط المحلي (SSL)"
+    }
+  }]
+}

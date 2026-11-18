@@ -225,6 +225,7 @@ if (window.hasOwnProperty('angular'))
           // Without a link yet, the failure belongs to the download that is still waiting for its link.
           if (view.downloadFileLink && failed && view.downloadFileLink.token !== failed.token) return;
           $timeout(() => { view.isBusy = false; });
+          homey.alert(failed.message || homey.__('exportFailed'));
         };
         Homey.on('downloadFileFailed', downloadFileFailedListener);
 
@@ -661,15 +662,14 @@ if (window.hasOwnProperty('angular'))
       $scope.downloadFile = async (type) => {
         view.isBusy = true;
         view.downloadFileLink = null;
-        //let opt = { returnType: type };
-        let downloadLink = await $bl.api("GET", "/getlogdownloadurl/" + type);
-        if (!downloadLink) {
-          $scope.$apply(() => {
-            (view.isBusy = false);
-          });
-          return (view.isBusy = false);
-        } else
+        try {
+          let downloadLink = await $bl.api("GET", "/getlogdownloadurl/" + type);
+          if (!downloadLink) throw new Error(homey.__('exportFailed'));
           view.downloadFileLink = downloadLink;
+        } catch (error) {
+          $scope.$apply(() => { view.isBusy = false; });
+          homey.alert(error.message || homey.__('exportFailed'));
+        }
       };
 
       $scope.closeHints = function () {

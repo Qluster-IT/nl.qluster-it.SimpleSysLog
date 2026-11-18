@@ -1,4 +1,5 @@
 {
+  "exportFailed": "The export could not be created or uploaded. Please try again.",
   "bllNotStartedYet": "The Better Logic Library App has not been started yet.",
   "bllNotRunning": "The Better Logic Library App must be running to use this function.",
   "fullyEnableInstallBll": "To fully enable the New Simple (Sys) LOG, all it's features and new interface, install the <a href=\"#\" id=\"bllAppLink\" onClick=\"openBllAppLink()\">Better Logic Library app.</a>",
@@ -49,7 +50,8 @@
       "default": "Default",
       "ocean": "Ocean",
       "forest": "Forest",
-      "sunset": "Sunset"
+      "sunset": "Sunset",
+      "console": "Console"
     },
     "datetime": {
       "customFormat": "Custom BLL date/time format",
@@ -356,7 +358,8 @@
         "background_fill": "Background fill",
         "background_solid": "Solid",
         "background_gradient": "Gradient",
-        "widget_padding_hint": "App default preserves the widget's normal padding."
+        "widget_padding_hint": "App default preserves the widget's normal padding.",
+        "background_gradient_end": "Gradient end color"
       },
       "undo": "Undo",
       "redo": "Redo",

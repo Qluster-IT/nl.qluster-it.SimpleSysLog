@@ -55,7 +55,8 @@
       "default": "Par défaut",
       "ocean": "Océan",
       "forest": "Forêt",
-      "sunset": "Coucher de soleil"
+      "sunset": "Coucher de soleil",
+      "console": "Console"
     },
     "datetime": {
       "customFormat": "Format de date et d’heure BLL personnalisé",
@@ -325,6 +326,12 @@
             "none": "Aucun",
             "narrow": "Étroit",
             "wide": "Large"
+          },
+          "wrap": "Retour à la ligne",
+          "wrap_values": {
+            "normal": "Adapter à la largeur",
+            "nowrap": "Sans retour à la ligne",
+            "words": "Empiler aux espaces"
           }
         },
         "search_filters": "Recherche et filtres",
@@ -351,7 +358,8 @@
         "background_fill": "Remplissage du fond",
         "background_solid": "Uni",
         "background_gradient": "Dégradé",
-        "widget_padding_hint": "Le réglage par défaut de l’app conserve les marges intérieures habituelles du widget."
+        "widget_padding_hint": "Le réglage par défaut de l’app conserve les marges intérieures habituelles du widget.",
+        "background_gradient_end": "Couleur de fin du dégradé"
       },
       "timestampFormat": "Format de date et d’heure",
       "timestampFormatHint": "Choisissez un format de date et d’heure BLL, ou saisissez et sélectionnez un format BLL personnalisé. Un widget peut le remplacer par son propre format.",
@@ -411,5 +419,6 @@
       "page": "Page"
     }
   },
-  "widget_features_notice": "Simple (Sys) Log dispose désormais d’un widget de tableau de bord ! Ajoutez le widget Simple Sys Log à un tableau de bord et ouvrez les paramètres de l’app pour concevoir sa mise en page et ses couleurs dans l’onglet Widgets. Le widget nécessite l’app Better Logic Library."
+  "widget_features_notice": "Simple (Sys) Log dispose désormais d’un widget de tableau de bord ! Ajoutez le widget Simple Sys Log à un tableau de bord et ouvrez les paramètres de l’app pour concevoir sa mise en page et ses couleurs dans l’onglet Widgets. Le widget nécessite l’app Better Logic Library.",
+  "exportFailed": "Impossible de créer ou de transférer l’export. Veuillez réessayer."
 }

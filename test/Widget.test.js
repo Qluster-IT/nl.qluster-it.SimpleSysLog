@@ -21,12 +21,22 @@ test('built-in presets remain valid and portable across every design and theme c
   } };
   const values = { message: 'A sample log entry', timestamp: '13:45', severity: 'Info', app: 'Example',
     hostname: 'homey', facility: 'Flow' };
-  const containsMessage = node => node.textContent === values.message || node.children.some(containsMessage);
+  const findField = (node, id) => node.className.split(' ').includes('ssl-field-' + id)
+    ? node : node.children.map(child => findField(child, id)).find(Boolean);
   for (const originalDesign of styles.BUILT_IN_DESIGNS) {
     const design = styles.validateDesign(originalDesign);
     for (const originalTheme of styles.BUILT_IN_THEMES) {
       const theme = styles.validateTheme(originalTheme);
-      assert.ok(containsMessage(layout.renderCard(doc, design, theme, values)));
+      const card = layout.renderCard(doc, design, theme, values);
+      const message = findField(card, 'message');
+      assert.equal(message.textContent, values.message);
+      assert.equal(message.style.background, undefined, 'built-in messages must not have a background highlight');
+      assert.equal(message.style.color, undefined, 'messages must inherit the theme text color for light/dark readability');
+      assert.ok(!message.className.includes('ssl-has-background'));
+      if (design.id === 'builtin:journal') {
+        assert.equal(findField(card, 'app').style.lineHeight, '17px', 'App / Group must not inherit host line height');
+        assert.equal(findField(card, 'facility').style.lineHeight, '14px', 'Facility must not inherit host line height');
+      }
       const decoded = template.decodeTemplate(await template.encodeTemplate({ design, theme }));
       const { id: designId, ...expectedDesign } = design;
       const { id: themeId, ...expectedTheme } = theme;
@@ -232,6 +242,63 @@ test('frame overrides distinguish legacy default from borderless and survive TWF
   }
 });
 
+test('only Console overrides built-in widget backgrounds and custom backgrounds remain supported', async () => {
+  const theme = styles.validateTheme(styles.BUILT_IN_THEMES[0]);
+  for (const original of styles.BUILT_IN_THEMES.filter(item => item.id !== 'builtin:console')) {
+    const preset = styles.validateTheme(original);
+    const rendered = layout.widgetStyle(styles.BUILT_IN_DESIGNS[0], preset);
+    assert.equal(preset.colors.background, 'automatic');
+    assert.equal(preset.backgroundGradient, undefined);
+    assert.equal(rendered['background-color'], undefined);
+    assert.equal(rendered['--ssl-background'], undefined);
+    assert.equal(rendered['background-image'], undefined);
+  }
+  const transparent = styles.validateTheme({ ...theme, id: 'transparent', colors: { ...theme.colors, background: 'none' } });
+  const rendered = layout.widgetStyle(styles.BUILT_IN_DESIGNS[0], transparent);
+  assert.equal(rendered['background-color'], 'transparent');
+  assert.equal(rendered['--ssl-background'], undefined, 'menus and sticky controls must keep their opaque background');
+  assert.equal(layout.widgetStyle({}, { ...transparent, backgroundGradient: true })['background-image'], undefined);
+  for (const key of ['surface', 'text', 'accent']) {
+    assert.throws(() => styles.validateTheme({ ...theme, colors: { ...theme.colors, [key]: 'none' } }), /Invalid widget theme/);
+  }
+  const { id, ...expected } = transparent;
+  assert.deepEqual(template.decodeTemplate(await template.encodeTemplate({ theme: transparent })).theme, expected);
+});
+
+test('built-in highlights and the green Console gradient keep readable foregrounds', () => {
+  const theme = styles.validateTheme(styles.BUILT_IN_THEMES.find(item => item.id === 'builtin:console'));
+  const design = styles.BUILT_IN_DESIGNS.find(item => item.id === 'builtin:console');
+  const style = layout.widgetStyle(design, theme);
+  assert.equal(style['--ssl-background'], theme.colors.background);
+  assert.equal(style['--ssl-surface'], theme.colors.surface);
+  assert.equal(style['--ssl-text'], theme.colors.text);
+  assert.equal(style['background-image'], `linear-gradient(to bottom, ${theme.colors.background}, ${theme.backgroundGradientEnd})`);
+  assert.equal(style['background-color'], undefined);
+  const luminance = hex => {
+    const rgb = hex.slice(1).match(/../g).map(value => {
+      const channel = parseInt(value, 16) / 255;
+      return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+    });
+    return rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722;
+  };
+  for (const key of ['text', 'muted', 'accent', 'emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug']) {
+    const foreground = luminance(theme.colors[key]);
+    for (const background of [theme.colors.background, theme.backgroundGradientEnd, theme.colors.surface]) {
+      const contrast = (foreground + 0.05) / (luminance(background) + 0.05);
+      assert.ok(contrast >= 4.5, `${key} must remain readable on the terminal background`);
+    }
+  }
+  for (const preset of styles.BUILT_IN_THEMES) {
+    for (const [id, colors] of Object.entries(preset.elements)) {
+      if (!colors.background.startsWith('#')) continue;
+      const foreground = luminance(colors.color);
+      const background = luminance(colors.background);
+      const contrast = (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
+      assert.ok(contrast >= 4.5, `${preset.name} ${id} highlights must remain readable in both modes`);
+    }
+  }
+});
+
 test('HEX colors and optional gradient fill validate and round-trip for widget and element colors', async () => {
   const base = { ...styles.BUILT_IN_THEMES[0], id: 'hex' };
   const theme = styles.validateTheme({ ...base, colors: { ...base.colors, background: '#2F8df6', outline: '#001122' },
@@ -245,12 +312,25 @@ test('HEX colors and optional gradient fill validate and round-trip for widget a
   assert.equal(layout.widgetStyle({}, { ...base, backgroundGradient: true })['background-image'], undefined);
   const { id, ...expected } = theme;
   assert.deepEqual(template.decodeTemplate(await template.encodeTemplate({ theme })).theme, expected);
+  const twoColor = styles.validateTheme({ ...theme, backgroundGradientEnd: '#001122' });
+  assert.equal(layout.widgetStyle({}, twoColor)['background-image'], 'linear-gradient(to bottom, #2F8df6, #001122)');
+  assert.equal(layout.widgetStyle({}, twoColor)['--ssl-background'], '#2F8df6');
+  assert.equal(layout.widgetStyle({}, { ...twoColor, backgroundGradient: false })['background-image'], undefined);
+  assert.equal(layout.widgetStyle({}, { ...twoColor, colors: { ...twoColor.colors, background: 'automatic' } })['background-image'], undefined);
+  assert.equal(styles.validateTheme({ ...twoColor, backgroundGradientEnd: 'automatic' }).backgroundGradientEnd, undefined);
+  assert.equal(layout.widgetStyle({}, styles.validateTheme({ ...twoColor, backgroundGradientEnd: 'green' }))['background-image'],
+    'linear-gradient(to bottom, #2F8df6, var(--ssl-color-green))');
+  assert.deepEqual(template.decodeTemplate(await template.encodeTemplate({ theme: twoColor })).theme,
+    { ...expected, backgroundGradientEnd: '#001122' });
   for (const color of ['#fff', '#fffffff', '#GG0000', 'red; color:black']) {
     assert.throws(() => styles.validateTheme({ ...base, colors: { ...base.colors, background: color } }), /Invalid widget theme/);
     assert.throws(() => styles.validateTheme({ ...base, elements: { message: { color, background: 'default' } } }), /Invalid widget theme/);
     assert.throws(() => styles.validateTheme({ ...base, elements: { message: { color: 'default', background: color } } }), /Invalid widget theme/);
   }
   assert.throws(() => styles.validateTheme({ ...base, backgroundGradient: 'yes' }), /Invalid widget theme/);
+  for (const backgroundGradientEnd of ['#fff', 'none', '#GG0000', true]) {
+    assert.throws(() => styles.validateTheme({ ...base, backgroundGradientEnd }), /Invalid widget theme/);
+  }
   assert.throws(() => styles.validateTheme({ ...base, elements: { border1: { color: '#123456', background: '#123456' } } }), /Invalid widget theme/);
 });
 

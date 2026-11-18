@@ -1,4 +1,5 @@
 {
+  "exportFailed": "내보내기 파일을 만들거나 업로드할 수 없습니다. 다시 시도하세요.",
   "bllNotStartedYet": "Better Logic Library 앱이 아직 시작되지 않았습니다.",
   "bllNotRunning": "이 기능을 사용하려면 Better Logic Library 앱이 실행 중이어야 합니다.",
   "fullyEnableInstallBll": "New Simple (Sys) LOG의 모든 기능과 새로운 인터페이스를 완전히 활성화하려면 <a href=\"#\" id=\"bllAppLink\" onClick=\"openBllAppLink()\">Better Logic Library 앱을</a> 설치하세요.",
@@ -50,7 +51,8 @@
       "default": "기본값",
       "ocean": "바다",
       "forest": "숲",
-      "sunset": "일몰"
+      "sunset": "일몰",
+      "console": "콘솔"
     },
     "datetime": {
       "customFormat": "사용자 지정 BLL 날짜/시간 형식",
@@ -357,7 +359,8 @@
         "background_fill": "배경 채우기",
         "background_solid": "단색",
         "background_gradient": "그라데이션",
-        "widget_padding_hint": "앱 기본값은 위젯의 기본 안쪽 여백을 유지합니다."
+        "widget_padding_hint": "앱 기본값은 위젯의 기본 안쪽 여백을 유지합니다.",
+        "background_gradient_end": "그라데이션 끝 색상"
       },
       "undo": "실행 취소",
       "redo": "다시 실행",

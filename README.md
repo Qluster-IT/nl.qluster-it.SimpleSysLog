@@ -10,6 +10,8 @@ With simple log You can:
 - See log events apear in realtime.
 - View the log in CSV format.
 - You can download the log in CSV format. -> https://developer.athom.com/tools/app-settings
+- In Advanced Flow, **Get log export URL** creates a CSV, Excel or JSON file and returns **Local URL** (HTTP) and **Local (SSL) URL** (HTTPS) for the same file. Prefer HTTPS; use the link promptly, as it expires according to Better Logic Library's file availability setting. If the export cannot be generated or uploaded, the card takes the error branch without returning tokens.
+- Excel exports use compatible column widths without shortening messages. Excel cannot hold more than 32,767 characters in a single cell; exports exceeding that limit fail explicitly instead of producing a damaged or silently truncated workbook. Use JSON or CSV for those entries.
 - Use the API to retreive, add and clean logging.
 
 # Dashboard widget
@@ -46,11 +48,12 @@ then select them in the widget settings. Switch between **Designs** and
 **Themes**, pick an item, and use **New**, **Copy** or **Delete**; built-in items
 are read-only, so copy them to customize. The built-in **Default** design and
 **Default** theme are used until you pick something else; the Default theme
-uses fixed severity colors and an automatic background that follows the
-dashboard. Theme colors are named colors (red,
+uses fixed severity colors and Homey's default background and fill.
+Log cards follow the dashboard's light or dark mode. Theme colors are named colors (red,
 orange, yellow, green, teal, cyan, blue, indigo, purple, pink, brown, grey,
 black, Black (light/dark), white) or **App default** (the widget's own color),
-so every theme works in light and dark mode.
+so every theme works in light and dark mode. Choose **None** for a transparent
+widget background.
 Black (light/dark) is the fixed `#2B2C36` shade; pure Black remains unchanged.
 For an element, App default means its normal appearance based on the Widget colors.
 
@@ -62,8 +65,14 @@ element to **Unused** to hide it. Select an element to override its size, font,
 text case, weight, italic or letter spacing; all are App default by default and
 then keep the element's own look (for example the uppercase, bold severity pill).
 Alongside Default, the built-in **Compact**, **Journal** and **Console** designs
-offer dense, spacious and monospace layouts. **Ocean**, **Forest** and **Sunset**
-themes add gentle gradient backgrounds that adapt to light and dark mode.
+offer dense, spacious and monospace layouts. Journal gives its App / Group and
+Facility badges consistent spacing in widgets and previews. **Ocean**, **Forest** and **Sunset**
+themes use blue, deep-green and warm-orange labels and accents while keeping
+messages unhighlighted and Homey's default widget background and fill.
+The **Console** theme pairs a dark-green gradient background with green text and
+clear severity colors; combine it with the **Console** design for monospace logs.
+Custom gradient fills can use an optional **Gradient end color**; App default
+keeps the existing mode-aware gradient.
 Compact shows the date above the time, centered, because it has no day separators.
 Use the Timestamp element's **Text wrapping** option to wrap to fit, prevent wrapping or
 stack its text at spaces; the column's alignment also aligns the text.
@@ -126,6 +135,8 @@ imported; TWFs from other apps, such as Chronograph, are rejected.
 
 **Create TWF** also creates two preview images of the template, first in light
 mode and then in dark mode, and copies a ready-made forum post with the images.
+Images include the design's search, filter and paging controls and one entry for
+each level, ordered from Emergency to Debug, without clipping the log list.
 Switch the forum to its rich-text editor before pasting, so the images are
 uploaded with the post. Automatic copying requires a secure context and
 clipboard permission, which the Homey settings frame may block. If settings

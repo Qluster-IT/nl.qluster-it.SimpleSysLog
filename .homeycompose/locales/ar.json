@@ -1,4 +1,5 @@
 {
+  "exportFailed": "تعذر إنشاء ملف التصدير أو رفعه. يرجى المحاولة مرة أخرى.",
   "bllNotStartedYet": "لم يتم بدء تطبيق مكتبة المنطق المحسنة بعد.",
   "bllNotRunning": "يجب أن يكون تطبيق مكتبة المنطق المحسنة قيد التشغيل لاستخدام هذه الوظيفة.",
   "fullyEnableInstallBll": "لتمكين New Simple (Sys) LOG بالكامل، بجميع ميزاته والواجهة الجديدة، قم بتثبيت <a href=\"#\" id=\"bllAppLink\" onClick=\"openBllAppLink()\"> تطبيق مكتبة المنطق المحسنة.</a>",
@@ -50,7 +51,8 @@
       "default": "افتراضي",
       "ocean": "المحيط",
       "forest": "الغابة",
-      "sunset": "الغروب"
+      "sunset": "الغروب",
+      "console": "وحدة التحكم"
     },
     "datetime": {
       "customFormat": "تنسيق تاريخ ووقت مخصص من BLL",
@@ -357,7 +359,8 @@
         "background_fill": "تعبئة الخلفية",
         "background_solid": "لون موحد",
         "background_gradient": "تدرج لوني",
-        "widget_padding_hint": "يحافظ الخيار الافتراضي للتطبيق على الحشوة المعتادة للأداة."
+        "widget_padding_hint": "يحافظ الخيار الافتراضي للتطبيق على الحشوة المعتادة للأداة.",
+        "background_gradient_end": "لون نهاية التدرج"
       },
       "undo": "تراجع",
       "redo": "إعادة",

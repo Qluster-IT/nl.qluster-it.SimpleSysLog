@@ -55,7 +55,8 @@
       "default": "기본값",
       "ocean": "바다",
       "forest": "숲",
-      "sunset": "일몰"
+      "sunset": "일몰",
+      "console": "콘솔"
     },
     "datetime": {
       "customFormat": "사용자 지정 BLL 날짜/시간 형식",
@@ -325,6 +326,12 @@
             "none": "없음",
             "narrow": "좁게",
             "wide": "넓게"
+          },
+          "wrap": "텍스트 줄바꿈",
+          "wrap_values": {
+            "normal": "너비에 맞게 줄바꿈",
+            "nowrap": "줄바꿈 없음",
+            "words": "공백마다 줄바꿈"
           }
         },
         "search_filters": "검색 및 필터",
@@ -351,7 +358,8 @@
         "background_fill": "배경 채우기",
         "background_solid": "단색",
         "background_gradient": "그라데이션",
-        "widget_padding_hint": "앱 기본값은 위젯의 기본 안쪽 여백을 유지합니다."
+        "widget_padding_hint": "앱 기본값은 위젯의 기본 안쪽 여백을 유지합니다.",
+        "background_gradient_end": "그라데이션 끝 색상"
       },
       "timestampFormat": "날짜 및 시간 형식",
       "timestampFormatHint": "BLL 날짜/시간 형식을 선택하거나 사용자 지정 BLL 형식을 입력하고 선택하세요. 위젯에서 자체 형식으로 재정의할 수 있습니다.",
@@ -411,5 +419,6 @@
       "page": "???"
     }
   },
-  "widget_features_notice": "Simple (Sys) Log에 이제 대시보드 위젯이 있습니다! Simple Sys Log 위젯을 대시보드에 추가하고, 앱 설정의 위젯 탭에서 레이아웃과 색상을 디자인하세요. 위젯에는 Better Logic Library 앱이 필요합니다."
+  "widget_features_notice": "Simple (Sys) Log에 이제 대시보드 위젯이 있습니다! Simple Sys Log 위젯을 대시보드에 추가하고, 앱 설정의 위젯 탭에서 레이아웃과 색상을 디자인하세요. 위젯에는 Better Logic Library 앱이 필요합니다.",
+  "exportFailed": "내보내기 파일을 만들거나 업로드할 수 없습니다. 다시 시도하세요."
 }

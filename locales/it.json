@@ -47,7 +47,8 @@
       "default": "Predefinito",
       "compact": "Compatto",
       "journal": "Diario",
-      "console": "Console"
+      "console": "Console",
+      "aurora": "Aurora"
     },
     "theme": {
       "homey": "Homey",
@@ -56,7 +57,8 @@
       "ocean": "Oceano",
       "forest": "Foresta",
       "sunset": "Tramonto",
-      "console": "Console"
+      "console": "Console",
+      "aurora": "Aurora"
     },
     "datetime": {
       "customFormat": "Formato data e ora BLL personalizzato",
@@ -420,5 +422,19 @@
     }
   },
   "widget_features_notice": "Simple (Sys) Log ora ha un widget per la dashboard! Aggiungi il widget Simple Sys Log a una dashboard e apri le impostazioni dell’app per progettarne layout e colori nella scheda Widget. Il widget richiede l’app Better Logic Library.",
-  "exportFailed": "Impossibile creare o caricare l’esportazione. Riprova."
+  "exportFailed": "Impossibile creare o caricare l’esportazione. Riprova.",
+  "settingsDownload": {
+    "preparing": "Preparazione del download…",
+    "ready": "Link per il download pronto. Se il download non parte, usa Scarica ora. Questo link è temporaneo.",
+    "reservationFailed": "Impossibile richiedere il download. Controlla la connessione ed esporta di nuovo.",
+    "generationFailed": "Impossibile creare o caricare l’esportazione. Riprova.",
+    "timeout": "La richiesta di download è scaduta. Esporta di nuovo.",
+    "networkFailed": "Impossibile verificare i link per il download. Controlla la connessione; anche il browser potrebbe bloccare questa verifica. Prova Scarica ora oppure esporta di nuovo.",
+    "openUnconfirmed": "Il browser non ha confermato l’apertura del download. Se non si è aperto nulla, usa Scarica ora.",
+    "openFailed": "Impossibile aprire il download. Usa Scarica ora.",
+    "expired": "Questo link per il download potrebbe essere scaduto. Esporta di nuovo per ottenere un nuovo link.",
+    "manual": "Scarica ora",
+    "cloud": "Scarica tramite internet"
+  },
+  "exportSkipped": "Le voci leggibili del registro sono state esportate. __count__ voci illeggibili sono state ignorate."
 }

@@ -1,4 +1,18 @@
 {
+  "settingsDownload": {
+    "preparing": "Preparing download…",
+    "ready": "Download link ready. If no download starts, use Download now. This link is temporary.",
+    "reservationFailed": "Could not request the download. Check your connection and export again.",
+    "generationFailed": "The export could not be created or uploaded. Please try again.",
+    "timeout": "The download request timed out. Please export again.",
+    "networkFailed": "Could not verify the download links. Check your connection; your browser may also block this check. Try Download now, or export again.",
+    "openUnconfirmed": "The browser did not confirm opening the download. If nothing opened, use Download now.",
+    "openFailed": "Could not open the download. Use Download now.",
+    "expired": "This download link may have expired. Export again for a new link.",
+    "manual": "Download now",
+    "cloud": "Download via internet"
+  },
+  "exportSkipped": "The readable log entries were exported. __count__ unreadable entries were skipped.",
   "exportFailed": "The export could not be created or uploaded. Please try again.",
   "bllNotStartedYet": "The Better Logic Library App has not been started yet.",
   "bllNotRunning": "The Better Logic Library App must be running to use this function.",
@@ -44,14 +58,18 @@
       "default": "Default",
       "compact": "Compact",
       "journal": "Journal",
-      "console": "Console"
+      "console": "Console",
+      "aurora": "Aurora",
+      "widgetkeeper": "WidgetKeeper"
     },
     "theme": {
       "default": "Default",
       "ocean": "Ocean",
       "forest": "Forest",
       "sunset": "Sunset",
-      "console": "Console"
+      "console": "Console",
+      "aurora": "Aurora",
+      "widgetkeeper": "WidgetKeeper"
     },
     "datetime": {
       "customFormat": "Custom BLL date/time format",

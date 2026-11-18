@@ -256,8 +256,8 @@
   // Fills a container with the rows and columns of a grid; renderItem(id, cell) returns an element's node or null.
   // options: selectedRow and selectedColumn ({ row, column }) for the designer preview outline;
   // trackPrefix names the CSS variables shared by grids of the same kind (see alignContentTracks).
-  function renderGrid(doc, grid, container, renderItem, options, trackPrefix) {
-    var layout = computeLayout(grid);
+  function renderGrid(doc, grid, container, renderItem, options, trackPrefix, layout) {
+    layout = layout || computeLayout(grid);
     var trackName = '--ssl-' + trackPrefix;
     var customColumnGaps = layout.spanning && layout.rows.some(function (row) { return row.columnGap !== undefined; });
     if (layout.spanning) {
@@ -395,7 +395,7 @@
         item.classList.add('ssl-has-background');
       }
       return item;
-    }, options, 'card');
+    }, options, 'card', options.cardLayout);
   }
 
   // The look from before the separator grid: one column with the date centred on the line.

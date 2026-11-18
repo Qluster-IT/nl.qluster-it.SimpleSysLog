@@ -47,7 +47,8 @@
       "default": "Standard",
       "compact": "Kompakt",
       "journal": "Journal",
-      "console": "Konsol"
+      "console": "Konsol",
+      "aurora": "Norrsken"
     },
     "theme": {
       "homey": "Homey",
@@ -56,7 +57,8 @@
       "ocean": "Hav",
       "forest": "Skog",
       "sunset": "Solnedgång",
-      "console": "Konsol"
+      "console": "Konsol",
+      "aurora": "Norrsken"
     },
     "datetime": {
       "customFormat": "Anpassat BLL-datum-/tidsformat",
@@ -420,5 +422,19 @@
     }
   },
   "widget_features_notice": "Simple (Sys) Log har nu en widget för instrumentpanelen! Lägg till widgeten Simple Sys Log på en instrumentpanel och öppna appinställningarna för att utforma layout och färger på fliken Widgetar. Widgeten kräver appen Better Logic Library.",
-  "exportFailed": "Exporten kunde inte skapas eller laddas upp. Försök igen."
+  "exportFailed": "Exporten kunde inte skapas eller laddas upp. Försök igen.",
+  "settingsDownload": {
+    "preparing": "Förbereder hämtning…",
+    "ready": "Hämtningslänken är klar. Om hämtningen inte startar, använd Hämta nu. Länken är tillfällig.",
+    "reservationFailed": "Det gick inte att begära hämtningen. Kontrollera anslutningen och exportera igen.",
+    "generationFailed": "Det gick inte att skapa eller ladda upp exporten. Försök igen.",
+    "timeout": "Begäran om hämtning tog för lång tid. Exportera igen.",
+    "networkFailed": "Det gick inte att kontrollera hämtningslänkarna. Kontrollera anslutningen; även webbläsaren kan blockera kontrollen. Prova Hämta nu eller exportera igen.",
+    "openUnconfirmed": "Webbläsaren bekräftade inte att hämtningen öppnades. Använd Hämta nu om inget öppnades.",
+    "openFailed": "Det gick inte att öppna hämtningen. Använd Hämta nu.",
+    "expired": "Den här hämtningslänken kan ha gått ut. Exportera igen för att få en ny länk.",
+    "manual": "Hämta nu",
+    "cloud": "Hämta via internet"
+  },
+  "exportSkipped": "De läsbara loggposterna exporterades. __count__ oläsbara poster hoppades över."
 }

@@ -34,6 +34,7 @@
 	<script type="text/javascript" src="../../net.i-dev.betterlogic/assets/js/bll.module.js"></script>
 	<link rel="stylesheet" href="../../net.i-dev.betterlogic/assets/css/bll.css" type="text/css" />
 	
+	<script type="text/javascript" src="settings-download.js"></script>
 	<script type="text/javascript" src="simplelog.module.js"></script>
 	<script type="text/javascript" src="../assets/js/ssl-widget-layout.js"></script>
 	<script type="text/javascript" src="../assets/js/html-to-image.min.js"></script>
@@ -321,7 +322,7 @@
 	</div>
 
 	<div class="main-view overflow-hidden" ng-show="!view.id || view.id=='log'">
-		<div class="busyOverlay" ng-show="view.isBusy"></div>
+		<div class="busyOverlay" ng-show="view.isBusy || view.downloadBusy"></div>
 		<div class="hints fw-bold" ng-show="view.showHints">
 			<div class="overlay"></div>
 			<div class="position-absolute start-0 text-center text-primary" style="width:190px;">

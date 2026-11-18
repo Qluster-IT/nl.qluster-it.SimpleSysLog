@@ -14,6 +14,7 @@ html.ssl-widget-page,
 .ssl-widget,
 .ssl-widget * {
   box-sizing: border-box;
+  touch-action: pan-x pan-y;
 }
 
 /* Like Chronograph: blue, green, orange, red and white use Homey's semantic palette, grey its
@@ -73,6 +74,8 @@ html.ssl-widget-page,
   background: var(--ssl-background);
   box-shadow: var(--ssl-frame-shadow);
   font-size: 13px;
+  /* Match the settings preview without inheriting the host page's line height. */
+  line-height: 1.5;
 }
 
 /* A widget forced to light mode stays light on a dark dashboard. */

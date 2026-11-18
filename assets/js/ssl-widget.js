@@ -185,7 +185,8 @@ function onHomeyReady(Homey) {
           element[0].replaceChildren(window.SSLWidgetLayout.renderCard(document, scope.design, scope.theme, values, {
             severityClass: scope.severityClass(log),
             labels: scope.labels,
-            classes: classes
+            classes: classes,
+            cardLayout: scope.cardLayout
           }));
           scope.scheduleTrackAlignment();
         }
@@ -550,6 +551,7 @@ function onHomeyReady(Homey) {
         if (!theme) throw new Error(translate('widgets.themeUnavailable', 'The selected widget theme is unavailable.'));
         $scope.design = design;
         $scope.theme = theme;
+        $scope.cardLayout = window.SSLWidgetLayout.computeLayout(design);
         if (!ownFormat && typeof design.timestampFormat === 'string' && design.timestampFormat.trim()) {
           datetimeFormat = design.timestampFormat;
         }
@@ -579,9 +581,10 @@ function onHomeyReady(Homey) {
 
       function refreshSearch() {
         try {
-          $scope.filteredLogs = $scope.logs.filter(function (log) {
-            return window.SSLWidgetSearch.matches(log, searchEnabled ? $scope.search.text : '', searchMode);
-          });
+          var query = searchEnabled ? $scope.search.text : '';
+          $scope.filteredLogs = typeof query === 'string' && query.trim()
+            ? $scope.logs.filter(window.SSLWidgetSearch.compile(query, searchMode))
+            : $scope.logs.slice();
           $scope.searchError = '';
         } catch (error) {
           $scope.searchError = error.message;
@@ -612,14 +615,18 @@ function onHomeyReady(Homey) {
         return SSL_SEVERITY_NAMES[severity] ? 'ssl-sev-' + SSL_SEVERITY_NAMES[severity] : 'ssl-sev-unknown';
       };
       // Entries are grouped by their formatted separator text, so the design's format sets the grouping.
+      var fallbackDayFormatter;
       $scope.formatDay = function (log) {
         var formatted = log.timestamp_formatted;
         if (formatted && typeof formatted === 'object' && Object.prototype.hasOwnProperty.call(formatted, dayFormat)) {
           return formatted[dayFormat];
         }
         var date = new Date(log.timestamp);
-        return Number.isNaN(date.getTime()) ? ''
-          : date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+        if (Number.isNaN(date.getTime())) return '';
+        if (!fallbackDayFormatter) {
+          fallbackDayFormatter = new Intl.DateTimeFormat(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+        }
+        return fallbackDayFormatter.format(date);
       };
       $scope.showDaySeparator = function (index) {
         if (!$scope.design.showDaySeparators) return false;
@@ -638,12 +645,19 @@ function onHomeyReady(Homey) {
         var pageScroll = !!document.documentElement && document.documentElement.classList.contains('ssl-android-page');
         var scroller = pageScroll ? document.scrollingElement || document.documentElement : list;
         var followTop = !!scroller && scroller.scrollTop <= 24;
-        var toolbar = pageScroll ? document.querySelector('.ssl-widget-toolbar') : null;
-        var viewTop = !list ? 0 : pageScroll ? (toolbar ? toolbar.getBoundingClientRect().bottom : 0)
-          : list.getBoundingClientRect().top;
-        var anchor = list && Array.from(list.querySelectorAll('.ssl-log-entry')).find(function (entry) {
-          return entry.getBoundingClientRect().bottom > viewTop;
-        });
+        var anchor = null;
+        if (list && !followTop && !scrollPending) {
+          var toolbar = pageScroll ? document.querySelector('.ssl-widget-toolbar') : null;
+          var viewTop = pageScroll ? (toolbar ? toolbar.getBoundingClientRect().bottom : 0)
+            : list.getBoundingClientRect().top;
+          var entries = list.querySelectorAll('.ssl-log-entry');
+          for (var index = 0; index < entries.length; index++) {
+            if (entries[index].getBoundingClientRect().bottom > viewTop) {
+              anchor = entries[index];
+              break;
+            }
+          }
+        }
         var top = anchor ? anchor.getBoundingClientRect().top : 0;
         $scope.$applyAsync(function () {
           if ($scope.logs.some(function (item) { return item._fingerprint === log._fingerprint; })) return;
@@ -805,13 +819,13 @@ function onHomeyReady(Homey) {
       var storageReadyDuringInitialLoad = false;
       Homey.on('log_updated', onRealtimeLog);
       Homey.on('log_storage_ready', onLogStorageReady);
-      Homey.api('GET', filterStatePath, {}).then(function (state) {
+      Promise.all([
+        Homey.api('GET', filterStatePath, {}),
+        Homey.api('GET', '/styles', {})
+      ]).then(function (initialData) {
         if (destroyed) return null;
-        restoreFilterState(state);
-        return Homey.api('GET', '/styles', {});
-      }).then(function (styles) {
-        if (destroyed) return null;
-        applyStyles(styles);
+        restoreFilterState(initialData[0]);
+        applyStyles(initialData[1]);
         return Homey.api('POST', '/register-timestamp-format', {
           instanceId: instanceId,
           formats: [datetimeFormat, dayFormat]

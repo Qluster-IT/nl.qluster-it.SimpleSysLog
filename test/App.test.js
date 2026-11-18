@@ -281,10 +281,13 @@ test('the export Flow returns both local URLs only after a successful upload', a
   await assert.rejects(async () => run({ returnType: 'json' }), /bllNotStartedYet/);
 
   const exports = { csv: '', xlsx: Uint8Array.of(0, 0x50, 0x4b, 0xe9, 0xff, 0).subarray(1, 5), json: '[{"message":"caf\u00e9"}]' };
-  let generated, request, resolveUpload;
-  app.Log = { async getLogs({ returnType }) {
+  let generated, request, resolveUpload, streaming = false;
+  app.Log = { async getLogs({ returnType, streamJson, streamCsv, streamExcel }) {
+    assert.equal(streamJson, returnType === 'json');
+    assert.equal(streamCsv, returnType === 'csv');
+    assert.equal(streamExcel, returnType === 'xlsx');
     generated = returnType;
-    return { [returnType]: exports[returnType] };
+    return { [returnType]: streaming ? require('node:stream').Readable.from([Buffer.from(exports[returnType])]) : exports[returnType] };
   } };
   const server = http.createServer(async (req, res) => {
     const chunks = [];
@@ -309,12 +312,17 @@ test('the export Flow returns both local URLs only after a successful upload', a
       localUrl: `https://127-0-0-1.homey.homeylocal.com${filePath}${filename}`
     };
   });
-  for (const [returnType, status, contentType] of [
+  for (const [returnType, status, contentType, useStream = false] of [
     ['csv', 200, 'text/csv'],
     ['xlsx', 200, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
     ['json', 200, 'text/json'],
-    ['json', 400, 'text/json']
+    ['json', 400, 'text/json'],
+    ['csv', 200, 'text/csv', true],
+    ['xlsx', 200, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', true],
+    ['json', 200, 'text/json', true],
+    ['json', 400, 'text/json', true]
   ]) {
+    streaming = useStream;
     const received = new Promise(resolve => { resolveUpload = resolve; });
     let settled = false;
     const result = run({ returnType }).finally(() => { settled = true; });
@@ -323,7 +331,7 @@ test('the export Flow returns both local URLs only after a successful upload', a
     assert.equal(req.method, 'POST');
     assert.equal(req.url, route);
     assert.equal(req.headers.accept, contentType);
-    assert.equal(Number(req.headers['content-length']), body.length);
+    if (!streaming) assert.equal(Number(req.headers['content-length']), body.length);
     assert.deepEqual(body, Buffer.from(exports[returnType]));
     res.writeHead(status).end();
     if (status === 400) {
@@ -372,6 +380,28 @@ test('a log download that cannot be generated is logged and reported to the sett
     ['Log download (json) could not be generated', 'disk unavailable']
   ]);
   assert.deepEqual(realtime, Array(3).fill(['downloadFileFailed', { token: 'download', message: 'disk unavailable' }]));
+});
+
+test('settings exports report the skipped-record count only after the streamed upload completes', async t => {
+  const api = appRequire('./api');
+  const { app, timers } = createApp();
+  app.settings = { jsonFilename: 'logs' };
+  const warnings = { skippedRecords: 0 };
+  app.Log = { getLogs: async () => ({ json: '[]', exportWarnings: warnings }) };
+  t.mock.method(BL, 'decode', async filename => filename);
+  t.mock.method(BL, 'getDownloadUrl', async () => ({ token: 'download' }));
+  const events = [];
+  t.mock.method(BL, 'setDownloadUrl', async ({ callback }) => {
+    assert.equal(events.length, 0);
+    warnings.skippedRecords = 2;
+    await callback({ token: 'download' });
+  });
+  const homey = { app, setTimeout: app.homey.setTimeout, error: app.homey.error,
+    api: { realtime: (event, data) => events.push([event, data]) } };
+  await api.getLogDownloadUrl({ homey, params: { returnType: 'json' } });
+  const [timer] = timers.values();
+  await timer.callback();
+  assert.deepEqual(events, [['downloadFileReady', { token: 'download', skippedRecords: 2 }]]);
 });
 
 test('settings exports reject unsupported formats and reservation failures before scheduling generation', async t => {

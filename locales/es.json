@@ -47,7 +47,8 @@
       "default": "Predeterminado",
       "compact": "Compacto",
       "journal": "Diario",
-      "console": "Consola"
+      "console": "Consola",
+      "aurora": "Aurora"
     },
     "theme": {
       "homey": "Homey",
@@ -56,7 +57,8 @@
       "ocean": "Océano",
       "forest": "Bosque",
       "sunset": "Atardecer",
-      "console": "Consola"
+      "console": "Consola",
+      "aurora": "Aurora"
     },
     "datetime": {
       "customFormat": "Formato personalizado de fecha y hora de BLL",
@@ -420,5 +422,19 @@
     }
   },
   "widget_features_notice": "¡Simple (Sys) Log ya tiene un widget para el panel! Añade el widget Simple Sys Log a un panel y abre los ajustes de la app para diseñar su diseño y colores en la pestaña Widgets. El widget necesita la app Better Logic Library.",
-  "exportFailed": "No se pudo crear o cargar la exportación. Inténtalo de nuevo."
+  "exportFailed": "No se pudo crear o cargar la exportación. Inténtalo de nuevo.",
+  "settingsDownload": {
+    "preparing": "Preparando descarga…",
+    "ready": "Enlace de descarga listo. Si la descarga no comienza, usa Descargar ahora. Este enlace es temporal.",
+    "reservationFailed": "No se pudo solicitar la descarga. Comprueba tu conexión y vuelve a exportar.",
+    "generationFailed": "No se pudo crear o subir la exportación. Inténtalo de nuevo.",
+    "timeout": "La solicitud de descarga ha tardado demasiado. Vuelve a exportar.",
+    "networkFailed": "No se pudieron comprobar los enlaces de descarga. Comprueba tu conexión; el navegador también puede bloquear esta comprobación. Prueba Descargar ahora o vuelve a exportar.",
+    "openUnconfirmed": "El navegador no confirmó la apertura de la descarga. Si no se abrió nada, usa Descargar ahora.",
+    "openFailed": "No se pudo abrir la descarga. Usa Descargar ahora.",
+    "expired": "Este enlace de descarga puede haber caducado. Vuelve a exportar para obtener uno nuevo.",
+    "manual": "Descargar ahora",
+    "cloud": "Descargar por internet"
+  },
+  "exportSkipped": "Se exportaron las entradas legibles del registro. Se omitieron __count__ entradas ilegibles."
 }

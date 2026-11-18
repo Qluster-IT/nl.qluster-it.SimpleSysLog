@@ -101,6 +101,105 @@ function flush(stream) {
   });
 }
 
+test('JSON stream exports defer bounded message reads and preserve complete sorted export bytes', async t => {
+  const { Readable } = require('node:stream');
+  t.mock.getter(BL, 'json', () => ({
+    toJson: records => Readable.from((async function* () {
+      yield '[';
+      let first = true;
+      for await (const record of records) {
+        yield (first ? '' : ',') + JSON.stringify(record);
+        first = false;
+      }
+      yield ']';
+    })(), { objectMode: false })
+  }));
+  const log = await createLog(t);
+  for (let index = 0; index < 160; index++) {
+    await log.writeLine({
+      message: `entry ${index} caf\u00e9 \uD83C\uDF19` + 'x'.repeat(index === 80 ? 100000 : 100),
+      timestamp: new Date(Date.UTC(2026, 0, index % 3 + 1, 0, 0, 160 - index)),
+      severity: index % 8, facility: 16, app: 'Example'
+    });
+  }
+  const books = Object.values(log.LogBooks);
+  await Promise.all(books.flatMap(book => [book.indexStream, book.logStream]).filter(Boolean).map(flush));
+  const expected = (await log.getLogs({ returnType: 'json' })).json;
+  const batches = [];
+  const buffers = new Set();
+  for (const book of books) {
+    const read = book.readMessages.bind(book);
+    t.mock.method(book, 'readMessages', (records, exportState, buffer) => {
+      batches.push(records.length);
+      buffers.add(buffer);
+      assert.equal(exportState.skippedRecords, 0);
+      return read(records, exportState, buffer);
+    });
+  }
+  const result = await log.getLogs({ returnType: 'json', streamJson: true });
+  assert.deepEqual(batches, [], 'message content must not be loaded before consuming the stream');
+  const chunks = [];
+  for await (const chunk of result.json) chunks.push(chunk);
+  assert.equal(Buffer.concat(chunks).toString('utf8'), expected);
+  assert.ok(batches.length > 3);
+  assert.ok(Math.max(...batches) <= 64);
+  assert.equal(buffers.size, 1, 'one bounded message buffer is reused across every batch and logbook');
+  assert.ok(books.every(book => book.fdRead === null));
+});
+
+test('exports skip corrupt records with an exact warning count while ordinary queries remain usable', async t => {
+  const { Readable } = require('node:stream');
+  t.mock.getter(BL, 'json', () => ({
+    toJson: records => Readable.from((async function* () {
+      const rows = [];
+      for await (const record of records) rows.push(record);
+      yield JSON.stringify(rows);
+    })(), { objectMode: false }),
+    toCsv: async records => records.map(record => record.message).join('\n'),
+    exports: {},
+    toExcel: async records => Buffer.from(records.map(record => record.message).join('\n'))
+  }));
+  const lodash = BL._;
+  t.mock.getter(BL, '_', () => ({
+    ...lodash,
+    map: (rows, key) => rows.map(row => key.split('.').reduce((value, part) => value?.[part], row)),
+    max: values => Math.max(...values.filter(value => value !== undefined))
+  }));
+  const translate = BL.homey.__;
+  BL.homey.__ = key => key;
+  t.after(() => { BL.homey.__ = translate; });
+  const log = await createLog(t);
+  const timestamp = new Date(2026, 0, 2, 12);
+  await log.writeLine({ message: 'readable', timestamp });
+  await log.writeLine({ message: 'malformed', timestamp: new Date(timestamp.getTime() + 500) });
+  await log.writeLine({ message: 'truncated', timestamp: new Date(timestamp.getTime() + 1000) });
+  const book = log.getLogBook(timestamp);
+  await Promise.all([flush(book.indexStream), flush(book.logStream)]);
+  fs.truncateSync(book.file + '.log', Buffer.byteLength('"readable"\n"malformed"\n"trunc', 'utf8'));
+  const fd = fs.openSync(book.file + '.log', 'r+');
+  try { fs.writeSync(fd, '!', Buffer.byteLength('"readable"\n')); } finally { fs.closeSync(fd); }
+  for (const returnType of ['json', 'csv', 'xlsx']) {
+    const result = await log.getLogs({ returnType });
+    assert.equal(result.exportWarnings.skippedRecords, 2);
+    if (returnType === 'json') assert.deepEqual(JSON.parse(result.json).map(row => row.message), ['readable']);
+    else assert.equal(result[returnType].toString(), 'readable');
+  }
+  const metadata = await log.getLogs();
+  assert.equal(metadata.logs.length, 3);
+  assert.equal(metadata.logs[2].message, 'readable');
+  const streamed = await log.getLogs({ returnType: 'json', streamJson: true });
+  assert.equal(streamed.exportWarnings.skippedRecords, 0);
+  const chunks = [];
+  for await (const chunk of streamed.json) chunks.push(chunk);
+  assert.deepEqual(JSON.parse(Buffer.concat(chunks).toString()).map(row => row.message), ['readable']);
+  assert.equal(streamed.exportWarnings.skippedRecords, 2);
+  assert.equal(book.fdRead, null);
+  fs.truncateSync(book.file + '.log', 0);
+  const empty = await log.getLogs({ returnType: 'json' });
+  assert.equal(empty.json, '[]');
+  assert.equal(empty.exportWarnings.skippedRecords, 3);
+});
+
 test('hostname filtering searches hostnames without requiring an app filter', async t => {
   const log = await createLog(t);
   log.LogApps.push('Unrelated app');

@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const { createRequire } = require('node:module');
 const test = require('node:test');
 const vm = require('node:vm');
+const zlib = require('node:zlib');
 
 const styles = require('../lib/widget-styles');
 const template = require('../lib/widget-template');
@@ -15,7 +16,8 @@ const widgetApi = require('../widgets/log_viewer/api');
 
 test('built-in presets remain valid and portable across every design and theme combination', async () => {
   const doc = { createElement: () => {
-    const node = { style: {}, children: [], className: '', setAttribute() {}, appendChild(child) { this.children.push(child); } };
+    const node = { style: {}, children: [], className: '', attributes: {},
+      setAttribute(name, value) { this.attributes[name] = value; }, appendChild(child) { this.children.push(child); } };
     node.classList = { add: name => { node.className += ' ' + name; } };
     return node;
   } };
@@ -28,6 +30,8 @@ test('built-in presets remain valid and portable across every design and theme c
     for (const originalTheme of styles.BUILT_IN_THEMES) {
       const theme = styles.validateTheme(originalTheme);
       const card = layout.renderCard(doc, design, theme, values);
+      const prepared = layout.renderCard(doc, design, theme, values, { cardLayout: layout.computeLayout(design) });
+      assert.equal(JSON.stringify(prepared), JSON.stringify(card), 'reusing a card layout must render the same output');
       const message = findField(card, 'message');
       assert.equal(message.textContent, values.message);
       assert.equal(message.style.background, undefined, 'built-in messages must not have a background highlight');
@@ -36,6 +40,20 @@ test('built-in presets remain valid and portable across every design and theme c
       if (design.id === 'builtin:journal') {
         assert.equal(findField(card, 'app').style.lineHeight, '17px', 'App / Group must not inherit host line height');
         assert.equal(findField(card, 'facility').style.lineHeight, '14px', 'Facility must not inherit host line height');
+        const metadata = card.children.find(cell => cell.children.some(child => child.attributes['data-element'] === 'app'));
+        assert.ok(metadata.children.some(child => child.attributes['data-element'] === 'facility'));
+        assert.equal(metadata.attributes['data-valign'], 'middle', 'badges of different heights must share a vertical center');
+      }
+      if (design.id === 'builtin:aurora') {
+        const cells = layout.computeLayout(design).cells;
+        const timestamp = cells.find(cell => cell.elements.includes('timestamp'));
+        const messageCell = cells.find(cell => cell.elements.includes('message'));
+        assert.equal(timestamp.rowSpan, 3, 'timestamp rail must cover the header, message and metadata');
+        assert.equal(messageCell.start, timestamp.start + timestamp.span, 'message must remain beside the timestamp rail');
+        for (const id of ['timestamp', 'severity', 'app', 'facility', 'hostname']) {
+          assert.equal(findField(card, id).textContent, values[id], `${id} must not be merged away by spanning columns`);
+        }
+        assert.equal(card.style.borderTop, `2px solid ${theme.id === 'builtin:aurora' ? '#218579' : 'var(--ssl-sev)'}`);
       }
       const decoded = template.decodeTemplate(await template.encodeTemplate({ design, theme }));
       const { id: designId, ...expectedDesign } = design;
@@ -578,18 +596,37 @@ test('widget templates round-trip and reject invalid or oversized input', async 
     theme: { ...styles.BUILT_IN_THEMES[0], id: undefined }
   };
   const encoded = await template.encodeTemplate(value);
-  assert.match(encoded, /^\[twf:SimpleSysLog:DESIGN,THEME:/);
+  assert.match(encoded, /^\[twf:SimpleSysLog:LogViewer:DESIGN,THEME:/);
   const expected = {
     design: styles.validateDesign(value.design, { allowMissingId: true }),
     theme: styles.validateTheme(value.theme, { allowMissingId: true })
   };
   assert.deepEqual(template.decodeTemplate(encoded), expected);
-  const legacy = Buffer.from(JSON.stringify({ version: 1, ...expected })).toString('base64');
-  assert.ok(encoded.length < legacy.length / 2);
-  assert.deepEqual(template.decodeTemplate(`[twf:SimpleSysLog:DESIGN,THEME:"${legacy}":/twf]`), expected);
-  assert.throws(() => template.decodeTemplate('[twf:SimpleSysLog:DESIGN:"not-base64":/twf]'), /Invalid template/);
+  const body = JSON.parse(zlib.brotliDecompressSync(Buffer.from(encoded.split('"')[1], 'base64')));
+  assert.equal(body.v, 1);
+  const uncompressed = Buffer.from(JSON.stringify({ version: 1, ...expected })).toString('base64');
+  assert.ok(encoded.length < uncompressed.length / 2);
+  assert.throws(() => template.decodeTemplate(`[twf:SimpleSysLog:LogViewer:DESIGN,THEME:"${uncompressed}":/twf]`), /Invalid template data/);
+  for (const version of [0, 2, 3]) {
+    const unsupported = zlib.brotliCompressSync(JSON.stringify({ ...body, v: version })).toString('base64');
+    assert.throws(() => template.decodeTemplate(`[twf:SimpleSysLog:LogViewer:DESIGN,THEME:"${unsupported}":/twf]`), /Unsupported template version/);
+  }
+  assert.throws(() => template.decodeTemplate('[twf:SimpleSysLog:LogViewer:DESIGN:"not-base64":/twf]'), /Invalid template/);
   assert.throws(() => template.decodeTemplate(encoded.replace('twf:SimpleSysLog:', 'twf:Chronograph:')), /This TWF is for Chronograph/);
+  assert.throws(() => template.decodeTemplate(encoded.replace(':LogViewer:', ':HistoryChart:')), /This TWF is for HistoryChart, not LogViewer/);
+  assert.throws(() => template.decodeTemplate(encoded.replace(':LogViewer:', ':')), /not LogViewer/);
   await assert.rejects(() => template.encodeTemplate({}), /Select a design or theme/);
+});
+
+test('community catalog excludes other widget families, other apps and headers without a widget family', async () => {
+  const encoded = await template.encodeTemplate({ theme: { ...styles.BUILT_IN_THEMES[0], id: undefined } });
+  const post = { id: 501, post_number: 4, raw: [
+    encoded, encoded.replace(':LogViewer:', ':HistoryChart:'),
+    encoded.replace(':SimpleSysLog:', ':OtherApp:'), encoded.replace(':LogViewer:', ':')
+  ].join('\n') };
+  const entries = catalog.entriesFromPost(post);
+  assert.equal(entries.length, 1);
+  assert.equal(entries[0].text, encoded);
 });
 
 test('community catalog loads templates from the configured SSL topic', async () => {
@@ -813,6 +850,13 @@ test('simple and advanced widget search match app, host, and message fields', ()
   assert.equal(search.matches(log, 'window AND NOT closed', 'advanced'), true);
   assert.equal(search.matches(log, '(window OR door) AND "Homey Pro"', 'advanced'), true);
   assert.throws(() => search.matches(log, 'window AND (door', 'advanced'), /parenthesis/);
+  const entries = [log, { message: 'Door closed', app: 'Security', hostname: 'Hall' }, { message: 'Window closed', app: 'Climate Flow' }];
+  for (const mode of ['simple', 'advanced']) {
+    for (const query of ['  ', 'CLIMATE', '(window OR door) AND NOT closed', '"Homey Pro"']) {
+      assert.deepEqual(entries.filter(search.compile(query, mode)), entries.filter(entry => search.matches(entry, query, mode)));
+    }
+  }
+  assert.throws(() => search.compile('window AND (door', 'advanced'), /parenthesis/);
 });
 
 
@@ -982,18 +1026,19 @@ test('live and visibility updates keep five entries and follow the top only with
         const events = {};
         const documentEvents = {};
         const frames = [];
+        let geometryReads = 0;
         let anchorPosition = 150;
         const page = { scrollTop: initialTop };
         const list = {
           scrollTop: initialTop,
-          getBoundingClientRect: () => ({ top: 0 }),
+          getBoundingClientRect: () => { geometryReads++; return { top: 0 }; },
           querySelectorAll: () => [anchor],
           contains: node => node === anchor
         };
         const scroller = pageScroll ? page : list;
-        const anchor = { getBoundingClientRect: () => ({
+        const anchor = { getBoundingClientRect: () => { geometryReads++; return ({
           top: anchorPosition - scroller.scrollTop, bottom: anchorPosition - scroller.scrollTop + 40
-        }) };
+        }); } };
         const entry = id => ({ id, timestamp: '2026-11-18T10:00:00.000Z', severity: 6, app: 'Example',
           message: 'Entry ' + id, timestamp_formatted: { timeshort: '10:00' } });
         const homey = {
@@ -1041,6 +1086,8 @@ test('live and visibility updates keep five entries and follow the top only with
           assert.equal(scope.filteredLogs.length, 5);
         }
         assert.equal(scope.logs.map(log => log.id).join(','), '12,11,10,0,1');
+        assert.equal(geometryReads, initialTop <= 24 ? 0 : pageScroll ? 2 : 3,
+          'live bursts must skip anchor measurements while following the top or awaiting scroll restoration');
         frames.splice(0).forEach(frame => frame());
         assert.equal(scroller.scrollTop, initialTop <= 24 ? 0 : initialTop + 120);
         events.log_updated(entry(12));
@@ -1064,6 +1111,9 @@ test('widget restores its instance filters before the first log request', async 
     bootstrap() {}
   };
   const saved = { levels: [3, 6], from: '2026-11-17', to: '2026-11-18' };
+  let releaseFilters;
+  const pendingFilters = new Promise(resolve => { releaseFilters = resolve; });
+  let stylesRequested = false;
   const logRequests = [];
   const homey = {
     __: () => '',
@@ -1072,9 +1122,12 @@ test('widget restores its instance filters before the first log request', async 
     on() {},
     ready() {},
     api(method, path) {
-      if (path === '/filter-state/widget-restore') return Promise.resolve(saved);
+      if (path === '/filter-state/widget-restore') return pendingFilters;
       if (path === '/register-timestamp-format') return Promise.resolve({ registered: true });
-      if (path === '/styles') return Promise.resolve(styles.getWidgetStyles({ settings: { get: () => undefined } }));
+      if (path === '/styles') {
+        stylesRequested = true;
+        return Promise.resolve(styles.getWidgetStyles({ settings: { get: () => undefined } }));
+      }
       logRequests.push(path);
       return Promise.resolve({ available: true, logs: [], severities: {}, facilities: {} });
     }
@@ -1090,10 +1143,19 @@ test('widget restores its instance filters before the first log request', async 
   const scope = { $applyAsync: fn => fn && fn(), $on() {} };
   controller(scope, () => {});
   await new Promise(resolve => setImmediate(resolve));
+  assert.equal(stylesRequested, true, 'styles need not wait for saved filters');
+  assert.deepEqual(logRequests, [], 'logs must still wait for saved filters');
+  releaseFilters(saved);
+  await new Promise(resolve => setImmediate(resolve));
 
   assert.equal(scope.selectedLevelCount(), 2);
   assert.equal(scope.hasDateFilter(), true);
   assert.ok(logRequests[0].includes('&dateFrom=2026-11-17&dateTo=2026-11-18&severities=3%2C6'));
+  const timestamp = '2026-11-18T10:00:00.000Z';
+  const expectedDay = new Date(timestamp).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+  assert.equal(scope.formatDay({ timestamp }), expectedDay);
+  assert.equal(scope.formatDay({ timestamp }), expectedDay);
+  assert.equal(scope.formatDay({ timestamp: 'invalid' }), '');
 });
 
 test('widget paging is opt-in and requests adjacent pages; search and filters can be hidden independently', async () => {

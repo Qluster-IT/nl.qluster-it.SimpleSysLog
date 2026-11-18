@@ -35,6 +35,9 @@ if (window.hasOwnProperty('angular'))
       let Homey = homey;
       let realtimeRefreshTimer;
       let __ = homey.__;
+      const settingsDownload = $window.SettingsDownload.bind({
+        homey, scope: $scope, view, http: $http, path: '/getlogdownloadurl/', errorsOnly: true
+      });
 
       $bl.init(homey, $scope);
 
@@ -208,27 +211,6 @@ if (window.hasOwnProperty('angular'))
           }
         });
         await gridDefer.promise;
-        const downloadFileReadyListener = (link) => {
-          console.log('downloadFileReady');
-          if (!view.downloadFileLink || view.downloadFileLink.token !== link.token) return;
-          $http.get(link.localTestUrl, { timeout: 1000 }).catch((err) => {
-            //if(x) $bl.openURL(link.cloudUrl);
-            if (err) $bl.openURL(link.cloudUrl);
-            view.isBusy = false;
-          }).then((x) => {
-            if (x) $bl.openURL(link.localUrl);
-            view.isBusy = false;
-          });
-        };
-        Homey.on('downloadFileReady', downloadFileReadyListener);
-        const downloadFileFailedListener = (failed) => {
-          // Without a link yet, the failure belongs to the download that is still waiting for its link.
-          if (view.downloadFileLink && failed && view.downloadFileLink.token !== failed.token) return;
-          $timeout(() => { view.isBusy = false; });
-          homey.alert(failed.message || homey.__('exportFailed'));
-        };
-        Homey.on('downloadFileFailed', downloadFileFailedListener);
-
         const logUpdatedListener = (log) => {
           if (!view.settings || view.settings.autoRefresh === false) return;
           if ($scope.logQuery.filters && $scope.logQuery.filters.length) {
@@ -246,12 +228,8 @@ if (window.hasOwnProperty('angular'))
         $scope.$on('$destroy', () => {
           if (realtimeRefreshTimer) $timeout.cancel(realtimeRefreshTimer);
           if (typeof Homey.off === 'function') {
-            Homey.off('downloadFileReady', downloadFileReadyListener);
-            Homey.off('downloadFileFailed', downloadFileFailedListener);
             Homey.off('log_updated', logUpdatedListener);
           } else if (typeof Homey.removeListener === 'function') {
-            Homey.removeListener('downloadFileReady', downloadFileReadyListener);
-            Homey.removeListener('downloadFileFailed', downloadFileFailedListener);
             Homey.removeListener('log_updated', logUpdatedListener);
           }
         });
@@ -659,18 +637,7 @@ if (window.hasOwnProperty('angular'))
       //         $bl.openURL(encodedUri);
       //     });
       // };
-      $scope.downloadFile = async (type) => {
-        view.isBusy = true;
-        view.downloadFileLink = null;
-        try {
-          let downloadLink = await $bl.api("GET", "/getlogdownloadurl/" + type);
-          if (!downloadLink) throw new Error(homey.__('exportFailed'));
-          view.downloadFileLink = downloadLink;
-        } catch (error) {
-          $scope.$apply(() => { view.isBusy = false; });
-          homey.alert(error.message || homey.__('exportFailed'));
-        }
-      };
+      $scope.downloadFile = settingsDownload.start;
 
       $scope.closeHints = function () {
         view.showHints = false;

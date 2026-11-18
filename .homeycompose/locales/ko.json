@@ -1,4 +1,18 @@
 {
+  "exportSkipped": "읽을 수 있는 로그 항목을 내보냈습니다. 읽을 수 없는 항목 __count__개를 건너뛰었습니다.",
+  "settingsDownload": {
+    "preparing": "다운로드 준비 중…",
+    "ready": "다운로드 링크가 준비되었습니다. 다운로드가 시작되지 않으면 지금 다운로드를 사용하세요. 이 링크는 임시 링크입니다.",
+    "reservationFailed": "다운로드를 요청할 수 없습니다. 연결을 확인하고 다시 내보내세요.",
+    "generationFailed": "내보내기 파일을 만들거나 업로드할 수 없습니다. 다시 시도하세요.",
+    "timeout": "다운로드 요청 시간이 초과되었습니다. 다시 내보내세요.",
+    "networkFailed": "다운로드 링크를 확인할 수 없습니다. 연결을 확인하세요. 브라우저가 이 확인을 차단할 수도 있습니다. 지금 다운로드를 누르거나 다시 내보내세요.",
+    "openUnconfirmed": "브라우저에서 다운로드 열기를 확인하지 않았습니다. 아무것도 열리지 않으면 지금 다운로드를 사용하세요.",
+    "openFailed": "다운로드를 열 수 없습니다. 지금 다운로드를 사용하세요.",
+    "expired": "이 다운로드 링크가 만료되었을 수 있습니다. 새 링크를 받으려면 다시 내보내세요.",
+    "manual": "지금 다운로드",
+    "cloud": "인터넷으로 다운로드"
+  },
   "exportFailed": "내보내기 파일을 만들거나 업로드할 수 없습니다. 다시 시도하세요.",
   "bllNotStartedYet": "Better Logic Library 앱이 아직 시작되지 않았습니다.",
   "bllNotRunning": "이 기능을 사용하려면 Better Logic Library 앱이 실행 중이어야 합니다.",
@@ -45,14 +59,18 @@
       "default": "기본값",
       "compact": "간결",
       "journal": "일지",
-      "console": "콘솔"
+      "console": "콘솔",
+      "aurora": "???",
+      "widgetkeeper": "WidgetKeeper"
     },
     "theme": {
       "default": "기본값",
       "ocean": "바다",
       "forest": "숲",
       "sunset": "일몰",
-      "console": "콘솔"
+      "console": "콘솔",
+      "aurora": "???",
+      "widgetkeeper": "WidgetKeeper"
     },
     "datetime": {
       "customFormat": "사용자 지정 BLL 날짜/시간 형식",

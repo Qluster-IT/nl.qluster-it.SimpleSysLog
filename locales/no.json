@@ -47,7 +47,8 @@
       "default": "Standard",
       "compact": "Kompakt",
       "journal": "Journal",
-      "console": "Konsoll"
+      "console": "Konsoll",
+      "aurora": "Nordlys"
     },
     "theme": {
       "homey": "Homey",
@@ -56,7 +57,8 @@
       "ocean": "Hav",
       "forest": "Skog",
       "sunset": "Solnedgang",
-      "console": "Konsoll"
+      "console": "Konsoll",
+      "aurora": "Nordlys"
     },
     "datetime": {
       "customFormat": "Egendefinert BLL-dato-/tidsformat",
@@ -420,5 +422,19 @@
     }
   },
   "widget_features_notice": "Simple (Sys) Log har nå en dashbord-widget! Legg til Simple Sys Log-widgeten på et dashbord, og åpne appinnstillingene for å utforme oppsett og farger i fanen Widgeter. Widgeten krever Better Logic Library-appen.",
-  "exportFailed": "Eksporten kunne ikke opprettes eller lastes opp. Prøv igjen."
+  "exportFailed": "Eksporten kunne ikke opprettes eller lastes opp. Prøv igjen.",
+  "settingsDownload": {
+    "preparing": "Forbereder nedlasting…",
+    "ready": "Nedlastingslenken er klar. Hvis nedlastingen ikke starter, bruk Last ned nå. Lenken er midlertidig.",
+    "reservationFailed": "Kunne ikke be om nedlastingen. Kontroller tilkoblingen og eksporter på nytt.",
+    "generationFailed": "Eksporten kunne ikke opprettes eller lastes opp. Prøv igjen.",
+    "timeout": "Nedlastingsforespørselen tok for lang tid. Eksporter på nytt.",
+    "networkFailed": "Kunne ikke kontrollere nedlastingslenkene. Kontroller tilkoblingen; nettleseren kan også blokkere kontrollen. Prøv Last ned nå, eller eksporter på nytt.",
+    "openUnconfirmed": "Nettleseren bekreftet ikke at nedlastingen ble åpnet. Bruk Last ned nå hvis ingenting ble åpnet.",
+    "openFailed": "Kunne ikke åpne nedlastingen. Bruk Last ned nå.",
+    "expired": "Denne nedlastingslenken kan ha utløpt. Eksporter på nytt for å få en ny lenke.",
+    "manual": "Last ned nå",
+    "cloud": "Last ned via internett"
+  },
+  "exportSkipped": "De lesbare loggoppføringene ble eksportert. __count__ uleselige oppføringer ble hoppet over."
 }

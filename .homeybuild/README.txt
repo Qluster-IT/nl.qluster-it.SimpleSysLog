@@ -26,6 +26,7 @@ The settings page has a Syslog-style interface, in which you can:
 
 You can use the API endpoints to access the log.
 
+
 Better Logic Library is supported (optional for basic logging, required for the full interface, exports and widgets). Use BLL coding in supported Flow message and group fields; see the Better Logic Library app settings for instructions.
 
 See the topic on the Community Forum for examples and information.

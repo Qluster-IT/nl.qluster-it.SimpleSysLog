@@ -46,7 +46,8 @@
       "default": "Default",
       "compact": "Compact",
       "journal": "Journal",
-      "console": "Console"
+      "console": "Console",
+      "aurora": "Aurora"
     },
     "theme": {
       "homey": "Homey",
@@ -55,7 +56,8 @@
       "ocean": "Ocean",
       "forest": "Forest",
       "sunset": "Sunset",
-      "console": "Console"
+      "console": "Console",
+      "aurora": "Aurora"
     },
     "datetime": {
       "customFormat": "Custom BLL date/time format",
@@ -419,5 +421,19 @@
     }
   },
   "widget_features_notice": "Simple (Sys) Log now has a dashboard widget! Add the Simple Sys Log widget to a dashboard, and open the app settings to design its layout and colors on the Widgets tab. The widget needs the Better Logic Library app.",
-  "exportFailed": "The export could not be created or uploaded. Please try again."
+  "exportFailed": "The export could not be created or uploaded. Please try again.",
+  "settingsDownload": {
+    "preparing": "Preparing download…",
+    "ready": "Download link ready. If no download starts, use Download now. This link is temporary.",
+    "reservationFailed": "Could not request the download. Check your connection and export again.",
+    "generationFailed": "The export could not be created or uploaded. Please try again.",
+    "timeout": "The download request timed out. Please export again.",
+    "networkFailed": "Could not verify the download links. Check your connection; your browser may also block this check. Try Download now, or export again.",
+    "openUnconfirmed": "The browser did not confirm opening the download. If nothing opened, use Download now.",
+    "openFailed": "Could not open the download. Use Download now.",
+    "expired": "This download link may have expired. Export again for a new link.",
+    "manual": "Download now",
+    "cloud": "Download via internet"
+  },
+  "exportSkipped": "The readable log entries were exported. __count__ unreadable entries were skipped."
 }

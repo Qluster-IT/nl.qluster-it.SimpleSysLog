@@ -47,7 +47,8 @@
       "default": "Par défaut",
       "compact": "Compact",
       "journal": "Journal",
-      "console": "Console"
+      "console": "Console",
+      "aurora": "Aurore"
     },
     "theme": {
       "homey": "Homey",
@@ -56,7 +57,8 @@
       "ocean": "Océan",
       "forest": "Forêt",
       "sunset": "Coucher de soleil",
-      "console": "Console"
+      "console": "Console",
+      "aurora": "Aurore"
     },
     "datetime": {
       "customFormat": "Format de date et d’heure BLL personnalisé",
@@ -420,5 +422,19 @@
     }
   },
   "widget_features_notice": "Simple (Sys) Log dispose désormais d’un widget de tableau de bord ! Ajoutez le widget Simple Sys Log à un tableau de bord et ouvrez les paramètres de l’app pour concevoir sa mise en page et ses couleurs dans l’onglet Widgets. Le widget nécessite l’app Better Logic Library.",
-  "exportFailed": "Impossible de créer ou de transférer l’export. Veuillez réessayer."
+  "exportFailed": "Impossible de créer ou de transférer l’export. Veuillez réessayer.",
+  "settingsDownload": {
+    "preparing": "Préparation du téléchargement…",
+    "ready": "Lien de téléchargement prêt. Si le téléchargement ne démarre pas, utilisez Télécharger maintenant. Ce lien est temporaire.",
+    "reservationFailed": "Impossible de demander le téléchargement. Vérifiez votre connexion et exportez à nouveau.",
+    "generationFailed": "Impossible de créer ou de transférer l’exportation. Veuillez réessayer.",
+    "timeout": "La demande de téléchargement a expiré. Veuillez exporter à nouveau.",
+    "networkFailed": "Impossible de vérifier les liens de téléchargement. Vérifiez votre connexion ; votre navigateur peut aussi bloquer cette vérification. Essayez Télécharger maintenant ou exportez à nouveau.",
+    "openUnconfirmed": "Le navigateur n’a pas confirmé l’ouverture du téléchargement. Si rien ne s’est ouvert, utilisez Télécharger maintenant.",
+    "openFailed": "Impossible d’ouvrir le téléchargement. Utilisez Télécharger maintenant.",
+    "expired": "Ce lien de téléchargement a peut-être expiré. Exportez à nouveau pour obtenir un nouveau lien.",
+    "manual": "Télécharger maintenant",
+    "cloud": "Télécharger via internet"
+  },
+  "exportSkipped": "Les entrées lisibles du journal ont été exportées. __count__ entrées illisibles ont été ignorées."
 }

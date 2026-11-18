@@ -24,9 +24,13 @@ With simple log You can:
 - You can download the log in CSV format. -> https://developer.athom.com/tools/app-settings
 - In Advanced Flow, **Get log export URL** creates a CSV, Excel or JSON file and returns **Local URL** (HTTP) and **Local (SSL) URL** (HTTPS) for the same file. Prefer HTTPS; use the link promptly, as it expires according to Better Logic Library's file availability setting. If the export cannot be generated or uploaded, the card takes the error branch without returning tokens.
 - Excel exports use compatible column widths without shortening messages. Excel cannot hold more than 32,767 characters in a single cell; exports exceeding that limit fail explicitly instead of producing a damaged or silently truncated workbook. Use JSON or CSV for those entries.
+- Settings downloads try the local connection, then the cloud connection when away from home. Failures and timeouts show an error popup instead of leaving the download busy indefinitely; successful downloads do not add panels or buttons to the settings screen.
+- JSON, CSV and Excel downloads stream to BLL when supported, reducing peak memory. JSON reads log messages in small batches without changing their order or contents. Unreadable entries are skipped; settings show a popup with the skipped count, and Flow exports report that count in the app diagnostics. Generation and upload failures still fail the export.
 - Use the API to retreive, add and clean logging.
 
 # Dashboard widget
+
+TWF exports and imports use the compressed v1 format; unreleased prototype encodings are not supported.
 
 The Simple Sys Log dashboard widget shows recent entries and updates as new
 entries arrive. Each widget can set:
@@ -78,17 +82,27 @@ text case, weight, italic or letter spacing; all are App default by default and
 then keep the element's own look (for example the uppercase, bold severity pill).
 Alongside Default, the built-in **Compact**, **Journal** and **Console** designs
 offer dense, spacious and monospace layouts. Journal gives its App / Group and
-Facility badges consistent spacing in widgets and previews. **Ocean**, **Forest** and **Sunset**
+Facility badges consistent spacing and a shared vertical center in widgets and previews. **Ocean**, **Forest** and **Sunset**
 themes use blue, deep-green and warm-orange labels and accents while keeping
 messages unhighlighted and Homey's default widget background and fill.
 The **Console** theme pairs a dark-green gradient background with green text and
 clear severity colors; combine it with the **Console** design for monospace logs.
+**Aurora** pairs a spacious timeline layout with violet badges and teal accents.
+Its matching theme keeps Homey's background and readable, unhighlighted messages.
+**WidgetKeeper** takes inspiration from [WidgetKeeper](https://github.com/thomassidor/widgetkeeper)'s Light Control, Thermostat
+Presets and Device Values: system typography, bold headings, calm blue accents
+and understated metadata, with automatic light and dark backgrounds.
 Custom gradient fills can use an optional **Gradient end color**; App default
 keeps the existing mode-aware gradient.
 Compact shows the date above the time, centered, because it has no day separators.
 Use the Timestamp element's **Text wrapping** option to wrap to fit, prevent wrapping or
 stack its text at spaces; the column's alignment also aligns the text.
 Duplicate any built-in preset to customize it; existing widget selections stay unchanged.
+All designs share the same default text spacing in widgets and previews;
+per-element line-height overrides still take precedence.
+Widgets load styles and saved filters together, reuse their card layout and search
+expression, and avoid unnecessary scroll measurements during live updates.
+Touch gestures scroll the widget without pinch or double-tap zoom.
 **Search and filters** sits below Widget, above Day separator; **Paging** sits
 below the log-card rows. Both have their own grid of up to two rows. Arrange
 Search and Filters, or Previous, Page and Next, just like card elements.
@@ -142,8 +156,8 @@ effect immediately.
 
 The **Templates** button opens template export, import and the community
 templates. Designs and themes are shared as a TWF (The Widget File): compressed
-text starting with `[twf:SimpleSysLog:`. Only Simple (Sys) Log TWFs can be
-imported; TWFs from other apps, such as Chronograph, are rejected.
+text starting with `[twf:SimpleSysLog:LogViewer:`. Only TWFs for this app's
+LogViewer widget family can be imported; other apps and widget families are rejected.
 
 **Create TWF** also creates two preview images of the template, first in light
 mode and then in dark mode, and copies a ready-made forum post with the images.

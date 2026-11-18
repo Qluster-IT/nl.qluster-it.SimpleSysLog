@@ -78,11 +78,21 @@ function withTimestampFormats(log, formats) {
 function fillLogDownload(homey, link, returnType, contentKey) {
   homey.setTimeout(async () => {
     try {
-      const logs = await homey.app.Log.getLogs({ returnType });
-      await BL.setDownloadUrl({ link, [contentKey]: logs[returnType], callback: ready => homey.api.realtime('downloadFileReady', ready) });
+      const logs = await homey.app.Log.getLogs({ returnType, streamJson: returnType === 'json',
+        streamCsv: returnType === 'csv', streamExcel: returnType === 'xlsx' });
+      const content = logs[returnType];
+      await BL.setDownloadUrl({ link, [content && typeof content.pipe === 'function' ? 'stream' : contentKey]: content,
+        callback: ready => homey.api.realtime('downloadFileReady', {
+          ...ready, ...(logs.exportWarnings && logs.exportWarnings.skippedRecords
+            ? { skippedRecords: logs.exportWarnings.skippedRecords } : {})
+        }) });
     } catch (error) {
       homey.error(`Log download (${returnType}) could not be generated`, error);
-      homey.api.realtime('downloadFileFailed', { token: link.token, message: error.message });
+      try {
+        await homey.api.realtime('downloadFileFailed', { token: link.token, message: error.message });
+      } catch (notificationError) {
+        homey.error('Log download failure could not be reported', notificationError);
+      }
     }
   }, 0);
 }

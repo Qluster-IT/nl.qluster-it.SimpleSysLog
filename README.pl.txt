@@ -4,7 +4,7 @@ FUNKCJE
 * Widżety pulpitu na żywo z wyszukiwaniem, filtrami poziomu i daty, opcjonalnym stronicowaniem oraz jasnym i ciemnym trybem.
 * Dostosuj projekty i motywy, w tym projekty Kompaktowy, Dziennik i Konsola oraz motywy Ocean, Las, Zachód słońca i Konsola.
 * Udostępniaj projekty i motywy jako TWF przez Szablony i Widget Exchange, z jasnymi i ciemnymi podglądami.
-* Wyświetlaj dzienniki na pulpicie Androida za pomocą podpisanych linków do widżetów Web.
+* Używaj Homey Web Widgets, aby przewijać dzienniki na Androidzie.
 * Twórz tymczasowe linki do pobrania CSV, Excel lub JSON w Advanced Flow.
 
 Ta aplikacja umożliwia dodawanie logów i/lub powiadomień do Twoich Przepływów. Dodatkowo log może zawierać, oprócz wiadomości, Aplikację/grupę, poziom powagi i obiekt.
@@ -20,7 +20,7 @@ Na stronie ustawień z interfejsem w stylu Syslog możesz:
 * Wyszukiwać i filtrować konkretne wiadomości, daty itp.
 * Ukrywać lub przesuwać kolumny.
 * Zapisuj filtry lub kolumny jako domyślne.
-* Pobierać kompletny dziennik w formacie Excel, Csv lub JSON, zarówno w aplikacji mobilnej, narzędziach deweloperskich, jak i wewnątrz przepływów.
+* Pobierać kompletny dziennik w formacie Excel, Csv lub JSON, zarówno w aplikacji mobilnej, aplikacji webowej, jak i wewnątrz przepływów.
 
 Możesz użyć końcowych punktów API do uzyskania dostępu do logu.
 

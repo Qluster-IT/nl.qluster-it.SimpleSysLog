@@ -4,7 +4,7 @@ FONCTIONNALITÉS
 * Widgets de tableau de bord en direct avec recherche, filtres de niveau et de date, pagination facultative et modes clair et sombre.
 * Personnalisez les designs et les thèmes, dont les designs Compact, Journal et Console et les thèmes Océan, Forêt, Coucher de soleil et Console.
 * Partagez des designs et des thèmes au format TWF via les Modèles et le Widget Exchange, avec des aperçus clairs et sombres.
-* Affichez les journaux sur un tableau de bord Android grâce à des liens signés de widgets Web.
+* Utilisez Homey Web Widgets pour faire défiler les journaux sur Android.
 * Créez des liens temporaires de téléchargement CSV, Excel ou JSON depuis Advanced Flow.
 
 Cette application permet d'ajouter des journaux et/ou des notifications à vos Flows. Optionnellement, un journal peut avoir, en plus de son message, une App/groupe, une sévérité et une installation.
@@ -20,7 +20,7 @@ La page des paramètres propose une interface de type Syslog, dans laquelle vous
 * Rechercher et filtrer des messages, des dates, etc.
 * Masquer ou déplacer des colonnes.
 * Enregistrer les filtres ou colonnes comme par défaut.
-* Télécharger le journal complet sous forme d'Excel, Csv ou JSON joliment formaté, dans l'application Mobile, les outils de développement ou au sein des flows.
+* Télécharger le journal complet sous forme d'Excel, Csv ou JSON joliment formaté, dans l'application Mobile, l'application Web ou au sein des flows.
 
 Vous pouvez utiliser les points de terminaison de l'API pour accéder au journal.
 

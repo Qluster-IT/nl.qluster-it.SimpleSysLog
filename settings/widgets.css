@@ -121,11 +121,34 @@
 
 .widget-designer .style-full-row input { width: 18px; height: 18px; }
 
+.settings-view > .settings-tabs {
+  position: relative;
+  z-index: 1;
+  background: var(--homey-background-color, var(--homey-color-background, Canvas));
+}
+
+.settings-view > .settings-widgets-content {
+  /* Let the preview pin at the settings edge without moving the editor above the tabs. */
+  margin-top: calc(-1 * var(--ssl-settings-tabs-height, 59px));
+  padding-top: 0;
+  /* The height change at the pin threshold must not move the scroll position back across it. */
+  overflow-anchor: none;
+}
+
+.settings-widgets-content::before {
+  content: "";
+  display: block;
+  height: calc(14px + var(--ssl-settings-tabs-height, 59px));
+}
+
+.settings-view:has(.settings-widgets-content:not(.ng-hide) [data-screen="editor"]:not([hidden]) .style-preview-sticky.is-stuck + #layout-editor-panel:not([hidden])) > .settings-tabs {
+  visibility: hidden;
+}
+
 .widget-designer .style-preview-sticky {
   position: sticky;
-  top: -14px;
+  top: 0;
   z-index: 10;
-  padding-bottom: 12px;
   border-bottom: 1px solid var(--homey-color-mono-400, rgba(128, 128, 128, 0.35));
   background: var(--homey-background-color, var(--homey-color-background, Canvas));
 }
@@ -141,7 +164,12 @@
   border-radius: 10px;
 }
 
-.widget-designer .style-preview-sticky.is-stuck .preview-widget { max-height: 22vh; }
+.widget-designer .style-preview-sticky .preview-widget { max-height: none; }
+.widget-designer .style-preview-sticky:has(+ #layout-editor-panel[hidden]) { position: static; }
+.widget-designer .style-preview-sticky.is-stuck:has(+ #layout-editor-panel:not([hidden])) .preview-widget {
+  max-height: 45vh;
+  max-height: 45dvh;
+}
 .widget-designer .preview-widget .ssl-log-list { overscroll-behavior: auto; }
 .widget-designer .preview-widget [hidden] { display: none; }
 .widget-designer .preview-widget .ssl-filter-option {
@@ -456,6 +484,53 @@
 .widget-designer .template-editor-switch { display: block; max-width: 100%; height: auto; margin: 4px 0 12px; }
 .widget-designer .template-catalog-details p { margin: 4px 0 8px; }
 .widget-designer .template-catalog-details .btn { margin: 0 8px 8px 0; font-size: 1rem; }
+.widget-designer .template-catalog-image-button {
+  display: block;
+  max-width: 100%;
+  margin: 0 0 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+.widget-designer .template-catalog-image-button img { display: block; max-width: 100%; height: auto; }
+.widget-designer.template-post-images-counter-invert .template-post-image { filter: invert(1) hue-rotate(180deg); }
+.widget-designer .template-image-dialog {
+  position: fixed;
+  inset: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--homey-text-color, #222);
+  background: var(--homey-background-color, #fff);
+}
+.widget-designer .template-image-dialog[open] { display: flex; flex-direction: column; }
+.widget-designer .template-image-toolbar {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid var(--homey-line-color, #ccc);
+}
+.widget-designer .template-image-toolbar .btn { min-width: 44px; min-height: 44px; }
+.widget-designer .template-image-toolbar output { min-width: 4rem; text-align: center; }
+.widget-designer .template-image-toolbar button:last-child { margin-left: auto; }
+.widget-designer .template-image-viewport {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-x pan-y;
+}
+.widget-designer .template-image-viewport img { display: block; max-width: none; height: auto; }
 
 .template-generation-overlay {
   position: fixed;

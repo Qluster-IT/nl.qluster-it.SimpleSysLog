@@ -4,7 +4,7 @@ FUNKTIONER
 * Dashboardwidgetar i realtid med sökning, nivå- och datumfilter, valfri sidindelning och ljust/mörkt läge.
 * Anpassa designer och teman, inklusive designerna Kompakt, Journal och Konsol och temana Hav, Skog, Solnedgång och Konsol.
 * Dela designer och teman som TWF-filer via Mallar och Widget Exchange, med ljusa och mörka förhandsbilder.
-* Visa loggar på en Android-dashboard med signerade Web-widgetlänkar.
+* Använd Homey Web Widgets för att rulla på Android.
 * Skapa tillfälliga nedladdningslänkar för CSV, Excel eller JSON från Advanced Flow.
 
 Den här appen gör det möjligt att lägga till loggning och/eller notifikationer till dina Flows. Valfritt kan en logg ha, utöver sitt meddelande, en App/grupp, allvarlighetsgrad och anläggning.
@@ -20,7 +20,7 @@ Inställningssidan har ett Syslog-liknande gränssnitt, där du kan:
 * Söka och filtrera specifika meddelanden, datum, etc.
 * Dölj eller flytta kolumner.
 * Spara filtren eller kolumnerna som standard.
-* Ladda ner den fullständiga loggen som snyggt formaterad Excel, Csv eller JSON, i Mobil-appen, Utvecklarverktyg eller inom flows.
+* Ladda ner den fullständiga loggen som snyggt formaterad Excel, Csv eller JSON, i Mobil-appen, webbappen eller inom flows.
 
 
 Du kan använda API-endpunkterna för att komma åt loggen.

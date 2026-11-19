@@ -717,7 +717,14 @@ test('community catalog loads templates from the configured SSL topic', async ()
       ? { post_stream: { posts: [{
         id: 501,
         post_number: 4,
-        raw: `# Compact log\nA shared design.\n${encoded}`,
+        raw: `# Compact log\nA shared design.\n![Widget preview](upload://abc.png)\n${encoded}`,
+        cooked: [
+          '<a class="lightbox" href="https://us1.discourse-cdn.com/flex025/uploads/athom/original/preview.png"><img src="/uploads/optimized/preview.png"></a>',
+          '<img src="/uploads/default/original/dark.png">',
+          '<img src="/uploads/default/original/dark.png">',
+          '<img src="https://elsewhere.example/uploads/third-party.png">',
+          '<img src="https://us1.discourse-cdn.com/flex025/uploads/other/third-party.png">'
+        ].join('\n'),
         username: 'community-user',
         created_at: '2026-01-01T00:00:00Z',
         actions_summary: [{ id: 2, count: 3 }]
@@ -730,6 +737,11 @@ test('community catalog loads templates from the configured SSL topic', async ()
   assert.equal(catalog.topicId, 162351);
   assert.equal(results.length, 1);
   assert.equal(results[0].title, 'Compact log');
+  assert.equal(results[0].description, 'A shared design.');
+  assert.deepEqual(results[0].images, [
+    'https://us1.discourse-cdn.com/flex025/uploads/athom/original/preview.png',
+    'https://community.homey.app/uploads/default/original/dark.png'
+  ]);
   assert.equal(results[0].template.design.name, 'Shared');
   assert.ok(requests[0].includes('/t/162351.json'));
   assert.ok(requests[1].includes('/t/162351/posts.json'));

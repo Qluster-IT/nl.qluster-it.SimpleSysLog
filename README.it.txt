@@ -4,7 +4,7 @@ FUNZIONI
 * Widget della dashboard in tempo reale con ricerca, filtri per livello e data, paginazione facoltativa e modalità chiara e scura.
 * Personalizza design e temi, tra cui i design Compatto, Diario e Console e i temi Oceano, Foresta, Tramonto e Console.
 * Condividi design e temi come TWF tramite Modelli e Widget Exchange, con anteprime chiare e scure.
-* Mostra i registri su una dashboard Android tramite link firmati ai widget Web.
+* Usa Homey Web Widgets per scorrere i registri su Android.
 * Crea link temporanei per scaricare CSV, Excel o JSON da Advanced Flow.
 
 Questa app ti permette di aggiungere registri e/o notifiche ai tuoi Flussi. Facoltativamente, un registro può avere, oltre al suo messaggio, un'app/gruppo, severità e funzione.
@@ -20,7 +20,7 @@ La pagina Impostazioni offre un'interfaccia in stile Syslog, in cui puoi:
 * Cercare e filtrare messaggi specifici, date, ecc.
 * Nascondere o spostare colonne.
 * Salvare i filtri o le colonne come predefiniti.
-* Scaricare il registro completo come file Excel, Csv o JSON ben formattati, nell'App Mobile, Strumenti di sviluppo o all'interno dei flussi.
+* Scaricare il registro completo come file Excel, Csv o JSON ben formattati, nell'App Mobile, App Web o all'interno dei flussi.
 
 Puoi utilizzare gli endpoint API per accedere al registro.
 

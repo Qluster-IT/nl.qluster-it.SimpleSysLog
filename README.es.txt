@@ -4,7 +4,7 @@ FUNCIONES
 * Widgets de panel en directo con búsqueda, filtros de nivel y fecha, paginación opcional y modos claro y oscuro.
 * Personaliza diseños y temas, incluidos los diseños Compacto, Diario y Consola y los temas Océano, Bosque, Atardecer y Consola.
 * Comparte diseños y temas como TWF mediante Plantillas y Widget Exchange, con imágenes de vista previa claras y oscuras.
-* Muestra registros en un panel Android mediante enlaces firmados de widgets web.
+* Usa Homey Web Widgets para desplazarte por los registros en Android.
 * Crea enlaces temporales de descarga de CSV, Excel o JSON desde Advanced Flow.
 
 Esta aplicación hace posible añadir registros y/o notificaciones a tus Flows. Opcionalmente, un registro puede tener, además de su mensaje, una App/grupo, gravedad e instalación.
@@ -20,7 +20,7 @@ La página de configuración tiene una interfaz de estilo Syslog, en la que pued
 * Buscar y filtrar mensajes específicos, fechas, etc.
 * Ocultar o mover columnas.
 * Guardar los filtros o columnas como predeterminados.
-* Descargar el Log completo como Excel, Csv o JSON con buen formato, en la App Móvil, en las Herramientas de Desarrollo o dentro de los flujos.
+* Descargar el Log completo como Excel, Csv o JSON con buen formato, en la App Móvil, en la App Web o dentro de los flujos.
 
 Puedes usar los puntos finales de la API para acceder al registro.
 

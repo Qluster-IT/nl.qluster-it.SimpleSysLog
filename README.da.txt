@@ -4,7 +4,7 @@ FUNKTIONER
 * Live-dashboardwidgets med søgning, niveau- og datofiltre, valgfri sideinddeling og lys/mørk tilstand.
 * Tilpas design og temaer, herunder designene Kompakt, Journal og Konsol og temaerne Hav, Skov, Solnedgang og Konsol.
 * Del design og temaer som TWF'er via Skabeloner og Widget Exchange med lyse og mørke eksempelbilleder.
-* Vis logge på et Android-dashboard med signerede Web-widgetlinks.
+* Brug Homey Web Widgets til at rulle på Android.
 * Opret midlertidige downloadlinks til CSV, Excel eller JSON fra Advanced Flow.
 
 Denne app gør det muligt at tilføje logning og/eller notifikationer til dine Flows. 
@@ -21,7 +21,7 @@ Indstillingssiden har en Syslog-lignende grænseflade, hvor du kan:
 * Søge og filtrere specifikke beskeder, datoer, osv.
 * Skjule eller flytte kolonner.
 * Gemme filtrene eller kolonnerne som standard.
-* Downloade den komplette log som pænt formatet Excel, Csv eller JSON i Mobilappen, Udviklerværktøjer eller inden for flows.
+* Downloade den komplette log som pænt formatet Excel, Csv eller JSON i Mobilappen, Webappen eller inden for flows.
 
 Du kan bruge API-endepunkterne til at få adgang til loggen.
 

@@ -4,7 +4,7 @@ FUNKTIONEN
 * Live-Dashboard-Widgets mit Suche, Filtern für Schweregrad und Datum, optionaler Seitennavigation sowie hellem und dunklem Modus.
 * Passe Designs und Themen an, darunter die Designs Kompakt, Journal und Konsole sowie die Themen Ozean, Wald, Sonnenuntergang und Konsole.
 * Teile Designs und Themen als TWFs über Vorlagen und den Widget Exchange mit hellen und dunklen Vorschaubildern.
-* Zeige Logs über signierte Web-Widget-Links auf einem Android-Dashboard an.
+* Nutze Homey Web Widgets zum Scrollen auf Android.
 * Erstelle in Advanced Flow temporäre Downloadlinks für CSV, Excel oder JSON.
 
 Diese App ermöglicht es, Logs und/oder Benachrichtigungen zu deinen Flows hinzuzufügen. Optional kann ein Log neben seiner Nachricht auch eine App/Gruppe, Schweregrad und Einrichtung haben.
@@ -20,7 +20,7 @@ Die Einstellungsseite bietet eine Syslog-ähnliche Oberfläche, in der du:
 * Nach bestimmten Nachrichten, Daten usw. suchen und filtern kannst.
 * Spalten ausblenden oder verschieben kannst.
 * Die Filter oder Spalten als Standard speichern kannst.
-* Den kompletten Log als schön formatiertes Excel, Csv oder JSON im Mobile App, Developertools oder innerhalb von Flows herunterladen kannst.
+* Den kompletten Log als schön formatiertes Excel, Csv oder JSON im Mobile App, Web-App oder innerhalb von Flows herunterladen kannst.
 
 Du kannst die API-Endpunkte verwenden, um auf das Log zuzugreifen.
 

@@ -6,7 +6,7 @@ This app makes it possible to add logging to your Flows.
 
 - Added live dashboard widgets with search, Level/Date filters and optional paging.
 - Added the widget designer, built-in designs and themes, and TWF sharing through Templates and the Widget Exchange with light/dark images.
-- Added signed Web widget links for Android dashboards.
+- Added signed links to use Homey Web Widgets for scrolling on Android.
 - Added **Get log export URL** for CSV, Excel and JSON downloads from Advanced Flow.
 - Improved mobile and desktop Excel exports, log storage efficiency, automatic cleanup and widget preview consistency.
 
@@ -135,7 +135,7 @@ standard frame, while **0** removes the border and its subtle dark-mode rim.
 The Widget also has optional padding for each side; rows have **Column gap**,
 columns have **Element gap**, and text elements have **Line height**. Without
 paging, bottom padding remains visible beneath the scrolling log list, including
-in the Android Web widget. The Web widget also keeps the configured widget frame
+in Homey Web Widgets for scrolling on Android. The Web widget also keeps the configured widget frame
 visible while the page scrolls.
 In a theme, set the **Widget border** color (default: Homey's line color),
 use named or HEX colors, and choose a solid or gradient background fill.
@@ -145,6 +145,10 @@ subtle light rim. Designer previews emulate the dashboard card's 10px corners in
 settings page's radius. Blue, green, orange, red, grey and white follow Homey's own palette.
 Critical and Error use different red shades, both available in the designer.
 Default (Syslog) uses the Default theme's appearance with syslog-inspired severity colors.
+The live preview shows all entries on the current preview page. While editing
+a custom design or theme, it pins above the settings tabs as you scroll down.
+The pinned preview uses up to 45% of the viewport height, with the log list
+scrolling inside it. The widget's own padding is preserved.
 Whatever you select is outlined in the preview. Switching between Designs and
 Themes keeps a selection when it is available in both. **Designer help** is open the first time and then
 stays open or closed as you leave it.
@@ -163,6 +167,10 @@ The **Templates** button opens template export, import and the community
 templates. Designs and themes are shared as a TWF (The Widget File): compressed
 text starting with `[twf:SimpleSysLog:LogViewer:`. Only TWFs for this app's
 LogViewer widget family can be imported; other apps and widget families are rejected.
+
+In **Community templates**, expand a template and tap a posted screenshot to
+open it full screen. Scroll to see the rest of the image, and pinch or use
+the zoom buttons to inspect details.
 
 **Create TWF** also creates two preview images of the template, first in light
 mode and then in dark mode, and copies a ready-made forum post with the images.

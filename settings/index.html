@@ -450,7 +450,7 @@
 				</div>
 			</form>
 		</section>
-		<section class="settings-content" role="tabpanel" ng-show="view.settingsTab === 'widgets'">
+		<section class="settings-content settings-widgets-content" role="tabpanel" ng-show="view.settingsTab === 'widgets'">
 			<div id="widget-designer" class="widget-designer">
 				<div class="designer-screen" data-screen="editor">
 					<div class="template-header style-editor-header">
@@ -605,6 +605,17 @@
 						</div>
 						<p id="catalog-empty" class="help-text" data-i18n="widgets.settings.emptyCatalog" hidden>No matching templates found.</p>
 						<div id="template-catalog" class="template-catalog" role="list"></div>
+						<dialog id="template-image-dialog" class="template-image-dialog">
+							<div class="template-image-toolbar">
+								<button id="template-zoom-out" class="hy-nostyle btn btn-outline-primary" type="button" disabled data-i18n-aria-label="widgets.settings.templateImageZoomOut" aria-label="Zoom out"><i class="fa-solid fa-magnifying-glass-minus" aria-hidden="true"></i></button>
+								<output id="template-image-scale">100%</output>
+								<button id="template-zoom-in" class="hy-nostyle btn btn-outline-primary" type="button" data-i18n-aria-label="widgets.settings.templateImageZoomIn" aria-label="Zoom in"><i class="fa-solid fa-magnifying-glass-plus" aria-hidden="true"></i></button>
+								<button id="template-image-close" class="hy-nostyle btn btn-outline-primary" type="button" autofocus><i class="fa-solid fa-xmark" aria-hidden="true"></i> <span data-i18n="widgets.settings.templateImageClose">Close image</span></button>
+							</div>
+							<div id="template-image-viewport" class="template-image-viewport" tabindex="0">
+								<img id="template-image-full" class="template-post-image" alt="" draggable="false">
+							</div>
+						</dialog>
 					</section>
 				</div>
 

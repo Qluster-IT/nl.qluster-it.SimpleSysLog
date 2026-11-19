@@ -4,7 +4,7 @@ FUNCTIES
 * Live dashboardwidgets met zoeken, filters voor Niveau en Datum, optionele paginering en een lichte/donkere modus.
 * Pas ontwerpen en thema's aan, waaronder de ontwerpen Compact, Dagboek en Console en de thema's Oceaan, Bos, Zonsondergang en Console.
 * Deel ontwerpen en thema's als TWF's via Sjablonen en de Widget Exchange, met lichte en donkere voorbeeldafbeeldingen.
-* Toon logs op een Android-dashboard met ondertekende Web-widgetlinks.
+* Gebruik Homey Web Widgets om te scrollen op Android.
 * Maak tijdelijke downloadlinks voor CSV, Excel of JSON vanuit Advanced Flow.
 
 Deze app maakt het mogelijk om logging en/of notificaties toe te voegen aan je Flows. Optioneel kan een log naast zijn bericht ook een App/groep, ernst en faciliteit hebben.
@@ -20,7 +20,7 @@ De instellingenpagina heeft een Syslog-achtige interface, waarin je kunt:
 * Specifieke berichten, data, etc. zoeken en filteren.
 * Kolommen verbergen of verplaatsen.
 * De filters of kolommen als standaard opslaan.
-* De complete Log downloaden als mooi opgemaakt Excel-, Csv- of JSON-bestand, in de Mobiele App, Ontwikkelaarstools of binnen flows.
+* De complete Log downloaden als mooi opgemaakt Excel-, Csv- of JSON-bestand, in de Mobiele App, Web App of binnen flows.
 
 Je kunt de API-eindpunten gebruiken om toegang te krijgen tot de log.
 

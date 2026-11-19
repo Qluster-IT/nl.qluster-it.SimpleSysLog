@@ -494,7 +494,6 @@
   cursor: zoom-in;
 }
 .widget-designer .template-catalog-image-button img { display: block; max-width: 100%; height: auto; }
-.widget-designer.template-post-images-counter-invert .template-post-image { filter: invert(1) hue-rotate(180deg); }
 .widget-designer .template-image-dialog {
   position: fixed;
   inset: 0;
@@ -530,7 +529,9 @@
   overscroll-behavior: contain;
   touch-action: pan-x pan-y;
 }
-.widget-designer .template-image-viewport img { display: block; max-width: none; height: auto; }
+.widget-designer .template-image-viewport.template-image-zoomed { cursor: grab; }
+.widget-designer .template-image-viewport.template-image-dragging { cursor: grabbing; user-select: none; }
+.widget-designer .template-image-viewport img { display: block; max-width: none; height: auto; user-select: none; }
 
 .template-generation-overlay {
   position: fixed;

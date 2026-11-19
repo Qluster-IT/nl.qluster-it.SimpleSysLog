@@ -3,7 +3,7 @@ Simple (Sys) Log.
 FUNZIONI
 * Widget della dashboard in tempo reale con ricerca, filtri per livello e data, paginazione facoltativa e modalità chiara e scura.
 * Personalizza design e temi, tra cui i design Compatto, Diario e Console e i temi Oceano, Foresta, Tramonto e Console.
-* Condividi design e temi come TWF tramite Modelli e Widget Exchange, con anteprime chiare e scure.
+* Condividi design e temi come TWF tramite Modelli e The Widget Exchange(r), con anteprime ingrandibili in modalità chiara e scura.
 * Usa Homey Web Widgets per scorrere i registri su Android.
 * Crea link temporanei per scaricare CSV, Excel o JSON da Advanced Flow.
 

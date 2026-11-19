@@ -403,7 +403,11 @@
       "prepareImageError": "Could not create the preview images. Create the TWF again to retry.",
       "clipboardImageError": "Could not copy the post and images. You can still copy the TWF separately.",
       "generating": "Generating the TWF and images. Please wait a moment.",
-      "copyHttp": "Automatic copying is unavailable over this HTTP connection. Click Copy post and images, or open Homey over HTTPS to copy automatically."
+      "copyHttp": "Automatic copying is unavailable over this HTTP connection. Click Copy post and images, or open Homey over HTTPS to copy automatically.",
+      "templateImageZoomIn": "Zoom in",
+      "templateImageZoomOut": "Zoom out",
+      "templateImageClose": "Close image",
+      "oldest": "Oldest"
     },
     "bllNotInstalled": "Install the Better Logic Library app to use this widget.",
     "android": {

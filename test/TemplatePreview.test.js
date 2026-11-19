@@ -70,6 +70,137 @@ function previewHarness(capture, extraExports = '') {
   return { document, ...window.SSLWidgetDesigner };
 }
 
+test('template images zoom at the wheel pointer and support mouse panning only when zoomed', () => {
+  const { document, bindTemplateImageViewer } = previewHarness(() => {}, 'bindTemplateImageViewer,');
+  const viewport = document.getElementById('template-image-viewport');
+  const image = document.getElementById('template-image-full');
+  viewport.getBoundingClientRect = () => ({ left: 10, top: 20 });
+  image.getBoundingClientRect = () => ({ width: 400 * (parseFloat(image.style.width || '100') / 100) });
+  viewport.scrollLeft = viewport.scrollTop = 0;
+  let captured;
+  viewport.setPointerCapture = id => { captured = id; };
+  viewport.hasPointerCapture = id => captured === id;
+  viewport.releasePointerCapture = () => { captured = undefined; };
+  bindTemplateImageViewer();
+
+  const fire = (type, options) => {
+    let prevented = false;
+    viewport.listeners[type]({ ...options, cancelable: true, preventDefault() { prevented = true; } });
+    return prevented;
+  };
+  const mouse = { pointerType: 'mouse', button: 0, pointerId: 1, clientX: 110, clientY: 220 };
+  assert.equal(fire('pointerdown', mouse), false);
+  const wheel = { deltaY: -Math.log(2) / 0.0015, clientX: 110, clientY: 220 };
+  assert.equal(fire('wheel', wheel), false);
+  assert.equal(viewport.scrollTop, 0);
+  assert.equal(fire('wheel', { ...wheel, ctrlKey: true }), true);
+  assert.equal(document.getElementById('template-image-scale').textContent, '200%');
+  assert.equal(viewport.scrollLeft, 100);
+  assert.equal(viewport.scrollTop, 200);
+  assert.ok(viewport.classList.contains('template-image-zoomed'));
+  assert.equal(fire('pointerdown', { ...mouse, pointerType: 'touch' }), false);
+  assert.equal(fire('pointerdown', mouse), true);
+  assert.equal(captured, 1);
+  assert.ok(viewport.classList.contains('template-image-dragging'));
+  fire('pointermove', { ...mouse, clientX: 80, clientY: 180 });
+  assert.equal(viewport.scrollLeft, 130);
+  assert.equal(viewport.scrollTop, 240);
+  fire('pointercancel', mouse);
+  assert.equal(captured, undefined);
+  assert.ok(!viewport.classList.contains('template-image-dragging'));
+});
+
+test('community catalog saves the sort order and restores it in a new settings page', async () => {
+  let saved = 'unrecognized';
+  let writeError = null;
+  const homey = {
+    get(key, callback) {
+      assert.equal(key, 'widgetTemplateCatalogSort');
+      callback(null, saved);
+    },
+    set(key, value, callback) {
+      assert.equal(key, 'widgetTemplateCatalogSort');
+      if (!writeError) saved = value;
+      callback(writeError);
+    }
+  };
+  function openSettings() {
+    const harness = previewHarness(() => {}, `
+      loadCatalogSort, saveCatalogSort, renderCatalog,
+      setupCatalogTest: function(homey) {
+        Homey = homey;
+        templates.catalog = [
+          { title: 'Alpha', number: 2 },
+          { title: 'Zulu', number: 1 }
+        ];
+      },
+    `);
+    const get = harness.document.getElementById;
+    get('catalog-previews').appendChild(harness.document.createElement('i'));
+    harness.setupCatalogTest(homey);
+    const titles = () => get('template-catalog').querySelectorAll('.template-catalog-title')
+      .map(button => button.children[0].textContent);
+    return { ...harness, get, titles, select: get('catalog-sort') };
+  }
+
+  const first = openSettings();
+  await first.loadCatalogSort();
+  assert.equal(first.select.value, 'newest');
+  assert.deepEqual(first.titles(), ['Alpha', 'Zulu']);
+  first.select.value = 'oldest';
+  await first.saveCatalogSort();
+  assert.equal(saved, 'oldest');
+  assert.deepEqual(first.titles(), ['Zulu', 'Alpha']);
+
+  const reopened = openSettings();
+  await reopened.loadCatalogSort();
+  reopened.renderCatalog();
+  assert.equal(reopened.select.value, 'oldest');
+  assert.deepEqual(reopened.titles(), ['Zulu', 'Alpha']);
+
+  writeError = 'Unable to save the preference';
+  reopened.select.value = 'name';
+  await reopened.saveCatalogSort();
+  assert.equal(reopened.select.value, 'oldest');
+  assert.equal(reopened.get('designer-status').textContent, writeError);
+});
+
+test('expanding a catalog entry replaces only its live preview with details and posted images', () => {
+  const harness = previewHarness(() => {}, `
+    renderCatalog,
+    setupCatalogTest: function(items) {
+      templates.catalog = items;
+      templates.showPreviews = true;
+    },
+  `);
+  const get = harness.document.getElementById;
+  get('catalog-previews').appendChild(harness.document.createElement('i'));
+  const template = {
+    design: { ...styles.BUILT_IN_DESIGNS[0], timestampFormat: '', daySeparatorFormat: '' },
+    theme: styles.BUILT_IN_THEMES[0]
+  };
+  const image = 'https://community.homey.app/uploads/default/original/example.png';
+  harness.setupCatalogTest([
+    { id: 'one', title: 'Alpha', number: 2, description: 'Template details', images: [image], template },
+    { id: 'two', title: 'Bravo', number: 1, template }
+  ]);
+  const catalog = get('template-catalog');
+  const toggleFirst = () => catalog.children[0].querySelector('.template-catalog-title').listeners.click();
+  harness.renderCatalog();
+  assert.equal(catalog.querySelectorAll('.template-catalog-thumbnail').length, 2);
+
+  toggleFirst();
+  assert.equal(catalog.children[0].querySelector('.template-catalog-thumbnail'), null);
+  assert.equal(catalog.children[0].querySelector('.template-catalog-description').textContent, 'Template details');
+  assert.equal(catalog.children[0].querySelector('.template-catalog-image-button').querySelector('img').src, image);
+  assert.ok(catalog.children[1].querySelector('.template-catalog-thumbnail'));
+  assert.equal(get('catalog-previews').getAttribute('aria-pressed'), 'true');
+
+  toggleFirst();
+  assert.equal(catalog.querySelectorAll('.template-catalog-thumbnail').length, 2);
+  assert.equal(catalog.querySelector('.template-catalog-details'), null);
+});
+
 function snapshot(preview) {
   const list = preview.querySelector('.ssl-log-list');
   return {

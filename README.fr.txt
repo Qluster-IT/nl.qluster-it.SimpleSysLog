@@ -3,7 +3,7 @@ Simple (Sys) Log.
 FONCTIONNALITÉS
 * Widgets de tableau de bord en direct avec recherche, filtres de niveau et de date, pagination facultative et modes clair et sombre.
 * Personnalisez les designs et les thèmes, dont les designs Compact, Journal et Console et les thèmes Océan, Forêt, Coucher de soleil et Console.
-* Partagez des designs et des thèmes au format TWF via les Modèles et le Widget Exchange, avec des aperçus clairs et sombres.
+* Partagez des designs et des thèmes au format TWF via les Modèles et The Widget Exchange(r), avec des aperçus zoomables en mode clair et sombre.
 * Utilisez Homey Web Widgets pour faire défiler les journaux sur Android.
 * Créez des liens temporaires de téléchargement CSV, Excel ou JSON depuis Advanced Flow.
 

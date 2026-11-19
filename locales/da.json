@@ -404,7 +404,11 @@
       "prepareImageError": "Kunne ikke oprette forhåndsvisningerne. Opret TWF'en igen for at prøve igen.",
       "clipboardImageError": "Kunne ikke kopiere opslaget og billederne. Du kan stadig kopiere TWF'en separat.",
       "generating": "Opretter TWF og billeder. Vent venligst et øjeblik.",
-      "copyHttp": "Automatisk kopiering er ikke tilgængelig via denne HTTP-forbindelse. Klik på Kopiér indlæg og billeder, eller åbn Homey via HTTPS for at kopiere automatisk."
+      "copyHttp": "Automatisk kopiering er ikke tilgængelig via denne HTTP-forbindelse. Klik på Kopiér indlæg og billeder, eller åbn Homey via HTTPS for at kopiere automatisk.",
+      "templateImageZoomIn": "Zoom ind",
+      "templateImageZoomOut": "Zoom ud",
+      "templateImageClose": "Luk billede",
+      "oldest": "Ældste"
     },
     "bllNotInstalled": "Installer Better Logic Library-appen for at bruge denne widget.",
     "android": {

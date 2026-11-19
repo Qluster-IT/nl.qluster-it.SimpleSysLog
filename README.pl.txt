@@ -3,7 +3,7 @@ Simple (Sys) Log.
 FUNKCJE
 * Widżety pulpitu na żywo z wyszukiwaniem, filtrami poziomu i daty, opcjonalnym stronicowaniem oraz jasnym i ciemnym trybem.
 * Dostosuj projekty i motywy, w tym projekty Kompaktowy, Dziennik i Konsola oraz motywy Ocean, Las, Zachód słońca i Konsola.
-* Udostępniaj projekty i motywy jako TWF przez Szablony i Widget Exchange, z jasnymi i ciemnymi podglądami.
+* Udostępniaj projekty i motywy jako TWF przez Szablony i The Widget Exchange(r), z powiększanymi podglądami w trybie jasnym i ciemnym.
 * Używaj Homey Web Widgets, aby przewijać dzienniki na Androidzie.
 * Twórz tymczasowe linki do pobrania CSV, Excel lub JSON w Advanced Flow.
 

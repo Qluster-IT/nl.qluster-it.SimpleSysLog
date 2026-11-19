@@ -3,7 +3,7 @@ Simple (Sys) Log.
 FUNCIONES
 * Widgets de panel en directo con búsqueda, filtros de nivel y fecha, paginación opcional y modos claro y oscuro.
 * Personaliza diseños y temas, incluidos los diseños Compacto, Diario y Consola y los temas Océano, Bosque, Atardecer y Consola.
-* Comparte diseños y temas como TWF mediante Plantillas y Widget Exchange, con imágenes de vista previa claras y oscuras.
+* Comparte diseños y temas como TWF mediante Plantillas y The Widget Exchange(r), con vistas previas ampliables en modo claro y oscuro.
 * Usa Homey Web Widgets para desplazarte por los registros en Android.
 * Crea enlaces temporales de descarga de CSV, Excel o JSON desde Advanced Flow.
 

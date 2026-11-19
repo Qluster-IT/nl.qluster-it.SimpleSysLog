@@ -3,7 +3,7 @@ Simple (Sys) Log.
 FUNKTIONEN
 * Live-Dashboard-Widgets mit Suche, Filtern für Schweregrad und Datum, optionaler Seitennavigation sowie hellem und dunklem Modus.
 * Passe Designs und Themen an, darunter die Designs Kompakt, Journal und Konsole sowie die Themen Ozean, Wald, Sonnenuntergang und Konsole.
-* Teile Designs und Themen als TWFs über Vorlagen und den Widget Exchange mit hellen und dunklen Vorschaubildern.
+* Teile Designs und Themen als TWFs über Vorlagen und The Widget Exchange(r) mit vergrößerbaren hellen und dunklen Vorschaubildern.
 * Nutze Homey Web Widgets zum Scrollen auf Android.
 * Erstelle in Advanced Flow temporäre Downloadlinks für CSV, Excel oder JSON.
 

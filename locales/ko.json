@@ -404,7 +404,11 @@
       "prepareImageError": "미리보기 이미지를 만들지 못했습니다. 다시 시도하려면 TWF를 다시 만드세요.",
       "clipboardImageError": "게시물과 이미지를 복사하지 못했습니다. TWF는 따로 복사할 수 있습니다.",
       "generating": "TWF와 이미지를 생성하고 있습니다. 잠시 기다려 주세요.",
-      "copyHttp": "이 HTTP 연결에서는 자동 복사를 사용할 수 없습니다. 게시물 및 이미지 복사를 클릭하거나 HTTPS로 Homey를 열어 자동으로 복사하세요."
+      "copyHttp": "이 HTTP 연결에서는 자동 복사를 사용할 수 없습니다. 게시물 및 이미지 복사를 클릭하거나 HTTPS로 Homey를 열어 자동으로 복사하세요.",
+      "templateImageZoomIn": "확대",
+      "templateImageZoomOut": "축소",
+      "templateImageClose": "이미지 닫기",
+      "oldest": "오래된순"
     },
     "bllNotInstalled": "이 위젯을 사용하려면 Better Logic Library 앱을 설치하세요.",
     "android": {

@@ -3,7 +3,7 @@ Simple (Sys) Log.
 FUNKTIONER
 * Dashboardwidgetar i realtid med sökning, nivå- och datumfilter, valfri sidindelning och ljust/mörkt läge.
 * Anpassa designer och teman, inklusive designerna Kompakt, Journal och Konsol och temana Hav, Skog, Solnedgång och Konsol.
-* Dela designer och teman som TWF-filer via Mallar och Widget Exchange, med ljusa och mörka förhandsbilder.
+* Dela designer och teman som TWF-filer via Mallar och The Widget Exchange(r), med ljusa och mörka förhandsbilder som du kan zooma in på.
 * Använd Homey Web Widgets för att rulla på Android.
 * Skapa tillfälliga nedladdningslänkar för CSV, Excel eller JSON från Advanced Flow.
 

@@ -3,7 +3,7 @@ Simple (Sys) Log.
 FEATURES
 * Live dashboard widgets with search, Level and Date filters, optional paging and light/dark modes.
 * Customize designs and themes, including Compact, Journal and Console designs and Ocean, Forest, Sunset and Console themes.
-* Share designs and themes as TWFs through Templates and the Widget Exchange, with light and dark preview images.
+* Share designs and themes as TWFs through Templates and The Widget Exchange(r), with zoomable light and dark preview images.
 * Use Homey Web Widgets for scrolling on Android.
 * Create temporary CSV, Excel or JSON download links from Advanced Flow.
 

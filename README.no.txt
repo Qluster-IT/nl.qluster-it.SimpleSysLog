@@ -3,7 +3,7 @@ Simple (Sys) Log.
 FUNKSJONER
 * Live-dashboardwidgeter med søk, nivå- og datofiltre, valgfri sideinndeling og lys/mørk modus.
 * Tilpass design og temaer, inkludert designene Kompakt, Journal og Konsoll og temaene Hav, Skog, Solnedgang og Konsoll.
-* Del design og temaer som TWF-er via Maler og Widget Exchange, med lyse og mørke forhåndsvisningsbilder.
+* Del design og temaer som TWF-er via Maler og The Widget Exchange(r), med lyse og mørke forhåndsvisningsbilder du kan zoome inn på.
 * Bruk Homey Web Widgets for å rulle på Android.
 * Opprett midlertidige nedlastingslenker for CSV, Excel eller JSON fra Advanced Flow.
 

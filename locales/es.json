@@ -404,7 +404,11 @@
       "prepareImageError": "No se pudieron crear las imágenes de vista previa. Vuelve a crear el TWF para intentarlo de nuevo.",
       "clipboardImageError": "No se pudieron copiar la publicación y las imágenes. Aún puedes copiar el TWF por separado.",
       "generating": "Generando el TWF y las imágenes. Espera un momento.",
-      "copyHttp": "La copia automática no está disponible en esta conexión HTTP. Haz clic en Copiar publicación e imágenes o abre Homey por HTTPS para copiar automáticamente."
+      "copyHttp": "La copia automática no está disponible en esta conexión HTTP. Haz clic en Copiar publicación e imágenes o abre Homey por HTTPS para copiar automáticamente.",
+      "templateImageZoomIn": "Acercar",
+      "templateImageZoomOut": "Alejar",
+      "templateImageClose": "Cerrar imagen",
+      "oldest": "Más antiguos"
     },
     "bllNotInstalled": "Instala la app Better Logic Library para usar este widget.",
     "android": {

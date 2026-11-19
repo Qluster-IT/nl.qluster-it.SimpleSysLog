@@ -3,7 +3,7 @@ Simple (Sys) Log.
 FUNCTIES
 * Live dashboardwidgets met zoeken, filters voor Niveau en Datum, optionele paginering en een lichte/donkere modus.
 * Pas ontwerpen en thema's aan, waaronder de ontwerpen Compact, Dagboek en Console en de thema's Oceaan, Bos, Zonsondergang en Console.
-* Deel ontwerpen en thema's als TWF's via Sjablonen en de Widget Exchange, met lichte en donkere voorbeeldafbeeldingen.
+* Deel ontwerpen en thema's als TWF's via Sjablonen en The Widget Exchange(r), met lichte en donkere voorbeeldafbeeldingen waarop je kunt inzoomen.
 * Gebruik Homey Web Widgets om te scrollen op Android.
 * Maak tijdelijke downloadlinks voor CSV, Excel of JSON vanuit Advanced Flow.
 

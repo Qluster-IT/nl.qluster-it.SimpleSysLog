@@ -99,6 +99,7 @@
   var templates = {
     section: 'export', busy: false, generating: false, review: null, exportText: '', exportDesignName: '', exportThemeName: '',
     catalog: null, favorites: {}, selectedId: null, showPreviews: false, previewsAvailable: false,
+    catalogSort: 'newest', catalogSortReady: false, catalogSortSaving: false,
     imageData: null, copyStatus: null
   };
 
@@ -2507,6 +2508,7 @@
     return function (first, second) {
       var result = 0;
       if (order === 'newest') result = second.number - first.number;
+      else if (order === 'oldest') result = first.number - second.number;
       else if (order === 'likes') result = (second.likes || 0) - (first.likes || 0);
       else if (order === 'favorites') result = Number(!!second.favorite) - Number(!!first.favorite);
       return result || String(first.title).localeCompare(String(second.title));
@@ -2530,6 +2532,7 @@
     var zoomIn = byId('template-zoom-in');
     var zoom = 1;
     var gesture;
+    var drag;
 
     function setZoom(value, anchor, point) {
       zoom = Math.max(1, Math.min(5, value));
@@ -2537,7 +2540,9 @@
       byId('template-image-scale').textContent = Math.round(zoom * 100) + '%';
       zoomOut.disabled = zoom <= 1;
       zoomIn.disabled = zoom >= 5;
-      if (anchor) {
+      viewport.classList.toggle('template-image-zoomed', zoom > 1);
+      if (zoom === 1) endDrag();
+      if (anchor && anchor.width) {
         var scale = image.getBoundingClientRect().width / anchor.width;
         viewport.scrollLeft = anchor.x * scale - point.x;
         viewport.scrollTop = anchor.y * scale - point.y;
@@ -2558,6 +2563,7 @@
     dialog.addEventListener('close', function () {
       if (dialog.open) return;
       gesture = null;
+      endDrag();
       image.removeAttribute('src');
     });
 
@@ -2585,6 +2591,39 @@
     viewport.addEventListener('touchend', function () { gesture = null; });
     viewport.addEventListener('touchcancel', function () { gesture = null; });
 
+    viewport.addEventListener('wheel', function (event) {
+      if (!event.ctrlKey || !event.deltaY) return;
+      if (event.cancelable) event.preventDefault();
+      var bounds = viewport.getBoundingClientRect();
+      var point = { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+      setZoom(zoom * Math.exp(-event.deltaY * 0.0015), imageAnchor(point), point);
+    }, { passive: false });
+
+    function endDrag(event) {
+      if (!drag || (event && drag.id !== event.pointerId)) return;
+      var pointerId = drag.id;
+      drag = null;
+      viewport.classList.remove('template-image-dragging');
+      if (viewport.hasPointerCapture(pointerId)) viewport.releasePointerCapture(pointerId);
+    }
+
+    viewport.addEventListener('pointerdown', function (event) {
+      if (event.pointerType !== 'mouse' || event.button !== 0 || zoom <= 1) return;
+      drag = { id: event.pointerId, x: event.clientX, y: event.clientY,
+        left: viewport.scrollLeft, top: viewport.scrollTop };
+      viewport.classList.add('template-image-dragging');
+      viewport.setPointerCapture(event.pointerId);
+      if (event.cancelable) event.preventDefault();
+    });
+    viewport.addEventListener('pointermove', function (event) {
+      if (!drag || drag.id !== event.pointerId) return;
+      viewport.scrollLeft = drag.left - (event.clientX - drag.x);
+      viewport.scrollTop = drag.top - (event.clientY - drag.y);
+    });
+    viewport.addEventListener('pointerup', endDrag);
+    viewport.addEventListener('pointercancel', endDrag);
+    viewport.addEventListener('lostpointercapture', endDrag);
+
     byId('template-catalog').addEventListener('click', function (event) {
       var button = event.target.closest('.template-catalog-image-button');
       if (!button || dialog.open) return;
@@ -2596,10 +2635,6 @@
       dialog.showModal();
       viewport.scrollLeft = viewport.scrollTop = 0;
     });
-  }
-
-  function updateTemplateImageColors() {
-    root.classList.toggle('template-post-images-counter-invert', homeyInvertsPage());
   }
 
   function addCatalogCard(item, container) {
@@ -2629,7 +2664,7 @@
       renderCatalog();
     });
     body.appendChild(title);
-    if (templates.showPreviews) {
+    if (templates.showPreviews && !expanded) {
       var thumbnail = element('div');
       thumbnail.setAttribute('inert', '');
       thumbnail.setAttribute('aria-hidden', 'true');
@@ -2646,7 +2681,7 @@
       (item.images || []).forEach(function (source, index) {
         var button = element('button', 'hy-nostyle template-catalog-image-button');
         button.type = 'button';
-        var image = element('img', 'template-post-image');
+        var image = element('img');
         image.loading = 'lazy';
         image.alt = item.title + ' (' + (index + 1) + '/' + item.images.length + ')';
         image.src = source;
@@ -2670,7 +2705,9 @@
     container.replaceChildren();
     var available = Array.isArray(templates.catalog);
     byId('catalog-search').disabled = !available;
-    byId('catalog-sort').disabled = !available;
+    var sort = byId('catalog-sort');
+    sort.disabled = !available || !templates.catalogSortReady || templates.catalogSortSaving;
+    sort.value = templates.catalogSort;
     var previews = byId('catalog-previews');
     previews.setAttribute('aria-pressed', String(templates.showPreviews));
     previews.querySelector('i').className = 'fa fa-solid ' + (templates.showPreviews ? 'fa-eye' : 'fa-eye-slash');
@@ -2681,9 +2718,40 @@
     }
     var query = byId('catalog-search').value.trim().toLowerCase();
     var items = templates.catalog.filter(function (item) { return catalogMatches(item, query); })
-      .sort(compareCatalog(byId('catalog-sort').value));
+      .sort(compareCatalog(templates.catalogSort));
     byId('catalog-empty').hidden = items.length > 0;
     items.forEach(function (item) { addCatalogCard(item, container); });
+  }
+
+  function isCatalogSort(order) {
+    return ['newest', 'oldest', 'name', 'likes', 'favorites'].indexOf(order) !== -1;
+  }
+
+  function loadCatalogSort() {
+    return getSetting('widgetTemplateCatalogSort').then(function (order) {
+      if (isCatalogSort(order)) templates.catalogSort = order;
+    }).catch(function (error) {
+      setStatus(error.message, true);
+    }).finally(function () {
+      templates.catalogSortReady = true;
+      renderCatalog();
+    });
+  }
+
+  function saveCatalogSort() {
+    var select = byId('catalog-sort');
+    var order = select.value;
+    if (select.disabled || !isCatalogSort(order) || order === templates.catalogSort) return;
+    templates.catalogSortSaving = true;
+    select.disabled = true;
+    return setSetting('widgetTemplateCatalogSort', order).then(function () {
+      templates.catalogSort = order;
+    }).catch(function (error) {
+      setStatus(error.message, true);
+    }).finally(function () {
+      templates.catalogSortSaving = false;
+      renderCatalog();
+    });
   }
 
   function loadCatalog() {
@@ -2786,6 +2854,7 @@
         element.alt = t(element.getAttribute('data-i18n-alt'), element.alt);
       });
     });
+    loadCatalogSort();
     getSetting('widgetTemplateShowPreviews').then(function (value) {
       templates.showPreviews = value === true;
       templates.previewsAvailable = true;
@@ -2826,7 +2895,6 @@
 
   function bindEvents() {
     bindTemplateImageViewer();
-    updateTemplateImageColors();
     root.querySelectorAll('.mode-button').forEach(function (button) {
       button.addEventListener('click', function () {
         var next = button.dataset.mode === 'theme' ? 'theme' : 'design';
@@ -2898,7 +2966,6 @@
     });
     if (darkSchemeQuery && darkSchemeQuery.addEventListener) {
       darkSchemeQuery.addEventListener('change', function () {
-        updateTemplateImageColors();
         previewMode = homeyInvertsPage() ? 'dark' : 'light';
         byId('preview-mode').value = previewMode;
         renderPreview();
@@ -2938,7 +3005,7 @@
     byId('save-template').addEventListener('click', saveTemplate);
     byId('catalog-previews').addEventListener('click', togglePreviews);
     byId('catalog-search').addEventListener('input', renderCatalog);
-    byId('catalog-sort').addEventListener('change', renderCatalog);
+    byId('catalog-sort').addEventListener('change', saveCatalogSort);
     byId('load-catalog').addEventListener('click', loadCatalog);
   }
 

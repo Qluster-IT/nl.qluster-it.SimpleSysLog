@@ -5,7 +5,7 @@ This app makes it possible to add logging to your Flows.
 ## 3.2.0
 
 - Added live dashboard widgets with search, Level/Date filters and optional paging.
-- Added the widget designer, built-in designs and themes, and TWF sharing through Templates and the Widget Exchange with light/dark images.
+- Added the widget designer, built-in designs and themes, and TWF sharing through The Widget Exchange(r) with zoomable light and dark screenshots.
 - Added signed links to use Homey Web Widgets for scrolling on Android.
 - Added **Get log export URL** for CSV, Excel and JSON downloads from Advanced Flow.
 - Improved mobile and desktop Excel exports, log storage efficiency, automatic cleanup and widget preview consistency.
@@ -168,9 +168,13 @@ templates. Designs and themes are shared as a TWF (The Widget File): compressed
 text starting with `[twf:SimpleSysLog:LogViewer:`. Only TWFs for this app's
 LogViewer widget family can be imported; other apps and widget families are rejected.
 
-In **Community templates**, expand a template and tap a posted screenshot to
-open it full screen. Scroll to see the rest of the image, and pinch or use
-the zoom buttons to inspect details.
+**The Widget Exchange(r)** remembers your sort order, including **Newest** or
+**Oldest**. Under **Templates**, expand
+a template to replace its live preview with its details and posted screenshots.
+Tap a posted screenshot to open it full screen. Scroll to see
+the rest of the image, and pinch or use the zoom buttons to inspect details.
+With a mouse, use Ctrl+wheel to zoom at the pointer and drag to pan while zoomed in.
+Posted screenshots keep their original colors in both light and dark mode.
 
 **Create TWF** also creates two preview images of the template, first in light
 mode and then in dark mode, and copies a ready-made forum post with the images.

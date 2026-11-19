@@ -4,7 +4,7 @@ FEATURES
 * Live dashboard widgets with search, Level and Date filters, optional paging and light/dark modes.
 * Customize designs and themes, including Compact, Journal and Console designs and Ocean, Forest, Sunset and Console themes.
 * Share designs and themes as TWFs through Templates and the Widget Exchange, with light and dark preview images.
-* Use signed Web widget links to show logs on an Android dashboard.
+* Use Homey Web Widgets for scrolling on Android.
 * Create temporary CSV, Excel or JSON download links from Advanced Flow.
 
 This app makes it possible to add logging and/or notifications to your Flows.
@@ -21,7 +21,7 @@ The settings page has a Syslog-style interface, in which you can:
 * Search and filter specific messages, dates, etc.
 * Hide or move columns.
 * Save the filters or columns as default.
-* Download the complete Log as nicely formatted Excel, Csv or JSON, in the Mobile App, Developertools or within flows.
+* Download the complete Log as nicely formatted Excel, Csv or JSON, in the Mobile App, Web App or within flows.
 
 
 You can use the API endpoints to access the log.

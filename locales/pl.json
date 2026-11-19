@@ -404,7 +404,11 @@
       "prepareImageError": "Nie udało się utworzyć obrazów podglądu. Utwórz TWF ponownie, aby spróbować jeszcze raz.",
       "clipboardImageError": "Nie udało się skopiować posta i obrazów. Nadal możesz skopiować TWF osobno.",
       "generating": "Trwa tworzenie TWF i obrazów. Proszę chwilę poczekać.",
-      "copyHttp": "Automatyczne kopiowanie nie jest dostępne przez to połączenie HTTP. Kliknij Kopiuj post i obrazy lub otwórz Homey przez HTTPS, aby kopiować automatycznie."
+      "copyHttp": "Automatyczne kopiowanie nie jest dostępne przez to połączenie HTTP. Kliknij Kopiuj post i obrazy lub otwórz Homey przez HTTPS, aby kopiować automatycznie.",
+      "templateImageZoomIn": "Powiększ",
+      "templateImageZoomOut": "Pomniejsz",
+      "templateImageClose": "Zamknij obraz",
+      "oldest": "Najstarsze"
     },
     "bllNotInstalled": "Zainstaluj aplikację Better Logic Library, aby korzystać z tego widżetu.",
     "android": {

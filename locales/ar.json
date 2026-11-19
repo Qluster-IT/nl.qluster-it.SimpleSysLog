@@ -404,7 +404,11 @@
       "prepareImageError": "تعذّر إنشاء صور المعاينة. أنشئ TWF مرة أخرى للمحاولة من جديد.",
       "clipboardImageError": "تعذّر نسخ المنشور والصور. لا يزال بإمكانك نسخ TWF بشكل منفصل.",
       "generating": "جارٍ إنشاء TWF والصور. يرجى الانتظار قليلًا.",
-      "copyHttp": "النسخ التلقائي غير متاح عبر اتصال HTTP هذا. انقر على «نسخ المنشور والصور» أو افتح Homey عبر HTTPS للنسخ تلقائيًا."
+      "copyHttp": "النسخ التلقائي غير متاح عبر اتصال HTTP هذا. انقر على «نسخ المنشور والصور» أو افتح Homey عبر HTTPS للنسخ تلقائيًا.",
+      "templateImageZoomIn": "تكبير",
+      "templateImageZoomOut": "تصغير",
+      "templateImageClose": "إغلاق الصورة",
+      "oldest": "الأقدم"
     },
     "bllNotInstalled": "ثبّت تطبيق Better Logic Library لاستخدام هذه الأداة.",
     "android": {

@@ -3,7 +3,7 @@ Simple (Sys) Log.
 주요 기능
 * 검색, 수준 및 날짜 필터, 선택적 페이지 이동, 밝은/어두운 모드를 지원하는 실시간 대시보드 위젯.
 * 간결, 일지, 콘솔 디자인과 바다, 숲, 일몰, 콘솔 테마 등 디자인과 테마 사용자 지정.
-* 템플릿과 Widget Exchange에서 밝은 모드와 어두운 모드 미리보기 이미지가 포함된 TWF로 디자인과 테마 공유.
+* 템플릿과 The Widget Exchange(r)에서 확대할 수 있는 밝은 모드와 어두운 모드 미리보기가 포함된 TWF로 디자인과 테마 공유.
 * Homey Web Widgets를 사용하여 Android에서 로그를 스크롤하세요.
 * Advanced Flow에서 CSV, Excel 또는 JSON 다운로드용 임시 링크 생성.
 

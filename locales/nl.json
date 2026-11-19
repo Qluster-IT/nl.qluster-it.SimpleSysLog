@@ -399,7 +399,11 @@
       "prepareImageError": "Kan de voorbeeldafbeeldingen niet maken. Maak de TWF opnieuw om het nog eens te proberen.",
       "clipboardImageError": "Kan het bericht en de afbeeldingen niet kopiëren. Je kunt de TWF nog wel apart kopiëren.",
       "generating": "TWF en afbeeldingen worden gemaakt. Even geduld alstublieft.",
-      "copyHttp": "Automatisch kopiëren is niet beschikbaar via deze HTTP-verbinding. Klik op Bericht en afbeeldingen kopiëren of open Homey via HTTPS om automatisch te kopiëren."
+      "copyHttp": "Automatisch kopiëren is niet beschikbaar via deze HTTP-verbinding. Klik op Bericht en afbeeldingen kopiëren of open Homey via HTTPS om automatisch te kopiëren.",
+      "templateImageZoomIn": "Inzoomen",
+      "templateImageZoomOut": "Uitzoomen",
+      "templateImageClose": "Afbeelding sluiten",
+      "oldest": "Oudste"
     },
     "bllNotInstalled": "Installeer de Better Logic Library-app om deze widget te gebruiken.",
     "android": {

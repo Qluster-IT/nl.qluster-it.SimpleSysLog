@@ -1,15 +1,5 @@
 This app makes it possible to add logging to your Flows.
 
-# Changelog
-
-## 3.2.0
-
-- Added live dashboard widgets with search, Level/Date filters and optional paging.
-- Added the widget designer, built-in designs and themes, and TWF sharing through The Widget Exchange(r) with zoomable light and dark screenshots.
-- Added signed links to use Homey Web Widgets for scrolling on Android.
-- Added **Get log export URL** for CSV, Excel and JSON downloads from Advanced Flow.
-- Improved mobile and desktop Excel exports, log storage efficiency, automatic cleanup and widget preview consistency.
-
 # Features
 
 With simple log You can:
@@ -292,3 +282,400 @@ manual reload.
 The public `/android/*` endpoints serve the Web widget links described above.
 Apart from `/android/ping`, they only answer requests that carry a valid signed
 link.
+
+# Changelog
+
+## 4.0.0
+
+- Added dashboard widgets with customizable designs and themes, search, filters and paging.
+- Share templates and zoom in on screenshots in The Widget Exchange(r).
+- Use Homey Web Widgets for scrolling on Android.
+- Added Flow export links and improved exports, log storage and reliability.
+- Improved browsing in The Widget Exchange(r) with saved sorting, an Oldest option and expanded template details.
+- Updated light and dark widget picker previews to follow Homey App Store guidelines.
+
+## 3.1.6
+
+- Changed sourcecode and issues from Bitbucket to GitHub.
+
+## 3.1.5
+
+- Added: Automatic refresh in the App Settings (in preparation of the upcoming widget).
+
+## 3.1.4
+
+- Resolved: Issues with Homeys FontAwesome v5.
+
+## 3.1.3
+
+- Resolved: Fault in the API when not using BLL.
+
+## 3.1.2
+
+- Added: Search tag for the Store.
+
+## 3.1.1
+
+- Translated: Translated into all supported languages.
+
+## 3.1.0
+
+- Translated: Translated into all supported languages.
+
+## 3.0.37
+
+- Resolved: Reading non existing files could make the app crash.
+
+## 3.0.36
+
+- Added: Facility: Variable.
+
+## 3.0.34
+
+- Added: Flowcards now support BLL Coding.
+
+## 3.0.33
+
+- Resolved: Flowcard error because of a certain startup sequence.
+
+## 3.0.32
+
+- Improved: From now on, logs will be counted.
+
+## 3.0.31
+
+- Improved: From now on, logs will be counted.
+
+## 3.0.30
+
+- Resolved: "Old" Simple Log Startup on iOS devices.
+
+## 3.0.29
+
+- Added: Hidden flowcards for the Script to add log to all flows.
+
+## 3.0.28
+
+- Added: The facilities to all flowcards.
+
+## 3.0.27
+
+- Added: A triggercard which triggers when something is written to the log.
+
+## 3.0.26
+
+- Added: Setting to disable [Group] in the Timeline.
+
+## 3.0.25
+
+- Bugixing: Having a Syslogclient setup might duplicate logs.
+
+## 3.0.24
+
+- Bugixing: Settingsscreen not opening correct on iOS.
+
+## 3.0.23
+
+- Resolved: Rows sometimes have empty messages, the are now automaticly fixed.
+
+## 3.0.22
+
+- Bugfixing: Rows sometimes have empty messages, trying to find the issue.
+
+## 3.0.21
+
+- Solved: Transforming old logs into the new format made the app crash with many logs.
+
+## 3.0.20
+
+- Debugging: Solving an issue with startup from old version.
+
+## 3.0.19
+
+- Debugging: Solving an issue with startup.
+
+## 3.0.18
+
+- Removed: Debugging info from the App Settings (diagnostic is to small to work with).
+
+## 3.0.17
+
+- Added: Script for HS to send a log if there are faults in the log.
+
+## 3.0.16
+
+- Improved: Automatic removal of old logs will only show a logline when there were logfiles to be deleted.
+
+## 3.0.15
+
+- Added: Debugging logs.
+
+## 3.0.14
+
+- Added: Debugging logs.
+
+## 3.0.13
+
+- Added: Debugging logs.
+
+## 3.0.12
+
+- Added: More debugging options.
+
+## 3.0.11
+
+- Added: More debugging options.
+
+## 3.0.10
+
+- Added: A Debug option in the App Settings - Settings for diagnostics.
+
+## 3.0.9
+
+- Added: Settings: Automaticly removal of logs after x number of days.
+- Bugfixed: Having the grid set to other than 50 rows would still only load 50 on opening App Settings.
+- Loading App Settings has been speedup because of this.
+
+## 3.0.8
+
+- Resolved: A wrong error after clearing the log.
+
+## 3.0.7
+
+- Resolved: Automatic logging to Syslog client based on severity.
+
+## 3.0.6
+
+- Update: BLL dependency.
+
+## 3.0.5
+
+- Resolved: Double logging after Settings update!
+
+## 3.0.4
+
+- Resolved: UTC issue with Sysloc Clients: Update BLL to resolve the issue!
+
+## 3.0.3
+
+- Added:Facilities scene, trigger, condition and action.
+
+## 3.0.2
+
+- Bugfixes a report: Reading file error, please send diagnostic if lines are empty.
+
+## 3.0.1
+
+- Bugfixes a report: Reading file error.
+
+## 3.0.0
+
+- Version 3: First full release.
+
+## 2.9.49
+
+- Building Version 3: Testing an issue after Homey restart with the log.
+
+## 2.9.48
+
+- Building Version 3: Testing an issue after Homey restart with the log.
+
+## 2.9.47
+
+- Building Version 3: Testing an issue after Homey restart with the log.
+
+## 2.9.46
+
+- Building Version 3: Testing an issue after Homey restart with the log.
+
+## 2.9.45
+
+- Building Version 3: Resolving an issue after Homey restart with the log.
+
+## 2.9.44
+
+- Building Version 3: Resolving an issue after Homey restart with the log.
+
+## 2.9.43
+
+- Building Version 3: You can now create a Syslog Server device, turn Simple Log into a Syslog for network devices (improved settings).
+
+## 2.9.42
+
+- Building Version 3: You can now create a Syslog Server device, turn Simple Log into a Syslog for network devices.
+
+## 2.9.41
+
+- Building Version 3: API call PUT /addlog can now include severity, facility and timestamp in its json body properties.
+
+## 2.9.40
+
+- Building Version 3: API call PUT /addlog can now include severity, facility and timestamp in its json body properties.
+
+## 2.9.39
+
+- Building Version 3: Solving an issue.
+
+## 2.9.38
+
+- Building Version 3: Fixed Syslog client message and app.
+
+## 2.9.37
+
+- Building Version 3: Excel default date format can now be set through BLL.
+
+## 2.9.36
+
+- Building Version 3: Log can now also be retrieved in flows as CSV (base64), JSON (base64) and Excel (base64).
+
+## 2.9.35
+
+- Building Version 3: Log can now also be retrieved in flows as CSV (base64), JSON (base64) and Excel (base64).
+
+## 2.9.34
+
+- Building Version 3: Hidden Automater flowcards for the Include-Logging Script.
+
+## 2.9.33
+
+- Building Version 3: Hidden Automater flowcards for the Include Logging Script.
+
+## 2.9.32
+
+- Building Version 3: Exportfiles now also works through the Cloud (it will check one second if local is available, else send you through the cloud to the file).
+
+## 2.9.31
+
+- Building Version 3: Exportfiles can now take longer than the 10 seconds timeout of App Settings. Also, groups, messages and files can have Emoticons, new lines (enters/returns), etc.
+
+## 2.9.30
+
+- Building Version 3: Memory improvement.
+
+## 2.9.29
+
+- Building Version 3: Memory improvement.
+
+## 2.9.28
+
+- Building Version 3: Memory improvement.
+
+## 2.9.27
+
+- Building Version 3: Added a Show Hints in the Settings which is displayed the first time you open the App Settings.
+
+## 2.9.26
+
+- Building Version 3: Solved another potential HP2023 startup bug.
+
+## 2.9.25
+
+- Building Version 3: Solved another startup bug.
+
+## 2.9.24
+
+- Building Version 3: Excel, csv and json can now be downloaded from anywhere, also remote: save and secure!
+
+## 2.9.23
+
+- Building Version 3: Migration fixes.
+
+## 2.9.22
+
+- Building Version 3: Without BLL Simple LOG is exactly as before and functions as it used to.
+
+## 2.9.21
+
+- Building Version 3: Without BLL Simple LOG is exactly as before and functions as it used to.
+
+## 2.9.20
+
+- Building Version 3: Without BLL Simple LOG is exactly as before and functions as it used to.
+
+## 2.9.19
+
+- Building Version 3: More error handling.
+
+## 2.9.18
+
+- Building Version 3: More translations.
+
+## 2.9.17
+
+- Building Version 3: Excel headers translated, styled, sticky and sized.
+
+## 2.9.16
+
+- Building Version 3: Almost done.
+
+## 2.9.15
+
+- Building Version 3: Works with all Homey Pro's again.
+
+## 2.9.14
+
+- Building Version 3: Export large logs in Excel, CSV and JSON on Developer-site and the Homey Mobile App.
+
+## 2.9.13
+
+- Building Version 3: Export large logs in Excel, CSV and JSON on Developer-site and the Homey Mobile App.
+
+## 2.9.12
+
+- Building Version 3: Export the log in Excel, CSV and JSON on Developer-site and the Homey Mobile App.
+
+## 2.9.11
+
+- Building: Version 3.0.0.
+
+## 2.9.10
+
+- Building: Version 3.0.0.
+
+## 2.9.9
+
+- Building: Version 3.0.0.
+
+## 2.9.8
+
+- Building: Version 3.0.0.
+
+## 2.9.7
+
+- Bugfixed: CSV can now be downloaded again and the CSV text can be selected within the Homey App Settings. And some minor other bugs.
+
+## 2.9.6
+
+- Bugfixed: CSV can now be downloaded again and the CSV text can be selected within the Homey App Settings.
+
+## 2.9.5
+
+- Improved: Works with Early 2023!
+
+## 2.9.4
+
+- Resolved: AddLog api bug.
+
+## 2.9.3
+
+- Added: Flowcard (then) to retrieve the log as json.
+
+## 2.9.2
+
+- Resolved: getLogs API back to public.
+
+## 2.9.1
+
+- Updated to SDK3.
+
+## 2.9.0
+
+- SDK3
+
+## 2.4.5
+
+- Fixed textual errors within the readme.EXT
+
+## 2.4.4
+
+- API Fix

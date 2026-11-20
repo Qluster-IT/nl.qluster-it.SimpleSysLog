@@ -4,11 +4,13 @@ const { exportMetadata } = require("./lib/log-export");
 const { encodeTemplate, decodeTemplate } = require("./lib/widget-template");
 const { getCatalog } = require("./lib/widget-template-catalog");
 const { getWidgetStyles, resolveTimestampFormat, resolveDaySeparatorFormat } = require("./lib/widget-styles");
+const { resolveTimestamp2Format } = require("./assets/js/ssl-widget-layout");
 const {
   TRANSLATION_KEYS, linkFilterStateId, matchesLinkFilters, resetSecret, verifyLink
 } = require("./lib/android-links");
 const widgetApi = require("./widgets/log_viewer/api");
 const { parseSeverities } = require("./lib/severity-filter");
+const widgetSearch = require("./assets/js/ssl-widget-search");
 
 const ANDROID_POLL_TIMEOUT_MS = 20000;
 
@@ -23,23 +25,45 @@ function linkSeverities(query) {
 
 function linkFormats(homey, config) {
   const design = getWidgetStyles(homey).designs.find(item => item.id === config.designStyle);
-  return { timestamp: resolveTimestampFormat(config.datetimeFormat, design), day: resolveDaySeparatorFormat(design) };
+  return { timestamp: resolveTimestampFormat(config.datetimeFormat, design), day: resolveDaySeparatorFormat(design),
+    timestamp2: resolveTimestamp2Format(design) };
 }
 
-function linkLogQuery(config, formats, severities, dateRange, skip) {
+function interactiveLinkConfig(config, query) {
+  if (!config.showFilters) return config;
+  const filters = widgetApi.parseMetadataFilters({ ...query, searchMode: config.searchMode });
+  const result = { ...config };
+  if (filters.facility !== undefined) result.facility = filters.facility;
+  for (const key of ['app', 'hostname']) {
+    if (!filters[key + 'Search']) continue;
+    delete result[key + 'Filter'];
+    result[key + 'Search'] = filters[key + 'Search'];
+  }
+  return result;
+}
+
+function linkLogQuery(config, formats, severities, dateRange, skip, search) {
   const query = {
     take: config.entryCount + (config.paging ? 1 : 0),
     timestampFormat: formats.timestamp,
     dayFormat: formats.day
   };
+  if (formats.timestamp2) query.timestamp2Format = formats.timestamp2;
   if (config.paging && skip !== undefined) query.skip = skip;
+  if (config.searchMode !== 'none') {
+    query.search = search;
+    query.searchMode = config.searchMode;
+  }
   if (severities !== undefined) query.severities = severities.join(',');
   else if (config.minSeverity !== undefined) query.minSeverity = config.minSeverity;
   if (dateRange && dateRange.from) query.dateFrom = dateRange.from;
   if (dateRange && dateRange.to) query.dateTo = dateRange.to;
-  if (config.facility !== undefined) query.facility = config.facility;
+  if (config.facility !== undefined) query.facility = Array.isArray(config.facility) ? config.facility.join(',') : config.facility;
   if (config.appFilter !== undefined) query.app = config.appFilter;
   if (config.hostnameFilter !== undefined) query.hostname = config.hostnameFilter;
+  if (config.appSearch !== undefined) query.appSearch = config.appSearch;
+  if (config.hostnameSearch !== undefined) query.hostnameSearch = config.hostnameSearch;
+  if (config.appSearch || config.hostnameSearch) query.searchMode = config.searchMode === 'advanced' ? 'advanced' : 'simple';
   return query;
 }
 
@@ -63,7 +87,7 @@ function matchesDateRange(log, bounds) {
 function withTimestampFormats(log, formats) {
   const formatted = { ...(log.timestamp_formatted || {}) };
   let changed = false;
-  for (const format of [formats.timestamp, formats.day]) {
+  for (const format of [formats.timestamp, formats.day].concat(formats.timestamp2 ? [formats.timestamp2] : [])) {
     if (Object.prototype.hasOwnProperty.call(formatted, format)) continue;
     try {
       formatted[format] = BL.datetime.toString(format, log.timestamp);
@@ -161,14 +185,16 @@ module.exports = {
   async formatWidgetTimestamps({ homey, body }) {
     const format = body && body.format;
     const timestamps = body && body.timestamps;
+    const locale = body && body.locale;
     if (typeof format !== 'string' || !format.trim() || format.length > 128
-      || !Array.isArray(timestamps) || timestamps.length > 10) throw new Error('Invalid timestamp format request.');
+      || !Array.isArray(timestamps) || timestamps.length > 10
+      || (locale !== undefined && locale !== 'en')) throw new Error('Invalid timestamp format request.');
     if (!BL.isReady) throw new Error(homey.__('bllNotStartedYet'));
     return {
       values: timestamps.map(value => {
         const date = new Date(value);
         if (Number.isNaN(date.getTime())) throw new Error('Invalid timestamp format request.');
-        return BL.datetime.toString(format, date);
+        return BL.datetime.toString(format, date, locale);
       })
     };
   },
@@ -198,27 +224,30 @@ module.exports = {
     });
   },
   async getAndroidLogs({ homey, query }) {
-    const config = verifiedLinkConfig(homey, query);
+    const config = interactiveLinkConfig(verifiedLinkConfig(homey, query), query);
     const severities = linkSeverities(query);
     const dateRange = widgetApi.parseDateRange(query);
     // Read the sequence first; entries written during the query are delivered again and deduplicated.
-    const seq = homey.app.androidLinkFeed.touch();
+    const seq = config.updateMode === 'periodic' ? homey.app.androidLinkFeed.seq : homey.app.androidLinkFeed.touch();
     const data = await widgetApi.getWidgetLogs({
-      homey, query: linkLogQuery(config, linkFormats(homey, config), severities, dateRange, query.skip)
+      homey, query: linkLogQuery(config, linkFormats(homey, config), severities, dateRange, query.skip, query.search)
     });
     return { ...data, seq, instance: homey.app.androidLinkFeed.instance };
   },
   async getAndroidUpdates({ homey, query }) {
-    const config = verifiedLinkConfig(homey, query);
+    const config = interactiveLinkConfig(verifiedLinkConfig(homey, query), query);
     const severities = linkSeverities(query);
     const dateRange = widgetApi.parseDateRange(query);
     // Wrappers cannot receive the api-ready realtime event, so they poll until it was announced.
     if (!homey.app.apiReady || !homey.app.androidLinkFeed.instance) return { ready: false };
     const dateBounds = homey.app.Log && (dateRange.from || dateRange.to) ? dateRangeBounds(dateRange) : null;
+    const appMatches = widgetSearch.compileText(config.appSearch, config.searchMode);
+    const hostnameMatches = widgetSearch.compileText(config.hostnameSearch, config.searchMode);
     const result = await homey.app.androidLinkFeed.wait({
       after: Number(query.after),
       instance: query.instance,
       matches: log => matchesLinkFilters(config, log, severities)
+        && appMatches(log.app) && hostnameMatches(log.hostname)
         && (!dateBounds || matchesDateRange(log, dateBounds)),
       timeoutMs: ANDROID_POLL_TIMEOUT_MS,
       setTimeout: (callback, ms) => homey.setTimeout(callback, ms),

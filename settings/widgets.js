@@ -33,6 +33,7 @@
   var previewFormatTimer = null;
   var translations = {
     timestamp: ['widgets.fields.timestamp', 'Timestamp'],
+    timestamp2: ['widgets.fields.timestamp2', 'Timestamp 2'],
     severity: ['widgets.fields.severity', 'Severity'],
     facility: ['widgets.fields.facility', 'Facility'],
     app: ['widgets.fields.app', 'App / Group'],
@@ -54,7 +55,8 @@
     debug: ['widgets.settings.colors.debug', 'Debug'],
     outline: ['widgets.settings.colors.outline', 'Widget border']
   };
-  var colorRoles = ['background', 'surface', 'text', 'muted', 'border', 'accent',
+  var entryColorRoles = ['surface', 'border'];
+  var widgetColorRoles = ['background', 'text', 'muted', 'accent',
     'emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug', 'outline'];
   var severityNames = ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'];
   var colorNames = ['automatic', 'red', 'red-soft', 'orange', 'yellow', 'green', 'teal', 'cyan', 'blue',
@@ -71,7 +73,7 @@
     automatic: 'Automatic', red: 'Red', orange: 'Orange', yellow: 'Yellow', green: 'Green', teal: 'Teal',
     cyan: 'Cyan', blue: 'Blue', indigo: 'Indigo', purple: 'Purple', pink: 'Pink', brown: 'Brown',
     grey: 'Grey', black: 'Black', 'black-light': 'Black (light/dark)', white: 'White',
-    'red-soft': 'Soft red'
+    'red-soft': 'Red (light)'
   };
   var fontFallbacks = {
     system: 'System', 'sans-serif': 'Sans-serif (Arial)', serif: 'Serif (Georgia)', monospace: 'Monospace (Courier New)',
@@ -84,16 +86,27 @@
     weight: { normal: 'Normal', medium: 'Medium', semibold: 'Semi-bold', bold: 'Bold', extrabold: 'Extra bold' },
     italic: { off: 'Off', on: 'On' },
     spacing: { none: 'None', narrow: 'Narrow', wide: 'Wide' },
-    wrap: { normal: 'Wrap to fit', nowrap: 'No wrapping', words: 'Stack at spaces' }
+    wrap: { normal: 'Wrap to fit', nowrap: 'No wrapping' }
   };
   var linePositionFallbacks = { behind: 'Behind the date', above: 'Above the date', below: 'Below the date' };
-  // Homey shows app settings in dark mode by inverting the settings iframe with a CSS filter.
-  // That filter is invisible from inside the frame, so it is detected through the system color scheme.
   var darkSchemeQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
-  function homeyInvertsPage() {
-    return window.parent !== window && !!(darkSchemeQuery && darkSchemeQuery.matches);
+  var previewMode = darkSchemeQuery && darkSchemeQuery.matches ? 'dark' : 'light';
+  var previewHostElements = [];
+  for (var hostElement = window.frameElement; hostElement; hostElement = hostElement.parentElement) {
+    previewHostElements.push(hostElement);
   }
-  var previewMode = homeyInvertsPage() ? 'dark' : 'light';
+  function homeyInvertsPage() {
+    return previewHostElements.some(function (element) {
+      var filter = element.ownerDocument.defaultView.getComputedStyle(element).filter;
+      return /^invert\((?:1(?:\.0+)?|100%)\) hue-rotate\(180deg\)$/.test(filter);
+    });
+  }
+  function updatePreviewHost() {
+    var inverted = homeyInvertsPage();
+    root.querySelectorAll('.ssl-widget.preview-widget').forEach(function (preview) {
+      preview.classList.toggle('preview-counter-invert', inverted);
+    });
+  }
   var mode = 'design';
   var forumTopicUrl = 'https://community.homey.app/t/162351';
   var templates = {
@@ -614,7 +627,6 @@
       var selected = isSelected('row', rowIndex, undefined, undefined, area);
       label.style.gridColumn = '1';
       label.style.gridRow = String(rowIndex + 1);
-      label.disabled = !isDesign;
       label.setAttribute('data-reorder-row', String(rowIndex));
       setPressed(label, selected, 'style-row-selected');
       if (isDesign) label.title = L('row_drag', 'Drag to reorder this row');
@@ -632,10 +644,9 @@
       slot.setAttribute('data-style-group', cell.row + ':' + cell.column);
       slot.classList.toggle('style-column-selected', selected);
       slot.addEventListener('click', function () {
-        if (isDesign) toggleSelection({ type: 'column', row: cell.row, column: cell.column, area: area });
+        toggleSelection({ type: 'column', row: cell.row, column: cell.column, area: area });
       });
       var number = editorButton('style-group-number', name);
-      number.disabled = !isDesign;
       number.setAttribute('aria-label', L('column', 'Column') + ' ' + name);
       number.setAttribute('data-reorder-column', cell.row + ':' + cell.column);
       setPressed(number, selected);
@@ -665,10 +676,7 @@
   }
 
   function renderLayoutEditor() {
-    var panel = byId('layout-editor-panel');
-    var isDesign = mode === 'design';
-    var item = isDesign ? selectedDesign() : selectedTheme();
-    panel.hidden = isBuiltIn(item.id);
+    var canReorder = mode === 'design' && !isBuiltIn(selectedDesign().id);
     var helpText = byId('style-designer-help');
     helpText.hidden = !help.expanded;
     helpText.textContent = L('group_hint', '') + ' ' + L('select_before_drag', '');
@@ -678,11 +686,14 @@
     helpToggle.querySelector('i').className = 'fa fa-solid ' + (help.expanded ? 'fa-chevron-up' : 'fa-chevron-down');
     var design = selectedDesign();
     if (!design.showDaySeparators && selection && selection.area === 'separator' && selection.type !== 'separator') {
-      selection = isDesign ? { type: 'separator', area: 'separator' } : null;
+      selection = { type: 'separator', area: 'separator' };
+    } else if (selection && (selection.type === 'row' || selection.type === 'column')) {
+      var selectedRow = gridFor(selection.area, design).rows[selection.row];
+      if (!selectedRow || (selection.type === 'column' && !selectedRow.columns[selection.column])) selection = null;
     }
     var editor = byId('group-editor');
     editor.replaceChildren();
-    var widget = editorButton('style-row-select style-widget-select', L('widget', 'Widget'));
+    var widget = editorButton('style-row-select style-widget-select style-widget-root-select', L('widget', 'Widget'));
     setPressed(widget, isSelected('widget'), 'style-row-selected');
     widget.addEventListener('click', function () { toggleSelection({ type: 'widget' }); });
     editor.appendChild(widget);
@@ -691,11 +702,10 @@
       var node = element('div', 'style-separator-area');
       node.setAttribute('data-style-area', area);
       var button = editorButton('style-row-select style-widget-select', partLabel(area));
-      button.disabled = !isDesign;
       setPressed(button, isSelected('part', undefined, undefined, undefined, area), 'style-row-selected');
       button.addEventListener('click', function () { toggleSelection({ type: 'part', area: area }); });
       node.appendChild(button);
-      renderGridEditor(node, gridFor(area, design), area, layoutApi.CONTROL_AREAS[area].ids, isDesign);
+      renderGridEditor(node, gridFor(area, design), area, layoutApi.CONTROL_AREAS[area].ids, canReorder);
       editor.appendChild(node);
     }
     controlArea('toolbar');
@@ -705,15 +715,20 @@
     separatorArea.setAttribute('data-style-area', 'separator');
     var separator = editorButton('style-row-select style-widget-select', L('day_separator', 'Day separator'));
     separator.setAttribute('data-style-separator', '');
-    separator.disabled = !isDesign;
     setPressed(separator, isSelected('separator', undefined, undefined, undefined, 'separator'), 'style-row-selected');
     separator.addEventListener('click', function () { toggleSelection({ type: 'separator', area: 'separator' }); });
     separatorArea.appendChild(separator);
     if (design.showDaySeparators) {
-      renderGridEditor(separatorArea, gridFor('separator', design), 'separator', layoutApi.SEPARATOR_ELEMENT_IDS, isDesign);
+      renderGridEditor(separatorArea, gridFor('separator', design), 'separator', layoutApi.SEPARATOR_ELEMENT_IDS, canReorder);
     }
     editor.appendChild(separatorArea);
-    renderGridEditor(editor, design, undefined, layoutApi.CARD_ELEMENT_IDS, isDesign);
+    var entryArea = element('div', 'style-separator-area');
+    var entry = editorButton('style-row-select style-widget-select', L('entry', 'Entry'));
+    setPressed(entry, isSelected('entry'), 'style-row-selected');
+    entry.addEventListener('click', function () { toggleSelection({ type: 'entry' }); });
+    entryArea.appendChild(entry);
+    renderGridEditor(entryArea, design, undefined, layoutApi.CARD_ELEMENT_IDS, canReorder);
+    editor.appendChild(entryArea);
     controlArea('paging');
     renderSelectionControls();
   }
@@ -751,7 +766,17 @@
     setSaveState(dirty);
   }
 
-  function addColorSelect(container, name, label, options, value, onChange) {
+  function addColorSelect(container, name, label, options, value, defaultColor, onChange) {
+    var swatch = element('span', 'color-swatch');
+    swatch.setAttribute('aria-hidden', 'true');
+    function updateSwatch(choice) {
+      swatch.style.backgroundColor = swatchColor(choice, defaultColor);
+    }
+    updateSwatch(value);
+    function applyColor(choice) {
+      updateSwatch(choice);
+      onChange(choice);
+    }
     var custom = layoutApi.isHexColor(value);
     var wrapper = element('div', 'style-color-control');
     var hexControls = element('div', 'style-hex-controls');
@@ -775,10 +800,11 @@
         } else {
           text.removeAttribute('aria-invalid');
           error.hidden = true;
-          onChange(choice);
+          applyColor(choice);
           syncColorValidity();
         }
       });
+    container.querySelector('label').prepend(swatch);
     select.replaceWith(wrapper);
     hexControls.append(text, picker);
     wrapper.append(select, hexControls);
@@ -790,7 +816,7 @@
       error.hidden = valid;
       if (valid) {
         picker.value = text.value;
-        onChange(text.value);
+        applyColor(text.value);
       }
       syncColorValidity();
     }
@@ -1181,7 +1207,7 @@
       addHint(controls, L('font_hint', 'Leave on App default to keep the widget\'s own font.'));
       var textStyles = (design.elementTextStyles || {})[id] || {};
       Object.keys(layoutApi.TEXT_STYLES).forEach(function (option) {
-        if (option === 'wrap' && id !== 'timestamp') return;
+        if (option === 'wrap' && id !== 'timestamp' && id !== 'timestamp2') return;
         addSelect(controls, 'element-text-' + option, L('text_styles.' + option, textStyleFallbacks[option]),
           [['', L('font_default', 'App default')]].concat(Object.keys(layoutApi.TEXT_STYLES[option].values).map(function (value) {
             return [value, L('text_styles.' + option + '_values.' + value, textStyleValueFallbacks[option][value])];
@@ -1222,13 +1248,14 @@
           });
         });
       }
-      if (id === 'timestamp') {
-        addFormatAutocomplete(controls, design.timestampFormat, {
-          name: 'timestamp-format',
+      if (id === 'timestamp' || id === 'timestamp2') {
+        var formatKey = id === 'timestamp2' ? 'timestamp2Format' : 'timestampFormat';
+        addFormatAutocomplete(controls, design[formatKey] || layoutApi.DEFAULT_TIMESTAMP2_FORMAT, {
+          name: id + '-format',
           label: t('widgets.settings.timestampFormat', 'Date and time format'),
-          hint: t('widgets.settings.timestampFormatHint', '')
+          hint: id === 'timestamp' ? t('widgets.settings.timestampFormatHint', '') : ''
         }, function (format) {
-          selectedDesign().timestampFormat = format;
+          selectedDesign()[formatKey] = format;
           setDirty();
           renderPreview();
         });
@@ -1253,21 +1280,32 @@
   function isSeparatorArea(area) { return area === 'separator'; }
 
   function renderThemeControls(container) {
-    container.appendChild(element('h3', '', t('widgets.settings.colorsTitle', 'Colors')));
-    if (selection.type === 'widget') {
-      var colors = element('div', 'style-colors ssl-palette');
+    if (selection.type === 'widget' || selection.type === 'entry') {
+      var isEntry = selection.type === 'entry';
+      var colors = isEntry ? fieldset('style-colors ssl-palette', L('entry', 'Entry')) : element('div', 'style-colors ssl-palette');
+      if (!isEntry) container.appendChild(element('h3', '', t('widgets.settings.colorsTitle', 'Colors')));
+      setColorPaletteMode(colors);
       container.appendChild(colors);
-      renderColors(colors);
+      renderColors(colors, isEntry ? entryColorRoles : widgetColorRoles);
       addHint(container, L('colors_hint', 'App default keeps the widget\'s own color, which follows light and dark mode.'));
       return;
     }
     if (selection.type !== 'element') return;
+    container.appendChild(element('h3', '', t('widgets.settings.colorsTitle', 'Colors')));
     var id = selection.element;
     var inSeparator = id === SEPARATOR_ID || id === LINE_ID;
     var isControl = layoutApi.CONTROL_IDS.indexOf(id) !== -1;
     var fieldsetNode = fieldset('style-colors ssl-palette', inSeparator
       ? L('day_separator', 'Day separator') + ' - ' + elementLabel(id) : elementLabel(id));
     var theme = selectedTheme();
+    setColorPaletteMode(fieldsetNode);
+    var themeStyle = layoutApi.widgetStyle(null, theme);
+    Object.keys(themeStyle).forEach(function (key) {
+      if (key.indexOf('--ssl-') === 0) fieldsetNode.style.setProperty(key, themeStyle[key]);
+    });
+    // Severity-dependent colors use the first sample entry as the representative color.
+    var sampleLevel = severityNames[previewEntries(false)[0].severity];
+    fieldsetNode.style.setProperty('--ssl-sev', 'var(--ssl-' + sampleLevel + ')');
     var current = (theme.elements && theme.elements[id]) || { color: 'default', background: 'default' };
     function update(key, value) {
       var item = selectedTheme();
@@ -1284,9 +1322,8 @@
       inSeparator || isControl ? separatorBackgrounds : elementBackgrounds]);
     entries.forEach(function (entry) {
       var row = element('div', 'style-color-row');
-      addColorSelect(row, 'element-' + entry[0], entry[1], colorOptions(entry[2]), current[entry[0]], function (value) {
-        update(entry[0], value);
-      });
+      addColorSelect(row, 'element-' + entry[0], entry[1], colorOptions(entry[2]), current[entry[0]],
+        elementDefaultColor(id, entry[0], sampleLevel), function (value) { update(entry[0], value); });
       fieldsetNode.appendChild(row);
     });
     addHint(fieldsetNode, L('element_colors_hint', 'App default keeps the element\'s normal appearance, based on the Widget colors.'));
@@ -1432,31 +1469,31 @@
     node.addEventListener('pointercancel', function (event) { endDrag(event, false); });
   }
 
-  function renderColors(colors) {
+  function renderColors(colors, roles) {
     var theme = selectedTheme();
     var builtin = isBuiltIn(theme.id);
-    colors.replaceChildren();
-    colorRoles.forEach(function (key) {
+    function updateGradientEndSwatch() {
+      colors.style.setProperty('--ssl-gradient-end-swatch', layoutApi.gradientEndColor(selectedTheme().colors.background));
+    }
+    if (roles.indexOf('background') !== -1) updateGradientEndSwatch();
+    roles.forEach(function (key) {
       var row = document.createElement('div');
       row.className = 'style-color-row';
-      var swatch = document.createElement('span');
-      swatch.className = 'color-swatch';
-      swatch.style.background = swatchColor(theme.colors[key]);
       var choices = colorNames.map(function (name) {
         return [name, name === 'automatic' ? L('color_default', 'App default')
           : t('widgets.settings.colorNames.' + name, colorNameFallbacks[name])];
       });
       if (key === 'background') choices.unshift(['none', L('color_none', 'None')]);
-      var input = addColorSelect(row, 'theme-color-' + key, t(translations[key][0], translations[key][1]), choices, theme.colors[key], function (value) {
-        selectedTheme().colors[key] = value;
-        swatch.style.background = swatchColor(value);
-        setDirty();
-      });
-      row.querySelector('label').prepend(swatch);
+      var input = addColorSelect(row, 'theme-color-' + key, t(translations[key][0], translations[key][1]), choices,
+        theme.colors[key], 'var(--ssl-' + key + ')', function (value) {
+          selectedTheme().colors[key] = value;
+          if (key === 'background') updateGradientEndSwatch();
+          setDirty();
+        });
       input.disabled = builtin;
       colors.appendChild(row);
       if (key === 'background') {
-        var fill = element('div', 'style-color-row');
+        var fill = element('div', 'style-color-row style-color-row-no-swatch');
         var fillInput = addSelect(fill, 'background-gradient', L('background_fill', 'Background fill'), [
           ['default', L('color_default', 'App default')],
           ['solid', L('background_solid', 'Solid')], ['gradient', L('background_gradient', 'Gradient')]
@@ -1471,7 +1508,8 @@
         colors.appendChild(fill);
         var end = element('div', 'style-color-row');
         addColorSelect(end, 'background-gradient-end', L('background_gradient_end', 'Gradient end color'),
-          choices.filter(function (choice) { return choice[0] !== 'none'; }), theme.backgroundGradientEnd || 'automatic', function (value) {
+          choices.filter(function (choice) { return choice[0] !== 'none'; }), theme.backgroundGradientEnd || 'automatic',
+          'var(--ssl-gradient-end-swatch)', function (value) {
             if (value === 'automatic') delete selectedTheme().backgroundGradientEnd;
             else selectedTheme().backgroundGradientEnd = value;
             setDirty();
@@ -1578,8 +1616,31 @@
     else if (id === 'template-code' && templates.copyStatus === 'copied') setCopyStatus(null);
   }
 
-  function swatchColor(name) {
-    return name === 'automatic' ? 'transparent' : layoutApi.colorValue(name);
+  function swatchColor(name, defaultColor) {
+    return name === 'automatic' || name === 'default' ? defaultColor : layoutApi.colorValue(name);
+  }
+
+  function elementDefaultColor(id, role, sampleLevel) {
+    if (role === 'background') {
+      if (id === 'severity') return 'var(--ssl-sev)';
+      if (id === 'facility') return 'color-mix(in srgb, var(--ssl-muted) 18%, transparent)';
+      if ([SEPARATOR_ID, 'search', 'filter', 'previousPage', 'nextPage'].indexOf(id) !== -1) return 'var(--ssl-surface)';
+      return 'transparent';
+    }
+    if (id === 'severity') return 'var(--ssl-' + sampleLevel + '-text, var(--ssl-color-black))';
+    if (isBorder(id)) return 'var(--ssl-sev)';
+    if (id === LINE_ID) return 'var(--ssl-border)';
+    if (['timestamp', 'timestamp2', 'hostname', 'facility', 'filter', 'pageNumber'].indexOf(id) !== -1) return 'var(--ssl-muted)';
+    return 'var(--ssl-text)';
+  }
+
+  function setColorPaletteMode(palette) {
+    palette.classList.toggle('ssl-mode-dark', previewMode === 'dark');
+    palette.classList.toggle('ssl-mode-light', previewMode !== 'dark');
+  }
+
+  function updateColorPaletteModes() {
+    root.querySelectorAll('.style-colors.ssl-palette').forEach(setColorPaletteMode);
   }
 
   function element(tag, className, text) {
@@ -1620,7 +1681,7 @@
       return Object.assign({}, entry, {
         date: previewDates[level < 4 ? 0 : 1],
         severity: level,
-        severityName: t('widgets.settings.colors.' + name, name.charAt(0).toUpperCase() + name.slice(1)),
+        severityName: name.charAt(0).toUpperCase() + name.slice(1),
         hostname: 'Homey'
       });
     });
@@ -1632,6 +1693,8 @@
     var selectedElement = selected.type === 'element' ? selected.element : undefined;
     var inSeparator = selected.area === 'separator';
     if (!preview || !design || !theme) return;
+    function previewText(key, fallback) { return forcedMode ? fallback : t(key, fallback); }
+    var locale = forcedMode ? 'en' : undefined;
     preview.className = 'ssl-widget preview-widget ssl-mode-' + (forcedMode || previewMode)
       + (!forcedMode && homeyInvertsPage() ? ' preview-counter-invert' : '')
       + (selected.type === 'widget' ? ' ssl-preview-selected' : '') + (extraClass ? ' ' + extraClass : '');
@@ -1643,14 +1706,17 @@
     preview.replaceChildren();
     var toolbar = element('header', 'ssl-widget-toolbar');
     var toolbarRow = element('div', 'ssl-toolbar-row');
+    var searchError = element('span', 'ssl-search-error');
+    searchError.setAttribute('role', 'alert');
+    searchError.style.display = 'none';
     var search = element('input', 'ssl-log-search');
     search.type = 'search';
-    search.placeholder = t('widgets.search', 'Search');
-    search.setAttribute('aria-label', t('widgets.search', 'Search'));
+    search.placeholder = previewText('widgets.search', 'Search');
+    search.setAttribute('aria-label', previewText('widgets.search', 'Search'));
     var filter = element('div', 'ssl-filter');
     var filterButton = element('button', 'ssl-filter-button');
     filterButton.type = 'button';
-    filterButton.setAttribute('aria-label', t('widgets.filters.button', 'Filters'));
+    filterButton.setAttribute('aria-label', previewText('widgets.filters.button', 'Filters'));
     filterButton.setAttribute('aria-haspopup', 'menu');
     filterButton.setAttribute('aria-expanded', 'false');
     var filterIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -1667,6 +1733,9 @@
     filter.appendChild(menu);
     var levelInputs = [];
     var dateInputs = [];
+    var metadataInputs = {};
+    var metadataGroups = {};
+    var examples = previewEntries(!!forcedMode);
     var filterGroups = [];
     var pageIndex = 0;
     function setMenuOpen(open) {
@@ -1715,7 +1784,7 @@
       menu.appendChild(group);
       return { options: options, count: count };
     }
-    var levelGroup = addFilterGroup(t('widgets.filters.level', 'Level'));
+    var levelGroup = addFilterGroup(previewText('widgets.filters.level', 'Level'));
     severityNames.forEach(function (name) {
       var label = element('label', 'ssl-filter-option ssl-sev-' + name);
       var input = element('input');
@@ -1723,20 +1792,20 @@
       input.setAttribute('role', 'menuitemcheckbox');
       input.addEventListener('change', filtersChanged);
       label.append(input, element('span', 'ssl-filter-dot'),
-        document.createTextNode(t('widgets.settings.colors.' + name, name.charAt(0).toUpperCase() + name.slice(1))));
+        document.createTextNode(previewText('widgets.settings.colors.' + name, name.charAt(0).toUpperCase() + name.slice(1))));
       levelInputs.push(input);
       levelGroup.options.appendChild(label);
     });
-    var clearLevels = element('button', 'ssl-filter-clear', t('widgets.filters.allLevels', 'All levels'));
+    var clearLevels = element('button', 'ssl-filter-clear', previewText('widgets.filters.allLevels', 'Reset'));
     clearLevels.type = 'button';
     clearLevels.addEventListener('click', function () {
       levelInputs.forEach(function (input) { input.checked = false; });
       filtersChanged();
     });
     levelGroup.options.appendChild(clearLevels);
-    var dateGroup = addFilterGroup(t('widgets.filters.date', 'Date'), 'ssl-filter-date-range');
+    var dateGroup = addFilterGroup(previewText('widgets.filters.date', 'Date'), 'ssl-filter-date-range');
     ['fromDate', 'toDate'].forEach(function (key, index) {
-      var label = element('label', '', t('widgets.filters.' + key, index === 0 ? 'From' : 'To'));
+      var label = element('label', '', previewText('widgets.filters.' + key, index === 0 ? 'From' : 'To'));
       var input = element('input');
       input.type = 'date';
       input.addEventListener('change', filtersChanged);
@@ -1747,45 +1816,98 @@
     var dateError = element('span', 'ssl-filter-date-error');
     dateError.setAttribute('role', 'alert');
     dateGroup.options.appendChild(dateError);
-    var clearDates = element('button', 'ssl-filter-clear', t('widgets.filters.allDates', 'All dates'));
+    var clearDates = element('button', 'ssl-filter-clear', previewText('widgets.filters.allDates', 'All dates'));
     clearDates.type = 'button';
     clearDates.addEventListener('click', function () {
       dateInputs.forEach(function (input) { input.value = ''; });
       filtersChanged();
     });
     dateGroup.options.appendChild(clearDates);
+    ['facility', 'app', 'hostname'].forEach(function (key) {
+      var group = addFilterGroup(previewText(translations[key][0], translations[key][1]),
+        key === 'facility' ? '' : 'ssl-filter-metadata');
+      var input;
+      if (key === 'facility') {
+        input = Object.values(window.SSLFacilities).map(function (value) {
+          var label = element('label', 'ssl-filter-option');
+          var checkbox = element('input');
+          checkbox.type = 'checkbox';
+          checkbox.value = value;
+          checkbox.setAttribute('role', 'menuitemcheckbox');
+          checkbox.addEventListener('change', filtersChanged);
+          label.append(checkbox, document.createTextNode(value));
+          group.options.appendChild(label);
+          return checkbox;
+        });
+      } else {
+        var label = element('label', '', previewText(translations[key][0], translations[key][1]));
+        input = element('input');
+        input.type = 'search';
+        input.maxLength = 200;
+        input.placeholder = previewText('widgets.search', 'Search');
+        input.addEventListener('input', filtersChanged);
+        label.appendChild(input);
+        group.options.appendChild(label);
+      }
+      metadataInputs[key] = input;
+      metadataGroups[key] = group;
+      var clear = element('button', 'ssl-filter-clear', previewText('widgets.filters.allLevels', 'Reset'));
+      clear.type = 'button';
+      clear.addEventListener('click', function () {
+        if (key === 'facility') input.forEach(function (checkbox) { checkbox.checked = false; });
+        else input.value = '';
+        filtersChanged();
+      });
+      group.clear = clear;
+      group.options.appendChild(clear);
+    });
     toolbarRow.append(search, filter);
     toolbar.appendChild(toolbarRow);
+    toolbar.appendChild(searchError);
     var list = element('div', 'ssl-log-list');
-    var examples = previewEntries(!!forcedMode);
     var pageSize = forcedMode ? examples.length : 3;
-    var formatted = previewTimestamps(design.timestampFormat);
-    var days = previewTimestamps(design.daySeparatorFormat);
+    var formatted = previewTimestamps(design.timestampFormat, locale);
+    var timestamp2Format = layoutApi.resolveTimestamp2Format(design);
+    var formatted2 = timestamp2Format ? previewTimestamps(timestamp2Format, locale) : null;
+    var days = previewTimestamps(design.daySeparatorFormat, locale);
     function dayText(date) {
       return days ? days[previewDates.indexOf(date)]
-        : date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+        : date.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' });
     }
     var labels = {};
-    layoutApi.ELEMENT_IDS.forEach(function (id) { labels[id] = elementLabel(id); });
+    layoutApi.ELEMENT_IDS.forEach(function (id) { labels[id] = previewText(translations[id][0], translations[id][1]); });
     function renderEntries() {
+      var matchesSearch, matchesApp, matchesHostname;
+      try {
+        matchesSearch = window.SSLWidgetSearch.compile(search.value, 'advanced');
+        matchesApp = window.SSLWidgetSearch.compileText(metadataInputs.app.value, 'advanced');
+        matchesHostname = window.SSLWidgetSearch.compileText(metadataInputs.hostname.value, 'advanced');
+        searchError.textContent = '';
+        searchError.style.display = 'none';
+      } catch (error) {
+        searchError.textContent = error.message;
+        searchError.style.display = 'block';
+        return;
+      }
       var levels = levelInputs.map(function (input, index) { return input.checked ? index : -1; })
         .filter(function (level) { return level >= 0; });
+      var selectedFacilities = metadataInputs.facility.filter(function (input) { return input.checked; })
+        .map(function (input) { return input.value; });
       var filtered = examples.filter(function (entry) {
         var date = entry.date;
         var day = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0')
           + '-' + String(date.getDate()).padStart(2, '0');
         return (!levels.length || levels.indexOf(entry.severity) !== -1)
           && (!dateInputs[0].value || day >= dateInputs[0].value)
-          && (!dateInputs[1].value || day <= dateInputs[1].value);
+          && (!dateInputs[1].value || day <= dateInputs[1].value)
+          && (!selectedFacilities.length || selectedFacilities.indexOf(entry.facility) !== -1)
+          && matchesApp(entry.app) && matchesHostname(entry.hostname) && matchesSearch(entry);
       });
       pageIndex = Math.min(pageIndex, Math.max(0, Math.ceil(filtered.length / pageSize) - 1));
       previous.disabled = pageIndex === 0;
       next.disabled = (pageIndex + 1) * pageSize >= filtered.length;
-      page.textContent = t('widgets.pagination.page', 'Page') + ' ' + (pageIndex + 1);
-      var visible = filtered.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize).filter(function (entry) {
-        return [entry.message, entry.app, entry.hostname].join('\n').toLowerCase()
-          .indexOf(search.value.trim().toLowerCase()) !== -1;
-      });
+      page.textContent = previewText('widgets.pagination.page', 'Page') + ' ' + (pageIndex + 1);
+      var visible = filtered.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
       list.replaceChildren();
       visible.forEach(function (entry, index) {
         var row = element('div', 'ssl-log-entry');
@@ -1800,7 +1922,8 @@
         }
         var values = {
           timestamp: formatted ? formatted[previewDates.indexOf(entry.date)]
-            : entry.date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }),
+            : entry.date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }),
+          timestamp2: formatted2 ? formatted2[previewDates.indexOf(entry.date)] : entry.date.toLocaleDateString(locale),
           severity: entry.severityName,
           facility: entry.facility,
           app: entry.app,
@@ -1811,12 +1934,13 @@
           severityClass: 'ssl-sev-' + severityNames[entry.severity],
           labels: labels,
           selectedElement: selectedElement,
+          selectedCard: selected.type === 'entry',
           selectedRow: !selected.area && selected.type === 'row' ? selected.row : undefined,
           selectedColumn: !selected.area && selected.type === 'column' ? { row: selected.row, column: selected.column } : undefined
         }));
         list.appendChild(row);
       });
-      if (!visible.length) list.appendChild(element('p', 'ssl-widget-message', t('widgets.noLogs', 'No log entries found.')));
+      if (!visible.length) list.appendChild(element('p', 'ssl-widget-message', previewText('widgets.noLogs', 'No log entries found.')));
       list.scrollTop = 0;
       layoutApi.alignContentTracks(list);
     }
@@ -1838,32 +1962,41 @@
       dateGroup.count.hidden = !dateCount;
       clearLevels.disabled = !levelCount;
       clearDates.disabled = !dateCount;
-      filterButton.classList.toggle('is-active', !!(levelCount || dateCount));
+      var metadataCount = 0;
+      Object.keys(metadataInputs).forEach(function (key) {
+        var count = key === 'facility' ? metadataInputs[key].filter(function (input) { return input.checked; }).length
+          : Number(!!metadataInputs[key].value.trim());
+        metadataGroups[key].count.textContent = count ? String(count) : '';
+        metadataGroups[key].count.hidden = !count;
+        metadataGroups[key].clear.disabled = !count;
+        metadataCount += count;
+      });
+      filterButton.classList.toggle('is-active', !!(levelCount || dateCount || metadataCount));
       var today = updateDateLimits();
       if (dateInputs.some(function (input) { return input.value > today; })) {
-        dateError.textContent = t('widgets.filters.futureDate', 'Dates cannot be later than today.');
+        dateError.textContent = previewText('widgets.filters.futureDate', 'Dates cannot be later than today.');
         return;
       }
       var invalid = dateInputs[0].value && dateInputs[1].value && dateInputs[0].value > dateInputs[1].value;
-      dateError.textContent = invalid ? t('widgets.filters.invalidDateRange', 'The start date must be on or before the end date.') : '';
+      dateError.textContent = invalid ? previewText('widgets.filters.invalidDateRange', 'The start date must be on or before the end date.') : '';
       if (invalid) return;
       pageIndex = 0;
       renderEntries();
     }
     var pagination = element('nav', 'ssl-widget-pagination');
-    pagination.setAttribute('aria-label', t('widgets.pagination.label', 'Log pages'));
-    var previous = element('button', 'ssl-page-button', t('widgets.pagination.previous', 'Previous'));
+    pagination.setAttribute('aria-label', previewText('widgets.pagination.label', 'Log pages'));
+    var previous = element('button', 'ssl-page-button', previewText('widgets.pagination.previous', 'Previous'));
     previous.type = 'button';
     previous.disabled = true;
-    var page = element('span', '', t('widgets.pagination.page', 'Page') + ' 1');
-    var next = element('button', 'ssl-page-button', t('widgets.pagination.next', 'Next'));
+    var page = element('span', '', previewText('widgets.pagination.page', 'Page') + ' 1');
+    var next = element('button', 'ssl-page-button', previewText('widgets.pagination.next', 'Next'));
     next.type = 'button';
     previous.addEventListener('click', function () { pageIndex--; renderEntries(); });
     next.addEventListener('click', function () { pageIndex++; renderEntries(); });
     search.addEventListener('input', renderEntries);
     pagination.append(previous, page, next);
     preview.append(toolbar, list, pagination);
-    preview.querySelectorAll('button, input, label').forEach(function (control) {
+    preview.querySelectorAll('button, input, select, label').forEach(function (control) {
       control.classList.add('hy-nostyle');
     });
     ['toolbar', 'paging'].forEach(function (area) {
@@ -1888,27 +2021,33 @@
   function defaultDesign() { return findDesign('builtin:default') || builtInDesigns[0]; }
 
   // Returns the preview timestamps in a BLL format, or null until BLL has formatted them.
-  function previewTimestamps(format) {
+  function previewTimestamps(format, locale) {
     if (typeof format !== 'string' || !format.trim()) return null;
-    if (Object.prototype.hasOwnProperty.call(previewFormats, format)) return previewFormats[format] || null;
+    var key = JSON.stringify([format, locale || null]);
+    if (Object.prototype.hasOwnProperty.call(previewFormats, key)) return previewFormats[key] || null;
     if (!Homey) return null;
-    previewFormatQueue[format] = true;
+    previewFormatQueue[key] = { format: format, locale: locale };
     clearTimeout(previewFormatTimer);
     previewFormatTimer = setTimeout(function () {
-      var formats = Object.keys(previewFormatQueue);
-      previewFormatQueue = {};
-      Promise.all(formats.map(function (item) {
-        return api('POST', '/widget-timestamps', {
-          format: item,
-          timestamps: previewDates.map(function (date) { return date.toISOString(); })
-        }).then(function (result) {
-          previewFormats[item] = result && Array.isArray(result.values) ? result.values : false;
-        }).catch(function () {
-          previewFormats[item] = false;
-        });
-      })).then(renderPreview);
+      flushPreviewFormats().then(renderPreview);
     }, 250);
     return null;
+  }
+
+  function flushPreviewFormats() {
+    var formats = previewFormatQueue;
+    previewFormatQueue = {};
+    return Promise.all(Object.keys(formats).map(function (key) {
+      return api('POST', '/widget-timestamps', {
+        format: formats[key].format,
+        locale: formats[key].locale,
+        timestamps: previewDates.map(function (date) { return date.toISOString(); })
+      }).then(function (result) {
+        previewFormats[key] = result && Array.isArray(result.values) ? result.values : false;
+      }).catch(function () {
+        previewFormats[key] = false;
+      });
+    }));
   }
   function defaultTheme() { return findTheme('builtin:default') || builtInThemes[0]; }
 
@@ -1985,8 +2124,8 @@
   var IMAGE_MODES = ['light', 'dark'];
   var IMAGE_WIDTH = 400;
   var IMAGE_PANELS = {
-    light: { background: '#f4f4f6', text: '#202127', label: ['widgets.settings.previewLight', 'Light'] },
-    dark: { background: '#0d0e12', text: '#f2f3f5', label: ['widgets.settings.previewDark', 'Dark'] }
+    light: { background: '#f5f4fa', text: '#1c1c1c', label: 'Light' },
+    dark: { background: '#111217', text: '#e4e4e7', label: 'Dark' }
   };
 
   function captureNode(node) {
@@ -2004,6 +2143,10 @@
 
   async function templatePreviewImages(design, theme) {
     if (!window.htmlToImage) throw new Error('Template preview is unavailable');
+    [design.timestampFormat, design.daySeparatorFormat, layoutApi.resolveTimestamp2Format(design)]
+      .filter(Boolean).forEach(function (format) { previewTimestamps(format, 'en'); });
+    clearTimeout(previewFormatTimer);
+    await flushPreviewFormats();
     var host = element('div', 'widget-designer');
     host.setAttribute('aria-hidden', 'true');
     host.style.cssText = 'position:fixed;left:-10000px;top:0;width:' + IMAGE_WIDTH + 'px;pointer-events:none;';
@@ -2042,7 +2185,7 @@
       context.fillStyle = panel.text;
       context.textBaseline = 'middle';
       context.font = '600 20px sans-serif';
-      context.fillText(t(panel.label[0], panel.label[1]), padding, padding + headingHeight / 2);
+      context.fillText(panel.label, padding, padding + headingHeight / 2);
       context.drawImage(image.canvas, padding, padding + headingHeight);
       return canvas.toDataURL('image/png');
     });
@@ -2058,8 +2201,10 @@
     var text = forumPost();
     var heading = text.slice(2, text.indexOf('\n\n'));
     var html = '<h1>' + escapeHtml(heading) + '</h1><p><br></p>'
-      + templates.imageData.map(function (image) { return '<p><img alt="Widget preview" src="' + image + '"></p>'; }).join('')
-      + '<p>TWF:</p><pre data-params="javascript"><code class="language-javascript">' + escapeHtml(templates.exportText) + '</code></pre>';
+      + '<p>' + templates.imageData.map(function (image) {
+        return '<img alt="Widget preview" width="' + (IMAGE_WIDTH / 2) + '" src="' + image + '">';
+      }).join(' ') + '</p>'
+      + '<pre data-params="javascript"><code class="language-javascript">' + escapeHtml(templates.exportText) + '</code></pre>';
     return { text: text, html: html };
   }
 
@@ -2207,7 +2352,7 @@
     var heading = [];
     if (templates.exportDesignName) heading.push('Design: ' + templates.exportDesignName.replace(/\s+/g, ' ').trim());
     if (templates.exportThemeName) heading.push('Theme: ' + templates.exportThemeName.replace(/\s+/g, ' ').trim());
-    return '# ' + heading.join(' | ') + '\n\n\n\nTWF:\n```javascript\n' + templates.exportText + '\n```';
+    return '# ' + heading.join(' | ') + '\n\n\n\n```javascript\n' + templates.exportText + '\n```';
   }
 
   function createTemplate() {
@@ -2317,7 +2462,7 @@
       elementFonts: clone(original.elementFonts || {}),
       elementTextStyles: clone(original.elementTextStyles || {})
     };
-    ['toolbarLayout', 'pagingLayout', 'controlStyles', 'widgetPadding', 'elementLineHeights', 'widgetBorderless'].forEach(function (key) {
+    ['toolbarLayout', 'pagingLayout', 'controlStyles', 'widgetPadding', 'elementLineHeights', 'widgetBorderless', 'timestamp2Format'].forEach(function (key) {
       if (original[key]) design[key] = clone(original[key]);
     });
     collection.designs.push(design);
@@ -2887,10 +3032,58 @@
 
   function switchMode(next) {
     mode = next;
-    if (isBuiltIn(editingItem().id) || !selection
-      || (selection.type !== 'widget' && selection.type !== 'element')) selection = null;
     selectionKey = editingKey();
     renderEditor();
+  }
+
+  function bindStickyPreview(sticky) {
+    var scrollContainer = sticky.closest('.settings-widgets-content');
+    var settingsView = scrollContainer.parentNode;
+    var tabs = settingsView.querySelector('.settings-tabs');
+    var editor = sticky.nextElementSibling;
+    var sentinel = element('div', 'style-preview-sentinel');
+    sentinel.setAttribute('aria-hidden', 'true');
+    sticky.parentNode.insertBefore(sentinel, sticky);
+    var stuckTimer = null;
+    var unpinnedHeight = 0;
+    function updateStuck() {
+      stuckTimer = null;
+      var isStuck = sticky.classList.contains('is-stuck');
+      var shouldStick = scrollContainer.clientHeight > 0 && !editor.hidden && sticky.getClientRects().length > 0
+        && sentinel.getBoundingClientRect().top < scrollContainer.getBoundingClientRect().top - 0.5;
+      if (shouldStick) {
+        if (!isStuck) {
+          unpinnedHeight = sticky.getBoundingClientRect().height;
+          sticky.classList.add('is-stuck');
+        }
+        // Reserve only the height lost to the pinned cap, outside the visible preview.
+        var space = Math.max(0, unpinnedHeight - sticky.getBoundingClientRect().height) + 'px';
+        if (editor.style.getPropertyValue('--ssl-preview-reserved-space') !== space) {
+          editor.style.setProperty('--ssl-preview-reserved-space', space);
+        }
+      } else if (isStuck) {
+        sticky.classList.remove('is-stuck');
+        editor.style.removeProperty('--ssl-preview-reserved-space');
+      }
+    }
+    function scheduleStuck() {
+      if (stuckTimer === null) stuckTimer = window.setTimeout(updateStuck, 0);
+    }
+    function updateTabHeight() {
+      if (tabs.offsetHeight) settingsView.style.setProperty('--ssl-settings-tabs-height', tabs.offsetHeight + 'px');
+      scheduleStuck();
+    }
+    scrollContainer.addEventListener('scroll', scheduleStuck, { passive: true });
+    window.addEventListener('resize', updateTabHeight);
+    if (window.ResizeObserver) {
+      new window.ResizeObserver(updateTabHeight).observe(tabs);
+      new window.ResizeObserver(function () {
+        // ResizeObserver runs before paint; refresh the reservation in the same frame.
+        if (stuckTimer !== null) window.clearTimeout(stuckTimer);
+        updateStuck();
+      }).observe(sticky);
+    }
+    updateTabHeight();
   }
 
   function bindEvents() {
@@ -2928,47 +3121,42 @@
     });
     byId('designer-help-toggle').addEventListener('click', toggleHelp);
     var sticky = root.querySelector('.style-preview-sticky');
-    if (sticky) {
-      var scrollContainer = sticky.closest('.settings-widgets-content');
-      var settingsView = scrollContainer.parentNode;
-      var tabs = settingsView.querySelector('.settings-tabs');
-      var sentinel = element('div', 'style-preview-sentinel');
-      sentinel.setAttribute('aria-hidden', 'true');
-      sticky.parentNode.insertBefore(sentinel, sticky);
-      var stuckTimer = null;
-      var updateStuck = function () {
-        stuckTimer = null;
-        var top = scrollContainer.getBoundingClientRect().top;
-        sticky.classList.toggle('is-stuck', scrollContainer.clientHeight > 0 && sticky.getClientRects().length > 0
-          && sentinel.getBoundingClientRect().top < top - 0.5);
-      };
-      var scheduleStuck = function () {
-        if (stuckTimer === null) stuckTimer = window.setTimeout(updateStuck, 0);
-      };
-      var updateTabHeight = function () {
-        if (tabs.offsetHeight) settingsView.style.setProperty('--ssl-settings-tabs-height', tabs.offsetHeight + 'px');
-        scheduleStuck();
-      };
-      scrollContainer.addEventListener('scroll', scheduleStuck, { passive: true });
-      window.addEventListener('resize', updateTabHeight);
-      if (window.ResizeObserver) new window.ResizeObserver(updateTabHeight).observe(tabs);
-      updateTabHeight();
-    }
+    if (sticky) bindStickyPreview(sticky);
     byId('style-new').addEventListener('click', function () { createItem(false); });
     byId('style-copy').addEventListener('click', function () { createItem(true); });
     byId('style-delete').addEventListener('click', function () {
       deleteSelected(mode).catch(function (error) { setStatus(error.message, true); });
     });
     byId('preview-mode').value = previewMode;
-    byId('preview-mode').addEventListener('change', function (event) {
-      previewMode = event.target.value === 'dark' ? 'dark' : 'light';
+    var previewModeChosen = false;
+    function applyPreviewMode(value) {
+      previewMode = value;
+      byId('preview-mode').value = value;
+      updateColorPaletteModes();
       renderPreview();
+      if (templates.section === 'catalog') renderCatalog();
+    }
+    byId('preview-mode').addEventListener('change', function (event) {
+      previewModeChosen = true;
+      applyPreviewMode(event.target.value === 'dark' ? 'dark' : 'light');
     });
     if (darkSchemeQuery && darkSchemeQuery.addEventListener) {
-      darkSchemeQuery.addEventListener('change', function () {
-        previewMode = homeyInvertsPage() ? 'dark' : 'light';
-        byId('preview-mode').value = previewMode;
-        renderPreview();
+      darkSchemeQuery.addEventListener('change', function (event) {
+        if (!previewModeChosen) applyPreviewMode(event.matches ? 'dark' : 'light');
+      });
+    }
+    if (previewHostElements.length && window.MutationObserver) {
+      var previewHostObserver = new window.MutationObserver(updatePreviewHost);
+      function observePreviewHost() {
+        previewHostElements.forEach(function (element) {
+          previewHostObserver.observe(element, { attributes: true, attributeFilter: ['class', 'style'] });
+        });
+        updatePreviewHost();
+      }
+      observePreviewHost();
+      window.addEventListener('pagehide', function () { previewHostObserver.disconnect(); });
+      window.addEventListener('pageshow', function (event) {
+        if (event.persisted) observePreviewHost();
       });
     }
     byId('save-styles').addEventListener('click', function () { save().catch(function () {}); });

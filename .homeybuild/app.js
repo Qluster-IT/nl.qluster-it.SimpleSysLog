@@ -424,15 +424,14 @@ class simpleLog extends Homey.App {
   triggerLogGenerated(data, group, { severity, facility, hostname, timestamp, source }) {
     if (!this.triggerLog_generated) return;
     let _severity = severity ? SEVERITIES[severity] : '';
-    let _facility = facility ? FACILITIES[facility] : '';
+    const facilityId = (facility || facility === 0) ? Number.parseInt(facility, 10) : -1;
     severity = severity ? Number.parseInt(severity) : -1;
-    facility = facility ? Number.parseInt(facility) : -1;
     this.triggerLog_generated.trigger({
       log: data, group: group || '',
       severity: _severity, severityId: severity,
-      facility: _facility, facilityId: facility,
+      facility: FACILITIES[facilityId] || '', facilityId,
       hostname: hostname || '', timestamp: timestamp.getTime(), source: source || ''
-    }, { group, severity, facility }).then(() => { }).catch(() => { });
+    }, { group, severity, facility: facilityId }).then(() => { }).catch(() => { });
     return true;
   }
 
@@ -453,10 +452,11 @@ class simpleLog extends Homey.App {
     if (source === 'log') {
 
       let sev = Number.parseInt(severity || '6');
+      const forwardedFacility = (facility || facility === 0) ? facility : '16';
       for (let i = sev; i < this.Loggers.length; i++) {
         const loggers = this.Loggers[i];
         for (const logger of loggers) {
-          await logger.log({ data, group, severity: severity || '6', facility: facility || '16', timestamp, hostname, source });
+          await logger.log({ data, group, severity: severity || '6', facility: forwardedFacility, timestamp, hostname, source });
         }
       }
     }
@@ -536,7 +536,7 @@ class simpleLog extends Homey.App {
     this.triggerLog_generated.registerRunListener(async (args, state) => {
       return (!args.group || args.group == 'undefined' || args.group == state.group) &&
         (!args.severity || args.severity == 'undefined' || args.severity == state.severity) &&
-        (!args.facility || args.facility == 'undefined' || args.facility == state.facility);
+        ((!args.facility && args.facility !== 0) || args.facility == 'undefined' || args.facility == state.facility);
     });
 
 

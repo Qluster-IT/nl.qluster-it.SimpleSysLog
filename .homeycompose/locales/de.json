@@ -58,6 +58,7 @@
     "design": {
       "default": "Standard",
       "compact": "Kompakt",
+      "compact-classic": "Kompakt klassisch",
       "journal": "Journal",
       "console": "Konsole",
       "aurora": "Polarlicht",
@@ -79,6 +80,7 @@
     },
     "fields": {
       "timestamp": "Zeitstempel",
+      "timestamp2": "Zeitstempel 2",
       "severity": "Schweregrad",
       "facility": "Einrichtung",
       "app": "App / Gruppe",
@@ -169,7 +171,11 @@
         "black": "Schwarz",
         "white": "Weiß",
         "black-light": "Schwarz (hell/dunkel)",
-        "red-soft": "Rot (Fehler)"
+        "red-soft": "Rot (hell)",
+        "red-dark": "Dunkelrot",
+        "grey-light": "Hellgrau",
+        "grey-dark": "Dunkelgrau",
+        "navy": "Marineblau"
       },
       "none": "Keine",
       "invalidName": "Gib einen Namen mit 1 bis 60 Zeichen ein.",
@@ -235,6 +241,7 @@
         "select_before_drag": "Wähle ein Element aus, bevor du es ziehst.",
         "widget": "Widget",
         "day_separator": "Tagestrenner",
+        "entry": "Eintrag",
         "row": "Zeile",
         "row_count": "Anzahl der Zeilen",
         "row_count_confirm": "Auf __count__ Zeilen reduzieren? Entfernte Zeilen verlieren ihre Einstellungen, ihre Elemente werden nach Unbenutzt verschoben und zeilenübergreifende Spalten werden verkürzt.",
@@ -352,8 +359,7 @@
           "wrap": "Textumbruch",
           "wrap_values": {
             "normal": "An Breite anpassen",
-            "nowrap": "Kein Umbruch",
-            "words": "An Leerzeichen stapeln"
+            "nowrap": "Kein Umbruch"
           }
         },
         "search_filters": "Suche und Filter",
@@ -408,7 +414,7 @@
     "filters": {
       "button": "Filter",
       "level": "Stufe",
-      "allLevels": "Alle Stufen",
+      "allLevels": "Zurücksetzen",
       "date": "Datum",
       "fromDate": "Von",
       "toDate": "Bis",
@@ -422,6 +428,8 @@
       "previous": "Zur?ck",
       "next": "Weiter",
       "page": "Seite"
-    }
+    },
+    "invalidUpdateMode": "Der Aktualisierungsmodus des Widgets ist ungültig.",
+    "invalidRefreshInterval": "Das Aktualisierungsintervall muss eine ganze Zahl von 1 bis 2147483 Sekunden sein."
   }
 }

@@ -49,7 +49,8 @@
       "journal": "Dziennik",
       "console": "Konsola",
       "aurora": "Zorza",
-      "widgetkeeper": "WidgetKeeper"
+      "widgetkeeper": "WidgetKeeper",
+      "compact-classic": "Kompaktowy klasyczny"
     },
     "theme": {
       "homey": "Homey",
@@ -73,7 +74,8 @@
       "facility": "Kategoria",
       "app": "Aplikacja / Grupa",
       "hostname": "Nazwa hosta",
-      "message": "Wiadomość"
+      "message": "Wiadomość",
+      "timestamp2": "Znacznik czasu 2"
     },
     "search": "Szukaj",
     "loading": "Wczytywanie logów…",
@@ -170,7 +172,11 @@
         "black": "Czarny",
         "white": "Biały",
         "black-light": "Czarny (jasny/ciemny)",
-        "red-soft": "Czerwony (Błąd)",
+        "red-soft": "Czerwony (jasny)",
+        "red-dark": "Ciemnoczerwony",
+        "grey-light": "Jasnoszary",
+        "grey-dark": "Ciemnoszary",
+        "navy": "Granatowy",
         "console-purple": "Fioletowy (Console: Alarm)",
         "console-pink": "Różowy (Console: Ostrzeżenie)",
         "console-red": "Czerwony (Console: Krytyczny)",
@@ -381,7 +387,8 @@
         "background_solid": "Jednolity",
         "background_gradient": "Gradient",
         "widget_padding_hint": "Domyślne ustawienie aplikacji zachowuje normalne odstępy wewnętrzne widżetu.",
-        "background_gradient_end": "Kolor końcowy gradientu"
+        "background_gradient_end": "Kolor końcowy gradientu",
+        "entry": "Wpis"
       },
       "timestampFormat": "Format daty i godziny",
       "timestampFormatHint": "Wybierz format daty i godziny BLL lub wpisz i wybierz własny format BLL. Widżet może go zastąpić własnym formatem.",
@@ -429,7 +436,7 @@
     "filters": {
       "button": "Filtry",
       "level": "Poziom",
-      "allLevels": "Wszystkie poziomy",
+      "allLevels": "Resetuj",
       "date": "Data",
       "fromDate": "Od",
       "toDate": "Do",
@@ -443,7 +450,9 @@
       "previous": "Poprzednia",
       "next": "Nast?pna",
       "page": "Strona"
-    }
+    },
+    "invalidUpdateMode": "Tryb aktualizacji widżetu jest nieprawidłowy.",
+    "invalidRefreshInterval": "Interwał odświeżania musi być liczbą całkowitą od 1 do 2147483 sekund."
   },
   "widget_features_notice": "Simple (Sys) Log ma teraz widżet na pulpit! Dodaj widżet Simple Sys Log do pulpitu i otwórz ustawienia aplikacji, aby na karcie Widżety zaprojektować jego układ i kolory. Widżet wymaga aplikacji Better Logic Library.",
   "exportFailed": "Nie udało się utworzyć lub przesłać eksportu. Spróbuj ponownie.",

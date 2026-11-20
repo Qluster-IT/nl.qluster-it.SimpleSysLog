@@ -49,7 +49,8 @@
       "journal": "일지",
       "console": "콘솔",
       "aurora": "???",
-      "widgetkeeper": "WidgetKeeper"
+      "widgetkeeper": "WidgetKeeper",
+      "compact-classic": "클래식 간결"
     },
     "theme": {
       "homey": "Homey",
@@ -73,7 +74,8 @@
       "facility": "분류",
       "app": "앱 / 그룹",
       "hostname": "호스트 이름",
-      "message": "메시지"
+      "message": "메시지",
+      "timestamp2": "타임스탬프 2"
     },
     "search": "검색",
     "loading": "로그를 불러오는 중…",
@@ -170,7 +172,11 @@
         "black": "검정",
         "white": "흰색",
         "black-light": "검정 (밝게/어둡게)",
-        "red-soft": "빨간색 (오류)",
+        "red-soft": "빨강 (밝음)",
+        "red-dark": "진한 빨강",
+        "grey-light": "밝은 회색",
+        "grey-dark": "진한 회색",
+        "navy": "남색",
         "console-purple": "보라색 (Console: 긴급)",
         "console-pink": "분홍색 (Console: 경보)",
         "console-red": "빨간색 (Console: 치명적)",
@@ -381,7 +387,8 @@
         "background_solid": "단색",
         "background_gradient": "그라데이션",
         "widget_padding_hint": "앱 기본값은 위젯의 기본 안쪽 여백을 유지합니다.",
-        "background_gradient_end": "그라데이션 끝 색상"
+        "background_gradient_end": "그라데이션 끝 색상",
+        "entry": "항목"
       },
       "timestampFormat": "날짜 및 시간 형식",
       "timestampFormatHint": "BLL 날짜/시간 형식을 선택하거나 사용자 지정 BLL 형식을 입력하고 선택하세요. 위젯에서 자체 형식으로 재정의할 수 있습니다.",
@@ -429,7 +436,7 @@
     "filters": {
       "button": "필터",
       "level": "수준",
-      "allLevels": "모든 수준",
+      "allLevels": "초기화",
       "date": "날짜",
       "fromDate": "시작",
       "toDate": "종료",
@@ -443,7 +450,9 @@
       "previous": "??",
       "next": "??",
       "page": "???"
-    }
+    },
+    "invalidUpdateMode": "위젯 업데이트 모드가 올바르지 않습니다.",
+    "invalidRefreshInterval": "새로 고침 간격은 1~2147483초 사이의 정수여야 합니다."
   },
   "widget_features_notice": "Simple (Sys) Log에 이제 대시보드 위젯이 있습니다! Simple Sys Log 위젯을 대시보드에 추가하고, 앱 설정의 위젯 탭에서 레이아웃과 색상을 디자인하세요. 위젯에는 Better Logic Library 앱이 필요합니다.",
   "exportFailed": "내보내기 파일을 만들거나 업로드할 수 없습니다. 다시 시도하세요.",

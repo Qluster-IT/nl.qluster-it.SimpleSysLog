@@ -103,13 +103,18 @@
     return predicate;
   }
 
-  function compile(query, mode) {
+  function compileText(query, mode) {
     query = typeof query === 'string' ? query.trim() : '';
     if (!query) return function () { return true; };
     var needle = query.toLowerCase();
     var predicate = mode === 'advanced' ? compileAdvanced(query) : function (text) {
       return text.indexOf(needle) !== -1;
     };
+    return function (text) { return predicate(typeof text === 'string' ? text.toLowerCase() : ''); };
+  }
+
+  function compile(query, mode) {
+    var predicate = compileText(query, mode);
     return function (log) { return predicate(searchableText(log)); };
   }
 
@@ -121,5 +126,5 @@
     return compileAdvanced(query)(text);
   }
 
-  return { matches: matches, compile: compile, compileAdvanced: compileAdvanced };
+  return { matches: matches, compile: compile, compileText: compileText, compileAdvanced: compileAdvanced };
 }));

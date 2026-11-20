@@ -22,7 +22,7 @@ test('built-in presets remain valid and portable across every design and theme c
     node.classList = { add: name => { node.className += ' ' + name; } };
     return node;
   } };
-  const values = { message: 'A sample log entry', timestamp: '13:45', severity: 'Info', app: 'Example',
+  const values = { message: 'A sample log entry', timestamp: '13:45', timestamp2: '20-11', severity: 'Info', app: 'Example',
     hostname: 'homey', facility: 'Flow' };
   const findField = (node, id) => node.className.split(' ').includes('ssl-field-' + id)
     ? node : node.children.map(child => findField(child, id)).find(Boolean);
@@ -38,6 +38,23 @@ test('built-in presets remain valid and portable across every design and theme c
       assert.equal(message.style.background, undefined, 'built-in messages must not have a background highlight');
       assert.equal(message.style.color, undefined, 'messages must inherit the theme text color for light/dark readability');
       assert.ok(!message.className.includes('ssl-has-background'));
+      if (design.id === 'builtin:compact') {
+        assert.equal(findField(card, 'timestamp2').style.fontSize, findField(card, 'timestamp').style.fontSize,
+          'Compact must keep the date and time the same size');
+      }
+      if (design.id === 'builtin:compact-classic') {
+        const cells = layout.computeLayout(design).cells;
+        const rail = cells.find(cell => cell.elements.includes('timestamp'));
+        const metadata = cells.find(cell => cell.elements.includes('app'));
+        const messageCell = cells.find(cell => cell.elements.includes('message'));
+        assert.deepEqual(rail.elements, ['timestamp2', 'timestamp', 'severity']);
+        assert.equal(rail.rowSpan, 2);
+        assert.equal(metadata.row, messageCell.row + 1);
+        assert.equal(metadata.start, messageCell.start);
+        assert.ok(parseFloat(findField(card, 'timestamp2').style.fontSize) < parseFloat(findField(card, 'timestamp').style.fontSize));
+        for (const id of ['timestamp2', 'timestamp', 'app', 'facility']) assert.equal(findField(card, id).textContent, values[id]);
+        assert.equal(card.style.borderLeft, '3px solid var(--ssl-sev)');
+      }
       if (design.id === 'builtin:journal') {
         assert.equal(findField(card, 'app').style.lineHeight, '17px', 'App / Group must not inherit host line height');
         assert.equal(findField(card, 'facility').style.lineHeight, '14px', 'Facility must not inherit host line height');
@@ -65,7 +82,7 @@ test('built-in presets remain valid and portable across every design and theme c
   }
 });
 
-test('timestamp wrapping is optional, portable and stacks Compact at spaces without splitting words', async () => {
+test('timestamps retain their text, support independent formats and migrate retired forced wrapping', async () => {
   const doc = { createElement: () => {
     const node = { style: {}, children: [], className: '', setAttribute() {}, appendChild(child) { this.children.push(child); } };
     node.classList = { add: name => { node.className += ' ' + name; } };
@@ -77,20 +94,33 @@ test('timestamp wrapping is optional, portable and stacks Compact at spaces with
   const defaultTimestamp = findTimestamp(layout.renderCard(doc, original, null, values));
   assert.equal(defaultTimestamp.style.whiteSpace, undefined);
   assert.equal(defaultTimestamp.style.inlineSize, undefined);
-  for (const wrap of ['normal', 'nowrap', 'words']) {
+  for (const wrap of ['normal', 'nowrap']) {
     const design = styles.validateDesign({ ...original, id: 'wrapping', elementTextStyles: { timestamp: { wrap } } });
     const timestamp = findTimestamp(layout.renderCard(doc, design, null, values));
-    assert.equal(timestamp.textContent, wrap === 'words' ? '18-11-2026\n16:19' : values.timestamp);
-    assert.equal(timestamp.style.whiteSpace, wrap === 'words' ? 'pre' : wrap === 'nowrap' ? 'nowrap' : 'normal');
+    assert.equal(timestamp.textContent, values.timestamp);
+    assert.equal(timestamp.style.whiteSpace, wrap === 'nowrap' ? 'nowrap' : 'normal');
     const decoded = template.decodeTemplate(await template.encodeTemplate({ design }));
     assert.deepEqual(decoded.design.elementTextStyles, design.elementTextStyles);
   }
   assert.throws(() => styles.validateDesign({ ...original, elementTextStyles: { timestamp: { wrap: 'invalid' } } }), /Invalid widget design/);
   assert.throws(() => styles.validateDesign({ ...original, elementTextStyles: { message: { wrap: 'words' } } }), /Invalid widget design/);
-  const compact = styles.BUILT_IN_DESIGNS.find(design => design.id === 'builtin:compact');
-  const timestamp = findTimestamp(layout.renderCard(doc, compact, null, values));
-  assert.equal(timestamp.textContent, '18-11-2026\n16:19');
-  assert.equal(timestamp.style.whiteSpace, 'pre');
+  const migrated = styles.validateDesign({ ...original, elementTextStyles: { timestamp: { wrap: 'words' } } });
+  assert.equal(migrated.elementTextStyles.timestamp.wrap, 'normal');
+  assert.equal(findTimestamp(layout.renderCard(doc, migrated, null, values)).textContent, values.timestamp);
+  for (const id of ['builtin:compact', 'builtin:compact-classic']) {
+    const design = styles.validateDesign(styles.BUILT_IN_DESIGNS.find(design => design.id === id));
+    assert.equal(design.timestampFormat, 'HH:mm');
+    assert.equal(layout.resolveTimestamp2Format(design), 'dd-MM');
+    const portable = template.decodeTemplate(await template.encodeTemplate({ design })).design;
+    assert.equal(portable.timestamp2Format, 'dd-MM');
+    assert.ok(layout.computeLayout(portable).cells.some(cell => cell.elements.includes('timestamp2')));
+    const { timestamp2Format, ...withoutFormat } = design;
+    assert.equal(layout.resolveTimestamp2Format(withoutFormat), 'dd-MM-yyyy');
+  }
+  assert.equal(layout.resolveTimestamp2Format(original), undefined);
+  for (const timestamp2Format of ['', null, 2, 'x'.repeat(129)]) {
+    assert.throws(() => styles.validateDesign({ ...original, timestamp2Format }), /Invalid widget design/);
+  }
 });
 
 test('control layouts and overrides validate and survive TWF export without changing older designs', async () => {
@@ -237,20 +267,80 @@ test('widget outline width and colour validate with defaults like Chronograph', 
 test('built-in severity shades are distinct and portable without changing saved colors', async () => {
   const css = fs.readFileSync(require.resolve('../assets/css/ssl-widget.css'), 'utf8');
   const colorHex = name => {
-    const match = css.match(new RegExp(`--ssl-color-${name}:\\s*(#[0-9a-f]{6})\\s*;`, 'i'));
+    const match = css.match(new RegExp(`--ssl-(?:color|fallback)-${name}:\\s*(#[0-9a-f]{6})\\s*;`, 'i'));
     assert.ok(match, `${name} must have a palette color`);
     return match[1].toUpperCase();
   };
   const levels = ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'];
-  for (const theme of styles.BUILT_IN_THEMES) {
+  const defaultSeverityColors = {
+    emergency: 'red-dark', alert: 'pink', critical: 'purple', error: 'red',
+    warning: 'orange', notice: 'green', info: 'blue', debug: 'grey'
+  };
+  const defaultSeverityTextColors = {
+    emergency: 'white', alert: 'black', critical: 'white', error: 'white',
+    warning: 'black', notice: 'black', info: 'black', debug: 'black'
+  };
+  for (const theme of styles.BUILT_IN_THEMES.filter(theme =>
+    ['builtin:default-syslog', 'builtin:console'].includes(theme.id))) {
     assert.notEqual(theme.colors.critical, theme.colors.error, `${theme.name} must distinguish Critical and Error`);
   }
   const builtin = styles.BUILT_IN_THEMES[0];
-  assert.equal(builtin.colors.critical, 'red');
-  assert.equal(builtin.colors.error, 'red-soft');
-  assert.notEqual(colorHex('red-soft'), '#F25F5C');
+  assert.equal(builtin.colors.accent, 'automatic');
+  assert.deepEqual(levels.map(level => builtin.colors[level]), Array(8).fill('automatic'));
+  const paletteDefaults = css.match(/\.ssl-widget,\s*\.ssl-palette\s*\{\s*--ssl-background:[^}]*\}/);
+  assert.ok(paletteDefaults, 'palette controls must inherit widget default colors');
+  const namedPalette = css.match(/\.ssl-widget,\s*\.ssl-palette\s*\{\s*--ssl-color-red:[^}]*\}/);
+  assert.ok(namedPalette, 'widget and palette contexts must share the named colors');
+  const homeyColors = {
+    red: ['red', '#d81c1d'],
+    orange: ['orange', '#ff8400'],
+    green: ['green', '#3fc700'],
+    blue: ['blue', '#0082fa'],
+    grey: ['mono-500', '#7a7a7f'],
+    white: ['white', '#ffffff']
+  };
+  for (const [name, [token, fallback]] of Object.entries(homeyColors)) {
+    assert.ok(namedPalette[0].includes(
+      `--ssl-color-${name}: var(--homey-color-${token}, var(--ssl-fallback-${name}));`),
+    `${name} must use Homey's color and exact fallback in widgets and previews`);
+    assert.ok(css.includes(`--ssl-fallback-${name}: ${fallback};`));
+  }
+  assert.match(css, /--ssl-emergency-text:\s*var\(--ssl-color-white\)/i);
+  assert.match(css, /--ssl-badge-text:\s*var\(--ssl-color-black\)/i);
+  const rendered = layout.widgetStyle({}, builtin);
+  assert.equal(rendered['--ssl-accent'], undefined);
+  assert.match(css, /--ssl-accent:\s*var\(--ssl-color-blue\)/i);
+  for (const level of levels) {
+    const expected = `var(--ssl-color-${defaultSeverityColors[level]})`;
+    assert.ok(css.includes(`--ssl-${level}: ${expected};`), `${level} CSS fallback must match Default`);
+    assert.ok(paletteDefaults[0].includes(`--ssl-${level}: ${expected};`),
+      `${level} default swatch must match Default`);
+    assert.equal(rendered['--ssl-' + level], undefined);
+    assert.ok(css.includes(`--ssl-${level}-text: var(--ssl-color-${defaultSeverityTextColors[level]});`),
+      `${level} default text must use its palette token`);
+  }
+  for (const id of ['ocean', 'forest', 'sunset', 'aurora', 'widgetkeeper']) {
+    const preset = styles.BUILT_IN_THEMES.find(theme => theme.id === 'builtin:' + id);
+    assert.deepEqual(levels.map(level => preset.colors[level]),
+      Array(8).fill('automatic'), `${id} must inherit Default's severity colors`);
+    const overrides = layout.widgetStyle({}, preset);
+    for (const level of levels) {
+      assert.equal(overrides['--ssl-' + level], undefined, `${id} must not override Default's ${level} color`);
+      assert.equal(css.includes(`--ssl-${level}: ${preset.colors[level]};`), false);
+      const expected = `var(--ssl-color-${defaultSeverityColors[level]})`;
+      assert.ok(css.includes(`--ssl-${level}: ${expected};`), `${id} must use Default's ${level} color`);
+    }
+  }
+  assert.equal(colorHex('red-soft'), '#FF453A');
+  assert.equal(colorHex('red-dark'), '#8B0000');
+  assert.equal(colorHex('purple'), '#9033FC');
+  assert.equal(colorHex('pink'), '#F2549E');
+  assert.equal(colorHex('grey-light'), '#D1D5DB');
+  assert.equal(colorHex('grey-dark'), '#4B5563');
+  assert.equal(colorHex('navy'), '#1E3A5F');
   const syslog = styles.BUILT_IN_THEMES[1];
   assert.equal(syslog.id, 'builtin:default-syslog');
+  assert.equal(syslog.colors.accent, 'automatic');
   assert.deepEqual(Object.fromEntries(levels.map(level => [level, syslog.colors[level]])), {
     emergency: '#FF00FF', alert: '#FF0000', critical: '#F44336', error: '#E57373',
     warning: '#FFC107', notice: '#00BCD4', info: '#4CAF50', debug: '#2196F3'
@@ -263,6 +353,11 @@ test('built-in severity shades are distinct and portable without changing saved 
     return red * 0.2126 + green * 0.7152 + blue * 0.0722;
   };
   for (const level of levels) {
+    const textColor = defaultSeverityTextColors[level] === 'white' ? '#FFFFFF' : '#000000';
+    const dark = luminance(textColor);
+    const fill = luminance(colorHex(defaultSeverityColors[level]));
+    assert.ok((Math.max(dark, fill) + 0.05) / (Math.min(dark, fill) + 0.05) >= 4.5,
+      `${level} Default badge must have readable text`);
     assert.ok((luminance(syslog.colors[level]) + 0.05) / (luminance('#101114') + 0.05) >= 4.5,
       `${level} badge must have readable text`);
   }
@@ -273,13 +368,36 @@ test('built-in severity shades are distinct and portable without changing saved 
   const theme = styles.validateTheme({ ...builtin, id: 'custom',
     colors: { ...builtin.colors, error: 'red-soft' }, elements: { message: { color: 'red-soft', background: 'red-soft' } } });
   assert.equal(layout.widgetStyle({}, theme)['--ssl-error'], 'var(--ssl-color-red-soft)');
+  const darkRedTheme = styles.validateTheme({ ...builtin, id: 'dark-red',
+    colors: { ...builtin.colors, error: 'red-dark' }, elements: { message: { color: 'red-dark', background: 'red-dark' } } });
+  assert.equal(layout.widgetStyle({}, darkRedTheme)['--ssl-error'], 'var(--ssl-color-red-dark)');
+  assert.equal(layout.widgetStyle({}, darkRedTheme)['--ssl-error-text'], 'var(--ssl-color-white)');
+  const darkRedExpected = { ...darkRedTheme };
+  delete darkRedExpected.id;
+  assert.deepEqual(template.decodeTemplate(await template.encodeTemplate({ theme: darkRedTheme })).theme, darkRedExpected);
+  const addedColorsTheme = styles.validateTheme({ ...builtin, id: 'added-colors',
+    colors: { ...builtin.colors, accent: 'navy', error: 'navy' },
+    elements: { message: { color: 'grey-light', background: 'grey-dark' } } });
+  assert.equal(layout.widgetStyle({}, addedColorsTheme)['--ssl-accent'], 'var(--ssl-color-navy)');
+  assert.equal(layout.widgetStyle({}, addedColorsTheme)['--ssl-error-text'], 'var(--ssl-color-white)');
+  const addedColorsExpected = { ...addedColorsTheme };
+  delete addedColorsExpected.id;
+  assert.deepEqual(template.decodeTemplate(await template.encodeTemplate({ theme: addedColorsTheme })).theme, addedColorsExpected);
   const { id, ...expected } = theme;
   assert.deepEqual(template.decodeTemplate(await template.encodeTemplate({ theme })).theme, expected);
   const localeDirectory = path.join('.homeycompose', 'locales');
   for (const file of fs.readdirSync(localeDirectory).filter(name => /^[a-z]{2}\.json$/.test(name))) {
     const locale = JSON.parse(fs.readFileSync(path.join(localeDirectory, file), 'utf8'));
     assert.ok(locale.widgets.theme['default-syslog'], `${file} must name the Syslog theme`);
+    assert.ok(locale.widgets.design['compact-classic'], `${file} must name Compact Classic`);
+    assert.ok(locale.widgets.fields.timestamp2, `${file} must name Timestamp 2`);
+    assert.equal(locale.widgets.settings.layout.text_styles.wrap_values.words, undefined);
     assert.ok(locale.widgets.settings.colorNames['red-soft'], `${file} must name red-soft`);
+    if (file === 'en.json') assert.equal(locale.widgets.settings.colorNames['red-soft'], 'Red (light)');
+    assert.ok(locale.widgets.settings.colorNames['red-dark'], `${file} must name red-dark`);
+    assert.ok(locale.widgets.settings.colorNames['grey-light'], `${file} must name grey-light`);
+    assert.ok(locale.widgets.settings.colorNames['grey-dark'], `${file} must name grey-dark`);
+    assert.ok(locale.widgets.settings.colorNames.navy, `${file} must name navy`);
   }
   const saved = styles.validateTheme({ ...builtin, id: 'saved', colors: { ...builtin.colors, error: 'red' } });
   assert.equal(saved.colors.error, 'red');
@@ -717,7 +835,7 @@ test('community catalog loads templates from the configured SSL topic', async ()
       ? { post_stream: { posts: [{
         id: 501,
         post_number: 4,
-        raw: `# Compact log\nA shared design.\n![Widget preview](upload://abc.png)\n${encoded}`,
+        raw: `# Compact log\nA shared design.\n![Widget preview](upload://abc.png)\n\n\`\`\`javascript\n${encoded}\n\`\`\``,
         cooked: [
           '<a class="lightbox" href="https://us1.discourse-cdn.com/flex025/uploads/athom/original/preview.png"><img src="/uploads/optimized/preview.png"></a>',
           '<img src="/uploads/default/original/dark.png">',
@@ -747,6 +865,28 @@ test('community catalog loads templates from the configured SSL topic', async ()
   assert.ok(requests[1].includes('/t/162351/posts.json'));
 });
 
+test('designer timestamp API uses English only on request without changing BLL defaults', async t => {
+  const api = require('../api');
+  const { BL } = require('betterlogiclibrary');
+  const previousDatetime = BL._datetime;
+  const previousReady = BL.isReady;
+  t.after(() => { BL.datetime = previousDatetime; BL.isReady = previousReady; });
+  const locales = [];
+  BL.isReady = true;
+  BL.datetime = {
+    toString(_format, date, locale) {
+      locales.push(locale);
+      return date.toLocaleDateString(locale || 'nl', { weekday: 'long', month: 'long' });
+    }
+  };
+  const body = { format: 'dddd MMMM', timestamps: ['2026-11-20T12:00:00Z'] };
+  assert.deepEqual((await api.formatWidgetTimestamps({ body })).values, ['november vrijdag']);
+  assert.deepEqual((await api.formatWidgetTimestamps({ body: { ...body, locale: 'en' } })).values, ['November Friday']);
+  assert.deepEqual(locales, [undefined, 'en']);
+  await assert.rejects(api.formatWidgetTimestamps({ body: { ...body, locale: 'invalid' } }),
+    /Invalid timestamp format request/);
+});
+
 test('widget API validates entry count, handles initial BLL absence, and formats returned fields', async () => {
   await assert.rejects(() => widgetApi.getWidgetLogs({
     homey: { app: { Log: { getLogs: async () => ({ logs: [] }) } } },
@@ -765,16 +905,25 @@ test('widget API validates entry count, handles initial BLL absence, and formats
         timestamp: '2026-01-01T12:00:00Z',
         timestamp_formatted: { datetime: '2026-01-01 12:00', 'dd-MM-yyyy HH:mm': '01-01-2026 12:00' },
         severity: 3, facility: 16, app: 'Heating', hostname: 'Homey', message: 'Warm'
-      }], count: 1 };
+      }, {
+        timestamp: '2026-01-01T12:00:00Z', severity: 3, facility: 2, app: 'Mailbox', message: 'Mail'
+      }, {
+        timestamp: '2026-01-01T12:00:00Z', severity: 3, facility: 12, app: 'Rpi', message: 'NTP'
+      }], count: 3 };
     } } } },
-    query: { take: '1', timestampFormat: 'dd-MM-yyyy HH:mm' }
+    query: { take: '3', timestampFormat: 'dd-MM-yyyy HH:mm' }
   });
-  assert.equal(receivedOptions.take, 1);
+  assert.equal(receivedOptions.take, 3);
   assert.equal(receivedOptions.timestampFormat, 'dd-MM-yyyy HH:mm');
   assert.equal(response.logs[0].severity, 'Error');
   assert.equal(response.logs[0].facility, 'Flow');
   assert.equal(response.logs[0].severityId, 3);
   assert.equal(response.logs[0].timestamp_formatted['dd-MM-yyyy HH:mm'], '01-01-2026 12:00');
+  assert.equal(response.logs[1].facility, 'Mail');
+  assert.equal(response.logs[2].facility, 'NTP');
+  assert.equal(response.facilities['2'], 'Mail');
+  assert.equal(response.facilities['12'], 'NTP');
+  assert.deepEqual(Object.keys(response.facilities), Array.from({ length: 24 }, (_, id) => String(id)));
   assert.equal(receivedOptions.maxSeverity, undefined);
   await widgetApi.getWidgetLogs({
     homey: { app: { Log: { getLogs: async options => { receivedOptions = options; return { logs: [], count: 0 }; } } } },
@@ -782,6 +931,14 @@ test('widget API validates entry count, handles initial BLL absence, and formats
   });
   assert.equal(JSON.stringify(receivedOptions.timestampFormat), '["HH:mm","dddd"]');
   assert.equal(receivedOptions.skip, 10);
+  await widgetApi.getWidgetLogs({
+    homey: { app: { Log: { getLogs: async options => { receivedOptions = options; return { logs: [] }; } } } },
+    query: { take: '1', timestampFormat: 'HH:mm:ss', timestamp2Format: 'dd-MM', dayFormat: 'dddd' }
+  });
+  assert.deepEqual(receivedOptions.timestampFormat, ['HH:mm:ss', 'dddd', 'dd-MM']);
+  for (const timestamp2Format of ['', [], null, 'x'.repeat(129)]) {
+    await assert.rejects(widgetApi.getWidgetLogs({ homey: { app: {} }, query: { take: '1', timestamp2Format } }), /second date and time format/);
+  }
   await assert.rejects(() => widgetApi.getWidgetLogs({
     homey: { app: { Log: { getLogs: async () => ({ logs: [] }) } } },
     query: { take: '1', skip: '-1' }
@@ -806,6 +963,11 @@ test('widget API validates and forwards per-widget log filters', async () => {
   assert.equal(receivedOptions.facility, 16);
   assert.equal(receivedOptions.app, 'Heat');
   assert.equal('hostname' in receivedOptions, false);
+  await widgetApi.getWidgetLogs({ homey, query: { take: '5', facility: '16,0,16' } });
+  assert.deepEqual(receivedOptions.facility, [0, 16]);
+  for (const facility of ['0,24', '0,', '0,1.5', '0,-1']) {
+    await assert.rejects(widgetApi.getWidgetLogs({ homey, query: { facility } }), /facility/);
+  }
   await widgetApi.getWidgetLogs({ homey, query: { take: '5', facility: 'all' } });
   assert.equal('facility' in receivedOptions, false);
   await widgetApi.getWidgetLogs({ homey, query: { take: '5', dateFrom: '2026-11-17', dateTo: '2026-11-18' } });
@@ -840,6 +1002,23 @@ test('widget filter state is saved independently for each Homey widget instance'
     ...instance('widget-one'), body: { levels: [8], from: null, to: null }
   }), /levels are invalid/);
   assert.throws(() => widgetApi.getWidgetFilterState(instance('../widget-two')), /instance ID is invalid/);
+  widgetApi.setWidgetFilterState({ ...instance('widget-one'),
+    body: { levels: [], from: null, to: null, facility: 0, app: ' Climate OR Heating ', hostname: 'Kitchen' } });
+  assert.deepEqual(widgetApi.getWidgetFilterState(instance('widget-one')),
+    { levels: [], from: null, to: null, facility: 0, app: 'Climate OR Heating', hostname: 'Kitchen' });
+  assert.deepEqual(widgetApi.getWidgetFilterState(instance('widget-two')), { levels: [], from: null, to: null });
+  widgetApi.setWidgetFilterState({ ...instance('widget-one'),
+    body: { levels: [], from: null, to: null, facility: [16, 0] } });
+  assert.deepEqual(widgetApi.getWidgetFilterState(instance('widget-one')).facility, [0, 16]);
+  for (const extra of [{ facility: 24 }, { facility: '0' }, { facility: [0, 24] }, { facility: [0, 0] },
+    { app: 'x'.repeat(201) }, { hostname: [] }]) {
+    assert.throws(() => widgetApi.setWidgetFilterState({
+      ...instance('widget-one'), body: { levels: [], from: null, to: null, ...extra }
+    }), /filter/);
+  }
+  widgetApi.setWidgetFilterState({ ...instance('widget-one'),
+    body: { levels: [], from: null, to: null, facility: null, app: '', hostname: ' ' } });
+  assert.deepEqual(widgetApi.getWidgetFilterState(instance('widget-one')), { levels: [], from: null, to: null });
 });
 
 test('widget timestamp format registration is scoped to the widget instance', async () => {
@@ -1002,6 +1181,66 @@ test('widget applies and replaces frame and theme CSS properties', () => {
     '--ssl-widget-padding-bottom': '24px', 'background-image': 'linear-gradient(red, blue)' });
   update({ '--ssl-outline-width': '0px' });
   assert.deepEqual(values, { unrelated: 'preserved', '--ssl-outline-width': '0px' });
+});
+
+test('automatic widget height measures content rather than the viewport, caps updates, and stops observing on cleanup', async () => {
+  let contentHeight = 140;
+  const node = (height, style = {}, className = '') => ({
+    children: [], styleValues: style, classList: { contains: name => name === className },
+    getClientRects: () => [{}],
+    getBoundingClientRect: () => ({ top: 100, bottom: 100 + height, height })
+  });
+  const widget = node(500, { borderTopWidth: '2px', borderBottomWidth: '2px' });
+  const toolbar = node(44);
+  toolbar.scrollHeight = 2000;
+  const list = node(400, { paddingTop: '4px', paddingBottom: '6px', marginBottom: '10px' }, 'ssl-log-list');
+  const first = node(40);
+  const last = node(40);
+  last.getBoundingClientRect = () => ({ top: 100 + contentHeight - 40, bottom: 100 + contentHeight, height: 40 });
+  list.children = [first, last];
+  widget.children = [toolbar, list, node(36)];
+  const ready = [];
+  const observers = [];
+  const listeners = new Map();
+  class Observer {
+    constructor(callback) { this.callback = callback; observers.push(this); }
+    observe(target) { assert.equal(target, widget); }
+    disconnect() { this.disconnected = true; }
+  }
+  const context = vm.createContext({
+    document: { querySelector: () => widget },
+    window: {
+      getComputedStyle: item => item.styleValues, setTimeout, clearTimeout,
+      ResizeObserver: Observer, MutationObserver: Observer,
+      addEventListener: (name, callback) => listeners.set(name, callback),
+      removeEventListener: name => listeners.delete(name)
+    }
+  });
+  vm.runInContext(fs.readFileSync(require.resolve('../assets/js/ssl-widget.js'), 'utf8'), context);
+  const Homey = { ready: ({ height }) => ready.push(height) };
+  const settle = () => new Promise(resolve => setTimeout(resolve, 5));
+  const stop = context.sslReadyWidget(Homey, { heightIsMax: true }, 500);
+  await settle();
+  assert.deepEqual(ready, [244], 'floating menus and the stretched list must not inflate content height');
+  contentHeight = 500;
+  observers[0].callback();
+  await settle();
+  assert.deepEqual(ready, [244, 500]);
+  contentHeight = 80;
+  observers[1].callback();
+  await settle();
+  assert.deepEqual(ready, [244, 500, 184], 'filtering must allow the widget to shrink again');
+  observers[1].callback();
+  await settle();
+  assert.equal(ready.length, 3, 'unchanged heights do not send another ready update');
+  stop();
+  assert.ok(observers.every(observer => observer.disconnected));
+  assert.equal(listeners.size, 0);
+  observers[0].callback();
+  await settle();
+  assert.equal(ready.length, 3);
+  context.sslReadyWidget(Homey, {}, 500)();
+  assert.deepEqual(ready, [244, 500, 184, 500], 'fixed height remains the default');
 });
 
 test('widget explains that BLL is required when its AngularJS file is unavailable', () => {
@@ -1229,7 +1468,8 @@ test('widget restores its instance filters before the first log request', async 
     module: () => ({ directive() {}, controller: (_name, definition) => { controller = definition.at(-1); } }),
     bootstrap() {}
   };
-  const saved = { levels: [3, 6], from: '2026-11-17', to: '2026-11-18' };
+  const saved = { levels: [3, 6], from: '2026-11-17', to: '2026-11-18',
+    facility: 0, app: 'Climate OR Heating', hostname: 'Kitchen' };
   let releaseFilters;
   const pendingFilters = new Promise(resolve => { releaseFilters = resolve; });
   let stylesRequested = false;
@@ -1269,12 +1509,156 @@ test('widget restores its instance filters before the first log request', async 
 
   assert.equal(scope.selectedLevelCount(), 2);
   assert.equal(scope.hasDateFilter(), true);
+  assert.equal(scope.searchMode, 'advanced');
+  assert.equal(scope.metadataFilter.facility, '0');
+  assert.ok(logRequests[0].includes('&facility=0'));
+  assert.ok(logRequests[0].includes('&appSearch=Climate%20OR%20Heating'));
+  assert.ok(logRequests[0].includes('&hostnameSearch=Kitchen'));
   assert.ok(logRequests[0].includes('&dateFrom=2026-11-17&dateTo=2026-11-18&severities=3%2C6'));
   const timestamp = '2026-11-18T10:00:00.000Z';
   const expectedDay = new Date(timestamp).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
   assert.equal(scope.formatDay({ timestamp }), expectedDay);
   assert.equal(scope.formatDay({ timestamp }), expectedDay);
   assert.equal(scope.formatDay({ timestamp: 'invalid' }), '');
+});
+
+test('widget searches query history and reset paging; Reset restores the current severity setting', async () => {
+  let controller;
+  const angular = {
+    module: () => ({ directive() {}, controller: (_name, definition) => { controller = definition.at(-1); } }),
+    bootstrap() {}
+  };
+  const requests = [];
+  const savedFilters = [];
+  const handlers = {};
+  const settings = { entryCount: 2, paging: true, minSeverity: '7', searchMode: 'advanced' };
+  const homey = {
+    __: () => '',
+    getSettings: () => settings,
+    getWidgetInstanceId: () => 'search-widget',
+    on: (event, handler) => { handlers[event] = handler; },
+    ready() {},
+    api(method, path, body) {
+      if (path === '/filter-state/search-widget') {
+        if (method === 'PUT') savedFilters.push(body);
+        return Promise.resolve(method === 'GET' ? { levels: [], from: null, to: null } : { saved: true });
+      }
+      if (path === '/styles') return Promise.resolve(styles.getWidgetStyles({ settings: { get: () => undefined } }));
+      if (path === '/register-timestamp-format') return Promise.resolve({ registered: true });
+      requests.push(new URL(path, 'http://widget'));
+      return Promise.resolve({ available: true, logs: [0, 1, 2].map(id => ({
+        id: String(id), severity: 3, message: 'backup', timestamp: '2026-11-18T10:00:00Z',
+        timestamp_formatted: { timeshort: '10:00' }
+      })) });
+    }
+  };
+  const context = vm.createContext({
+    angular, document: { addEventListener() {}, getElementById: () => null },
+    window: { SSLWidgetSearch: search, SSLWidgetLayout: layout }, console
+  });
+  vm.runInContext(fs.readFileSync(require.resolve('../assets/js/ssl-widget.js'), 'utf8'), context);
+  context.onHomeyReady(homey);
+  const scope = { $applyAsync: fn => fn && fn(), $on() {} };
+  controller(scope, () => {});
+  const settle = () => new Promise(resolve => setImmediate(resolve));
+  await settle();
+  scope.nextPage();
+  await settle();
+  assert.equal(scope.pageIndex, 1);
+  scope.search.text = 'backup AND NOT failed';
+  scope.validateSearch();
+  await settle();
+  assert.equal(scope.pageIndex, 0);
+  assert.equal(requests.at(-1).searchParams.get('search'), 'backup AND NOT failed');
+  assert.equal(requests.at(-1).searchParams.get('searchMode'), 'advanced');
+  const before = requests.length;
+  scope.search.text = 'backup AND (';
+  scope.validateSearch();
+  assert.ok(scope.searchError);
+  assert.equal(requests.length, before);
+  scope.search.text = 'backup';
+  scope.validateSearch();
+  await settle();
+  handlers.log_updated({ id: 'unrelated', severity: 3, message: 'unrelated',
+    timestamp_formatted: { timeshort: '10:00' } });
+  assert.equal(scope.logs.length, 2);
+  assert.ok(scope.logs.every(row => row.message === 'backup'));
+
+  scope.toggleLevel(6);
+  await settle();
+  settings.minSeverity = '5';
+  scope.clearLevels();
+  await settle();
+  assert.equal(requests.at(-1).searchParams.get('minSeverity'), '5');
+  assert.equal(requests.at(-1).searchParams.has('severities'), false);
+  handlers.log_updated({ id: 'debug', severity: 7, message: 'backup',
+    timestamp_formatted: { timeshort: '10:00' } });
+  assert.ok(scope.logs.every(row => row.id !== 'debug'));
+  settings.minSeverity = '0';
+  scope.clearLevels();
+  await settle();
+  assert.equal(requests.at(-1).searchParams.get('minSeverity'), '0');
+  settings.facility = '3';
+  settings.appFilter = 'Backup';
+  settings.hostnameFilter = 'Server';
+  scope.clearLevels();
+  await settle();
+  assert.equal(requests.at(-1).searchParams.get('app'), 'Backup');
+  for (const [key, value] of Object.entries({
+    facility: '0', app: 'Climate OR Heating', hostname: 'Kitchen AND NOT Garage'
+  })) {
+    scope.metadataFilter[key] = value;
+    scope.metadataChanged(key);
+    await settle();
+  }
+  let params = requests.at(-1).searchParams;
+  assert.equal(params.get('facility'), '0');
+  assert.equal(params.get('appSearch'), 'Climate OR Heating');
+  assert.equal(params.get('hostnameSearch'), 'Kitchen AND NOT Garage');
+  assert.equal(params.has('app'), false);
+  assert.equal(params.has('hostname'), false);
+  assert.equal(savedFilters.at(-1).facility, 0);
+  assert.equal(savedFilters.at(-1).app, 'Climate OR Heating');
+  const entry = { severity: 0, facility: 0, app: 'Climate Flow', hostname: 'Kitchen', message: 'backup',
+    timestamp_formatted: { timeshort: '10:00' } };
+  handlers.log_updated({ ...entry, id: 'excluded-host', hostname: 'Garage' });
+  handlers.log_updated({ ...entry, id: 'included-metadata' });
+  assert.ok(scope.logs.some(row => row.id === 'included-metadata'));
+  assert.ok(scope.logs.every(row => row.id !== 'excluded-host'));
+  scope.toggleFacility(16);
+  await settle();
+  assert.equal(scope.selectedFacilityCount(), 2);
+  assert.equal(requests.at(-1).searchParams.get('facility'), '0,16');
+  assert.deepEqual(Array.from(savedFilters.at(-1).facility), [0, 16]);
+  handlers.log_updated({ ...entry, id: 'included-second-facility', facility: 16 });
+  handlers.log_updated({ ...entry, id: 'excluded-facility', facility: 3 });
+  assert.ok(scope.logs.some(row => row.id === 'included-second-facility'));
+  assert.ok(scope.logs.every(row => row.id !== 'excluded-facility'));
+  scope.toggleFacility(0);
+  scope.toggleFacility(16);
+  await settle();
+  assert.equal(scope.selectedFacilityCount(), 0);
+  assert.equal(requests.at(-1).searchParams.get('facility'), '3');
+  assert.equal(savedFilters.at(-1).facility, undefined);
+  const requestsBeforeInvalid = requests.length;
+  scope.metadataFilter.app = 'Climate AND (';
+  scope.metadataChanged('app');
+  await settle();
+  assert.ok(scope.metadataErrors.app);
+  assert.equal(requests.length, requestsBeforeInvalid);
+  scope.clearMetadataFilter('app');
+  scope.metadataFilter.facility = '';
+  scope.metadataChanged('facility');
+  scope.metadataFilter.hostname = '';
+  scope.metadataChanged('hostname');
+  await settle();
+  params = requests.at(-1).searchParams;
+  assert.equal(scope.hasMetadataFilter(), false);
+  assert.equal(params.get('facility'), '3');
+  assert.equal(params.get('app'), 'Backup');
+  assert.equal(params.get('hostname'), 'Server');
+  assert.equal(params.has('appSearch'), false);
+  assert.equal(savedFilters.at(-1).app, undefined);
 });
 
 test('widget paging is opt-in and requests adjacent pages; search and filters can be hidden independently', async () => {
@@ -1300,7 +1684,9 @@ test('widget paging is opt-in and requests adjacent pages; search and filters ca
     on() {},
     ready() {},
     api(method, path) {
-      if (path === '/filter-state/widget-page') return Promise.resolve({ levels: [3], from: '2026-11-18', to: null });
+      if (path === '/filter-state/widget-page') return Promise.resolve({
+        levels: [3], from: '2026-11-18', to: null, facility: 0, app: 'Climate', hostname: 'Kitchen'
+      });
       if (path === '/register-timestamp-format') return Promise.resolve({ registered: true });
       if (path === '/styles') return Promise.resolve(styles.getWidgetStyles({ settings: { get: () => undefined } }));
       logRequests.push(path);
@@ -1335,6 +1721,9 @@ test('widget paging is opt-in and requests adjacent pages; search and filters ca
   assert.ok(logRequests[0].includes('&skip=0'));
   assert.ok(!logRequests[0].includes('dateFrom='));
   assert.ok(!logRequests[0].includes('severities='));
+  assert.ok(!logRequests[0].includes('facility='));
+  assert.ok(!logRequests[0].includes('appSearch='));
+  assert.ok(!logRequests[0].includes('hostnameSearch='));
 
   scope.nextPage();
   await settle();
@@ -1347,6 +1736,314 @@ test('widget paging is opt-in and requests adjacent pages; search and filters ca
   await settle();
   assert.equal(scope.pageIndex, 0);
   assert.ok(logRequests[2].includes('&skip=0'));
+});
+
+function createRefreshWidget(settings, pageScroll = false) {
+  const timers = new Map();
+  const renderTimers = new Map();
+  const listScroller = { scrollTop: 200 };
+  const pageScroller = { scrollTop: 300 };
+  const handlers = {};
+  const requests = [];
+  const registrations = [];
+  const destroyHandlers = [];
+  let controller;
+  let timerId = 0;
+  const homey = {
+    __: () => '',
+    getSettings: () => ({ entryCount: 2, paging: true, ...settings }),
+    getWidgetInstanceId: () => 'refresh-widget',
+    on: (event, handler) => { handlers[event] = handler; },
+    off: event => { delete handlers[event]; },
+    ready() {},
+    api(method, requestPath, body) {
+      if (requestPath === '/filter-state/refresh-widget') {
+        return Promise.resolve(method === 'PUT' ? { saved: true } : { levels: [], from: null, to: null });
+      }
+      if (requestPath === '/styles') return Promise.resolve(styles.getWidgetStyles({ settings: { get: () => undefined } }));
+      if (requestPath === '/register-timestamp-format') {
+        registrations.push(body);
+        return Promise.resolve({ registered: true });
+      }
+      return new Promise((resolve, reject) => requests.push({ path: requestPath, resolve, reject }));
+    }
+  };
+  const context = vm.createContext({
+    angular: {
+      module: () => ({ directive() {}, controller: (_name, definition) => { controller = definition.at(-1); } }),
+      bootstrap() {}
+    },
+    document: {
+      addEventListener() {}, removeEventListener() {},
+      documentElement: { classList: { contains: () => pageScroll } },
+      scrollingElement: pageScroller,
+      getElementById: id => id === 'ssl-log-list' ? listScroller : null
+    },
+    window: {
+      SSLWidgetSearch: search,
+      SSLWidgetLayout: layout,
+      requestAnimationFrame: callback => callback(),
+      setTimeout: (callback, delay) => { const id = ++timerId; timers.set(id, { callback, delay }); return id; },
+      clearTimeout: id => timers.delete(id)
+    },
+    console
+  });
+  vm.runInContext(fs.readFileSync(require.resolve('../assets/js/ssl-widget.js'), 'utf8'), context);
+  context.onHomeyReady(homey);
+  const scope = { $applyAsync: fn => fn && fn(), $on: (_event, handler) => destroyHandlers.push(handler) };
+  const timeout = callback => { const id = ++timerId; renderTimers.set(id, callback); return id; };
+  timeout.cancel = id => renderTimers.delete(id);
+  controller(scope, timeout);
+  return {
+    scope, requests, registrations, handlers, timers, renderTimers, listScroller, pageScroller,
+    destroy: () => destroyHandlers.forEach(handler => handler()),
+    render() {
+      for (const [id, callback] of renderTimers) {
+        renderTimers.delete(id);
+        callback();
+      }
+    },
+    tick() {
+      assert.equal(timers.size, 1);
+      const [id, timer] = timers.entries().next().value;
+      timers.delete(id);
+      timer.callback();
+    }
+  };
+}
+
+function refreshWidgetData(message) {
+  return {
+    available: true,
+    logs: Array.from({ length: 3 }, (_, index) => ({
+      id: `${message}-${index}`, message, severity: 6, facility: 0,
+      timestamp: `2026-11-18T10:0${index}:00.000Z`, timestamp_formatted: { timeshort: '10:00' }
+    })),
+    severities: {}, facilities: { 0: 'Kernel' }
+  };
+}
+
+test('native and Web controllers register and render both timestamps without applying widget overrides to Timestamp 2', async () => {
+  const settle = () => new Promise(resolve => setImmediate(resolve));
+  for (const pageScroll of [false, true]) {
+    const widget = createRefreshWidget({ designStyle: 'builtin:compact-classic', datetimeFormat: 'HH:mm:ss' }, pageScroll);
+    await settle();
+    assert.deepEqual(Array.from(widget.registrations[0].formats), ['HH:mm:ss', 'ddd d MMM', 'dd-MM']);
+    assert.ok(widget.requests[0].path.includes('&timestamp2Format=dd-MM'));
+    const data = refreshWidgetData('initial');
+    data.logs.forEach(log => { log.timestamp_formatted = { 'HH:mm:ss': '10:00:00', 'dd-MM': '18-11' }; });
+    widget.requests[0].resolve(data);
+    await settle();
+    assert.equal(widget.scope.fieldValue('timestamp', widget.scope.logs[0]), '10:00:00');
+    assert.equal(widget.scope.fieldValue('timestamp2', widget.scope.logs[0]), '18-11');
+    widget.listScroller.scrollTop = widget.pageScroller.scrollTop = 0;
+    widget.handlers.log_updated({
+      message: 'live', timestamp: '2026-11-19T11:00:00Z', severity: 6, facility: 0,
+      timestamp_formatted: { 'HH:mm:ss': '11:00:00', 'dd-MM': '19-11' }
+    });
+    assert.equal(widget.scope.fieldValue('timestamp2', widget.scope.logs[0]), '19-11');
+    widget.destroy();
+  }
+});
+
+test('Previous and Next scroll the new page to the top after rendering in native and Web widgets', async () => {
+  const settle = () => new Promise(resolve => setImmediate(resolve));
+  for (const pageScroll of [false, true]) {
+    const widget = createRefreshWidget({ updateMode: 'periodic' }, pageScroll);
+    const { scope, requests, renderTimers } = widget;
+    const scroller = pageScroll ? widget.pageScroller : widget.listScroller;
+    await settle();
+    requests[0].resolve(refreshWidgetData('initial'));
+    await settle();
+    for (const [index, navigate] of [scope.nextPage, scope.previousPage].entries()) {
+      scroller.scrollTop = 150;
+      navigate();
+      await settle();
+      assert.equal(scroller.scrollTop, 150, 'do not scroll the old page while its replacement is loading');
+      requests[index + 1].resolve(refreshWidgetData('page'));
+      await settle();
+      assert.equal(scroller.scrollTop, 150, 'wait for Angular to render the new entries');
+      widget.render();
+      assert.equal(scroller.scrollTop, 0);
+    }
+    scroller.scrollTop = 120;
+    widget.tick();
+    await settle();
+    requests[3].resolve(refreshWidgetData('refreshed'));
+    await settle();
+    widget.render();
+    assert.equal(scroller.scrollTop, 120, 'periodic refresh must not reset the reading position');
+    scope.nextPage();
+    await settle();
+    requests[4].reject(new Error('page unavailable'));
+    await settle();
+    assert.equal(renderTimers.size, 0);
+    assert.equal(scroller.scrollTop, 120, 'failed navigation must not scroll');
+    scope.previousPage();
+    await settle();
+    requests[5].resolve(refreshWidgetData('last'));
+    await settle();
+    assert.equal(renderTimers.size, 1);
+    scope.nextPage();
+    await settle();
+    widget.render();
+    assert.equal(scroller.scrollTop, 120, 'scrolling from a superseded page must be ignored');
+    requests[6].resolve(refreshWidgetData('current'));
+    await settle();
+    assert.equal(renderTimers.size, 1);
+    widget.destroy();
+    assert.equal(renderTimers.size, 0, 'destruction cancels pending page scrolling');
+    assert.equal(scroller.scrollTop, 120);
+  }
+});
+
+test('periodic widgets wait for queries to settle, keep manual changes immediate, and clean up timers', async () => {
+  const widget = createRefreshWidget({ updateMode: 'periodic', refreshInterval: 2 });
+  const { scope, requests, timers } = widget;
+  const settle = () => new Promise(resolve => setImmediate(resolve));
+  await settle();
+  assert.equal(widget.handlers.log_updated, undefined);
+  assert.equal(timers.size, 0, 'initial requests must settle before scheduling');
+  requests[0].resolve(refreshWidgetData('initial'));
+  await settle();
+  assert.equal(scope.logs.length, 2, 'the paging lookahead is not displayed');
+  assert.equal([...timers.values()][0].delay, 2000);
+
+  widget.tick();
+  await settle();
+  assert.equal(requests.length, 2);
+  assert.equal(timers.size, 0, 'an automatic request cannot overlap another automatic request');
+  assert.equal(scope.logs[0].message, 'initial');
+  scope.search.text = 'new';
+  scope.validateSearch();
+  await settle();
+  assert.equal(requests.length, 3, 'search does not wait for the refresh interval or active request');
+  assert.match(requests[2].path, /search=new/);
+  requests[2].resolve(refreshWidgetData('new'));
+  await settle();
+  assert.equal(timers.size, 0, 'older outstanding requests also prevent automatic refresh');
+  requests[1].resolve(refreshWidgetData('stale'));
+  await settle();
+  assert.equal(scope.logs[0].message, 'new', 'a stale automatic result cannot replace a newer search');
+  assert.equal(timers.size, 1);
+
+  scope.metadataFilter.facility = '0';
+  scope.metadataChanged('facility');
+  await settle();
+  assert.equal(timers.size, 0, 'an immediate filter request cancels the scheduled automatic request');
+  assert.match(requests[3].path, /facility=0/);
+  requests[3].resolve(refreshWidgetData('new'));
+  await settle();
+  scope.nextPage();
+  await settle();
+  assert.match(requests[4].path, /skip=2/);
+  requests[4].resolve(refreshWidgetData('new'));
+  await settle();
+  widget.tick();
+  await settle();
+  assert.match(requests[5].path, /skip=2/, 'automatic refresh preserves the current page and filters');
+  assert.match(requests[5].path, /facility=0/);
+  widget.destroy();
+  requests[5].resolve(refreshWidgetData('late'));
+  await settle();
+  assert.equal(timers.size, 0, 'a request completing after destruction cannot restart the timer');
+  assert.equal(scope.logs[0].message, 'new');
+});
+
+test('periodic widgets recover from unavailable storage and failed requests and stop scheduled refreshes on destruction', async () => {
+  const widget = createRefreshWidget({ updateMode: 'periodic' });
+  const { scope, requests, timers } = widget;
+  const settle = () => new Promise(resolve => setImmediate(resolve));
+  await settle();
+  requests[0].resolve({ available: false, logs: [] });
+  await settle();
+  assert.equal(scope.bllUnavailable, true);
+  assert.equal([...timers.values()][0].delay, 10000);
+  widget.tick();
+  await settle();
+  widget.handlers.log_storage_ready();
+  await settle();
+  assert.equal(requests.length, 2, 'storage-ready notifications cannot overlap an automatic retry');
+  requests[1].reject(new Error('offline'));
+  await settle();
+  assert.equal(scope.error, 'offline');
+  assert.equal(timers.size, 1, 'a failed request must schedule another attempt');
+  widget.tick();
+  await settle();
+  requests[2].resolve(refreshWidgetData('recovered'));
+  await settle();
+  assert.equal(scope.bllUnavailable, false);
+  assert.equal(scope.error, '');
+  assert.equal(scope.logs.length, 2);
+  widget.destroy();
+  assert.equal(timers.size, 0);
+
+  const failedInitialLoad = createRefreshWidget({ updateMode: 'periodic' });
+  await settle();
+  failedInitialLoad.requests[0].reject(new Error('initial connection failed'));
+  await settle();
+  assert.equal(failedInitialLoad.scope.error, 'initial connection failed');
+  failedInitialLoad.tick();
+  await settle();
+  failedInitialLoad.requests[1].resolve(refreshWidgetData('retried'));
+  await settle();
+  assert.equal(failedInitialLoad.scope.error, '');
+  assert.equal(failedInitialLoad.scope.logs[0].message, 'retried');
+  failedInitialLoad.destroy();
+});
+
+test('periodic refresh does not submit incomplete searches or invalid date ranges', async () => {
+  const widget = createRefreshWidget({ updateMode: 'periodic' });
+  const { scope, requests } = widget;
+  const settle = () => new Promise(resolve => setImmediate(resolve));
+  await settle();
+  requests[0].resolve(refreshWidgetData('initial'));
+  await settle();
+  scope.search.text = 'initial AND (';
+  scope.validateSearch();
+  widget.tick();
+  await settle();
+  assert.equal(requests.length, 1);
+  assert.ok(scope.searchError);
+  scope.search.text = '';
+  scope.validateSearch();
+  await settle();
+  requests[1].resolve(refreshWidgetData('initial'));
+  await settle();
+  scope.dateFilter = { from: '2020-02-02', to: '2020-02-01' };
+  scope.dateRangeChanged();
+  widget.tick();
+  await settle();
+  assert.equal(requests.length, 2);
+  assert.ok(scope.dateFilterError);
+  scope.clearDateRange();
+  await settle();
+  requests[2].resolve(refreshWidgetData('initial'));
+  await settle();
+  widget.tick();
+  await settle();
+  assert.equal(requests.length, 4, 'automatic refresh resumes after valid input');
+  widget.destroy();
+  requests[3].resolve(refreshWidgetData('late'));
+});
+
+test('older widgets stay live and invalid periodic settings fail before querying', async () => {
+  const settle = () => new Promise(resolve => setImmediate(resolve));
+  const live = createRefreshWidget({});
+  await settle();
+  live.requests[0].resolve(refreshWidgetData('live'));
+  await settle();
+  assert.equal(typeof live.handlers.log_updated, 'function');
+  assert.equal(live.timers.size, 0);
+  live.destroy();
+  for (const refreshInterval of [0, -1, 0.5, '', 'bad', Infinity, 2147484, null, true, [1]]) {
+    const widget = createRefreshWidget({ updateMode: 'periodic', refreshInterval });
+    await settle();
+    assert.match(widget.scope.error, /refresh interval/);
+    assert.equal(widget.requests.length, 0);
+    assert.equal(widget.timers.size, 0);
+    widget.destroy();
+  }
 });
 
 async function runWidgetStorageScenario(storageReadyDuringLoad) {

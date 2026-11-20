@@ -49,7 +49,8 @@
       "journal": "Diario",
       "console": "Consola",
       "aurora": "Aurora",
-      "widgetkeeper": "WidgetKeeper"
+      "widgetkeeper": "WidgetKeeper",
+      "compact-classic": "Compacto clásico"
     },
     "theme": {
       "homey": "Homey",
@@ -73,7 +74,8 @@
       "facility": "Categoría",
       "app": "App / Grupo",
       "hostname": "Nombre del host",
-      "message": "Mensaje"
+      "message": "Mensaje",
+      "timestamp2": "Fecha y hora 2"
     },
     "search": "Buscar",
     "loading": "Cargando registros…",
@@ -170,7 +172,11 @@
         "black": "Negro",
         "white": "Blanco",
         "black-light": "Negro (claro/oscuro)",
-        "red-soft": "Rojo (Error)",
+        "red-soft": "Rojo (claro)",
+        "red-dark": "Rojo oscuro",
+        "grey-light": "Gris claro",
+        "grey-dark": "Gris oscuro",
+        "navy": "Azul marino",
         "console-purple": "Morado (Console: Emergencia)",
         "console-pink": "Rosa (Console: Alerta)",
         "console-red": "Rojo (Console: Crítico)",
@@ -381,7 +387,8 @@
         "background_solid": "Sólido",
         "background_gradient": "Degradado",
         "widget_padding_hint": "El valor predeterminado de la app conserva el relleno normal del widget.",
-        "background_gradient_end": "Color final del degradado"
+        "background_gradient_end": "Color final del degradado",
+        "entry": "Entrada"
       },
       "timestampFormat": "Formato de fecha y hora",
       "timestampFormatHint": "Elige un formato de fecha y hora de BLL, o escribe y selecciona un formato BLL personalizado. Un widget puede reemplazarlo con su propio formato.",
@@ -429,7 +436,7 @@
     "filters": {
       "button": "Filtros",
       "level": "Nivel",
-      "allLevels": "Todos los niveles",
+      "allLevels": "Restablecer",
       "date": "Fecha",
       "fromDate": "Desde",
       "toDate": "Hasta",
@@ -443,7 +450,9 @@
       "previous": "Anterior",
       "next": "Siguiente",
       "page": "P?gina"
-    }
+    },
+    "invalidUpdateMode": "El modo de actualización del widget no es válido.",
+    "invalidRefreshInterval": "El intervalo de actualización debe ser un número entero entre 1 y 2147483 segundos."
   },
   "widget_features_notice": "¡Simple (Sys) Log ya tiene un widget para el panel! Añade el widget Simple Sys Log a un panel y abre los ajustes de la app para diseñar su diseño y colores en la pestaña Widgets. El widget necesita la app Better Logic Library.",
   "exportFailed": "No se pudo crear o cargar la exportación. Inténtalo de nuevo.",

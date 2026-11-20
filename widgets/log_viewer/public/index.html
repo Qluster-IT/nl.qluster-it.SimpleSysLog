@@ -15,10 +15,10 @@
     <header class="ssl-widget-toolbar" ng-if="showToolbar && !bllUnavailable">
       <div class="ssl-toolbar-row" ssl-control-layout="toolbar">
         <input id="ssl-log-search" class="ssl-log-search" data-ssl-control="search" type="search" ng-show="showSearch"
-          ng-attr-aria-label="{{ labels.search }}" ng-model="search.text"
+          ng-attr-aria-label="{{ labels.search }}" ng-model="search.text" ng-model-options="{ debounce: 250 }"
           ng-change="validateSearch()" ng-attr-placeholder="{{ labels.search }}">
         <div class="ssl-filter" data-ssl-control="filter" ng-show="showFilters" ng-keydown="filterKeydown($event)">
-          <button type="button" class="ssl-filter-button" ng-class="{ 'is-active': hasLevelFilter() || hasDateFilter() }"
+          <button type="button" class="ssl-filter-button" ng-class="{ 'is-active': hasLevelFilter() || hasDateFilter() || hasMetadataFilter() }"
             aria-haspopup="menu" ng-attr-aria-expanded="{{ filterMenu.open }}" ng-attr-aria-label="{{ labels.filters }}"
             ng-attr-title="{{ labels.filters }}" ng-click="toggleFilterMenu()">
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 5h18l-7 8.5V19l-4 2v-7.5z"/></svg>
@@ -56,6 +56,27 @@
                 <span class="ssl-filter-date-error" role="alert" ng-if="dateFilterError">{{ dateFilterError }}</span>
                 <button type="button" class="ssl-filter-clear" role="menuitem" ng-click="clearDateRange()"
                   ng-disabled="!hasDateFilter()">{{ labels.allDates }}</button>
+              </div>
+            </div>
+            <div class="ssl-filter-group" ng-repeat="field in ['facility', 'app', 'hostname']">
+              <button type="button" class="ssl-filter-item" role="menuitem" aria-haspopup="true"
+                ng-attr-aria-expanded="{{ filterMenu[field] }}" ng-click="openFilterGroup(field)">
+                <span>{{ labels[field] }}</span><span class="ssl-filter-count" ng-if="hasMetadataFilter(field)">{{ field === 'facility' ? selectedFacilityCount() : 1 }}</span><span aria-hidden="true">›</span>
+              </button>
+              <div class="ssl-filter-options" ng-class="{ 'ssl-filter-metadata': field !== 'facility' }" role="group" ng-attr-aria-label="{{ labels[field] }}" ng-if="filterMenu[field]">
+                <div ng-if="field === 'facility'">
+                  <label class="ssl-filter-option" ng-repeat="facility in facilityOptions">
+                    <input type="checkbox" role="menuitemcheckbox" ng-checked="facilityFilter[facility.id]"
+                      ng-click="toggleFacility(facility.id)">{{ facility.label }}
+                  </label>
+                </div>
+                <label ng-if="field !== 'facility'">{{ labels[field] }}
+                  <input type="search" maxlength="200" ng-model="metadataFilter[field]"
+                    ng-model-options="{ debounce: 250 }" ng-change="metadataChanged(field)" ng-attr-placeholder="{{ labels.search }}">
+                </label>
+                <span class="ssl-filter-date-error" role="alert" ng-if="metadataErrors[field]">{{ metadataErrors[field] }}</span>
+                <button type="button" class="ssl-filter-clear" role="menuitem" ng-click="clearMetadataFilter(field)"
+                  ng-disabled="!hasMetadataFilter(field) && !metadataFilter[field]">{{ labels.allLevels }}</button>
               </div>
             </div>
           </div>

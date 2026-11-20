@@ -135,7 +135,11 @@
         if (method === 'GET' && route === '/logs') {
           var params = new URLSearchParams(String(path).split('?')[1] || '');
           return state.loadLogs(params.get('severities'), params.get('dateFrom'), params.get('dateTo'),
-            params.has('skip') ? params.get('skip') : undefined);
+            params.has('skip') ? params.get('skip') : undefined, params.get('search'), {
+              facility: params.get('facility'),
+              appSearch: params.get('appSearch'),
+              hostnameSearch: params.get('hostnameSearch')
+            });
         }
         return Promise.reject(new Error('This action is not available in a Web widget.'));
       }
@@ -153,6 +157,7 @@
     var severities = null;
     var dateFrom = null;
     var dateTo = null;
+    var metadata = {};
     var generation = 0;
 
     function loop() {
@@ -161,6 +166,7 @@
       if (severities) extra.severities = severities;
       if (dateFrom) extra.dateFrom = dateFrom;
       if (dateTo) extra.dateTo = dateTo;
+      Object.keys(metadata).forEach(function (key) { if (metadata[key]) extra[key] = metadata[key]; });
       options.request('/android/updates', extra, POLL_CLIENT_TIMEOUT_MS).then(function (data) {
         // The filters changed while this poll was waiting, so discard its old results.
         if (started !== generation) {
@@ -196,14 +202,17 @@
       loop();
     }
 
-    function setFilters(levels, from, to) {
+    function setFilters(levels, from, to, fields) {
       levels = levels || null;
       from = from || null;
       to = to || null;
-      if (levels === severities && from === dateFrom && to === dateTo) return;
+      fields = fields || {};
+      if (levels === severities && from === dateFrom && to === dateTo
+        && ['facility', 'appSearch', 'hostnameSearch'].every(function (key) { return (fields[key] || null) === (metadata[key] || null); })) return;
       severities = levels;
       dateFrom = from;
       dateTo = to;
+      metadata = Object.assign({}, fields);
       generation++;
     }
 
@@ -211,7 +220,7 @@
       start: start,
       setFilters: setFilters,
       setSeverities: function (value) {
-        setFilters(value, dateFrom, dateTo);
+        setFilters(value, dateFrom, dateTo, metadata);
       },
       update: function (data) {
         if (!data) return;
@@ -274,6 +283,7 @@
     });
 
     connection.request('/android/init').then(function (init) {
+      var periodicInstance = null;
       followSystemColorMode(init.config.colorMode);
       homey = createHomey({
         config: init.config,
@@ -289,15 +299,22 @@
             body: JSON.stringify(body)
           });
         },
-        loadLogs: function (severities, dateFrom, dateTo, skip) {
-          poller.setFilters(severities, dateFrom, dateTo);
+        loadLogs: function (severities, dateFrom, dateTo, skip, search, metadata) {
+          poller.setFilters(severities, dateFrom, dateTo, metadata);
           var query = {};
+          Object.keys(metadata || {}).forEach(function (key) { if (metadata[key]) query[key] = metadata[key]; });
           if (severities) query.severities = severities;
           if (dateFrom) query.dateFrom = dateFrom;
           if (dateTo) query.dateTo = dateTo;
           if (skip !== undefined) query.skip = skip;
+          if (search) query.search = search;
           return connection.request('/android/logs', query).then(function (data) {
-            poller.update(data);
+            if (init.config.updateMode === 'periodic') {
+              if (periodicInstance && data.instance && periodicInstance !== data.instance) window.location.reload();
+              if (data.instance) periodicInstance = data.instance;
+            } else {
+              poller.update(data);
+            }
             return data;
           });
         }

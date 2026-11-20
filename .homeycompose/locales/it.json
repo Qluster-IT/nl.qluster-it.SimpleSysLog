@@ -58,6 +58,7 @@
     "design": {
       "default": "Predefinito",
       "compact": "Compatto",
+      "compact-classic": "Compatto classico",
       "journal": "Diario",
       "console": "Console",
       "aurora": "Aurora",
@@ -79,6 +80,7 @@
     },
     "fields": {
       "timestamp": "Data e ora",
+      "timestamp2": "Data e ora 2",
       "severity": "Gravità",
       "facility": "Categoria",
       "app": "App / Gruppo",
@@ -169,7 +171,11 @@
         "black": "Nero",
         "white": "Bianco",
         "black-light": "Nero (chiaro/scuro)",
-        "red-soft": "Rosso (Errore)"
+        "red-soft": "Rosso (chiaro)",
+        "red-dark": "Rosso scuro",
+        "grey-light": "Grigio chiaro",
+        "grey-dark": "Grigio scuro",
+        "navy": "Blu navy"
       },
       "none": "Nessuno",
       "invalidName": "Inserisci un nome da 1 a 60 caratteri.",
@@ -235,6 +241,7 @@
         "select_before_drag": "Seleziona un elemento prima di trascinarlo.",
         "widget": "Widget",
         "day_separator": "Separatore del giorno",
+        "entry": "Voce",
         "row": "Riga",
         "row_count": "Numero di righe",
         "row_count_confirm": "Ridurre a __count__ righe? Le righe rimosse perdono le impostazioni, i loro elementi passano a Non utilizzati e le colonne su più righe vengono accorciate.",
@@ -352,8 +359,7 @@
           "wrap": "Testo a capo",
           "wrap_values": {
             "normal": "Adatta alla larghezza",
-            "nowrap": "Non andare a capo",
-            "words": "Impila agli spazi"
+            "nowrap": "Non andare a capo"
           }
         },
         "search_filters": "Ricerca e filtri",
@@ -408,7 +414,7 @@
     "filters": {
       "button": "Filtri",
       "level": "Livello",
-      "allLevels": "Tutti i livelli",
+      "allLevels": "Ripristina",
       "date": "Data",
       "fromDate": "Da",
       "toDate": "A",
@@ -422,6 +428,8 @@
       "previous": "Precedente",
       "next": "Successivo",
       "page": "Pagina"
-    }
+    },
+    "invalidUpdateMode": "La modalità di aggiornamento del widget non è valida.",
+    "invalidRefreshInterval": "L’intervallo di aggiornamento deve essere un numero intero compreso tra 1 e 2147483 secondi."
   }
 }

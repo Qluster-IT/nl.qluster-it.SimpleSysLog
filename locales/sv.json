@@ -49,7 +49,8 @@
       "journal": "Journal",
       "console": "Konsol",
       "aurora": "Norrsken",
-      "widgetkeeper": "WidgetKeeper"
+      "widgetkeeper": "WidgetKeeper",
+      "compact-classic": "Kompakt klassisk"
     },
     "theme": {
       "homey": "Homey",
@@ -73,7 +74,8 @@
       "facility": "Kategori",
       "app": "App / Grupp",
       "hostname": "Värdnamn",
-      "message": "Meddelande"
+      "message": "Meddelande",
+      "timestamp2": "Tidsstämpel 2"
     },
     "search": "Sök",
     "loading": "Läser in loggar…",
@@ -170,7 +172,11 @@
         "black": "Svart",
         "white": "Vit",
         "black-light": "Svart (ljus/mörk)",
-        "red-soft": "Röd (Fel)",
+        "red-soft": "Röd (ljus)",
+        "red-dark": "Mörkröd",
+        "grey-light": "Ljusgrå",
+        "grey-dark": "Mörkgrå",
+        "navy": "Marinblå",
         "console-purple": "Lila (Console: Nödläge)",
         "console-pink": "Rosa (Console: Larm)",
         "console-red": "Röd (Console: Kritisk)",
@@ -381,7 +387,8 @@
         "background_solid": "Enfärgad",
         "background_gradient": "Toning",
         "widget_padding_hint": "Appens standard behåller widgetens normala inre avstånd.",
-        "background_gradient_end": "Slutfärg för toning"
+        "background_gradient_end": "Slutfärg för toning",
+        "entry": "Post"
       },
       "timestampFormat": "Datum- och tidsformat",
       "timestampFormatHint": "Välj ett BLL-datum-/tidsformat, eller skriv och välj ett eget BLL-format. En widget kan åsidosätta det med ett eget format.",
@@ -429,7 +436,7 @@
     "filters": {
       "button": "Filter",
       "level": "Nivå",
-      "allLevels": "Alla nivåer",
+      "allLevels": "Återställ",
       "date": "Datum",
       "fromDate": "Från",
       "toDate": "Till",
@@ -443,7 +450,9 @@
       "previous": "F?reg?ende",
       "next": "N?sta",
       "page": "Sida"
-    }
+    },
+    "invalidUpdateMode": "Widgetens uppdateringsläge är ogiltigt.",
+    "invalidRefreshInterval": "Uppdateringsintervallet måste vara ett heltal från 1 till 2147483 sekunder."
   },
   "widget_features_notice": "Simple (Sys) Log har nu en widget för instrumentpanelen! Lägg till widgeten Simple Sys Log på en instrumentpanel och öppna appinställningarna för att utforma layout och färger på fliken Widgetar. Widgeten kräver appen Better Logic Library.",
   "exportFailed": "Exporten kunde inte skapas eller laddas upp. Försök igen.",

@@ -1162,6 +1162,96 @@ test('legacy writers preserve Unicode lengths and metadata after closing and reo
     item.severity === 6 && item.facility === 18 && item.app === 'app' && item.hostname === 'host'));
 });
 
+test('widget searches filter history before taking pages in indexed and legacy logs', async t => {
+  const log = await createLog(t);
+  const api = require('../widgets/log_viewer/api');
+  for (const legacy of [false, true]) {
+    const timestamp = new Date(2026, 0, legacy ? 3 : 2, 12);
+    if (legacy) {
+      const book = log.getLogBook(timestamp);
+      book.indexVersion = 1;
+      book.indexFile = book.legacyIndexFile;
+    }
+    for (let i = 0; i < 12; i++) {
+      await log.writeLine({
+        message: i % 3 === 0 ? `backup ${i}` : `unrelated ${i}`, app: 'Heating', hostname: 'Kitchen',
+        severity: i % 2 ? 6 : 3, timestamp: new Date(timestamp.getTime() + i * 1000)
+      });
+    }
+  }
+  const homey = { app: { Log: log } };
+  for (const searchMode of ['simple', 'advanced']) {
+    const query = { search: searchMode === 'simple' ? 'backup' : 'backup AND Heating AND NOT missing', searchMode, take: '2' };
+    const pages = [];
+    for (let skip = 0; skip < 8; skip += 2) {
+      const result = await api.getWidgetLogs({ homey, query: { ...query, skip: String(skip) } });
+      assert.equal(result.logs.length, 2);
+      pages.push(...result.logs);
+    }
+    assert.equal(new Set(pages.map(row => row.id)).size, 8);
+    assert.ok(pages.every(row => row.message.startsWith('backup')));
+    const tail = await api.getWidgetLogs({ homey, query: { ...query, skip: '8' } });
+    assert.equal(tail.logs.length, 0);
+  }
+  const byHost = await api.getWidgetLogs({ homey, query: { search: 'Kitchen', take: '30' } });
+  assert.equal(byHost.logs.length, 24);
+  const limited = await api.getWidgetLogs({ homey, query: { search: 'backup', minSeverity: '3', take: '30' } });
+  assert.equal(limited.logs.length, 4);
+  await assert.rejects(api.getWidgetLogs({ homey, query: { search: 'backup AND (', searchMode: 'advanced' } }), /search|parenthesis/);
+});
+
+test('field-scoped widget filters apply before pagination in indexed and legacy history', async t => {
+  const log = await createLog(t);
+  const api = require('../widgets/log_viewer/api');
+  for (const legacy of [false, true]) {
+    const timestamp = new Date(2026, 0, legacy ? 3 : 2, 12);
+    if (legacy) {
+      const book = log.getLogBook(timestamp);
+      book.indexVersion = 1;
+      book.indexFile = book.legacyIndexFile;
+    }
+    for (let i = 0; i < 12; i++) {
+      const matching = i % 3 === 0;
+      await log.writeLine({
+        timestamp: new Date(timestamp.getTime() + i * 1000), severity: 3, facility: matching ? 0 : 16,
+        app: matching ? 'Climate Flow' : 'Noise', hostname: matching ? 'Kitchen' : 'Garage',
+        message: 'Climate Kitchen in the message must not match field-only searches'
+      });
+    }
+    await log.writeLine({ timestamp: new Date(timestamp.getTime() + 12000), severity: 3, facility: 0,
+      message: 'missing metadata' });
+  }
+  const homey = { app: { Log: log } };
+  const query = { appSearch: '(Climate OR Heating) AND NOT Noise', hostnameSearch: 'Kitchen AND NOT Garage',
+    facility: '0', searchMode: 'advanced', take: '2' };
+  const entries = [];
+  for (let skip = 0; skip < 8; skip += 2) {
+    const page = await api.getWidgetLogs({ homey, query: { ...query, skip: String(skip) } });
+    assert.equal(page.logs.length, 2);
+    entries.push(...page.logs);
+  }
+  assert.equal(new Set(entries.map(entry => entry.id)).size, 8);
+  assert.ok(entries.every(entry => entry.app === 'Climate Flow' && entry.hostname === 'Kitchen' && entry.facilityId === 0));
+  assert.equal((await api.getWidgetLogs({ homey, query: { ...query, skip: '8' } })).logs.length, 0);
+  assert.equal((await api.getWidgetLogs({ homey, query: { appSearch: 'Climate OR Heating', searchMode: 'simple' } })).logs.length, 0);
+  assert.equal((await api.getWidgetLogs({ homey, query: { appSearch: 'climate', searchMode: 'simple', take: '30' } })).logs.length, 8);
+  const negative = await api.getWidgetLogs({ homey, query: {
+    appSearch: 'NOT Noise', hostnameSearch: 'NOT Garage', searchMode: 'advanced', take: '30'
+  } });
+  assert.equal(negative.logs.length, 10);
+  assert.equal(negative.logs.filter(entry => entry.message === 'missing metadata').length, 2);
+  const allFacilities = await api.getWidgetLogs({ homey, query: { facility: '0,16', take: '30' } });
+  assert.equal(allFacilities.logs.length, 26, 'both facilities match across indexed and legacy history');
+  const firstFacilities = await api.getWidgetLogs({ homey, query: { facility: '0,16', take: '2' } });
+  const nextFacilities = await api.getWidgetLogs({ homey, query: { facility: '0,16', take: '2', skip: '2' } });
+  assert.deepEqual([...firstFacilities.logs, ...nextFacilities.logs].map(entry => entry.id),
+    allFacilities.logs.slice(0, 4).map(entry => entry.id));
+  const indexedBook = log.getLogBook(new Date(2026, 0, 2, 12));
+  assert.equal(await indexedBook.cursorRowMatches({ facility: [0, 16] }, 1), true);
+  assert.equal(await indexedBook.cursorRowMatches({ facility: [0, 3] }, 1), false);
+  await assert.rejects(api.getWidgetLogs({ homey, query: { appSearch: 'Climate AND (', searchMode: 'advanced' } }), /search|parenthesis/);
+});
+
 test('maxSeverity keeps entries at or above a severity level in indexed, cursor, and legacy reads', async t => {
   const log = await createLog(t);
   const timestamp = new Date(2026, 0, 2, 12);

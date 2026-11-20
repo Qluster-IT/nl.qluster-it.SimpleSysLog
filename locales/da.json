@@ -49,7 +49,8 @@
       "journal": "Journal",
       "console": "Konsol",
       "aurora": "Nordlys",
-      "widgetkeeper": "WidgetKeeper"
+      "widgetkeeper": "WidgetKeeper",
+      "compact-classic": "Kompakt klassisk"
     },
     "theme": {
       "homey": "Homey",
@@ -73,7 +74,8 @@
       "facility": "Facilitet",
       "app": "App / Gruppe",
       "hostname": "Værtsnavn",
-      "message": "Besked"
+      "message": "Besked",
+      "timestamp2": "Tidsstempel 2"
     },
     "search": "Søg",
     "loading": "Indlæser logposter…",
@@ -170,7 +172,11 @@
         "black": "Sort",
         "white": "Hvid",
         "black-light": "Sort (lys/mørk)",
-        "red-soft": "Rød (Fejl)",
+        "red-soft": "Rød (lys)",
+        "red-dark": "Mørkerød",
+        "grey-light": "Lysegrå",
+        "grey-dark": "Mørkegrå",
+        "navy": "Marineblå",
         "console-purple": "Lilla (Console: Nødstilfælde)",
         "console-pink": "Lyserød (Console: Alarm)",
         "console-red": "Rød (Console: Kritisk)",
@@ -381,7 +387,8 @@
         "background_solid": "Ensfarvet",
         "background_gradient": "Farveforløb",
         "widget_padding_hint": "Appens standard bevarer widgettens normale indvendige afstand.",
-        "background_gradient_end": "Slutfarve for farveovergang"
+        "background_gradient_end": "Slutfarve for farveovergang",
+        "entry": "Post"
       },
       "timestampFormat": "Dato- og tidsformat",
       "timestampFormatHint": "Vælg et BLL-dato-/tidsformat, eller indtast og vælg et brugerdefineret BLL-format. En widget kan tilsidesætte det med sit eget format.",
@@ -429,7 +436,7 @@
     "filters": {
       "button": "Filtre",
       "level": "Niveau",
-      "allLevels": "Alle niveauer",
+      "allLevels": "Nulstil",
       "date": "Dato",
       "fromDate": "Fra",
       "toDate": "Til",
@@ -443,7 +450,9 @@
       "previous": "Forrige",
       "next": "N?ste",
       "page": "Side"
-    }
+    },
+    "invalidUpdateMode": "Widgettens opdateringstilstand er ugyldig.",
+    "invalidRefreshInterval": "Opdateringsintervallet skal være et helt tal fra 1 til 2147483 sekunder."
   },
   "widget_features_notice": "Simple (Sys) Log har nu en dashboard-widget! Tilføj Simple Sys Log-widgetten til et dashboard, og åbn appindstillingerne for at designe layout og farver på fanen Widgets. Widgetten kræver Better Logic Library-appen.",
   "exportFailed": "Eksporten kunne ikke oprettes eller uploades. Prøv igen.",

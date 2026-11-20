@@ -49,7 +49,8 @@
       "journal": "Journal",
       "console": "Konsoll",
       "aurora": "Nordlys",
-      "widgetkeeper": "WidgetKeeper"
+      "widgetkeeper": "WidgetKeeper",
+      "compact-classic": "Kompakt klassisk"
     },
     "theme": {
       "homey": "Homey",
@@ -73,7 +74,8 @@
       "facility": "Kategori",
       "app": "App / Gruppe",
       "hostname": "Vertsnavn",
-      "message": "Melding"
+      "message": "Melding",
+      "timestamp2": "Tidsstempel 2"
     },
     "search": "Søk",
     "loading": "Laster logger…",
@@ -170,7 +172,11 @@
         "black": "Svart",
         "white": "Hvit",
         "black-light": "Svart (lys/mørk)",
-        "red-soft": "Rød (Feil)",
+        "red-soft": "Rød (lys)",
+        "red-dark": "Mørkerød",
+        "grey-light": "Lysegrå",
+        "grey-dark": "Mørkegrå",
+        "navy": "Marineblå",
         "console-purple": "Lilla (Console: Nødsituasjon)",
         "console-pink": "Rosa (Console: Alarm)",
         "console-red": "Rød (Console: Kritisk)",
@@ -381,7 +387,8 @@
         "background_solid": "Ensfarget",
         "background_gradient": "Fargeovergang",
         "widget_padding_hint": "Appens standard beholder widgetens vanlige innvendige avstand.",
-        "background_gradient_end": "Sluttfarge for gradering"
+        "background_gradient_end": "Sluttfarge for gradering",
+        "entry": "Oppføring"
       },
       "timestampFormat": "Dato- og tidsformat",
       "timestampFormatHint": "Velg et BLL-dato-/tidsformat, eller skriv inn og velg et egendefinert BLL-format. En widget kan overstyre det med sitt eget format.",
@@ -429,7 +436,7 @@
     "filters": {
       "button": "Filtre",
       "level": "Nivå",
-      "allLevels": "Alle nivåer",
+      "allLevels": "Tilbakestill",
       "date": "Dato",
       "fromDate": "Fra",
       "toDate": "Til",
@@ -443,7 +450,9 @@
       "previous": "Forrige",
       "next": "Neste",
       "page": "Side"
-    }
+    },
+    "invalidUpdateMode": "Widgetens oppdateringsmodus er ugyldig.",
+    "invalidRefreshInterval": "Oppdateringsintervallet må være et heltall fra 1 til 2147483 sekunder."
   },
   "widget_features_notice": "Simple (Sys) Log har nå en dashbord-widget! Legg til Simple Sys Log-widgeten på et dashbord, og åpne appinnstillingene for å utforme oppsett og farger i fanen Widgeter. Widgeten krever Better Logic Library-appen.",
   "exportFailed": "Eksporten kunne ikke opprettes eller lastes opp. Prøv igjen.",

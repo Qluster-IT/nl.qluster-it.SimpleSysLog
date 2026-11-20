@@ -49,7 +49,8 @@
       "journal": "Журнал",
       "console": "Консоль",
       "aurora": "???????? ??????",
-      "widgetkeeper": "WidgetKeeper"
+      "widgetkeeper": "WidgetKeeper",
+      "compact-classic": "Компактный классический"
     },
     "theme": {
       "homey": "Homey",
@@ -73,7 +74,8 @@
       "facility": "Категория",
       "app": "Приложение / Группа",
       "hostname": "Имя узла",
-      "message": "Сообщение"
+      "message": "Сообщение",
+      "timestamp2": "Время 2"
     },
     "search": "Поиск",
     "loading": "Загрузка журналов…",
@@ -170,7 +172,11 @@
         "black": "Чёрный",
         "white": "Белый",
         "black-light": "Чёрный (светлый/тёмный)",
-        "red-soft": "Красный (Ошибка)",
+        "red-soft": "Красный (светлый)",
+        "red-dark": "Тёмно-красный",
+        "grey-light": "Светло-серый",
+        "grey-dark": "Тёмно-серый",
+        "navy": "Тёмно-синий",
         "console-purple": "Фиолетовый (Console: Чрезвычайная ситуация)",
         "console-pink": "Розовый (Console: Тревога)",
         "console-red": "Красный (Console: Критично)",
@@ -381,7 +387,8 @@
         "background_solid": "Сплошной",
         "background_gradient": "Градиент",
         "widget_padding_hint": "Значение по умолчанию сохраняет обычные внутренние отступы виджета.",
-        "background_gradient_end": "Конечный цвет градиента"
+        "background_gradient_end": "Конечный цвет градиента",
+        "entry": "Запись"
       },
       "timestampFormat": "Формат даты и времени",
       "timestampFormatHint": "Выберите формат даты и времени BLL или введите и выберите собственный формат BLL. Виджет может переопределить его своим форматом.",
@@ -429,7 +436,7 @@
     "filters": {
       "button": "Фильтры",
       "level": "Уровень",
-      "allLevels": "Все уровни",
+      "allLevels": "Сбросить",
       "date": "Дата",
       "fromDate": "С",
       "toDate": "По",
@@ -443,7 +450,9 @@
       "previous": "?????",
       "next": "?????",
       "page": "????????"
-    }
+    },
+    "invalidUpdateMode": "Недопустимый режим обновления виджета.",
+    "invalidRefreshInterval": "Интервал обновления должен быть целым числом от 1 до 2147483 секунд."
   },
   "widget_features_notice": "В Simple (Sys) Log появился виджет для панели! Добавьте виджет Simple Sys Log на панель и откройте настройки приложения, чтобы на вкладке «Виджеты» настроить его макет и цвета. Для виджета нужно приложение Better Logic Library.",
   "exportFailed": "Не удалось создать или загрузить экспорт. Попробуйте ещё раз.",

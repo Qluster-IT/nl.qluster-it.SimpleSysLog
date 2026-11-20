@@ -58,6 +58,7 @@
     "design": {
       "default": "Domyślny",
       "compact": "Kompaktowy",
+      "compact-classic": "Kompaktowy klasyczny",
       "journal": "Dziennik",
       "console": "Konsola",
       "aurora": "Zorza",
@@ -79,6 +80,7 @@
     },
     "fields": {
       "timestamp": "Znacznik czasu",
+      "timestamp2": "Znacznik czasu 2",
       "severity": "Poziom",
       "facility": "Kategoria",
       "app": "Aplikacja / Grupa",
@@ -169,7 +171,11 @@
         "black": "Czarny",
         "white": "Biały",
         "black-light": "Czarny (jasny/ciemny)",
-        "red-soft": "Czerwony (Błąd)"
+        "red-soft": "Czerwony (jasny)",
+        "red-dark": "Ciemnoczerwony",
+        "grey-light": "Jasnoszary",
+        "grey-dark": "Ciemnoszary",
+        "navy": "Granatowy"
       },
       "none": "Brak",
       "invalidName": "Wpisz nazwę o długości od 1 do 60 znaków.",
@@ -235,6 +241,7 @@
         "select_before_drag": "Wybierz element przed przeciągnięciem.",
         "widget": "Widżet",
         "day_separator": "Separator dnia",
+        "entry": "Wpis",
         "row": "Wiersz",
         "row_count": "Liczba wierszy",
         "row_count_confirm": "Zmniejszyć do __count__ wierszy? Usunięte wiersze tracą ustawienia, ich elementy trafiają do Nieużywane, a kolumny obejmujące wiele wierszy zostają skrócone.",
@@ -352,8 +359,7 @@
           "wrap": "Zawijanie tekstu",
           "wrap_values": {
             "normal": "Dopasuj do szerokości",
-            "nowrap": "Bez zawijania",
-            "words": "Układaj wiersze przy spacjach"
+            "nowrap": "Bez zawijania"
           }
         },
         "search_filters": "Wyszukiwanie i filtry",
@@ -408,7 +414,7 @@
     "filters": {
       "button": "Filtry",
       "level": "Poziom",
-      "allLevels": "Wszystkie poziomy",
+      "allLevels": "Resetuj",
       "date": "Data",
       "fromDate": "Od",
       "toDate": "Do",
@@ -422,6 +428,8 @@
       "previous": "Poprzednia",
       "next": "Nast?pna",
       "page": "Strona"
-    }
+    },
+    "invalidUpdateMode": "Tryb aktualizacji widżetu jest nieprawidłowy.",
+    "invalidRefreshInterval": "Interwał odświeżania musi być liczbą całkowitą od 1 do 2147483 sekund."
   }
 }

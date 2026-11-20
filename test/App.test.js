@@ -59,6 +59,38 @@ function createApp(App = loadApp()) {
   return { app, timers, settings, errors, createdTimers: () => createdTimers };
 }
 
+test('log Flows and syslog forwarding preserve facility zero as Kernel', async () => {
+  const { app } = createApp();
+  const listeners = new Map();
+  const card = id => ({ registerRunListener: listener => listeners.set(id, listener) });
+  let event;
+  app.homey.flow = {
+    getActionCard: card,
+    getConditionCard: card,
+    getTriggerCard(id) {
+      return { ...card(id), trigger: async (tokens, state) => { event = { tokens, state }; } };
+    }
+  };
+  app.buildCards();
+  app.Log = { writeLine: async () => {} };
+  let forwarded;
+  app.Loggers = Array.from({ length: 8 }, () => []);
+  app.Loggers[6].push({ log: async entry => { forwarded = entry; } });
+
+  await app.addLogToDB('test', 'group', { facility: 0 });
+  assert.equal(forwarded.facility, 0);
+  assert.equal(event.tokens.facility, 'Kernel');
+  assert.equal(event.tokens.facilityId, 0);
+  const matches = listeners.get('Log_generated');
+  assert.equal(await matches({ facility: '0' }, event.state), true);
+  assert.equal(await matches({ facility: 0 }, { ...event.state, facility: 2 }), false);
+  assert.equal(await matches({}, event.state), true);
+
+  await app.addLogToDB('test', 'group');
+  assert.equal(forwarded.facility, '16');
+  assert.equal(event.tokens.facilityId, -1);
+});
+
 test('settings reloads keep one daily timer and a changed retention value is used', async t => {
   t.mock.timers.enable({ apis: ['Date'], now: new Date(2026, 10, 13, 20, 0).getTime() });
   const { app, timers, settings, createdTimers } = createApp();

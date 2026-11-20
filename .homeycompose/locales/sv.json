@@ -58,6 +58,7 @@
     "design": {
       "default": "Standard",
       "compact": "Kompakt",
+      "compact-classic": "Kompakt klassisk",
       "journal": "Journal",
       "console": "Konsol",
       "aurora": "Norrsken",
@@ -79,6 +80,7 @@
     },
     "fields": {
       "timestamp": "Tidsstämpel",
+      "timestamp2": "Tidsstämpel 2",
       "severity": "Allvarlighetsgrad",
       "facility": "Kategori",
       "app": "App / Grupp",
@@ -169,7 +171,11 @@
         "black": "Svart",
         "white": "Vit",
         "black-light": "Svart (ljus/mörk)",
-        "red-soft": "Röd (Fel)"
+        "red-soft": "Röd (ljus)",
+        "red-dark": "Mörkröd",
+        "grey-light": "Ljusgrå",
+        "grey-dark": "Mörkgrå",
+        "navy": "Marinblå"
       },
       "none": "Ingen",
       "invalidName": "Ange ett namn med 1 till 60 tecken.",
@@ -235,6 +241,7 @@
         "select_before_drag": "Välj ett objekt innan du drar det.",
         "widget": "Widget",
         "day_separator": "Dagavdelare",
+        "entry": "Post",
         "row": "Rad",
         "row_count": "Antal rader",
         "row_count_confirm": "Minska till __count__ rader? Borttagna rader förlorar sina inställningar, deras element flyttas till Oanvända och kolumner som sträcker sig över flera rader förkortas.",
@@ -352,8 +359,7 @@
           "wrap": "Radbrytning",
           "wrap_values": {
             "normal": "Anpassa till bredden",
-            "nowrap": "Ingen radbrytning",
-            "words": "Stapla vid blanksteg"
+            "nowrap": "Ingen radbrytning"
           }
         },
         "search_filters": "Sökning och filter",
@@ -408,7 +414,7 @@
     "filters": {
       "button": "Filter",
       "level": "Nivå",
-      "allLevels": "Alla nivåer",
+      "allLevels": "Återställ",
       "date": "Datum",
       "fromDate": "Från",
       "toDate": "Till",
@@ -422,6 +428,8 @@
       "previous": "F?reg?ende",
       "next": "N?sta",
       "page": "Sida"
-    }
+    },
+    "invalidUpdateMode": "Widgetens uppdateringsläge är ogiltigt.",
+    "invalidRefreshInterval": "Uppdateringsintervallet måste vara ett heltal från 1 till 2147483 sekunder."
   }
 }

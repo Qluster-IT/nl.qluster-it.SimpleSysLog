@@ -90,6 +90,41 @@
       "max": 5000
     },
     {
+      "id": "heightIsMax",
+      "type": "checkbox",
+      "title": {
+        "en": "Height is max height",
+        "nl": "Hoogte is maximale hoogte",
+        "da": "Højde er maksimal højde",
+        "de": "Höhe ist die maximale Höhe",
+        "es": "La altura es la altura máxima",
+        "fr": "La hauteur est la hauteur maximale",
+        "it": "L'altezza è l'altezza massima",
+        "no": "Høyde er maksimal høyde",
+        "sv": "Höjd är maximal höjd",
+        "pl": "Wysokość jest wysokością maksymalną",
+        "ru": "Высота — это максимальная высота",
+        "ko": "높이를 최대 높이로 사용",
+        "ar": "الارتفاع هو الحد الأقصى للارتفاع"
+      },
+      "hint": {
+        "en": "Automatically fit the widget to its content, up to Height. Longer content scrolls within that maximum.",
+        "nl": "Pas de widget automatisch aan de inhoud aan, tot Hoogte. Langere inhoud scrolt binnen dat maximum.",
+        "da": "Tilpas automatisk widgetten til indholdet op til Højde. Længere indhold ruller inden for denne grænse.",
+        "de": "Das Widget passt sich automatisch dem Inhalt bis zur Höhe an. Längere Inhalte werden innerhalb dieses Maximums gescrollt.",
+        "es": "Ajusta automáticamente el widget al contenido, hasta Altura. El contenido más largo se desplaza dentro de ese máximo.",
+        "fr": "Adapte automatiquement le widget au contenu, jusqu’à Hauteur. Le contenu plus long défile dans cette limite.",
+        "it": "Adatta automaticamente il widget al contenuto, fino ad Altezza. Il contenuto più lungo scorre entro questo limite.",
+        "no": "Tilpass widgeten automatisk til innholdet, opptil Høyde. Lengre innhold ruller innenfor denne grensen.",
+        "sv": "Anpassa widgeten automatiskt till innehållet, upp till Höjd. Längre innehåll rullar inom denna gräns.",
+        "pl": "Automatycznie dopasuj widżet do zawartości, do wartości Wysokość. Dłuższa zawartość przewija się w tym limicie.",
+        "ru": "Автоматически подстраивать виджет под содержимое, не превышая Высоту. Более длинное содержимое прокручивается в этих пределах.",
+        "ko": "높이를 한도로 콘텐츠에 맞게 위젯 크기를 자동 조절합니다. 더 긴 콘텐츠는 이 한도 내에서 스크롤됩니다.",
+        "ar": "اضبط حجم الأداة تلقائيًا حسب المحتوى حتى قيمة الارتفاع. يُمرر المحتوى الأطول ضمن هذا الحد."
+      },
+      "value": false
+    },
+    {
       "id": "colorMode",
       "type": "dropdown",
       "title": {
@@ -285,7 +320,7 @@
         "ko": "검색 모드",
         "ar": "وضع البحث"
       },
-      "value": "simple",
+      "value": "advanced",
       "values": [
         {
           "id": "none",
@@ -397,6 +432,101 @@
         "ar": "إظهار زري السابق والتالي أسفل السجلات."
       },
       "value": false
+    },
+    {
+      "id": "updateMode",
+      "type": "dropdown",
+      "title": {
+        "en": "Updates",
+        "nl": "Updates",
+        "da": "Opdateringer",
+        "de": "Aktualisierungen",
+        "es": "Actualizaciones",
+        "fr": "Mises à jour",
+        "it": "Aggiornamenti",
+        "no": "Oppdateringer",
+        "sv": "Uppdateringar",
+        "pl": "Aktualizacje",
+        "ru": "Обновления",
+        "ko": "업데이트",
+        "ar": "التحديثات"
+      },
+      "value": "live",
+      "values": [
+        {
+          "id": "live",
+          "label": {
+            "en": "Live",
+            "nl": "Live",
+            "da": "Live",
+            "de": "Live",
+            "es": "En directo",
+            "fr": "En direct",
+            "it": "In tempo reale",
+            "no": "Direkte",
+            "sv": "Live",
+            "pl": "Na żywo",
+            "ru": "В реальном времени",
+            "ko": "실시간",
+            "ar": "مباشر"
+          }
+        },
+        {
+          "id": "periodic",
+          "label": {
+            "en": "Refresh every N seconds",
+            "nl": "Elke N seconden vernieuwen",
+            "da": "Opdater hvert N sekund",
+            "de": "Alle N Sekunden aktualisieren",
+            "es": "Actualizar cada N segundos",
+            "fr": "Actualiser toutes les N secondes",
+            "it": "Aggiorna ogni N secondi",
+            "no": "Oppdater hvert N sekund",
+            "sv": "Uppdatera var N:e sekund",
+            "pl": "Odświeżaj co N sekund",
+            "ru": "Обновлять каждые N секунд",
+            "ko": "N초마다 새로 고침",
+            "ar": "التحديث كل N ثانية"
+          }
+        }
+      ]
+    },
+    {
+      "id": "refreshInterval",
+      "type": "number",
+      "title": {
+        "en": "Refresh interval (seconds)",
+        "nl": "Verversingsinterval (seconden)",
+        "da": "Opdateringsinterval (sekunder)",
+        "de": "Aktualisierungsintervall (Sekunden)",
+        "es": "Intervalo de actualización (segundos)",
+        "fr": "Intervalle d’actualisation (secondes)",
+        "it": "Intervallo di aggiornamento (secondi)",
+        "no": "Oppdateringsintervall (sekunder)",
+        "sv": "Uppdateringsintervall (sekunder)",
+        "pl": "Interwał odświeżania (sekundy)",
+        "ru": "Интервал обновления (секунды)",
+        "ko": "새로 고침 간격(초)",
+        "ar": "الفاصل بين التحديثات (بالثواني)"
+      },
+      "hint": {
+        "en": "Only used with periodic refresh. Enter a whole number of at least 1.",
+        "nl": "Alleen voor periodiek vernieuwen. Voer een geheel getal van minimaal 1 in.",
+        "da": "Bruges kun ved periodisk opdatering. Indtast et helt tal på mindst 1.",
+        "de": "Nur für regelmäßige Aktualisierungen. Eine ganze Zahl von mindestens 1 eingeben.",
+        "es": "Solo para actualizaciones periódicas. Introduce un número entero de al menos 1.",
+        "fr": "Uniquement pour l’actualisation périodique. Saisissez un entier supérieur ou égal à 1.",
+        "it": "Solo per gli aggiornamenti periodici. Inserisci un numero intero di almeno 1.",
+        "no": "Brukes bare ved periodisk oppdatering. Angi et heltall på minst 1.",
+        "sv": "Används endast vid periodisk uppdatering. Ange ett heltal på minst 1.",
+        "pl": "Tylko do okresowego odświeżania. Wpisz liczbę całkowitą nie mniejszą niż 1.",
+        "ru": "Только для периодического обновления. Введите целое число не меньше 1.",
+        "ko": "주기적 새로 고침에만 사용됩니다. 1 이상의 정수를 입력하세요.",
+        "ar": "يُستخدم فقط للتحديث الدوري. أدخل عددًا صحيحًا لا يقل عن 1."
+      },
+      "value": 10,
+      "min": 1,
+      "max": 2147483
     },
     {
       "id": "minSeverity",
@@ -800,7 +930,7 @@
         {
           "id": "10",
           "title": {
-            "en": "Deamon",
+            "en": "Daemon",
             "nl": "Daemon",
             "da": "Daemon",
             "de": "Daemon",

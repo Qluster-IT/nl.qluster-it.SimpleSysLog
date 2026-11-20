@@ -53,6 +53,7 @@
     "design": {
       "default": "Standaard",
       "compact": "Compact",
+      "compact-classic": "Compact klassiek",
       "journal": "Dagboek",
       "console": "Console",
       "aurora": "Noorderlicht",
@@ -74,6 +75,7 @@
     },
     "fields": {
       "timestamp": "Tijdstip",
+      "timestamp2": "Tijdstip 2",
       "severity": "Niveau",
       "facility": "Categorie",
       "app": "App / Groep",
@@ -164,7 +166,11 @@
         "black": "Zwart",
         "white": "Wit",
         "black-light": "Zwart (licht/donker)",
-        "red-soft": "Rood (Fout)"
+        "red-soft": "Rood (licht)",
+        "red-dark": "Donkerrood",
+        "grey-light": "Lichtgrijs",
+        "grey-dark": "Donkergrijs",
+        "navy": "Marineblauw"
       },
       "none": "Geen",
       "invalidName": "Voer een naam van 1 tot 60 tekens in.",
@@ -230,6 +236,7 @@
         "select_before_drag": "Selecteer een onderdeel voordat je het versleept.",
         "widget": "Widget",
         "day_separator": "Dagscheiding",
+        "entry": "Regel",
         "row": "Rij",
         "row_count": "Aantal rijen",
         "row_count_confirm": "Verminderen naar __count__ rijen? Verwijderde rijen verliezen hun instellingen, hun elementen gaan naar Ongebruikt en kolommen die meerdere rijen beslaan worden ingekort.",
@@ -347,8 +354,7 @@
           "wrap": "Tekstomloop",
           "wrap_values": {
             "normal": "Passend afbreken",
-            "nowrap": "Niet afbreken",
-            "words": "Stapelen bij spaties"
+            "nowrap": "Niet afbreken"
           }
         },
         "search_filters": "Zoeken en filters",
@@ -403,7 +409,7 @@
     "filters": {
       "button": "Filters",
       "level": "Niveau",
-      "allLevels": "Alle niveaus",
+      "allLevels": "Resetten",
       "date": "Datum",
       "fromDate": "Vanaf",
       "toDate": "Tot en met",
@@ -417,6 +423,8 @@
       "previous": "Vorige",
       "next": "Volgende",
       "page": "Pagina"
-    }
+    },
+    "invalidUpdateMode": "De updatemodus van de widget is ongeldig.",
+    "invalidRefreshInterval": "Het verversingsinterval moet een geheel getal van 1 tot en met 2147483 seconden zijn."
   }
 }

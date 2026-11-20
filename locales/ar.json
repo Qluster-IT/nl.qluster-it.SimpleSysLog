@@ -49,7 +49,8 @@
       "journal": "يوميات",
       "console": "وحدة التحكم",
       "aurora": "????? ??????",
-      "widgetkeeper": "WidgetKeeper"
+      "widgetkeeper": "WidgetKeeper",
+      "compact-classic": "مضغوط كلاسيكي"
     },
     "theme": {
       "homey": "Homey",
@@ -73,7 +74,8 @@
       "facility": "الفئة",
       "app": "التطبيق / المجموعة",
       "hostname": "اسم المضيف",
-      "message": "الرسالة"
+      "message": "الرسالة",
+      "timestamp2": "الطابع الزمني 2"
     },
     "search": "بحث",
     "loading": "جارٍ تحميل السجلات…",
@@ -170,7 +172,11 @@
         "black": "أسود",
         "white": "أبيض",
         "black-light": "أسود (فاتح/داكن)",
-        "red-soft": "أحمر (خطأ)",
+        "red-soft": "أحمر (فاتح)",
+        "red-dark": "أحمر داكن",
+        "grey-light": "رمادي فاتح",
+        "grey-dark": "رمادي داكن",
+        "navy": "كحلي",
         "console-purple": "بنفسجي (Console: طوارئ)",
         "console-pink": "وردي (Console: تنبيه)",
         "console-red": "أحمر (Console: حرج)",
@@ -381,7 +387,8 @@
         "background_solid": "لون موحد",
         "background_gradient": "تدرج لوني",
         "widget_padding_hint": "يحافظ الخيار الافتراضي للتطبيق على الحشوة المعتادة للأداة.",
-        "background_gradient_end": "لون نهاية التدرج"
+        "background_gradient_end": "لون نهاية التدرج",
+        "entry": "إدخال"
       },
       "timestampFormat": "تنسيق التاريخ والوقت",
       "timestampFormatHint": "اختر تنسيق تاريخ ووقت BLL، أو اكتب تنسيق BLL مخصصًا وحدده. يمكن للأداة تجاوزه بتنسيقها الخاص.",
@@ -429,7 +436,7 @@
     "filters": {
       "button": "عوامل التصفية",
       "level": "المستوى",
-      "allLevels": "كل المستويات",
+      "allLevels": "إعادة تعيين",
       "date": "التاريخ",
       "fromDate": "من",
       "toDate": "إلى",
@@ -443,7 +450,9 @@
       "previous": "??????",
       "next": "??????",
       "page": "????"
-    }
+    },
+    "invalidUpdateMode": "وضع تحديث الأداة غير صالح.",
+    "invalidRefreshInterval": "يجب أن يكون الفاصل بين التحديثات عددًا صحيحًا من 1 إلى 2147483 ثانية."
   },
   "widget_features_notice": "أصبح لدى Simple (Sys) Log الآن أداة للوحة المعلومات! أضف أداة Simple Sys Log إلى لوحة معلومات، وافتح إعدادات التطبيق لتصميم تخطيطها وألوانها في علامة التبويب «الأدوات». تحتاج الأداة إلى تطبيق Better Logic Library.",
   "exportFailed": "تعذر إنشاء ملف التصدير أو رفعه. يرجى المحاولة مرة أخرى.",

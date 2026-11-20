@@ -57,6 +57,7 @@
     "design": {
       "default": "Default",
       "compact": "Compact",
+      "compact-classic": "Compact Classic",
       "journal": "Journal",
       "console": "Console",
       "aurora": "Aurora",
@@ -78,6 +79,7 @@
     },
     "fields": {
       "timestamp": "Timestamp",
+      "timestamp2": "Timestamp 2",
       "severity": "Severity",
       "facility": "Facility",
       "app": "App / Group",
@@ -168,7 +170,11 @@
         "black": "Black",
         "white": "White",
         "black-light": "Black (light/dark)",
-        "red-soft": "Red (Error)"
+        "red-soft": "Red (light)",
+        "red-dark": "Red (dark)",
+        "grey-light": "Grey (light)",
+        "grey-dark": "Grey (dark)",
+        "navy": "Navy"
       },
       "none": "None",
       "invalidName": "Enter a name of 1 to 60 characters.",
@@ -234,6 +240,7 @@
         "select_before_drag": "Select an item before dragging it.",
         "widget": "Widget",
         "day_separator": "Day separator",
+        "entry": "Entry",
         "row": "Row",
         "row_count": "Number of rows",
         "row_count_confirm": "Reduce to __count__ rows? Removed rows lose their settings, their elements move to Unused, and spanning columns are shortened.",
@@ -351,8 +358,7 @@
           "wrap": "Text wrapping",
           "wrap_values": {
             "normal": "Wrap to fit",
-            "nowrap": "No wrapping",
-            "words": "Stack at spaces"
+            "nowrap": "No wrapping"
           }
         },
         "search_filters": "Search and filters",
@@ -407,7 +413,7 @@
     "filters": {
       "button": "Filters",
       "level": "Level",
-      "allLevels": "All levels",
+      "allLevels": "Reset",
       "date": "Date",
       "fromDate": "From",
       "toDate": "To",
@@ -421,6 +427,8 @@
       "previous": "Previous",
       "next": "Next",
       "page": "Page"
-    }
+    },
+    "invalidUpdateMode": "The widget update mode is invalid.",
+    "invalidRefreshInterval": "The refresh interval must be a whole number from 1 to 2147483 seconds."
   }
 }

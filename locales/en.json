@@ -48,7 +48,8 @@
       "journal": "Journal",
       "console": "Console",
       "aurora": "Aurora",
-      "widgetkeeper": "WidgetKeeper"
+      "widgetkeeper": "WidgetKeeper",
+      "compact-classic": "Compact Classic"
     },
     "theme": {
       "homey": "Homey",
@@ -72,7 +73,8 @@
       "facility": "Facility",
       "app": "App / Group",
       "hostname": "Hostname",
-      "message": "Message"
+      "message": "Message",
+      "timestamp2": "Timestamp 2"
     },
     "search": "Search",
     "loading": "Loading logs…",
@@ -169,7 +171,11 @@
         "black": "Black",
         "white": "White",
         "black-light": "Black (light/dark)",
-        "red-soft": "Red (Error)",
+        "red-soft": "Red (light)",
+        "red-dark": "Red (dark)",
+        "grey-light": "Grey (light)",
+        "grey-dark": "Grey (dark)",
+        "navy": "Navy",
         "console-purple": "Purple (Console: Emergency)",
         "console-pink": "Pink (Console: Alert)",
         "console-red": "Red (Console: Critical)",
@@ -380,7 +386,8 @@
         "background_solid": "Solid",
         "background_gradient": "Gradient",
         "widget_padding_hint": "App default preserves the widget's normal padding.",
-        "background_gradient_end": "Gradient end color"
+        "background_gradient_end": "Gradient end color",
+        "entry": "Entry"
       },
       "timestampFormat": "Date and time format",
       "timestampFormatHint": "Choose a BLL date/time format, or type a custom BLL format and select it. A widget can overrule it with its own format.",
@@ -428,7 +435,7 @@
     "filters": {
       "button": "Filters",
       "level": "Level",
-      "allLevels": "All levels",
+      "allLevels": "Reset",
       "date": "Date",
       "fromDate": "From",
       "toDate": "To",
@@ -442,7 +449,9 @@
       "previous": "Previous",
       "next": "Next",
       "page": "Page"
-    }
+    },
+    "invalidUpdateMode": "The widget update mode is invalid.",
+    "invalidRefreshInterval": "The refresh interval must be a whole number from 1 to 2147483 seconds."
   },
   "widget_features_notice": "Simple (Sys) Log now has a dashboard widget! Add the Simple Sys Log widget to a dashboard, and open the app settings to design its layout and colors on the Widgets tab. The widget needs the Better Logic Library app.",
   "exportFailed": "The export could not be created or uploaded. Please try again.",

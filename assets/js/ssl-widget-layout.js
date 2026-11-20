@@ -7,8 +7,9 @@
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.SSLWidgetLayout = api;
 }(typeof self !== 'undefined' ? self : this, function () {
-  var ELEMENT_IDS = ['timestamp', 'severity', 'facility', 'app', 'hostname', 'message'];
-  var DEFAULT_SIZES = { timestamp: 12, severity: 10, facility: 10, app: 11, hostname: 11, message: 13, daySeparator: 11,
+  var ELEMENT_IDS = ['timestamp', 'severity', 'facility', 'app', 'hostname', 'message', 'timestamp2'];
+  var DEFAULT_TIMESTAMP2_FORMAT = 'dd-MM-yyyy';
+  var DEFAULT_SIZES = { timestamp: 12, timestamp2: 12, severity: 10, facility: 10, app: 11, hostname: 11, message: 13, daySeparator: 11,
     search: 13, filter: 13, previousPage: 13, pageNumber: 12, nextPage: 13 };
   var CONTROL_AREAS = {
     toolbar: { key: 'toolbarLayout', ids: ['search', 'filter'], gap: 6 },
@@ -49,7 +50,7 @@
     weight: { property: 'fontWeight', values: { normal: '400', medium: '500', semibold: '600', bold: '700', extrabold: '800' } },
     italic: { property: 'fontStyle', values: { off: 'normal', on: 'italic' } },
     spacing: { property: 'letterSpacing', values: { none: '0', narrow: '0.04em', wide: '0.08em' } },
-    wrap: { property: 'whiteSpace', values: { normal: 'normal', nowrap: 'nowrap', words: 'pre' } }
+    wrap: { property: 'whiteSpace', values: { normal: 'normal', nowrap: 'nowrap' } }
   };
   var UNITS = 5;
   var MAX_ROWS = 10;
@@ -178,12 +179,47 @@
 
   function isHexColor(value) { return typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value); }
 
+  function luminance(value) {
+    var channels = value.slice(1).match(/../g).map(function (part) {
+      var channel = parseInt(part, 16) / 255;
+      return channel <= 0.04045 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4);
+    });
+    return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+  }
+
+  function badgeTextColor(value) {
+    if (!isHexColor(value)) {
+      return ['red', 'red-dark', 'navy', 'purple', 'black', 'black-light'].indexOf(value) !== -1
+        ? 'var(--ssl-color-white)' : 'var(--ssl-color-black)';
+    }
+    var background = luminance(value);
+    return 1.05 / (background + 0.05) > (background + 0.05) / (luminance('#101114') + 0.05) ? '#FFFFFF' : '#101114';
+  }
+
+  function resolveTimestamp2Format(design) {
+    if (!design || !Array.isArray(design.rows) || !design.rows.some(function (row) {
+      return row.columns.some(function (column) { return column.elements.indexOf('timestamp2') !== -1; });
+    })) return undefined;
+    return design.timestamp2Format || DEFAULT_TIMESTAMP2_FORMAT;
+  }
+
+  function gradientEndColor(background, end) {
+    if (end && end !== 'automatic') return colorValue(end);
+    if (!background || background === 'automatic' || background === 'none') return 'var(--ssl-gradient-surface)';
+    return 'color-mix(in srgb, ' + colorValue(background) + ' 11%, var(--ssl-gradient-surface))';
+  }
+
   function widgetStyle(design, theme) {
     var style = {};
     Object.keys(theme && theme.colors || {}).forEach(function (key) {
       var value = theme.colors[key];
       if (key === 'background' && value === 'none') style['background-color'] = 'transparent';
-      else if (value && value !== 'automatic') style['--ssl-' + key] = colorValue(value);
+      else if (value && value !== 'automatic') {
+        style['--ssl-' + key] = colorValue(value);
+        if (['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'].indexOf(key) !== -1) {
+          style['--ssl-' + key + '-text'] = badgeTextColor(value);
+        }
+      }
     });
     if (design && design.widgetBorderWidth) style['--ssl-outline-width'] = design.widgetBorderWidth + 'px';
     if (design && design.widgetBorderless) {
@@ -197,12 +233,12 @@
     if (theme && theme.backgroundGradient && background && background !== 'automatic' && background !== 'none') {
       var color = colorValue(background);
       if (theme.backgroundGradientEnd && theme.backgroundGradientEnd !== 'automatic') {
-        style['background-image'] = 'linear-gradient(to bottom, ' + color + ', ' + colorValue(theme.backgroundGradientEnd) + ')';
+        style['background-image'] = 'linear-gradient(to bottom, ' + color + ', ' + gradientEndColor(background, theme.backgroundGradientEnd) + ')';
       } else {
         var surface = 'var(--ssl-gradient-surface)';
         style['--ssl-background'] = surface;
         style['background-image'] = 'linear-gradient(to bottom, color-mix(in srgb, ' + color
-          + ' 22%, ' + surface + '), color-mix(in srgb, ' + color + ' 11%, ' + surface + '))';
+          + ' 22%, ' + surface + '), ' + gradientEndColor(background) + ')';
       }
     }
     return style;
@@ -385,10 +421,6 @@
       if (options.selectedElement === id) item.classList.add('ssl-element-selected');
       if (options.labels && options.labels[id]) item.title = options.labels[id];
       item.textContent = value === undefined || value === null ? '' : String(value);
-      if (id === 'timestamp' && design && design.elementTextStyles && design.elementTextStyles.timestamp
-        && design.elementTextStyles.timestamp.wrap === 'words') {
-        item.textContent = item.textContent.replace(/[ \t]+/g, '\n');
-      }
       var colors = applyText(item, design, theme, id);
       if (colors && colors.background && colors.background !== 'default') {
         item.style.background = colorValue(colors.background);
@@ -482,9 +514,11 @@
     config.ids.forEach(function (id) {
       var node = nodes[id];
       if (!node) return;
+      node.classList.remove('ssl-preview-selected');
       var target = id === 'filter' ? node.querySelector('.ssl-filter-button') : node;
       target.classList.remove('ssl-element-selected');
       applyControlText(target, design, theme, id);
+      if (id === 'search') target.style.fontSize = 'max(var(--ssl-input-min-font-size, 0px), ' + elementSize(design, id) + 'px)';
       ['min-height', 'height', 'width', 'padding-left', 'padding-right', 'padding-top', 'padding-bottom',
         'border-radius'].forEach(function (property) { target.style.removeProperty(property); });
       if (options.selectedElement === id) target.classList.add('ssl-element-selected');
@@ -510,7 +544,15 @@
       }
     });
     if (!grid) {
-      config.ids.forEach(function (id) { if (nodes[id]) container.appendChild(nodes[id]); });
+      if (options.selectedRow === 0) container.classList.add('ssl-preview-selected');
+      config.ids.forEach(function (id, index) {
+        var node = nodes[id];
+        if (!node) return;
+        if (options.selectedColumn && options.selectedColumn.row === 0 && options.selectedColumn.column === index) {
+          node.classList.add('ssl-preview-selected');
+        }
+        container.appendChild(node);
+      });
       return container;
     }
     container.classList.add('ssl-grid-card');
@@ -550,7 +592,10 @@
     positionFilterMenu: positionFilterMenu,
     isHexColor: isHexColor,
     colorValue: colorValue,
+    gradientEndColor: gradientEndColor,
     widgetStyle: widgetStyle,
+    DEFAULT_TIMESTAMP2_FORMAT: DEFAULT_TIMESTAMP2_FORMAT,
+    resolveTimestamp2Format: resolveTimestamp2Format,
     ELEMENT_IDS: ELEMENT_IDS,
     DAY_SEPARATOR_ID: DAY_SEPARATOR_ID,
     DAY_SEPARATOR_LINE_ID: DAY_SEPARATOR_LINE_ID,

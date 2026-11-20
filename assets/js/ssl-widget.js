@@ -8,6 +8,65 @@ function sslWidgetHeight(settings) {
   return Math.min(5000, Math.max(100, Math.round(height)));
 }
 
+function sslWidgetContentHeight(widget) {
+  function pixels(style, key) { return parseFloat(style[key]) || 0; }
+  var style = window.getComputedStyle(widget);
+  var height = pixels(style, 'borderTopWidth') + pixels(style, 'borderBottomWidth')
+    + pixels(style, 'paddingTop') + pixels(style, 'paddingBottom');
+  var children = Array.prototype.filter.call(widget.children, function (child) { return child.getClientRects().length; });
+  children.forEach(function (child) {
+    var childStyle = window.getComputedStyle(child);
+    height += pixels(childStyle, 'marginTop') + pixels(childStyle, 'marginBottom');
+    if (child.classList.contains('ssl-log-list') || child.classList.contains('ssl-android-content')) {
+      var content = Array.prototype.filter.call(child.children, function (item) { return item.getClientRects().length; });
+      if (content.length) height += content[content.length - 1].getBoundingClientRect().bottom
+        - content[0].getBoundingClientRect().top;
+      height += pixels(childStyle, 'paddingTop') + pixels(childStyle, 'paddingBottom')
+        + pixels(childStyle, 'borderTopWidth') + pixels(childStyle, 'borderBottomWidth');
+    } else {
+      height += child.getBoundingClientRect().height;
+    }
+  });
+  return Math.ceil(height + Math.max(0, children.length - 1) * pixels(style, 'rowGap'));
+}
+
+function sslReadyWidget(Homey, settings, maxHeight) {
+  if (settings.heightIsMax !== true) {
+    Homey.ready({ height: maxHeight });
+    return function () {};
+  }
+  var widget = document.querySelector('.ssl-widget');
+  var timer = null;
+  var stopped = false;
+  var previousHeight = null;
+  function schedule() {
+    if (stopped || timer !== null) return;
+    timer = window.setTimeout(function () {
+      timer = null;
+      var height = Math.min(maxHeight, Math.max(1, sslWidgetContentHeight(widget)));
+      if (height === previousHeight) return;
+      previousHeight = height;
+      Homey.ready({ height: height });
+    }, 0);
+  }
+  var resizeObserver = typeof window.ResizeObserver === 'function' ? new window.ResizeObserver(schedule) : null;
+  var mutationObserver = typeof window.MutationObserver === 'function' ? new window.MutationObserver(schedule) : null;
+  if (resizeObserver) resizeObserver.observe(widget);
+  if (mutationObserver) mutationObserver.observe(widget, {
+    childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['style', 'class']
+  });
+  window.addEventListener('resize', schedule);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+  schedule();
+  return function () {
+    stopped = true;
+    if (timer !== null) window.clearTimeout(timer);
+    if (resizeObserver) resizeObserver.disconnect();
+    if (mutationObserver) mutationObserver.disconnect();
+    window.removeEventListener('resize', schedule);
+  };
+}
+
 function sslColorModeClass(settings) {
   return 'ssl-mode-' + (settings.colorMode === 'light' || settings.colorMode === 'dark' ? settings.colorMode : 'automatic');
 }
@@ -136,7 +195,7 @@ function sslShowAndroidLinks(Homey, settings, widgetHeight) {
     status.classList.add('ssl-widget-error');
     status.textContent = error && error.message ? error.message : t('unavailable', 'The links could not be created.');
   }).then(function () {
-    Homey.ready({ height: widgetHeight });
+    sslReadyWidget(Homey, settings, widgetHeight);
   });
 }
 
@@ -163,7 +222,7 @@ function onHomeyReady(Homey) {
     main.className = 'ssl-widget ' + sslColorModeClass(widgetSettings);
     main.appendChild(message);
     document.body.replaceChildren(main);
-    Homey.ready({ height: widgetHeight });
+    sslReadyWidget(Homey, widgetSettings, widgetHeight);
     return;
   }
 
@@ -257,17 +316,26 @@ function onHomeyReady(Homey) {
       var settings = widgetSettings;
       var count = settings.entryCount === undefined || settings.entryCount === null
         ? 25 : Number(settings.entryCount);
-      var searchMode = settings.searchMode === 'advanced' ? 'advanced' : 'simple';
+      var searchMode = settings.searchMode === 'simple' || settings.searchMode === 'none' ? 'simple' : 'advanced';
       var searchEnabled = settings.searchMode !== 'none';
       var showFilters = settings.showFilters !== false;
       var paging = settings.paging === true;
+      var updateMode = settings.updateMode === undefined ? 'live' : settings.updateMode;
+      var periodic = updateMode === 'periodic';
+      var refreshInterval = settings.refreshInterval === undefined ? 10 : settings.refreshInterval;
+      if (typeof refreshInterval === 'string' && refreshInterval.trim()) refreshInterval = Number(refreshInterval);
+      var refreshTimer = null;
+      var logRequestsInFlight = 0;
       // The design's format applies unless this widget chose its own; it is resolved once the styles load.
       var ownFormat = settings.datetimeFormat && typeof settings.datetimeFormat === 'object'
         ? settings.datetimeFormat.id : settings.datetimeFormat;
       if (typeof ownFormat !== 'string' || !ownFormat.trim()) ownFormat = '';
       var datetimeFormat = ownFormat || 'timeshort';
+      var timestamp2Format;
       var dayFormat = 'ddd d MMM';
       var filters = readFilters(settings);
+      var metadataFilters = {};
+      var metadataPredicates = {};
       var instanceId = Homey.getWidgetInstanceId();
       var filterStatePath = '/filter-state/' + encodeURIComponent(instanceId);
       var filterSaveQueue = Promise.resolve();
@@ -275,11 +343,13 @@ function onHomeyReady(Homey) {
       var severities = {};
       var facilities = {};
       var destroyed = false;
+      var stopAutoHeight = null;
       var realtimeReady = false;
       var timestampFormatRegistered = false;
       var pendingRealtimeEntries = [];
       var labels = {
         timestamp: translate('widgets.fields.timestamp', 'Timestamp'),
+        timestamp2: translate('widgets.fields.timestamp2', 'Timestamp 2'),
         severity: translate('widgets.fields.severity', 'Severity'),
         facility: translate('widgets.fields.facility', 'Facility'),
         app: translate('widgets.fields.app', 'App / Group'),
@@ -288,7 +358,7 @@ function onHomeyReady(Homey) {
         search: translate('widgets.search', 'Search'),
         filters: translate('widgets.filters.button', 'Filters'),
         level: translate('widgets.filters.level', 'Level'),
-        allLevels: translate('widgets.filters.allLevels', 'All levels'),
+        allLevels: translate('widgets.filters.allLevels', 'Reset'),
         date: translate('widgets.filters.date', 'Date'),
         fromDate: translate('widgets.filters.fromDate', 'From'),
         toDate: translate('widgets.filters.toDate', 'To'),
@@ -318,6 +388,7 @@ function onHomeyReady(Homey) {
       $scope.theme = { elements: {} };
       $scope.styleVersion = 0;
       var alignTimer = null;
+      var pageScrollTimer = null;
       var scrollPending = false;
       // Every card is its own grid, so content-sized columns (time and level in the default design)
       // are aligned across the list after cards render; a timeout also runs in background tabs.
@@ -341,9 +412,13 @@ function onHomeyReady(Homey) {
       $scope.hasNextPage = false;
       $scope.pageLoading = false;
       $scope.modeClass = sslColorModeClass(settings);
-      $scope.filterMenu = { open: false, level: false, date: false };
+      $scope.filterMenu = { open: false, level: false, date: false, facility: false, app: false, hostname: false };
       // Chosen levels by id; when any are chosen they replace the widget's minimum level.
       $scope.levelFilter = {};
+      $scope.facilityFilter = {};
+      $scope.metadataFilter = { facility: '', app: '', hostname: '' };
+      $scope.metadataErrors = {};
+      $scope.facilityOptions = [];
       $scope.dateFilter = { from: null, to: null };
       $scope.dateFilterError = '';
       $scope.filterSaveError = '';
@@ -362,6 +437,16 @@ function onHomeyReady(Homey) {
 
       $scope.hasLevelFilter = function () { return selectedLevels().length > 0; };
       $scope.selectedLevelCount = function () { return selectedLevels().length; };
+      function selectedFacilities() {
+        return Object.keys($scope.facilityFilter).filter(function (id) { return $scope.facilityFilter[id]; })
+          .map(Number).sort(function (a, b) { return a - b; });
+      }
+      $scope.selectedFacilityCount = function () { return selectedFacilities().length; };
+      $scope.toggleFacility = function (id) {
+        $scope.facilityFilter[id] = !$scope.facilityFilter[id];
+        $scope.metadataFilter.facility = selectedFacilities().join(',');
+        $scope.metadataChanged('facility');
+      };
       function dateValue(value) {
         if (value === undefined || value === null || value === '') return '';
         var date = value instanceof Date ? value : new Date(value);
@@ -403,6 +488,10 @@ function onHomeyReady(Homey) {
         }
         $scope.levelFilter = levels;
         $scope.dateFilter = { from: from, to: to };
+        ['facility', 'app', 'hostname'].forEach(function (key) {
+          $scope.metadataFilter[key] = state[key] === undefined ? '' : String(state[key]);
+          updateMetadataFilter(key);
+        });
       }
       function persistFilterState() {
         if (hasFutureDate()) return;
@@ -411,6 +500,7 @@ function onHomeyReady(Homey) {
           from: dateValue($scope.dateFilter.from) || null,
           to: dateValue($scope.dateFilter.to) || null
         };
+        Object.keys(metadataFilters).forEach(function (key) { state[key] = metadataFilters[key]; });
         filterSaveQueue = filterSaveQueue.then(function () {
           return Homey.api('PUT', filterStatePath, state);
         }).then(function () {
@@ -452,14 +542,50 @@ function onHomeyReady(Homey) {
         persistFilterState();
         reloadLogs(true);
       };
+      function updateMetadataFilter(key) {
+        var value = $scope.metadataFilter[key].trim();
+        try {
+          if (key === 'facility') {
+            var selected = value ? value.split(',').map(function (id) {
+              if (!/^\d{1,2}$/.test(id) || Number(id) > 23) throw new Error('Invalid facility.');
+              return Number(id);
+            }) : [];
+            $scope.facilityFilter = {};
+            selected.forEach(function (id) { $scope.facilityFilter[id] = true; });
+            selected = selectedFacilities();
+            if (selected.length) metadataFilters.facility = selected.length === 1 ? selected[0] : selected;
+            else delete metadataFilters.facility;
+          } else {
+            if (value.length > 200) throw new Error('The filter must be at most 200 characters.');
+            metadataPredicates[key] = window.SSLWidgetSearch.compileText(value, searchMode);
+            if (value) metadataFilters[key] = value;
+            else delete metadataFilters[key];
+          }
+          $scope.metadataErrors[key] = '';
+          return true;
+        } catch (error) {
+          $scope.metadataErrors[key] = error.message;
+          return false;
+        }
+      }
+      $scope.hasMetadataFilter = function (key) {
+        return key ? metadataFilters[key] !== undefined : Object.keys(metadataFilters).length > 0;
+      };
+      $scope.metadataChanged = function (key) {
+        if (!updateMetadataFilter(key)) return;
+        persistFilterState();
+        reloadLogs(true);
+      };
+      $scope.clearMetadataFilter = function (key) {
+        $scope.metadataFilter[key] = '';
+        $scope.metadataChanged(key);
+      };
       $scope.toggleFilterMenu = function () {
         $scope.filterMenu.open = !$scope.filterMenu.open;
-        $scope.filterMenu.level = false;
-        $scope.filterMenu.date = false;
+        Object.keys($scope.filterMenu).forEach(function (key) { if (key !== 'open') $scope.filterMenu[key] = false; });
       };
       $scope.openFilterGroup = function (group) {
-        $scope.filterMenu.level = group === 'level';
-        $scope.filterMenu.date = group === 'date';
+        Object.keys($scope.filterMenu).forEach(function (key) { if (key !== 'open') $scope.filterMenu[key] = key === group; });
       };
       $scope.filterKeydown = function (event) {
         if (event.key !== 'Escape' || !$scope.filterMenu.open) return;
@@ -480,12 +606,12 @@ function onHomeyReady(Homey) {
       $scope.previousPage = function () {
         if (!paging || $scope.pageIndex <= 0 || $scope.pageLoading) return;
         $scope.pageIndex--;
-        reloadLogs();
+        reloadLogs(false, true);
       };
       $scope.nextPage = function () {
         if (!paging || !$scope.hasNextPage || $scope.pageLoading) return;
         $scope.pageIndex++;
-        reloadLogs();
+        reloadLogs(false, true);
       };
 
       function closeFilterMenuOutside(event) {
@@ -513,15 +639,31 @@ function onHomeyReady(Homey) {
           && String(value).toLowerCase().indexOf(search.toLowerCase()) >= 0;
       }
 
+      function effectiveFilters() {
+        var result = Object.assign({}, filters);
+        if (!showFilters) return result;
+        if (metadataFilters.facility !== undefined) result.facility = metadataFilters.facility;
+        ['app', 'hostname'].forEach(function (key) {
+          if (metadataFilters[key] === undefined) return;
+          delete result[key];
+          result[key + 'Search'] = metadataFilters[key];
+        });
+        return result;
+      }
+
       // Mirrors the server-side widget filters for realtime entries.
       function matchesFilters(entry) {
         var levels = showFilters ? selectedLevels() : [];
         if (levels.length) {
           if (levels.indexOf(Number(entry.severity)) < 0) return false;
         } else if (filters.minSeverity !== undefined && !(Number(entry.severity) <= filters.minSeverity)) return false;
-        if (filters.facility !== undefined && Number(entry.facility) !== filters.facility) return false;
-        if (filters.app !== undefined && !containsText(entry.app, filters.app)) return false;
-        if (filters.hostname !== undefined && !containsText(entry.hostname, filters.hostname)) return false;
+        var active = effectiveFilters();
+        if (active.facility !== undefined && !(Array.isArray(active.facility)
+          ? active.facility.indexOf(Number(entry.facility)) >= 0 : Number(entry.facility) === active.facility)) return false;
+        if (active.app !== undefined && !containsText(entry.app, active.app)) return false;
+        if (active.hostname !== undefined && !containsText(entry.hostname, active.hostname)) return false;
+        if (active.appSearch && !metadataPredicates.app(entry.app)) return false;
+        if (active.hostnameSearch && !metadataPredicates.hostname(entry.hostname)) return false;
         var from = showFilters ? dateValue($scope.dateFilter.from) : '';
         var to = showFilters ? dateValue($scope.dateFilter.to) : '';
         if (from || to) {
@@ -565,6 +707,7 @@ function onHomeyReady(Homey) {
         $scope.design = design;
         $scope.theme = theme;
         $scope.cardLayout = window.SSLWidgetLayout.computeLayout(design);
+        timestamp2Format = window.SSLWidgetLayout.resolveTimestamp2Format(design);
         if (!ownFormat && typeof design.timestampFormat === 'string' && design.timestampFormat.trim()) {
           datetimeFormat = design.timestampFormat;
         }
@@ -604,14 +747,24 @@ function onHomeyReady(Homey) {
         }
       }
 
-      $scope.validateSearch = refreshSearch;
+      $scope.validateSearch = function () {
+        try {
+          window.SSLWidgetSearch.compile($scope.search.text, searchMode);
+          $scope.searchError = '';
+          reloadLogs(true);
+        } catch (error) {
+          $scope.searchError = error.message;
+        }
+      };
       $scope.fieldValue = function (field, log) {
-        if (field === 'timestamp') {
+        if (field === 'timestamp' || field === 'timestamp2') {
+          var format = field === 'timestamp2' ? timestamp2Format : datetimeFormat;
+          if (!format) return '';
           var formatted = log.timestamp_formatted;
           if (formatted && typeof formatted === 'object') {
-            if (Object.prototype.hasOwnProperty.call(formatted, datetimeFormat)) return formatted[datetimeFormat];
+            if (Object.prototype.hasOwnProperty.call(formatted, format)) return formatted[format];
             if (Object.prototype.hasOwnProperty.call(formatted, 'datetime')) {
-              console.error('The log entry is missing its selected timestamp format', datetimeFormat);
+              console.error('The log entry is missing its selected timestamp format', format);
               return formatted.datetime;
             }
           }
@@ -693,14 +846,18 @@ function onHomeyReady(Homey) {
 
       function insertRealtimeEntry(entry) {
         var formatted = entry.timestamp_formatted;
-        if (!formatted || typeof formatted !== 'object'
-          || !Object.prototype.hasOwnProperty.call(formatted, datetimeFormat)) {
-          console.error('Realtime log entry is missing its selected timestamp format', datetimeFormat);
+        var formats = timestamp2Format ? [datetimeFormat, timestamp2Format] : [datetimeFormat];
+        for (var index = 0; index < formats.length; index++) {
+          var format = formats[index];
           if (!formatted || typeof formatted !== 'object'
-            || !Object.prototype.hasOwnProperty.call(formatted, 'datetime')) return;
-          formatted = Object.assign(Object.create(null), formatted);
-          formatted[datetimeFormat] = formatted.datetime;
-          entry.timestamp_formatted = formatted;
+            || !Object.prototype.hasOwnProperty.call(formatted, format)) {
+            console.error('Realtime log entry is missing its selected timestamp format', format);
+            if (!formatted || typeof formatted !== 'object'
+              || !Object.prototype.hasOwnProperty.call(formatted, 'datetime')) return;
+            formatted = Object.assign(Object.create(null), formatted);
+            formatted[format] = formatted.datetime;
+            entry.timestamp_formatted = formatted;
+          }
         }
         preserveScrollOnInsert(normalizeLog(entry));
       }
@@ -709,6 +866,12 @@ function onHomeyReady(Homey) {
         if (destroyed || $scope.bllUnavailable || !entry || !Number.isSafeInteger(count)) return;
         if (paging && $scope.pageIndex > 0) return;
         if (!matchesFilters(entry)) return;
+        try {
+          if (searchEnabled && !window.SSLWidgetSearch.matches(entry, $scope.search.text, searchMode)) return;
+        } catch (error) {
+          $scope.$applyAsync(function () { $scope.searchError = error.message; });
+          return;
+        }
         if (!realtimeReady) {
           if (pendingRealtimeEntries.length >= count) pendingRealtimeEntries.shift();
           pendingRealtimeEntries.push(entry);
@@ -720,7 +883,19 @@ function onHomeyReady(Homey) {
       if (!Number.isSafeInteger(count) || count < 1) {
         $scope.loading = false;
         $scope.error = translate('widgets.invalidEntryCount', 'The entry count must be a whole number of at least 1.');
-        Homey.ready({ height: widgetHeight });
+        stopAutoHeight = sslReadyWidget(Homey, settings, widgetHeight);
+        $scope.$on('$destroy', stopAutoHeight);
+        return;
+      }
+
+      if ((updateMode !== 'live' && !periodic)
+        || (periodic && (!Number.isSafeInteger(refreshInterval) || refreshInterval < 1 || refreshInterval > 2147483))) {
+        $scope.loading = false;
+        $scope.error = updateMode !== 'live' && !periodic
+          ? translate('widgets.invalidUpdateMode', 'The widget update mode is invalid.')
+          : translate('widgets.invalidRefreshInterval', 'The refresh interval must be a whole number from 1 to 2147483 seconds.');
+        stopAutoHeight = sslReadyWidget(Homey, settings, widgetHeight);
+        $scope.$on('$destroy', stopAutoHeight);
         return;
       }
 
@@ -728,9 +903,17 @@ function onHomeyReady(Homey) {
         var path = '/logs?take=' + encodeURIComponent(count + (paging ? 1 : 0))
           + '&timestampFormat=' + encodeURIComponent(datetimeFormat)
           + '&dayFormat=' + encodeURIComponent(dayFormat);
+        if (timestamp2Format) path += '&timestamp2Format=' + encodeURIComponent(timestamp2Format);
         if (paging) path += '&skip=' + encodeURIComponent($scope.pageIndex * count);
-        Object.keys(filters).forEach(function (key) {
-          path += '&' + key + '=' + encodeURIComponent(filters[key]);
+        if (searchEnabled && $scope.search.text.trim()) {
+          path += '&search=' + encodeURIComponent($scope.search.text.trim());
+        }
+        var active = effectiveFilters();
+        if ((searchEnabled && $scope.search.text.trim()) || active.appSearch || active.hostnameSearch) {
+          path += '&searchMode=' + searchMode;
+        }
+        Object.keys(active).forEach(function (key) {
+          path += '&' + key + '=' + encodeURIComponent(active[key]);
         });
         var from = showFilters ? dateValue($scope.dateFilter.from) : '';
         var to = showFilters ? dateValue($scope.dateFilter.to) : '';
@@ -752,6 +935,7 @@ function onHomeyReady(Homey) {
         $scope.bllUnavailable = false;
         severities = data.severities || {};
         facilities = data.facilities || {};
+        $scope.facilityOptions = Object.keys(facilities).map(function (id) { return { id: id, label: facilities[id] }; });
         $scope.hasNextPage = paging && data.logs.length > count;
         $scope.logs = data.logs.slice(0, count).map(normalizeLog);
         $scope.pageLoading = false;
@@ -765,22 +949,66 @@ function onHomeyReady(Homey) {
       // Refetches with the current filters; only the latest request applies.
       var levelRequest = 0;
       var filtersChangedDuringLoad = false;
-      function reloadLogs(resetPage) {
+      function schedulePeriodicRefresh() {
+        if (!periodic || destroyed || initialLoadPending || !timestampFormatRegistered
+          || logRequestsInFlight > 0 || refreshTimer !== null) return;
+        refreshTimer = window.setTimeout(function () {
+          refreshTimer = null;
+          if ($scope.searchError || $scope.dateFilterError
+            || Object.keys($scope.metadataErrors).some(function (key) { return !!$scope.metadataErrors[key]; })) {
+            schedulePeriodicRefresh();
+            return;
+          }
+          reloadLogs();
+        }, refreshInterval * 1000);
+      }
+
+      function requestLogs() {
+        var path = logsPath();
+        if (refreshTimer !== null) {
+          window.clearTimeout(refreshTimer);
+          refreshTimer = null;
+        }
+        logRequestsInFlight++;
+        return Promise.resolve().then(function () {
+          return Homey.api('GET', path, {});
+        }).finally(function () {
+          logRequestsInFlight--;
+          schedulePeriodicRefresh();
+        });
+      }
+
+      function reloadLogs(resetPage, scrollToTop) {
+        filters = readFilters(Homey.getSettings() || {});
         if (showFilters && hasFutureDate()) return;
         if (resetPage && paging) $scope.pageIndex = 0;
         if (initialLoadPending) {
           filtersChangedDuringLoad = true;
           return;
         }
-        if (destroyed || $scope.bllUnavailable) return;
+        if (destroyed || ($scope.bllUnavailable && !periodic)) return;
         $scope.pageLoading = paging;
         var request = ++levelRequest;
         realtimeReady = false;
         pendingRealtimeEntries.length = 0;
         $scope.error = '';
-        Homey.api('GET', logsPath(), {}).then(function (data) {
+        return requestLogs().then(function (data) {
           if (destroyed || request !== levelRequest) return;
-          $scope.$applyAsync(function () { applyLogData(data); });
+          $scope.$applyAsync(function () {
+            if (destroyed || request !== levelRequest) return;
+            applyLogData(data);
+            if (!scrollToTop || !data.available) return;
+            if (pageScrollTimer) $timeout.cancel(pageScrollTimer);
+            pageScrollTimer = $timeout(function () {
+              pageScrollTimer = null;
+              if (destroyed || request !== levelRequest) return;
+              var pageScroll = !!document.documentElement
+                && document.documentElement.classList.contains('ssl-android-page');
+              var scroller = pageScroll ? document.scrollingElement || document.documentElement
+                : document.getElementById('ssl-log-list');
+              if (scroller) scroller.scrollTop = 0;
+            }, 0, false);
+          });
         }).catch(function (error) {
           if (destroyed || request !== levelRequest) return;
           $scope.$applyAsync(function () {
@@ -800,7 +1028,7 @@ function onHomeyReady(Homey) {
         $scope.bllUnavailable = false;
         $scope.loading = true;
         $scope.$applyAsync();
-        Homey.api('GET', logsPath(), {}).then(function (data) {
+        return requestLogs().then(function (data) {
           if (destroyed) return;
           $scope.$applyAsync(function () {
             applyLogData(data);
@@ -825,12 +1053,12 @@ function onHomeyReady(Homey) {
       function onLogStorageReady() {
         if (destroyed) return;
         if (initialLoadPending) storageReadyDuringInitialLoad = true;
-        else reloadAfterStorageReady();
+        else if (!periodic || logRequestsInFlight === 0) reloadAfterStorageReady();
       }
 
       var initialLoadPending = true;
       var storageReadyDuringInitialLoad = false;
-      Homey.on('log_updated', onRealtimeLog);
+      if (!periodic) Homey.on('log_updated', onRealtimeLog);
       Homey.on('log_storage_ready', onLogStorageReady);
       Promise.all([
         Homey.api('GET', filterStatePath, {}),
@@ -841,7 +1069,7 @@ function onHomeyReady(Homey) {
         applyStyles(initialData[1]);
         return Homey.api('POST', '/register-timestamp-format', {
           instanceId: instanceId,
-          formats: [datetimeFormat, dayFormat]
+          formats: [datetimeFormat, dayFormat].concat(timestamp2Format ? [timestamp2Format] : [])
         });
       }).then(function (result) {
         if (destroyed && !result) return null;
@@ -851,7 +1079,7 @@ function onHomeyReady(Homey) {
           unregisterTimestampFormat();
           return null;
         }
-        return Homey.api('GET', logsPath(), {});
+        return requestLogs();
       }).then(function (data) {
         if (!data) return;
         if (destroyed) return;
@@ -871,19 +1099,24 @@ function onHomeyReady(Homey) {
         $scope.$applyAsync(function () {
           $scope.loading = false;
         });
-        Homey.ready({ height: widgetHeight });
+        stopAutoHeight = sslReadyWidget(Homey, settings, widgetHeight);
         if (storageReadyDuringInitialLoad && !$scope.error) reloadAfterStorageReady();
         else if (filtersChangedDuringLoad && !$scope.error) reloadLogs();
+        schedulePeriodicRefresh();
       });
 
       document.addEventListener('visibilitychange', function () {
-        if (document.hidden === false && !destroyed && !$scope.bllUnavailable) {
+        if (document.hidden === false && !destroyed && !$scope.bllUnavailable
+          && (!periodic || logRequestsInFlight === 0)) {
           reloadLogs();
         }
       });
 
       $scope.$on('$destroy', function () {
         destroyed = true;
+        if (pageScrollTimer) $timeout.cancel(pageScrollTimer);
+        if (refreshTimer !== null) window.clearTimeout(refreshTimer);
+        if (stopAutoHeight) stopAutoHeight();
         if (typeof window.removeEventListener === 'function') window.removeEventListener('resize', $scope.scheduleTrackAlignment);
         if (alignTimer !== null) window.clearTimeout(alignTimer);
         document.removeEventListener('click', closeFilterMenuOutside);

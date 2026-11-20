@@ -22,28 +22,45 @@ With simple log You can:
 
 TWF exports and imports use the compressed v1 format; unreleased prototype encodings are not supported.
 
-The Simple Sys Log dashboard widget shows recent entries and updates as new
-entries arrive. Each widget can set:
+The Simple Sys Log dashboard widget shows recent entries with live or periodic
+updates. Each widget can set:
 
 - its entries per page and height (100 to 5000 pixels; the search bar stays at the top);
 - light, dark, or automatic mode (automatic follows the dashboard);
-- no, simple, or advanced search, with filters controlled separately;
+- no, simple, or advanced search (default), with filters controlled separately;
 - optional Previous/Next paging (off by default);
+- **Live** updates (default), or **Refresh every N seconds**, with a configurable interval (default 10 seconds, minimum 1);
+- **Height is max height** (off by default), to fit the content up to the configured Height;
 - a BLL date/time format or a custom format;
 - filters for a minimum severity, a facility, and app/group or hostname text.
 
 With **Show filters** enabled, the filter button appears next to the search
-field, or on its own when Search Mode is **None**. Click **Level** or **Date**
+field, or on its own when Search Mode is **None**. Click **Level**, **Date**,
+**Facility**, **App / Group** or **Hostname**
 to open that section; only one section opens at a time.
 Under **Level**
 you can select one or more levels to show only those entries, even levels
 below the widget's minimum severity. Under **Date**, choose an inclusive
 **From**/**To** range up to today; either end can be left blank, and changes apply
-immediately. **All levels** and **All dates** clear their filters. These
+immediately. **Reset** clears the selected levels and restores the minimum
+severity from the widget settings; **All dates** clears the date range.
+**Facility** has multi-select checkboxes like **Level**; **App / Group** and **Hostname** have search fields
+using simple or advanced search according to the widget's Search Mode (simple
+when search is hidden). Each selection overrides its corresponding widget
+setting. **Reset**, unchecking every Facility, or clearing a search
+field restores that setting. Different filter sections are combined. These
 interactive filters are saved separately for each widget instance and restored
 when it reloads.
+Search matches app/group, hostname and message text across the log history
+before applying the entry limit or paging, in both simple and advanced mode.
 When paging is enabled, **Entries per page** controls the page size; otherwise,
-it controls how many recent entries are shown.
+it controls how many recent entries are shown. **Previous** and **Next** scroll
+to the top of the newly loaded page.
+
+Periodic updates refresh the current results after each interval instead of
+inserting new entries live. Slow requests do not overlap automatic refreshes.
+Search, filter and page changes still apply immediately. This controls only
+the widget display, not how often the app records logs.
 
 The widget needs the Better Logic Library app. When BLL starts after the
 widget has loaded, the widget loads its entries automatically.
@@ -55,6 +72,8 @@ then select them in the widget settings. Switch between **Designs** and
 are read-only, so copy them to customize. The built-in **Default** design and
 **Default** theme are used until you pick something else; the Default theme
 uses fixed severity colors and Homey's default background and fill.
+Its severity palette is dark red (Emergency), pink (Alert), purple (Critical),
+red (Error), orange (Warning), green (Notice), blue (Info) and grey (Debug).
 Log cards follow the dashboard's light or dark mode. Theme colors are named colors (red,
 orange, yellow, green, teal, cyan, blue, indigo, purple, pink, brown, grey,
 black, Black (light/dark), white) or **App default** (the widget's own color),
@@ -72,7 +91,11 @@ text case, weight, italic or letter spacing; all are App default by default and
 then keep the element's own look (for example the uppercase, bold severity pill).
 Alongside Default, the built-in **Compact**, **Journal** and **Console** designs
 offer dense, spacious and monospace layouts. Journal gives its App / Group and
-Facility badges consistent spacing and a shared vertical center in widgets and previews. **Ocean**, **Forest** and **Sunset**
+Facility badges consistent spacing and a shared vertical center in widgets and previews.
+**Compact Classic** recreates the older widget's compact layout: stacked date,
+time and severity beside the message, with App / Group and Facility underneath.
+Use it with the **Default** theme; there is no separate Classic theme.
+**Ocean**, **Forest** and **Sunset**
 themes use blue, deep-green and warm-orange labels and accents while keeping
 messages unhighlighted and Homey's default widget background and fill.
 The **Console** theme pairs a dark-green gradient background with green text and
@@ -84,9 +107,12 @@ Presets and Device Values: system typography, bold headings, calm blue accents
 and understated metadata, with automatic light and dark backgrounds.
 Custom gradient fills can use an optional **Gradient end color**; App default
 keeps the existing mode-aware gradient.
-Compact shows the date above the time, centered, because it has no day separators.
-Use the Timestamp element's **Text wrapping** option to wrap to fit, prevent wrapping or
-stack its text at spaces; the column's alignment also aligns the text.
+Compact and Compact Classic use **Timestamp 2** for the date above the time.
+Compact keeps both the same size; only Compact Classic uses a smaller date.
+Both Timestamp elements have their own format, size and text styling. The widget's
+date/time setting overrides only the original Timestamp. **Text wrapping** can wrap
+to fit or prevent wrapping; the retired stack-at-spaces option becomes normal
+wrapping, so older custom layouts may need a manual adjustment.
 Duplicate any built-in preset to customize it; existing widget selections stay unchanged.
 All designs share the same default text spacing in widgets and previews;
 per-element line-height overrides still take precedence.
@@ -129,21 +155,26 @@ in Homey Web Widgets for scrolling on Android. The Web widget also keeps the con
 visible while the page scrolls.
 In a theme, set the **Widget border** color (default: Homey's line color),
 use named or HEX colors, and choose a solid or gradient background fill.
+Select **Entry** above the log rows in Theme mode to set **Entry background**
+and **Border**. The outer **Widget border** is set separately under **Widget**.
 Like Chronograph, the widget fills Homey's tile edge to edge with Homey's rounded corners
 (`--homey-border-radius-default`), and in dark mode uses a near-black `#181920` surface with a
 subtle light rim. Designer previews emulate the dashboard card's 10px corners instead of the
 settings page's radius. Blue, green, orange, red, grey and white follow Homey's own palette.
-Critical and Error use different red shades, both available in the designer.
+The Default theme uses purple for Critical and red for Error.
 Default (Syslog) uses the Default theme's appearance with syslog-inspired severity colors.
-The live preview shows all entries on the current preview page. While editing
-a custom design or theme, it pins above the settings tabs as you scroll down.
+The live preview shows all entries on the current preview page and pins above
+the settings tabs as you scroll down.
 The pinned preview uses up to 45% of the viewport height, with the log list
 scrolling inside it. The widget's own padding is preserved.
-Whatever you select is outlined in the preview. Switching between Designs and
-Themes keeps a selection when it is available in both. **Designer help** is open the first time and then
+Select any visible section, row, column, or element in Design or Theme to
+highlight it in the preview. Built-in designs and themes can be inspected
+this way without editing them. Switching modes keeps a selection when it is
+available in both. **Designer help** is open the first time and then
 stays open or closed as you leave it.
-Search, Level/Date filters and paging work with sample entries in the preview;
-they do not change the filters saved for dashboard widgets.
+Search, Level/Date/Facility/App/Hostname filters and paging work with sample entries in the preview.
+The Facility filter lists all 24 facilities, even if some have no matching sample entries.
+Preview controls do not change the filters saved for dashboard widgets.
 Live updates keep the configured entry limit. New entries return the list to
 the top when you are already near it; scrolling further down keeps your reading position.
 
@@ -167,7 +198,8 @@ With a mouse, use Ctrl+wheel to zoom at the pointer and drag to pan while zoomed
 Posted screenshots keep their original colors in both light and dark mode.
 
 **Create TWF** also creates two preview images of the template, first in light
-mode and then in dark mode, and copies a ready-made forum post with the images.
+mode and then in dark mode, and copies a ready-made forum post with the images
+followed directly by the template code block.
 Images include the design's search, filter and paging controls and one entry for
 each level, ordered from Emergency to Debug, without clipping the log list.
 Switch the forum to its rich-text editor before pasting, so the images are
@@ -284,6 +316,19 @@ Apart from `/android/ping`, they only answer requests that carry a valid signed
 link.
 
 # Changelog
+
+## 4.0.2
+
+- Aligned widget and preview colors with Homey's light and dark palettes.
+- Select any visible part of the layout in Design or Theme to highlight it in the preview. Set log entry background and border colors under Entry in Theme mode.
+- Fixed names and filtering for all 24 syslog facilities in widgets and Flows.
+
+## 4.0.1
+
+- Added Compact Classic and refreshed Default severity colours.
+- Added independently styled date and time elements.
+- Added periodic widget updates, flexible height and more filters.
+- Improved widget scrolling and template previews.
 
 ## 4.0.0
 

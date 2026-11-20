@@ -4,6 +4,7 @@ const { FACILITIES, SEVERITIES } = require('../../lib/Log');
 const { getWidgetStyles } = require('../../lib/widget-styles');
 const { createLinks } = require('../../lib/android-links');
 const { parseSeverities } = require('../../lib/severity-filter');
+const widgetSearch = require('../../assets/js/ssl-widget-search');
 
 const WIDGET_FILTER_STATES_SETTING = 'widgetFilterStates';
 const SEVERITY_COUNT = Object.keys(SEVERITIES).length;
@@ -19,6 +20,18 @@ function optionalText(value, message) {
   if (value === undefined || value === null) return undefined;
   if (typeof value !== 'string' || value.length > 200) throw new Error(message);
   return value.trim() || undefined;
+}
+
+function optionalFacilities(value) {
+  const message = 'The facility filter must contain whole numbers from 0 to 23.';
+  if (typeof value !== 'string' || !value.includes(',')) return optionalInteger(value, 0, 23, message);
+  if (value.length > 96) throw new Error(message);
+  const facilities = value.split(',').map(part => {
+    const text = part.trim();
+    if (!/^\d{1,2}$/.test(text) || Number(text) > 23) throw new Error(message);
+    return Number(text);
+  });
+  return [...new Set(facilities)].sort((a, b) => a - b);
 }
 
 function optionalDate(value, label) {
@@ -40,6 +53,19 @@ function parseDateRange(query) {
   return { from, to };
 }
 
+function parseMetadataFilters(query) {
+  const searchMode = query && query.searchMode === 'advanced' ? 'advanced' : 'simple';
+  const filters = {
+    facility: optionalFacilities(query && query.facility),
+    appSearch: optionalText(query && query.appSearch, 'The app filter must be text of at most 200 characters.'),
+    hostnameSearch: optionalText(query && query.hostnameSearch, 'The hostname filter must be text of at most 200 characters.')
+  };
+  for (const key of ['appSearch', 'hostnameSearch']) {
+    if (filters[key]) widgetSearch.compileText(filters[key], searchMode);
+  }
+  return filters;
+}
+
 function validateWidgetInstanceId(value) {
   if (typeof value !== 'string' || !/^[A-Za-z0-9._-]{1,128}$/.test(value)
     || value === '__proto__' || value === 'constructor' || value === 'prototype') {
@@ -50,7 +76,7 @@ function validateWidgetInstanceId(value) {
 
 function normalizeWidgetFilterState(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)
-    || Object.keys(value).some(key => !['levels', 'from', 'to'].includes(key))
+    || Object.keys(value).some(key => !['levels', 'from', 'to', 'facility', 'app', 'hostname'].includes(key))
     || !Array.isArray(value.levels) || value.levels.length > SEVERITY_COUNT) {
     throw new Error('The widget filter state is invalid.');
   }
@@ -64,7 +90,20 @@ function normalizeWidgetFilterState(value) {
   const from = optionalDate(value.from, 'start') || null;
   const to = optionalDate(value.to, 'end') || null;
   if (from && to && from > to) throw new Error('The start date must be on or before the end date.');
-  return { levels: [...levels].sort((a, b) => a - b), from, to };
+  const state = { levels: [...levels].sort((a, b) => a - b), from, to };
+  if (value.facility !== undefined && value.facility !== null && value.facility !== '') {
+    const selected = Array.isArray(value.facility) ? value.facility : [value.facility];
+    if (selected.length > 24 || selected.some(id => !Number.isInteger(id) || id < 0 || id > 23)
+      || new Set(selected).size !== selected.length) {
+      throw new Error('The widget filter facility is invalid.');
+    }
+    if (selected.length) state.facility = Array.isArray(value.facility) ? [...selected].sort((a, b) => a - b) : value.facility;
+  }
+  for (const key of ['app', 'hostname']) {
+    const text = optionalText(value[key], 'The widget filter text must be at most 200 characters.');
+    if (text) state[key] = text;
+  }
+  return state;
 }
 
 function readWidgetFilterStates(homey) {
@@ -82,6 +121,7 @@ function readWidgetFilterStates(homey) {
 
 module.exports = {
   parseDateRange,
+  parseMetadataFilters,
 
   getWidgetFilterState({ homey, params }) {
     const instanceId = validateWidgetInstanceId(params && params.instanceId);
@@ -131,21 +171,29 @@ module.exports = {
     if (dayFormat !== undefined && (typeof dayFormat !== 'string' || !dayFormat.trim() || dayFormat.length > 128)) {
       throw new Error('The day separator format must be a non-empty string of at most 128 characters.');
     }
+    const timestamp2Format = query && query.timestamp2Format !== undefined ? query.timestamp2Format : undefined;
+    if (timestamp2Format !== undefined && (typeof timestamp2Format !== 'string' || !timestamp2Format.trim() || timestamp2Format.length > 128)) {
+      throw new Error('The second date and time format must be a non-empty string of at most 128 characters.');
+    }
     const filters = {
+      ...parseMetadataFilters(query),
+      search: optionalText(query && query.search, 'The search must be text of at most 200 characters.'),
+      searchMode: query && query.searchMode === 'advanced' ? 'advanced' : 'simple',
       maxSeverity: optionalInteger(query && query.minSeverity, 0, 7, 'The minimum severity must be a whole number from 0 to 7.'),
-      facility: optionalInteger(query && query.facility, 0, 23, 'The facility must be a whole number from 0 to 23.'),
       app: optionalText(query && query.app, 'The app filter must be text of at most 200 characters.'),
       hostname: optionalText(query && query.hostname, 'The hostname filter must be text of at most 200 characters.'),
       timestamp_fromUTC: dateRange.from,
       timestamp_toUTC: dateRange.to,
       severities: parseSeverities(query && query.severities)
     };
+    if (filters.search) widgetSearch.compile(filters.search, filters.searchMode);
     // Levels picked in the widget's filter menu replace the widget's minimum level.
     if (filters.severities !== undefined) delete filters.maxSeverity;
     Object.keys(filters).forEach(key => filters[key] === undefined && delete filters[key]);
     if (!homey.app.Log) return { available: false, logs: [] };
 
-    const result = await homey.app.Log.getLogs({ ...filters, skip, take, maxSizeKb: 900, timestampFormat: dayFormat ? [timestampFormat, dayFormat] : timestampFormat });
+    const formats = [timestampFormat].concat(dayFormat ? [dayFormat] : [], timestamp2Format ? [timestamp2Format] : []);
+    const result = await homey.app.Log.getLogs({ ...filters, skip, take, maxSizeKb: 900, timestampFormat: formats.length > 1 ? formats : timestampFormat });
     if (!result || !Array.isArray(result.logs)) throw new Error('The log query returned an invalid result.');
     const logs = result.logs.map(log => ({
       ...log,

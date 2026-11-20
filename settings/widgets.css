@@ -131,7 +131,7 @@
   /* Let the preview pin at the settings edge without moving the editor above the tabs. */
   margin-top: calc(-1 * var(--ssl-settings-tabs-height, 59px));
   padding-top: 0;
-  /* The height change at the pin threshold must not move the scroll position back across it. */
+  /* Do not anchor to rows inside the preview when it changes height. */
   overflow-anchor: none;
 }
 
@@ -155,6 +155,20 @@
 
 .widget-designer .style-preview-sentinel { height: 1px; margin-bottom: -1px; }
 
+/* Emulate dashboard token mappings in the preview's own mode, not the editor's. */
+.ssl-widget.preview-widget,
+.ssl-palette {
+  --homey-color-red: var(--ssl-fallback-red);
+  --homey-color-orange: var(--ssl-fallback-orange);
+  --homey-color-green: var(--ssl-fallback-green);
+  --homey-color-blue: var(--ssl-fallback-blue);
+  --homey-color-mono-500: var(--ssl-fallback-grey);
+  --homey-color-white: var(--ssl-fallback-white);
+  --homey-text-color: var(--ssl-fallback-text);
+  --homey-text-color-light: var(--ssl-fallback-muted);
+  --homey-line-color: var(--ssl-fallback-line);
+}
+
 .widget-designer .preview-widget {
   width: 100%;
   max-width: 450px;
@@ -170,6 +184,11 @@
   max-height: 45vh;
   max-height: 45dvh;
 }
+.widget-designer #layout-editor-panel:not([hidden]) {
+  display: flow-root;
+  padding-top: var(--ssl-preview-reserved-space, 0px);
+}
+
 .widget-designer .preview-widget .ssl-log-list { overscroll-behavior: auto; }
 .widget-designer .preview-widget [hidden] { display: none; }
 .widget-designer .preview-widget .ssl-filter-option {
@@ -262,6 +281,9 @@
 .widget-designer .style-row-select:disabled { cursor: default; opacity: 0.6; }
 .widget-designer .style-row-selected { border-color: var(--ssl-primary); }
 .widget-designer .style-widget-select { display: block; width: 100%; }
+.widget-designer #group-editor > .style-widget-root-select {
+  margin-top: 12px;
+}
 .widget-designer .style-row-rules,
 .widget-designer .style-column-controls { display: grid; gap: 8px; margin: 12px 0; border: 0; padding: 0; }
 .widget-designer .style-row-rules legend,
@@ -383,6 +405,11 @@
 .widget-designer .ssl-element-selected,
 .widget-designer .ssl-preview-selected { outline: 2px solid var(--ssl-primary); outline-offset: 1px; }
 .widget-designer .ssl-preview-row-overlay { pointer-events: none; outline-offset: -2px; }
+.widget-designer .preview-widget > .ssl-widget-pagination.ssl-preview-selected {
+  outline-offset: -2px;
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
 
 .widget-designer .style-colors { display: grid; gap: 8px; }
 
@@ -409,10 +436,17 @@
 .widget-designer .style-hex-controls[hidden] { display: none; }
 .widget-designer .style-hex-controls input[type="color"] { width: 100%; padding: 4px; }
 
-.widget-designer .color-swatch {
+.widget-designer .color-swatch,
+.widget-designer .style-color-row-no-swatch label::before {
   flex: 0 0 auto;
+  box-sizing: border-box;
   width: 16px;
   height: 16px;
+}
+
+.widget-designer .style-color-row-no-swatch label::before { content: ""; }
+
+.widget-designer .color-swatch {
   border: 1px solid rgba(128, 128, 128, 0.6);
   border-radius: 50%;
 }

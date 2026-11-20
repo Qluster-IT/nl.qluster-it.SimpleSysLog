@@ -166,7 +166,7 @@ class SyslogClientDevice extends Homey.Device {
 
 	async log({ message, severity, facility, hostname, timestamp, data, group, source = 'syslogclient' }) {
 		if (severity) severity = Number.parseInt(severity); else severity = this.settings.severity;
-		if (facility) facility = Number.parseInt(facility); else facility = this.settings.facility;
+		if (facility || facility === 0) facility = Number.parseInt(facility, 10); else facility = this.settings.facility;
 		const appName = group || this.appName;
 
 		if (!timestamp) timestamp = new Date();

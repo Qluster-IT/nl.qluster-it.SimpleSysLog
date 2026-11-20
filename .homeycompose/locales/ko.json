@@ -58,6 +58,7 @@
     "design": {
       "default": "기본값",
       "compact": "간결",
+      "compact-classic": "클래식 간결",
       "journal": "일지",
       "console": "콘솔",
       "aurora": "???",
@@ -79,6 +80,7 @@
     },
     "fields": {
       "timestamp": "타임스탬프",
+      "timestamp2": "타임스탬프 2",
       "severity": "심각도",
       "facility": "분류",
       "app": "앱 / 그룹",
@@ -169,7 +171,11 @@
         "black": "검정",
         "white": "흰색",
         "black-light": "검정 (밝게/어둡게)",
-        "red-soft": "빨간색 (오류)"
+        "red-soft": "빨강 (밝음)",
+        "red-dark": "진한 빨강",
+        "grey-light": "밝은 회색",
+        "grey-dark": "진한 회색",
+        "navy": "남색"
       },
       "none": "없음",
       "invalidName": "1~60자의 이름을 입력하세요.",
@@ -235,6 +241,7 @@
         "select_before_drag": "끌기 전에 항목을 선택하세요.",
         "widget": "위젯",
         "day_separator": "날짜 구분선",
+        "entry": "항목",
         "row": "행",
         "row_count": "행 수",
         "row_count_confirm": "행을 __count__개로 줄일까요? 삭제된 행의 설정은 사라지고 요소는 미사용으로 이동하며 여러 행에 걸친 열은 짧아집니다.",
@@ -352,8 +359,7 @@
           "wrap": "텍스트 줄바꿈",
           "wrap_values": {
             "normal": "너비에 맞게 줄바꿈",
-            "nowrap": "줄바꿈 없음",
-            "words": "공백마다 줄바꿈"
+            "nowrap": "줄바꿈 없음"
           }
         },
         "search_filters": "검색 및 필터",
@@ -408,7 +414,7 @@
     "filters": {
       "button": "필터",
       "level": "수준",
-      "allLevels": "모든 수준",
+      "allLevels": "초기화",
       "date": "날짜",
       "fromDate": "시작",
       "toDate": "종료",
@@ -422,6 +428,8 @@
       "previous": "??",
       "next": "??",
       "page": "???"
-    }
+    },
+    "invalidUpdateMode": "위젯 업데이트 모드가 올바르지 않습니다.",
+    "invalidRefreshInterval": "새로 고침 간격은 1~2147483초 사이의 정수여야 합니다."
   }
 }

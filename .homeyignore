@@ -15,6 +15,7 @@
 # Development dependencies and tests
 /package-lock.json
 /test/
+/tools/
 
 # Documentation (App Store descriptions use README.txt)
 /README.md

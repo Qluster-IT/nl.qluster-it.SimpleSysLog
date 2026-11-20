@@ -58,6 +58,7 @@
     "design": {
       "default": "Standard",
       "compact": "Kompakt",
+      "compact-classic": "Kompakt klassisk",
       "journal": "Journal",
       "console": "Konsoll",
       "aurora": "Nordlys",
@@ -79,6 +80,7 @@
     },
     "fields": {
       "timestamp": "Tidsstempel",
+      "timestamp2": "Tidsstempel 2",
       "severity": "Alvorlighetsgrad",
       "facility": "Kategori",
       "app": "App / Gruppe",
@@ -169,7 +171,11 @@
         "black": "Svart",
         "white": "Hvit",
         "black-light": "Svart (lys/mørk)",
-        "red-soft": "Rød (Feil)"
+        "red-soft": "Rød (lys)",
+        "red-dark": "Mørkerød",
+        "grey-light": "Lysegrå",
+        "grey-dark": "Mørkegrå",
+        "navy": "Marineblå"
       },
       "none": "Ingen",
       "invalidName": "Skriv inn et navn på 1 til 60 tegn.",
@@ -235,6 +241,7 @@
         "select_before_drag": "Velg et element før du drar det.",
         "widget": "Widget",
         "day_separator": "Dagsskille",
+        "entry": "Oppføring",
         "row": "Rad",
         "row_count": "Antall rader",
         "row_count_confirm": "Reduser til __count__ rader? Fjernede rader mister innstillingene, elementene flyttes til Ubrukt og kolonner over flere rader forkortes.",
@@ -352,8 +359,7 @@
           "wrap": "Tekstbryting",
           "wrap_values": {
             "normal": "Tilpass til bredden",
-            "nowrap": "Ingen tekstbryting",
-            "words": "Stable ved mellomrom"
+            "nowrap": "Ingen tekstbryting"
           }
         },
         "search_filters": "Søk og filtre",
@@ -408,7 +414,7 @@
     "filters": {
       "button": "Filtre",
       "level": "Nivå",
-      "allLevels": "Alle nivåer",
+      "allLevels": "Tilbakestill",
       "date": "Dato",
       "fromDate": "Fra",
       "toDate": "Til",
@@ -422,6 +428,8 @@
       "previous": "Forrige",
       "next": "Neste",
       "page": "Side"
-    }
+    },
+    "invalidUpdateMode": "Widgetens oppdateringsmodus er ugyldig.",
+    "invalidRefreshInterval": "Oppdateringsintervallet må være et heltall fra 1 til 2147483 sekunder."
   }
 }

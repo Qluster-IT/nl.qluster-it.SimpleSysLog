@@ -49,7 +49,8 @@
       "journal": "Journal",
       "console": "Konsole",
       "aurora": "Polarlicht",
-      "widgetkeeper": "WidgetKeeper"
+      "widgetkeeper": "WidgetKeeper",
+      "compact-classic": "Kompakt klassisch"
     },
     "theme": {
       "homey": "Homey",
@@ -73,7 +74,8 @@
       "facility": "Einrichtung",
       "app": "App / Gruppe",
       "hostname": "Hostname",
-      "message": "Nachricht"
+      "message": "Nachricht",
+      "timestamp2": "Zeitstempel 2"
     },
     "search": "Suchen",
     "loading": "Protokolle werden geladen…",
@@ -170,7 +172,11 @@
         "black": "Schwarz",
         "white": "Weiß",
         "black-light": "Schwarz (hell/dunkel)",
-        "red-soft": "Rot (Fehler)",
+        "red-soft": "Rot (hell)",
+        "red-dark": "Dunkelrot",
+        "grey-light": "Hellgrau",
+        "grey-dark": "Dunkelgrau",
+        "navy": "Marineblau",
         "console-purple": "Violett (Console: Notfall)",
         "console-pink": "Rosa (Console: Alarm)",
         "console-red": "Rot (Console: Kritisch)",
@@ -381,7 +387,8 @@
         "background_solid": "Einfarbig",
         "background_gradient": "Farbverlauf",
         "widget_padding_hint": "App-Standard behält die normalen Innenabstände des Widgets bei.",
-        "background_gradient_end": "Verlauf-Endfarbe"
+        "background_gradient_end": "Verlauf-Endfarbe",
+        "entry": "Eintrag"
       },
       "timestampFormat": "Datums- und Zeitformat",
       "timestampFormatHint": "Wähle ein BLL-Datums-/Zeitformat oder gib ein eigenes BLL-Format ein und wähle es aus. Ein Widget kann es mit einem eigenen Format überschreiben.",
@@ -429,7 +436,7 @@
     "filters": {
       "button": "Filter",
       "level": "Stufe",
-      "allLevels": "Alle Stufen",
+      "allLevels": "Zurücksetzen",
       "date": "Datum",
       "fromDate": "Von",
       "toDate": "Bis",
@@ -443,7 +450,9 @@
       "previous": "Zur?ck",
       "next": "Weiter",
       "page": "Seite"
-    }
+    },
+    "invalidUpdateMode": "Der Aktualisierungsmodus des Widgets ist ungültig.",
+    "invalidRefreshInterval": "Das Aktualisierungsintervall muss eine ganze Zahl von 1 bis 2147483 Sekunden sein."
   },
   "widget_features_notice": "Simple (Sys) Log hat jetzt ein Dashboard-Widget! Füge das Simple Sys Log-Widget einem Dashboard hinzu und öffne die App-Einstellungen, um im Tab Widgets Layout und Farben zu gestalten. Das Widget benötigt die Better Logic Library-App.",
   "exportFailed": "Der Export konnte nicht erstellt oder hochgeladen werden. Bitte erneut versuchen.",

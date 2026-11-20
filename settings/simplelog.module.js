@@ -50,32 +50,7 @@ if (window.hasOwnProperty('angular'))
 
       let gridDefer = $q.defer();
 
-      var facilities = {
-        Kernel: 0,
-        User: 1,
-        Mail: 2,
-        System: 3,
-        Authorization: 4,
-        Syslog: 5,
-        LPR: 6,
-        News: 7,
-        UUCP: 8,
-        Cron: 9,
-        Deamon: 10,
-        FTP: 11,
-        NTP: 12,
-        Security: 13,
-        Console: 14,
-        Clock: 15,
-        Flow: 16,
-        Device: 17,
-        App: 18,
-        Scene: 19,
-        Trigger: 20,
-        Condition: 21,
-        Action: 22,
-        Variable: 23
-      };
+      view.facilities = { ...window.SSLFacilities, 13: 'Security', 14: 'Console' };
 
       var severities = {
         Emergency: 0,
@@ -92,12 +67,6 @@ if (window.hasOwnProperty('angular'))
         if (Object.hasOwnProperty.call(severities, severityKey)) {
           const severityNr = severities[severityKey];
           view.severities[severityNr] = severityKey;
-        }
-
-      for (const facilityKey in facilities)
-        if (Object.hasOwnProperty.call(facilities, facilityKey)) {
-          const facilityNr = facilities[facilityKey];
-          view.facilities[facilityNr] = facilityKey;
         }
 
       async function loadLogs({ severity, facility, hostname, lastLog } = {}) {
@@ -462,7 +431,7 @@ if (window.hasOwnProperty('angular'))
             filter: {
               noTerm: true,
               type: uiGridConstants.filter.SELECT,
-              selectOptions: _.map(facilities, (val, key) => { return { value: val, label: key }; })
+              selectOptions: Object.entries(view.facilities).map(([id, label]) => ({ value: Number(id), label }))
             },
             cellTemplate:
               '<div class="ui-grid-cell-contents">{{grid.appScope.view.facilities[row.entity.facility]}}</div>'
@@ -590,7 +559,9 @@ if (window.hasOwnProperty('angular'))
             const filter = query.filters[i];
             switch (filter.field) {
               case 'severity': opts.severity = filter.term; break;
-              case 'facility': opts.facility = filter.term; break;
+              case 'facility':
+                if (filter.term !== undefined && filter.term !== null && filter.term !== '') opts.facility = Number(filter.term);
+                break;
               case 'app': opts.app = filter.term; break;
               case 'message': opts.message = filter.term; break;
               case 'timestamp':

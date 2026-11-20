@@ -44,7 +44,8 @@
       "journal": "Dagboek",
       "console": "Console",
       "aurora": "Noorderlicht",
-      "widgetkeeper": "WidgetKeeper"
+      "widgetkeeper": "WidgetKeeper",
+      "compact-classic": "Compact klassiek"
     },
     "theme": {
       "homey": "Homey",
@@ -68,7 +69,8 @@
       "facility": "Categorie",
       "app": "App / Groep",
       "hostname": "Hostnaam",
-      "message": "Bericht"
+      "message": "Bericht",
+      "timestamp2": "Tijdstip 2"
     },
     "search": "Zoeken",
     "loading": "Logregels laden…",
@@ -165,7 +167,11 @@
         "black": "Zwart",
         "white": "Wit",
         "black-light": "Zwart (licht/donker)",
-        "red-soft": "Rood (Fout)",
+        "red-soft": "Rood (licht)",
+        "red-dark": "Donkerrood",
+        "grey-light": "Lichtgrijs",
+        "grey-dark": "Donkergrijs",
+        "navy": "Marineblauw",
         "console-purple": "Paars (Console: Noodgeval)",
         "console-pink": "Roze (Console: Alarm)",
         "console-red": "Rood (Console: Kritiek)",
@@ -376,7 +382,8 @@
         "background_solid": "Effen",
         "background_gradient": "Kleurverloop",
         "widget_padding_hint": "App-standaard behoudt de normale opvulling van de widget.",
-        "background_gradient_end": "Eindkleur kleurverloop"
+        "background_gradient_end": "Eindkleur kleurverloop",
+        "entry": "Regel"
       },
       "timestampFormat": "Datum- en tijdnotatie",
       "timestampFormatHint": "Kies een BLL-datum-/tijdnotatie, of typ en selecteer een eigen BLL-notatie. Een widget kan deze overschrijven met een eigen notatie.",
@@ -424,7 +431,7 @@
     "filters": {
       "button": "Filters",
       "level": "Niveau",
-      "allLevels": "Alle niveaus",
+      "allLevels": "Resetten",
       "date": "Datum",
       "fromDate": "Vanaf",
       "toDate": "Tot en met",
@@ -438,7 +445,9 @@
       "previous": "Vorige",
       "next": "Volgende",
       "page": "Pagina"
-    }
+    },
+    "invalidUpdateMode": "De updatemodus van de widget is ongeldig.",
+    "invalidRefreshInterval": "Het verversingsinterval moet een geheel getal van 1 tot en met 2147483 seconden zijn."
   },
   "widget_features_notice": "Simple (Sys) Log heeft nu een dashboardwidget! Voeg de Simple Sys Log-widget toe aan een dashboard en open de app-instellingen om op het tabblad Widgets de indeling en kleuren te ontwerpen. De widget heeft de Better Logic Library-app nodig.",
   "exportFailed": "De export kon niet worden gemaakt of geüpload. Probeer het opnieuw.",

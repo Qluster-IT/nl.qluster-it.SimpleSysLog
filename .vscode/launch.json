@@ -51,7 +51,7 @@
       "name": "Attach to HP2023",
       "type": "node",
       "request": "attach",
-      "address": "192.168.1.242",
+      "address": "192.168.1.18",
       "port": 9218,
       "localRoot": "${workspaceFolder}",
       "remoteRoot": "/app/",
@@ -78,7 +78,7 @@
       "name": "Attach to HP2019",
       "type": "node",
       "request": "attach",
-      "address": "192.168.1.239",
+      "address": "192.168.1.19",
       "port": 9218,
       "localRoot": "${workspaceFolder}",
       "remoteRoot": "/"
